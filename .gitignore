@@ -1,0 +1,15 @@
+# 로컬 아카이브 (오래된 파일 보관, Git 미공유)
+.local_archive/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# 대용량 임시 파일
+*.har
+*.log
+
+# Editor
+*.swp
+*.swo
+*~
