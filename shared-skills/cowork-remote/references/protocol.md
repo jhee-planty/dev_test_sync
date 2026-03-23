@@ -276,7 +276,10 @@ Result: `{ "browser": "Chrome 126", "os": "Windows 11", "network": "corporate", 
 ## Git Sync Protocol
 
 - **쓰기 분리가 핵심.** dev → requests/, test → results/. 이 규칙을 어기면 충돌 발생.
-- **동기화:** `git add` → `git commit` → `git push`로 전달, 상대방은 `git fetch` → `git pull`로 수신.
+- **동기화:**
+  - dev PC(Cowork): GitHub MCP connector (`mcp__github__push_files`)로 전달
+  - test PC: `git add` → `git commit` → `git push`로 전달
+  - 수신: dev는 `mcp__github__get_file_contents`, test는 `git fetch` → `git pull`
 - **대용량 파일:** 스크린샷은 압축하여 포함, 작업 완료 후 `git rm` → `local_archive/`로 이동.
 - **파일 정리:** `local_archive/`로 이동은 dev가 담당. test는 파일을 삭제하지 않는다.
-- **폴링:** `git fetch`로 새 커밋 확인, 변경이 있으면 `git pull`로 수신.
+- **폴링:** dev는 `mcp__github__list_commits`로 새 커밋 확인, test는 `git fetch`로 확인.

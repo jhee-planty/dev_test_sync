@@ -7,6 +7,11 @@ dev는 작업을 요청하고, 큐를 관리하고, 결과를 수신한다.
 Git 저장소(dev_test_sync)가 로컬에 clone 되어 있어야 한다.
 `GIT_SYNC_REPO`를 실제 clone 경로로 설정한다.
 
+**Git 동기화:** Cowork에서는 GitHub MCP connector를 사용한다.
+- 파일 업로드: `mcp__github__push_files` (owner: "jhee-planty", repo: "dev_test_sync")
+- 파일 읽기: `mcp__github__get_file_contents`
+- 새 커밋 확인 (폴링): `mcp__github__list_commits` → 최신 커밋 SHA 비교
+
 ```bash
 # Cowork 세션 시작 시 한 번 실행 — 마운트된 경로에 맞게 조정
 GIT_SYNC_REPO="$HOME/Documents/workspace/dev_test_sync"  # Git clone 경로
@@ -84,7 +89,7 @@ with open(queue_path, 'w') as f:
 
 ```
 AskUserQuestion("작업 #{id} ({command})을 test PC에 요청했습니다.
-git push 후 test PC에서 git pull로 확인 가능합니다.
+GitHub MCP push 완료. test PC에서 git pull로 확인 가능합니다.
 다른 작업도 추가하시겠습니까?",
   options=["다른 작업 추가", "큐 상태 확인", "완료"])
 ```
