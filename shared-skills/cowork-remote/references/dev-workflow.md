@@ -23,8 +23,8 @@ Bash에서 `export GIT_SYNC_REPO=...`로 설정하면 Python에서도 접근 가
 ### Step 1 — Determine next ID
 
 ```bash
-# requests/와 .local_archive/에서 가장 큰 ID를 찾아 +1
-ls "$GIT_SYNC_REPO"/requests/*.json "$GIT_SYNC_REPO"/.local_archive/**/*.json 2>/dev/null \
+# requests/와 local_archive/에서 가장 큰 ID를 찾아 +1
+ls "$GIT_SYNC_REPO"/requests/*.json "$GIT_SYNC_REPO"/local_archive/**/*.json 2>/dev/null \
   | grep -oE '[0-9]{3}' | sort -n | tail -1
 ```
 
@@ -149,12 +149,12 @@ result의 status에 따라 queue.json 갱신:
 주기적으로 (또는 사용자 요청 시) 완료된 작업을 정리.
 
 ```bash
-# .local_archive/{date}/ 디렉토리 생성
-mkdir -p "$GIT_SYNC_REPO/.local_archive/$(date +%Y-%m-%d)"
+# local_archive/{date}/ 디렉토리 생성
+mkdir -p "$GIT_SYNC_REPO/local_archive/$(date +%Y-%m-%d)"
 
 # done/error 상태인 request와 result를 archive로 이동
-mv "$GIT_SYNC_REPO/requests/{id}_"*.json "$GIT_SYNC_REPO/.local_archive/$(date +%Y-%m-%d)/"
-mv "$GIT_SYNC_REPO/results/{id}_result.json" "$GIT_SYNC_REPO/.local_archive/$(date +%Y-%m-%d)/"
+mv "$GIT_SYNC_REPO/requests/{id}_"*.json "$GIT_SYNC_REPO/local_archive/$(date +%Y-%m-%d)/"
+mv "$GIT_SYNC_REPO/results/{id}_result.json" "$GIT_SYNC_REPO/local_archive/$(date +%Y-%m-%d)/"
 ```
 
 queue.json에서도 archived 작업을 제거하거나 별도 `archived` 배열로 이동.

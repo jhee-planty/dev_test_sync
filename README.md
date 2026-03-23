@@ -12,7 +12,7 @@ dev_test_sync/
 │   └── metrics/        ← 메트릭 + 성공 패턴
 ├── shared-skills/      ← test PC와 공유하는 스킬
 ├── artifacts/          ← 파이프라인 산출물 (최신만)
-└── .local_archive/     ← 로컬 보관 (.gitignore)
+└── local_archive/     ← 로컬 보관 (.gitignore)
 ```
 
 ## 동기화 프로토콜

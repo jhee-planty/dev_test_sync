@@ -34,7 +34,7 @@ File: `requests/{id}_{command}.json`
 
 ### ID Assignment
 
-Next ID = max existing ID + 1. Check both `requests/` and `.local_archive/` to avoid reuse.
+Next ID = max existing ID + 1. Check both `requests/` and `local_archive/` to avoid reuse.
 
 ---
 
@@ -269,7 +269,7 @@ Result: `{ "browser": "Chrome 126", "os": "Windows 11", "network": "corporate", 
 | Request file | `{id}_{command}.json` | `001_check-block.json` |
 | Result file | `{id}_result.json` | `001_result.json` |
 | Attachment dir | `files/{id}/` | `files/001/` |
-| Archive dir | `.local_archive/{date}/` | `.local_archive/2026-03-17/` |
+| Archive dir | `local_archive/{date}/` | `local_archive/2026-03-17/` |
 
 ---
 
@@ -277,6 +277,6 @@ Result: `{ "browser": "Chrome 126", "os": "Windows 11", "network": "corporate", 
 
 - **쓰기 분리가 핵심.** dev → requests/, test → results/. 이 규칙을 어기면 충돌 발생.
 - **동기화:** `git add` → `git commit` → `git push`로 전달, 상대방은 `git fetch` → `git pull`로 수신.
-- **대용량 파일:** 스크린샷은 압축하여 포함, 작업 완료 후 `git rm` → `.local_archive/`로 이동.
-- **파일 정리:** `.local_archive/`로 이동은 dev가 담당. test는 파일을 삭제하지 않는다.
+- **대용량 파일:** 스크린샷은 압축하여 포함, 작업 완료 후 `git rm` → `local_archive/`로 이동.
+- **파일 정리:** `local_archive/`로 이동은 dev가 담당. test는 파일을 삭제하지 않는다.
 - **폴링:** `git fetch`로 새 커밋 확인, 변경이 있으면 `git pull`로 수신.

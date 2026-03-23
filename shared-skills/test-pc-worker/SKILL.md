@@ -76,7 +76,7 @@ $base (dev_test_sync)/
 │   └── metrics/
 ├── queue.json              ← 참고용. 수정하지 않는다.
 ├── shared-skills/          ← 스킬 공유. 읽기만 한다.
-└── .local_archive/         ← 로컬 전용 (gitignored)
+└── local_archive/         ← 로컬 전용 (gitignored)
 ```
 
 **핵심 규칙:** `results/`에만 파일을 생성한다.

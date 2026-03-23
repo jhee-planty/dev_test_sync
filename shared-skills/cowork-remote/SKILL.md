@@ -159,7 +159,7 @@ GIT_SYNC_REPO (dev_test_sync)/
 ├── shared-skills/          ← 스킬 공유 (양쪽 읽기)
 ├── artifacts/              ← 산출물 (최신만 Git 공유)
 │   └── warning-pipeline/
-└── .local_archive/         ← 로컬 전용 (gitignored)
+└── local_archive/         ← 로컬 전용 (gitignored)
 ```
 
 **쓰기 규칙:** 각 PC는 자기 쓰기 폴더에만 파일을 생성/수정한다.
@@ -203,7 +203,7 @@ dev updates queue.json                test executes task
 | Execute task | test | (local) | test-workflow.md |
 | Write result | test | results/ | test-workflow.md |
 | Read results | dev | results/ | dev-workflow.md |
-| Archive completed | dev | .local_archive/ | dev-workflow.md |
+| Archive completed | dev | local_archive/ | dev-workflow.md |
 
 ---
 

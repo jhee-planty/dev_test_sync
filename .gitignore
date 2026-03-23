@@ -1,5 +1,5 @@
 # 로컬 아카이브 (오래된 파일 보관, Git 미공유)
-.local_archive/
+local_archive/
 
 # OS files
 .DS_Store
