@@ -41,28 +41,28 @@
       "id": "149",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T12:06:53.407857",
-      "updated": "2026-03-24T12:06:53.407857",
-      "summary": "Gemini retest (DB: gemini.google.com + batchexecute)"
+      "updated": "2026-03-24T12:30:00.000000",
+      "summary": "Gemini: NOT blocked (etapd restart 전, DB 미반영)"
     },
     {
       "id": "150",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T12:06:53.407857",
-      "updated": "2026-03-24T12:06:53.407857",
-      "summary": "Gamma retest (DB: gamma.app + /)"
+      "updated": "2026-03-24T12:30:00.000000",
+      "summary": "Gamma: NOT blocked (etapd restart 전, DB 미반영)"
     },
     {
       "id": "151",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T12:06:53.407857",
-      "updated": "2026-03-24T12:06:53.407857",
-      "summary": "Notion retest (DB: www.notion.so + /)"
+      "updated": "2026-03-24T12:30:00.000000",
+      "summary": "Notion: NOT blocked (etapd restart 전, DB 미반영)"
     },
     {
       "id": "152",
@@ -92,5 +92,5 @@
       "summary": "Notion retest (etapd restart 후, detect 확인됨)"
     }
   ],
-  "last_updated": "2026-03-24T12:18:49.543878"
+  "last_updated": "2026-03-24T12:30:00.000000"
 }
