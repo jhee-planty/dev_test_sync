@@ -150,6 +150,19 @@ foreach ($req in $requests | Sort-Object Name) {
 요청 JSON의 `command` 필드에 따라 desktop-commander + PowerShell로 작업을 수행한다.
 
 → See `references/windows-commands.md` for per-command execution details.
+→ See `references/browser-rules.md` for 브라우저 설정 및 DevTools 검증 규칙.
+
+**브라우저 작업 시 반드시 DevTools를 활용한다.**
+스크린샷만으로는 타이밍 문제로 오판할 수 있다. DevTools 기반 검증이 정확도를 높인다.
+
+핵심 규칙:
+- Chrome 최초 실행 시 F12로 DevTools 열기 (하단 도킹, 별도 창 분리 금지)
+- 키 입력 후 → Elements에서 input value 확인
+- 전송 후 → Network 탭에서 요청이 나갔는지 확인
+- 응답 후 → Console 에러 확인 (ERR_HTTP2_PROTOCOL_ERROR 등 진단 핵심)
+- 화면 변화 없는 서비스(Gemini 등) → Console/Network으로 작업 완료 판단
+
+→ See `references/browser-rules.md` § "DevTools 활용 — 동작 검증" for 전체 체크리스트.
 
 ### Step 3 — 결과 작성
 

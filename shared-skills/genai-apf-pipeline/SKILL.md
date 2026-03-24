@@ -1,7 +1,7 @@
 ---
 name: genai-apf-pipeline
 description: >
-  Master orchestrator for GenAI APF (ai_prompt_filter) workflow. 3-phase pipeline: HAR capture → analysis + registration → build + deploy. Cowork orchestrates Claude Code sub agents (Opus) in parallel, reviews results (quality gate), then directs the main agent to apply file changes. Make sure to use this skill whenever the user mentions APF, ai_prompt_filter, GenAI service blocking, EtapV3 AI services, or anything related to capturing and registering AI services — even if they don't say "pipeline" explicitly. Also use when asking about role division (who does what), workflow status, or how to add a new AI service. This is the entry point for all APF work.
+  Master orchestrator for GenAI APF (ai_prompt_filter) **block** workflow. 3-phase pipeline: HAR capture → analysis + registration → build + deploy. Cowork orchestrates Claude Code sub agents (Opus) in parallel, reviews results (quality gate), then directs the main agent to apply file changes. Use this skill for: capturing AI service traffic, HAR analysis, adding new services to the block list, APF SQL/C++ code generation, build and deploy coordination, or role division questions. This is the entry point for all APF **blocking** work. Do NOT use for warning design, warning implementation, or frontend inspection — those belong to genai-warning-pipeline and its sub-skills.
 ---
 
 # GenAI APF Pipeline — Master Orchestrator

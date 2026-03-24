@@ -121,8 +121,13 @@ AI 서비스에서 Etap 차단이 작동하는지 확인.
    Send-ToBrowser $prompt
    ```
 5. **응답 대기** — `Start-Sleep -Seconds 3` (차단 테스트는 응답이 빠름. 서비스에 따라 조정)
-6. **스크린샷 캡처** — `Take-Screenshot`으로 결과 화면 저장
-7. **판단** — 스크린샷을 확인하여:
+6. **DevTools 검증** — 스크린샷 전에 반드시 DevTools로 교차 확인:
+   - Network 탭: 프롬프트 POST 요청이 실제로 나갔는지 확인 (요청 없으면 입력 실패)
+   - Console 탭: 에러 확인 (`ERR_HTTP2_PROTOCOL_ERROR` 등은 진단 핵심 정보)
+   - 화면 변화 없는 서비스: Console/Network에 변화가 있으면 작업 완료로 판단
+   → See `browser-rules.md` § "DevTools 활용 — 동작 검증"
+7. **스크린샷 캡처** — `Take-Screenshot`으로 결과 화면 저장
+8. **판단** — 스크린샷 + DevTools 결과를 종합하여:
    - 정상 AI 응답 → `blocked: false`
    - 응답 없이 멈추거나 에러 화면 → `blocked: true`
    - 경고 메시지 표시 → `blocked: true` + 텍스트 기록
@@ -149,8 +154,12 @@ try {
 **실행 순서:**
 
 1~5: check-block과 동일 (프롬프트: `"한글날"` 또는 `params.prompt`)
-6. **스크린샷 캡처** — 경고 메시지가 표시된 화면 저장
-7. **페이지 텍스트 추출 (선택)** — `start_process`로 PowerShell 실행:
+6. **DevTools 검증** — check-block과 동일한 DevTools 교차 확인 수행:
+   - Network 탭: 프롬프트 요청 확인 + 응답 상태 코드
+   - Console 탭: 에러/경고 수집 (result JSON의 `console_errors`에 기록)
+   - Elements 탭: 경고 텍스트 노드가 DOM에 존재하는지 확인
+7. **스크린샷 캡처** — 경고 메시지가 표시된 화면 저장
+8. **페이지 텍스트 추출 (선택)** — `start_process`로 PowerShell 실행:
    ```powershell
    # Chrome의 페이지 내용을 직접 읽을 수 없으므로
    # 스크린샷 기반으로 Cowork가 시각적 판단을 수행한다.

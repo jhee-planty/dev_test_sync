@@ -20,11 +20,11 @@ User can also execute directly from terminal.
 ## 터미널 사용 규칙
 
 컴파일 서버와 테스트 서버의 원격 작업은 **하나의 터미널**만 사용한다.
-여러 터미널을 열면 어딘서 어떤 명령이 실행 중인지 추적이 어렵고,
-사용자가 작업과정을 따라가기 헤뤬다.
+여러 터미널을 열면 어디서 어떤 명령이 실행 중인지 추적이 어렵고,
+사용자가 작업과정을 따라가기 어렵다.
 
 ```
-원칹:
+원칙:
   - scp, ssh, ninja 등 모든 원격 명령은 동일한 터미널에서 순차 실행
   - 작업 과정이 사용자에게 자연스럽게 표시되도록 한다
   - 병렬 실행이 필요하면 하나의 SSH 세션 안에서 `&&`로 체이닝   - 로그 모니터링(tail -f)이 필요한 경우만 예외적으로 두 번째 터미널 허용
@@ -32,7 +32,7 @@ User can also execute directly from terminal.
 
 이 규칙은 사용자가 빌드-배포 진행 상황을 실시간으로 확인할 수 있게 하기 위함이다.
 
-**터미널 누저 방지:** 작업이 반복되면서 열린 터미널이 계속 늘어나는 문제가 있다.
+**터미널 누적 방지:** 작업이 반복되면서 열린 터미널이 계속 늘어나는 문제가 있다.
 새 터미널을 열기 전에 기존 터미널이 유휴 상태인지 확인하고, 유휴 상태면 재사용한다.
 불가피하게 새 터미널을 열었으면 작업 완료 후 정리한다.
 
@@ -142,9 +142,9 @@ ssh -p 12222 solution@61.79.198.110 \
 
 ## Step 2 — Build + Install (Compile Server)
 
-빌드 와 설치를 한 번에 실행한다.
+빌드와 설치를 한 번에 실행한다.
 반복 테스트 시 빌드-배포 사이클 시간을 단축하기 위해
-`ninja`와 `ninja install`을 한 명령어로 묻캔다.
+`ninja`와 `ninja install`을 한 명령어로 묶는다.
 
 ```bash
 ssh -p 12222 solution@61.79.198.110 << 'EOF'
@@ -201,7 +201,7 @@ scp -P 12222 \
 - `x86_64`: Architecture
 - `el`: Enterprise Linux (Rocky OS)
 
-**같은 날 여러 번 빌드하면 패키지 파일이 더어쓀워진다.**
+**같은 날 여러 번 빌드하면 패키지 파일이 덮어써진다.**
 이전 빌드로 롤백해야 할 경우를 대비해 Deploy 전에 수동으로 백업한다:
 `cp /tmp/etap-root-{YYMMDD}.* ~/Downloads/backup_`
 
@@ -244,7 +244,7 @@ ssh -p 12222 solution@218.232.120.58 \
 
 ## Post-Deploy: User Testing
 
-⸰포 완료 후 test PC에서 차단/경고 동작을 검즜한다.
+배포 완료 후 test PC에서 차단/경고 동작을 검증한다.
 → See `genai-warning-pipeline/SKILL.md` § Test-Fix Cycle
 → See `apf-warning-impl/SKILL.md` § Step 5 (test PC에 check-warning 요청)
 
@@ -307,7 +307,7 @@ Extract filename and line number from build error messages to locate the source 
 
 ## 검증 된 명령어 참조
 
-이전 세션에서 성공했던 명령어를 재사용 시 실펨함는 경우가 있다.
+이전 세션에서 성공했던 명령어를 재사용 시 실패하는 경우가 있다.
 검증된 명령어는 아래에 기록하고, 실패 시 이 목록을 우선 참조한다.
 
 ### SSH + MySQL (test 서버 → DB 서버)
@@ -328,17 +328,17 @@ ssh -p 12222 solution@218.232.120.58 'etapcomm ai_prompt_filter.reload_services'
 
 DB 패턴 변경후 반드시 실행. 리로드 없이 테스트하메 이전 패턴으로 동작한다.
 
-### detect 확인 (2026-03-20 검즙)
+### detect 확인 (2026-03-20 검증)
 
 ```bash
 ssh -p 12222 solution@218.232.120.58 'tail -50 /var/log/etap.log | grep detect_and_mark'
 ```
 
-리로드 후 detect_and_mark 로그가 창호는지 확인. 창호면 DB 패턴 매칭 성공.
+리로드 후 detect_and_mark 로그가 찍히는지 확인. 찍히면 DB 패턴 매칭 성공.
 
-### 새로욄 성공명령어 발견 시
+### 새로운 성공 명령어 발견 시
 
-이 세션에 추가한다. 형식: 명령어 + 실행 위치 + 확인 날짥.
+이 세션에 추가한다. 형식: 명령어 + 실행 위치 + 확인 날짜.
 
 ---
 
