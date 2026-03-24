@@ -68,29 +68,29 @@
       "id": "152",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T12:18:49.543878",
-      "updated": "2026-03-24T12:18:49.543878",
-      "summary": "Gemini retest (etapd restart 후)"
+      "updated": "2026-03-24T12:28:11.920808",
+      "summary": "Gemini: NOT blocked (재시작 후에도). batchexecute 200. domain/path mismatch 지속"
     },
     {
       "id": "153",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T12:18:49.543878",
-      "updated": "2026-03-24T12:18:49.543878",
-      "summary": "Gamma retest (etapd restart 후)"
+      "updated": "2026-03-24T12:28:11.920808",
+      "summary": "Gamma: 부분차단. graphql 403 발생하나 generation 완료. 패턴 정밀화 필요"
     },
     {
       "id": "154",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T12:18:49.543878",
-      "updated": "2026-03-24T12:18:49.543878",
-      "summary": "Notion retest (etapd restart 후, detect 확인됨)"
+      "updated": "2026-03-24T12:28:11.920808",
+      "summary": "Notion: BLOCKED! runInferenceTranscriptApiError. 경고 미표시 → warning impl 필요"
     }
   ],
-  "last_updated": "2026-03-24T12:30:00.000000"
+  "last_updated": "2026-03-24T12:28:11.920808"
 }
