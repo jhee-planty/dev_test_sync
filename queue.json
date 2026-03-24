@@ -36,7 +36,34 @@
       "created": "2026-03-24T09:55:12.573616",
       "updated": "2026-03-24T12:02:54.977557",
       "summary": "Notion: NOT blocked. [*.]notion.so/api/v3/ 미감지. AI 정상 응답."
+    },
+    {
+      "id": "149",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:06:53.407857",
+      "updated": "2026-03-24T12:06:53.407857",
+      "summary": "Gemini retest (DB: gemini.google.com + batchexecute)"
+    },
+    {
+      "id": "150",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:06:53.407857",
+      "updated": "2026-03-24T12:06:53.407857",
+      "summary": "Gamma retest (DB: gamma.app + /)"
+    },
+    {
+      "id": "151",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:06:53.407857",
+      "updated": "2026-03-24T12:06:53.407857",
+      "summary": "Notion retest (DB: www.notion.so + /)"
     }
   ],
-  "last_updated": "2026-03-24T12:02:54.977557"
+  "last_updated": "2026-03-24T12:06:53.407857"
 }
