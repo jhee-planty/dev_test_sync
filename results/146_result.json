@@ -1,0 +1,23 @@
+{
+  "id": "146",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "error",
+    "screenshot": "files/146/check_warning_146_devtools.png",
+    "devtools_check": {
+      "api_endpoint": "github.com/copilot (messages SSE)",
+      "http_status": 200,
+      "etap_intercepted": true,
+      "observation": "messages 요청 200 반환 후 SSE 스트리밍 데이터 미수신. 3분 이상 Thinking... 상태 지속. 추가 네트워크 요청 없음.",
+      "request_count": 4,
+      "total_transferred": "14.4 kB"
+    }
+  },
+  "started": "2026-03-24T11:18:00+09:00",
+  "completed": "2026-03-24T11:21:30+09:00",
+  "notes": "[재테스트-Etap정상화후-DevTools확인] GitHub Copilot blocked=true 판정. messages 요청이 200으로 반환되었으나 SSE 스트리밍 응답이 도착하지 않아 'Thinking...' 상태에서 무한 대기. Etap이 api.individual.githubcopilot.com의 스트리밍 응답을 차단/보류한 것으로 판단. 경고 메시지는 표시되지 않음 (warning_visible=false)."
+}
