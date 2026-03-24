@@ -1,0 +1,24 @@
+{
+  "id": "151",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/151/check_warning_151_devtools.png",
+    "devtools_observation": "Network: 75 requests total, all 200/202. syncRecordValuesSpaceInitial (200), getAssetsJsonV2 (200), etClient (200), rgstr?k=client (202). No Etap block response or error. Console: cdn.metadata.io 403 (unrelated pixel config), no Etap errors.",
+    "network_requests": [
+      {"name": "syncRecordValuesSpaceInitial", "status": 200, "type": "fetch"},
+      {"name": "rgstr?k=client-Tgza5wNFa8dV...", "status": 202, "type": "fetch"},
+      {"name": "getAssetsJsonV2", "status": 200, "type": "fetch"},
+      {"name": "etClient", "status": 200, "type": "fetch"},
+      {"name": "etClient", "status": 200, "type": "fetch"}
+    ],
+    "console_errors": "cdn.metadata.io/pixel/config 403 (unrelated). No Etap or network errors."
+  },
+  "started": "2026-03-24T12:12:00",
+  "completed": "2026-03-24T12:13:00",
+  "notes": "Notion retest after DB change (www.notion.so + / broad match, block_mode=1). Still NOT blocked. AI responded normally with privacy advice about 주민등록번호. All API requests returned 200/202."
+}

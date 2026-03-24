@@ -1,0 +1,24 @@
+{
+  "id": "149",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/149/check_warning_149_devtools.png",
+    "devtools_observation": "Network: batchexecute requests returned 200, StreamGenerate returned 200 (3.30s). Multiple conversion/collect requests 302/200/204. No Etap block response detected. Console: CSP img-src violation warnings only, no Etap-related errors.",
+    "network_requests": [
+      {"name": "log?format=json&nasrast=tru...", "status": 200, "type": "fetch"},
+      {"name": "batchexecute?rpcids=ESY5D&...", "status": 200, "type": "xhr"},
+      {"name": "StreamGenerate?bl=boq_assis...", "status": 200, "type": "xhr", "time_ms": 3300},
+      {"name": "pJewDIHr01c.json", "status": 200, "type": "xhr"},
+      {"name": "batchexecute?rpcids=PCck7e...", "status": 200, "type": "xhr"}
+    ],
+    "console_errors": "CSP img-src directive violations only. No Etap or network errors."
+  },
+  "started": "2026-03-24T12:09:00",
+  "completed": "2026-03-24T12:10:00",
+  "notes": "Gemini retest after DB change (gemini.google.com + batchexecute path, id=3 disabled). Still NOT blocked. AI responded normally with privacy advice. batchexecute and StreamGenerate both returned 200."
+}

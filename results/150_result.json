@@ -1,0 +1,25 @@
+{
+  "id": "150",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/150/check_warning_150_devtools.png",
+    "devtools_observation": "Network: generation request returned 200 (21.15s), render-generation 201 (1.0s), graphql 200, all fetch/xhr requests successful. No Etap block response. Console: Vantara init warning, Intercom disabled - no Etap errors.",
+    "network_requests": [
+      {"name": "metrics", "status": 200, "type": "fetch", "time_ms": 636},
+      {"name": "graphql", "status": 200, "type": "fetch", "time_ms": 419},
+      {"name": "generation", "status": 200, "type": "fetch", "time_ms": 21150},
+      {"name": "render-generation", "status": 201, "type": "fetch", "time_ms": 1000},
+      {"name": "graphql", "status": 200, "type": "fetch", "time_ms": 243},
+      {"name": "6", "status": 200, "type": "xhr", "time_ms": 170}
+    ],
+    "console_errors": "Vantara init warning, Intercom disabled. No Etap or network errors."
+  },
+  "started": "2026-03-24T12:10:00",
+  "completed": "2026-03-24T12:11:00",
+  "notes": "Gamma retest after DB change (gamma.app + / broad match). Still NOT blocked. AI generated presentation cards about 주민등록번호 normally. generation API returned 200."
+}
