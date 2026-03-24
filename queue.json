@@ -117,7 +117,16 @@
       "created": "2026-03-24T12:44:40.931638",
       "updated": "2026-03-24T12:44:40.931638",
       "summary": "Notion: NDJSON block response fix 후 경고 표시 테스트"
+    },
+    {
+      "id": "158",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T08:27:05.339574",
+      "updated": "2026-03-25T08:27:05.339574",
+      "summary": "Gemini: batchexecute Protocol 정밀 확인 (h2 vs h3). Remote Address 포함."
     }
   ],
-  "last_updated": "2026-03-24T12:44:40.931638"
+  "last_updated": "2026-03-25T08:27:05.339574"
 }
