@@ -5,38 +5,38 @@
       "id": "145",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T09:55:12.573616",
-      "summary": "Gemini check-warning (DB: signaler-pa, path=/)"
+      "updated": "2026-03-24T12:02:54.977557",
+      "summary": "Gemini: NOT blocked. DB domain(signaler-pa)≠실제 API(gemini.google.com). 미감지."
     },
     {
       "id": "146",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T09:55:12.573616",
-      "summary": "GitHub Copilot check-warning"
+      "updated": "2026-03-24T12:02:54.977557",
+      "summary": "GitHub Copilot: blocked=true but warning NOT visible. SSE data 미수신, Thinking... 무한대기."
     },
     {
       "id": "147",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T09:55:12.573616",
-      "summary": "Gamma check-warning"
+      "updated": "2026-03-24T12:02:54.977557",
+      "summary": "Gamma: NOT blocked. ai.api.gamma.app 미감지. 모든 요청 200 정상."
     },
     {
       "id": "148",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T09:55:12.573616",
-      "summary": "Notion AI check-warning (block_mode fixed)"
+      "updated": "2026-03-24T12:02:54.977557",
+      "summary": "Notion: NOT blocked. [*.]notion.so/api/v3/ 미감지. AI 정상 응답."
     }
   ],
-  "last_updated": "2026-03-24T09:55:12.573616"
+  "last_updated": "2026-03-24T12:02:54.977557"
 }
