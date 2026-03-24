@@ -2,184 +2,41 @@
   "updated_at": "2026-03-23T15:15:00.000000",
   "tasks": [
     {
-      "id": "142",
+      "id": "145",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-23T15:15:00+09:00",
-      "updated": "2026-03-23T15:15:00+09:00",
-      "summary": "Regression Test: ChatGPT 민감정보 차단 경고 확인"
+      "created": "2026-03-24T09:55:12.573616",
+      "updated": "2026-03-24T09:55:12.573616",
+      "summary": "Gemini check-warning (DB: signaler-pa, path=/)"
     },
     {
-      "id": "143",
+      "id": "146",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-23T15:15:00+09:00",
-      "updated": "2026-03-23T15:15:00+09:00",
-      "summary": "Regression Test: Perplexity 민감정보 차단 경고 확인"
+      "created": "2026-03-24T09:55:12.573616",
+      "updated": "2026-03-24T09:55:12.573616",
+      "summary": "GitHub Copilot check-warning"
     },
     {
-      "id": "144",
+      "id": "147",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-23T15:15:00+09:00",
-      "updated": "2026-03-23T15:15:00+09:00",
-      "summary": "Regression Test: Claude 민감정보 차단 경고 확인"
+      "created": "2026-03-24T09:55:12.573616",
+      "updated": "2026-03-24T09:55:12.573616",
+      "summary": "Gamma check-warning"
     },
     {
-      "id": "060",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:04:20.717670",
-      "updated": "2026-03-20T08:04:20.717672",
-      "summary": "Phase 1 Frontend Inspect: Gemini"
-    },
-    {
-      "id": "061",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:04:20.717674",
-      "updated": "2026-03-20T08:04:20.717675",
-      "summary": "Phase 1 Frontend Inspect: GitHub Copilot"
-    },
-    {
-      "id": "062",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:04:20.717676",
-      "updated": "2026-03-20T08:04:20.717677",
-      "summary": "Phase 1 Frontend Inspect: Gamma"
-    },
-    {
-      "id": "063",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:04:20.717678",
-      "updated": "2026-03-20T08:04:20.717679",
-      "summary": "Phase 1 Frontend Inspect: Grok"
-    },
-    {
-      "id": "064",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:04:20.717680",
-      "updated": "2026-03-20T08:04:20.717681",
-      "summary": "Phase 1 Frontend Inspect: M365 Copilot"
-    },
-    {
-      "id": "070",
+      "id": "148",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-20T08:40:43.756509",
-      "updated": "2026-03-20T08:40:43.756608",
-      "summary": "Phase 3 Warning Test: Gemini"
-    },
-    {
-      "id": "071",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:40:43.756612",
-      "updated": "2026-03-20T08:40:43.756612",
-      "summary": "Phase 3 Warning Test: Grok"
-    },
-    {
-      "id": "072",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:40:43.756614",
-      "updated": "2026-03-20T08:40:43.756614",
-      "summary": "Phase 3 Warning Test: GitHub Copilot"
-    },
-    {
-      "id": "073",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:40:43.756616",
-      "updated": "2026-03-20T08:40:43.756616",
-      "summary": "Phase 3 Warning Test: Gamma"
-    },
-    {
-      "id": "074",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T08:40:43.756618",
-      "updated": "2026-03-20T08:40:43.756618",
-      "summary": "Phase 3 Warning Test: M365 Copilot"
-    },
-    {
-      "id": "075",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:13:01.606621",
-      "updated": "2026-03-20T11:13:01.606709",
-      "summary": "DB 서비스 조회 + 3개 서비스 INSERT (GitHub Copilot, Gamma, M365 Copilot)"
-    },
-    {
-      "id": "076",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:16:36.392772",
-      "updated": "2026-03-20T11:16:36.392858",
-      "summary": "Retest after DB registration: GitHub Copilot"
-    },
-    {
-      "id": "077",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:16:36.392861",
-      "updated": "2026-03-20T11:16:36.392862",
-      "summary": "Retest after DB registration: Gamma"
-    },
-    {
-      "id": "078",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:16:36.392863",
-      "updated": "2026-03-20T11:16:36.392864",
-      "summary": "Retest after DB registration: M365 Copilot"
-    },
-    {
-      "id": "079",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:27:14.592980",
-      "updated": "2026-03-20T11:27:14.593119",
-      "summary": "API endpoint capture: GitHub Copilot API capture"
-    },
-    {
-      "id": "080",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:27:14.593124",
-      "updated": "2026-03-20T11:27:14.593125",
-      "summary": "API endpoint capture: Gamma API capture"
-    },
-    {
-      "id": "081",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-20T11:27:14.593127",
-      "updated": "2026-03-20T11:27:14.593128",
-      "summary": "API endpoint capture: M365 Copilot API capture"
+      "created": "2026-03-24T09:55:12.573616",
+      "updated": "2026-03-24T09:55:12.573616",
+      "summary": "Notion AI check-warning (block_mode fixed)"
     }
-  ]
+  ],
+  "last_updated": "2026-03-24T09:55:12.573616"
 }

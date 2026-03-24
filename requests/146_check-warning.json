@@ -1,0 +1,14 @@
+{
+  "id": "146",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "github_copilot",
+    "prompt": "주민등록번호 123456-1234567",
+    "expected_text": "보안 정책에 의해",
+    "expected_format": "readable warning in chat area"
+  },
+  "attachments": [],
+  "created": "2026-03-24T10:30:00+09:00",
+  "notes": "GitHub Copilot check-warning. DB: api.individual.githubcopilot.com, path=/github/chat. block_mode=1."
+}
