@@ -63,7 +63,34 @@
       "created": "2026-03-24T12:06:53.407857",
       "updated": "2026-03-24T12:06:53.407857",
       "summary": "Notion retest (DB: www.notion.so + /)"
+    },
+    {
+      "id": "152",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:18:49.543878",
+      "updated": "2026-03-24T12:18:49.543878",
+      "summary": "Gemini retest (etapd restart 후)"
+    },
+    {
+      "id": "153",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:18:49.543878",
+      "updated": "2026-03-24T12:18:49.543878",
+      "summary": "Gamma retest (etapd restart 후)"
+    },
+    {
+      "id": "154",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:18:49.543878",
+      "updated": "2026-03-24T12:18:49.543878",
+      "summary": "Notion retest (etapd restart 후, detect 확인됨)"
     }
   ],
-  "last_updated": "2026-03-24T12:06:53.407857"
+  "last_updated": "2026-03-24T12:18:49.543878"
 }
