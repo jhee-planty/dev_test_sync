@@ -99,7 +99,16 @@
       "created": "2026-03-24T12:31:25.991144",
       "updated": "2026-03-24T12:31:25.991144",
       "summary": "Gemini: Protocol 확인 (h2 vs h3/QUIC) + 실제 API domain 확인"
+    },
+    {
+      "id": "156",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-24T12:33:01.921414",
+      "updated": "2026-03-24T12:33:01.921414",
+      "summary": "Notion: 정상 응답 format 캡처 (runInferenceTranscript Content-Type + body 구조)"
     }
   ],
-  "last_updated": "2026-03-24T12:31:25.991144"
+  "last_updated": "2026-03-24T12:33:01.921414"
 }
