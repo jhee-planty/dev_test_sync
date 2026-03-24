@@ -1,0 +1,167 @@
+---
+name: workflow-retrospective
+description: >
+  APF 테스트 자동화 워크플로우 회고 및 최적화 스킬 (dev PC 전용).
+  test-pc-worker가 수집한 메트릭 로그와 experience를 분석하여
+  비효율 패턴을 탐지하고, 스킬 개선안을 제시한다.
+  Use this skill whenever: "회고해줘", "비효율 분석", "워크플로우 개선",
+  "어디가 느려?", "뭐가 불필요해?", "최적화", "retrospective",
+  "메트릭 분석", "로그 분석", "작업 통계", "패턴 분석",
+  or any request to review and optimize the APF test automation workflow.
+  Also trigger when the user says "개선점 찾아줘" or "이거 왜 이렇게 오래 걸려?"
+---
+
+# Workflow Retrospective Skill
+
+## Purpose
+
+APF 테스트 자동화 파이프라인(HAR 캡처 → 분석 → 등록 → 빌드 → 테스트) 전반의
+실행 기록을 분석하여 비효율을 찾고 개선안을 제시하는 스킬.
+
+**핵심 원칙:** 데이터 기반 판단. "느린 것 같다"가 아니라 "check-block 평균 47초,
+이 중 브라우저 시작 대기가 30초를 차지"처럼 근거를 갖춘 분석을 한다.
+
+**현재 단계 (방안 1 — 수동 회고):**
+사용자가 "회고해줘"라고 하면 메트릭 로그를 읽어서 분석 리포트를 생성한다.
+메트릭은 매 작업마다 test PC의 test-pc-worker 스킬(Step 4)이 자동 기록한다.
+
+> **향후 발전 경로 (충분한 경험 축적 후):**
+>
+> **방안 2 — 자동 회고 스케줄:**
+> schedule 스킬을 활용하여 일정 주기(매일 또는 N건 작업 완료 후)로
+> 자동 회고 태스크를 실행. 사용자는 리포트만 확인하고 "적용해"로 승인.
+> → 전환 조건: metrics 로그가 30건 이상 쌓이고, 반복되는 비효율 패턴이 3개 이상 확인될 때.
+>
+> **방안 3 — workflow-optimizer 전용 스킬:**
+> 회고 + 패치 제안 + 적용까지 하나의 사이클로 캡슐화.
+> 다른 스킬의 SKILL.md를 직접 읽고 개선 diff를 생성하여 사용자 승인 후 적용.
+> experience에 "적용 전/후 비교"를 기록하여 개선 효과를 추적.
+> → 전환 조건: 방안 2로 3회 이상 회고를 완료하고, 스킬 패치가 2건 이상 발생했을 때.
+
+---
+
+## Data Sources
+
+회고 데이터는 **읽기**와 **쓰기** 경로가 분리되어 있다.
+Git 충돌 방지를 위해 dev PC는 `requests/`에만, test PC는 `results/`에만 쓴다.
+
+**읽기 (입력):**
+
+| 데이터 | 경로 | 생성자 |
+|--------|------|--------|
+| 작업 메트릭 로그 | `$GIT_SYNC_REPO/results/metrics/` | test-pc-worker |
+| test 경험 로그 | `$GIT_SYNC_REPO/results/metrics/experience.jsonl` | test-pc-worker |
+| 작업 결과 파일 | `$GIT_SYNC_REPO/results/{id}_result.json` | test-pc-worker |
+| 작업 요청 파일 | `$GIT_SYNC_REPO/requests/{id}_{command}.json` | cowork-remote (dev) |
+| 큐 히스토리 | `$GIT_SYNC_REPO/queue.json` | cowork-remote (dev) |
+| 이전 회고 리포트 | `$GIT_SYNC_REPO/artifacts/retrospective/` | 이 스킬 (dev) |
+
+**쓰기 (출력):**
+
+| 산출물 | 경로 | 비고 |
+|--------|------|------|
+| 회고 리포트 | `$GIT_SYNC_REPO/artifacts/retrospective/retrospective_{date}.md` | dev가 쓰기 (최신만 Git, 이전 → local_archive/) |
+| 회고 경험 로그 | `$GIT_SYNC_REPO/artifacts/retrospective/retro_experience.jsonl` | dev가 쓰기 |
+
+`$GIT_SYNC_REPO`는 Git 저장소(dev_test_sync)의 로컬 clone 경로.
+직접 실행 시: `~/Documents/workspace/dev_test_sync/`
+
+**Cowork에서 사용 시:** Git 저장소 폴더를 Cowork에 마운트(폴더 선택)해야 한다.
+마운트된 경로가 `$GIT_SYNC_REPO`가 된다.
+
+---
+
+## Analysis Flow
+
+### Step 1 — 데이터 수집
+
+```
+1. $GIT_SYNC_REPO/results/metrics/ 스캔 (Cowork: `mcp__github__get_file_contents`로 최신 데이터 수신)
+2. metrics_{date}.jsonl 파일들을 읽어서 전체 메트릭 로드
+3. experience.jsonl 에서 축적된 관찰 사항 로드
+4. 기간 필터링 (사용자가 기간 지정 시 적용)
+```
+
+사용자가 기간을 지정하지 않으면 최근 7일 또는 전체 로그를 분석한다.
+
+### Step 2 — 패턴 분석
+
+5가지 차원에서 데이터를 분석한다:
+소요 시간, 실패 패턴, 불필요한 동작, 워크플로우 병목, 자원 활용.
+
+→ See `references/analysis-dimensions.md` for 각 차원의 분석 방법, 개선 신호, 복합 패턴 교차 분석.
+
+### Step 3 — 개선안 도출
+
+분석 결과를 바탕으로 구체적인 개선안을 제시한다.
+
+개선안의 형식:
+```
+[개선안 #{N}]
+- 문제: {데이터에서 발견된 비효율}
+- 근거: {메트릭 수치}
+- 제안: {구체적 변경 내용}
+- 대상 스킬: {수정할 스킬/파일}
+- 기대 효과: {예상 개선 수치}
+- 우선순위: high / medium / low
+```
+
+### Step 4 — 리포트 생성
+
+분석 결과를 마크다운 리포트로 생성한다.
+
+→ See `references/report-template.md` for 리포트 구조.
+
+리포트 저장 위치: `$GIT_SYNC_REPO/artifacts/retrospective/retrospective_{date}.md`
+최초 사용 시 `artifacts/retrospective/` 폴더가 없으면 생성한다.
+
+**아카이브 정책:** 새 리포트 생성 시 이전 리포트는 `local_archive/old-artifacts/`로 이동.
+Git에는 최신 리포트만 유지한다.
+
+---
+
+## Commands
+
+사용자 트리거에 따른 동작:
+
+| 트리거 | 동작 |
+|--------|------|
+| "회고해줘" / "retrospective" | 전체 분석 + 리포트 생성 |
+| "어디가 느려?" / "병목 분석" | 소요 시간 분석만 집중 |
+| "실패 패턴" / "에러 분석" | 실패/재시도 패턴만 집중 |
+| "통계 보여줘" / "메트릭 요약" | 수치 요약만 (분석 없이) |
+| "이전 회고 확인" | 이전 회고 리포트 읽기 + 미적용 개선안 목록 |
+
+**참고:** "개선안 적용"은 사용자가 리포트를 보고 직접 지시한다.
+자동 적용은 방안 3(workflow-optimizer) 전환 후 가능해진다.
+
+---
+
+## Experience Tracking
+
+회고 결과 자체도 경험으로 기록한다.
+
+회고를 수행할 때마다 `artifacts/retrospective/retro_experience.jsonl`에 append:
+```json
+{
+  "type": "retrospective",
+  "date": "2026-03-18",
+  "period": "2026-03-11 ~ 2026-03-18",
+  "tasks_analyzed": 15,
+  "issues_found": 3,
+  "improvements_proposed": 2,
+  "improvements_applied": 0,
+  "summary": "check-block 브라우저 시작 대기 30초 → Chrome 사전 실행으로 5초로 단축 가능"
+}
+```
+
+이 기록은 다음 회고 시 "이전에 제안했지만 아직 적용하지 않은 개선안"을 추적하는 데 사용한다.
+
+---
+
+## Related Skills
+
+- **`test-pc-worker`** (test PC): 매 작업 후 Step 4에서 메트릭을 자동 수집 (`references/metrics-collection.md`). 이 스킬이 분석할 데이터를 생성한다.
+- **`cowork-remote`** (dev/test): 작업 요청/결과의 원본 데이터 소스.
+- **`genai-apf-pipeline`** (dev): APF 전체 파이프라인. 파이프라인 수준 비효율은 여기에 피드백.
+- **`schedule`**: 방안 2 전환 시 자동 회고 스케줄링에 사용.
