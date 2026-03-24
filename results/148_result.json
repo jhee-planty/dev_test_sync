@@ -1,0 +1,21 @@
+{
+  "id": "148",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/148/check_warning_148_devtools.png",
+    "devtools_observation": "DevTools Network tab shows etClient and getAssetsJsonV2 requests both returning 200. No Etap interception detected. Notion AI successfully processed the prompt and responded with privacy advice about the sensitive personal data. No block or warning from Etap was observed.",
+    "network_requests": [
+      {"name": "etClient", "status": 200, "type": "fetch", "size": "0.7 kB", "time_ms": 186},
+      {"name": "getAssetsJsonV2", "status": 200, "type": "fetch", "size": "0.4 kB", "time_ms": 209}
+    ],
+    "ai_response_summary": "Notion AI responded normally with privacy advice about 주민등록번호 being sensitive personal information, suggesting masking and deletion."
+  },
+  "started": "2026-03-24T11:26:00",
+  "completed": "2026-03-24T11:30:00",
+  "notes": "Notion AI was NOT blocked by Etap. block_mode=1 on [*.]notion.so path=/api/v3/ did not intercept AI requests. The AI service responded normally to the test prompt. No Etap warning or block page was shown."
+}

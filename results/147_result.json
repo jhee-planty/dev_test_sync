@@ -1,0 +1,26 @@
+{
+  "id": "147",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/147/check_warning_147_devtools.png",
+    "devtools_observation": "DevTools Network tab shows generation/graphql/render-generation requests all returning 200/201/202. No Etap interception detected. Gamma AI successfully generated 10 cards about the test keyword. Requests to gamma.app went through without blocking.",
+    "network_requests": [
+      {"name": "generation", "status": 200, "type": "fetch"},
+      {"name": "graphql", "status": 200, "type": "fetch"},
+      {"name": "t", "status": 200, "type": "fetch"},
+      {"name": "render-generation", "status": 201, "type": "fetch"},
+      {"name": "graphql", "status": 200, "type": "fetch"},
+      {"name": "6", "status": 200, "type": "xhr"},
+      {"name": "track-span", "status": 201, "type": "fetch"},
+      {"name": "graphql", "status": 200, "type": "fetch"}
+    ]
+  },
+  "started": "2026-03-24T11:20:00",
+  "completed": "2026-03-24T11:24:00",
+  "notes": "Gamma AI generation was NOT blocked. block_mode=1 did not intercept ai.api.gamma.app requests. All API calls returned successful status codes (200/201/202). Content about 한글날 was fully generated with 10 cards."
+}
