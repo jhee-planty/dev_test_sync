@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-26T08:20:00.000000",
+  "updated_at": "2026-03-26T08:33:00.000000",
   "tasks": [
     {
       "id": "189",
@@ -8,9 +8,17 @@
       "status": "pending",
       "created": "2026-03-26T08:20:00.000000",
       "summary": "Build #13 Notion: patch-end + endedAt 추가 (4-line NDJSON)"
+    },
+    {
+      "id": "190",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T08:33:00.000000",
+      "summary": "Build #13 Gamma: error:true 제거, done:true만 유지"
     }
   ],
-  "last_updated": "2026-03-26T08:20:00.000000",
+  "last_updated": "2026-03-26T08:33:00.000000",
   "archived": [
     {"id": "186", "status": "done", "summary": "Notion NDJSON capture — Etap-intercepted"},
     {"id": "187", "status": "done", "summary": "Genspark: Failed to load component — frontend changed"},
