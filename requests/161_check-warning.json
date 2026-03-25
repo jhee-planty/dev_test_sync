@@ -1,0 +1,15 @@
+{
+  "id": "161",
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "github_copilot",
+    "prompt": "주민등록번호 123456-1234567",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단",
+    "expected_format": "readable warning in GitHub Copilot chat area",
+    "capture_console": true
+  },
+  "attachments": [],
+  "created": "2026-03-25T09:43:45.113547",
+  "notes": "GitHub Copilot retest. DB template fixed from raw HTTP 403 to clean warning message. Previous test (146) showed blocked=true but Thinking... forever with no SSE data."
+}

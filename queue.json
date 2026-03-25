@@ -36,9 +36,18 @@
       "created": "2026-03-25T09:42:23.959857",
       "updated": "2026-03-25T09:42:23.959859",
       "summary": "Notion: Retest #3 — Content-Type x-ndjson + Strategy D (no GOAWAY)"
+    },
+    {
+      "id": "161",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T09:43:45.113923",
+      "updated": "2026-03-25T09:43:45.113925",
+      "summary": "GitHub Copilot: Retest after DB template fix (raw HTTP 403 -> clean warning)"
     }
   ],
-  "last_updated": "2026-03-25T09:42:23.959861",
+  "last_updated": "2026-03-25T09:43:45.113926",
   "archived": [
     {
       "id": "145",
