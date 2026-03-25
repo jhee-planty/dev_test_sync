@@ -1,0 +1,27 @@
+{
+  "id": "191",
+  "command": "check-warning",
+  "status": "warning_not_rendered",
+  "service": "gamma",
+  "build": "260326 #14",
+  "summary": "Build #14: cards[0].title strategy also failed. Outline shows 1 empty card with only number '1', no warning text rendered. 0/50000 characters generated. Same result as Build #13.",
+  "checks": {
+    "ai_response_blocked": true,
+    "warning_text_visible": false,
+    "outline_generated": true
+  },
+  "outline_analysis": {
+    "total_cards": 1,
+    "card_title_text": "",
+    "characters_generated": "0 / 50000",
+    "warning_in_card_title": false,
+    "warning_in_card_description": false
+  },
+  "comparison_with_build13": {
+    "build13_result": "warning_not_rendered (outline.title strategy)",
+    "build14_result": "warning_not_rendered (cards[0].title strategy)",
+    "difference": "No observable difference — both produce 1 empty card with no text"
+  },
+  "screenshots": ["results/files/191/outline_result.png"],
+  "timestamp": "2026-03-26T08:57:00+09:00"
+}
