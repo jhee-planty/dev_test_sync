@@ -32,10 +32,10 @@
       "id": "160",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T09:42:23.959857",
-      "updated": "2026-03-25T09:42:23.959859",
-      "summary": "Notion: Retest #3 — Content-Type x-ndjson + Strategy D (no GOAWAY)"
+      "updated": "2026-03-25T09:55:06.878712",
+      "summary": "Notion: Content-Type + GOAWAY fixes VERIFIED, but warning still NOT displayed. NDJSON body format mismatch — need JSON Patch format."
     },
     {
       "id": "161",
@@ -45,9 +45,18 @@
       "created": "2026-03-25T09:43:45.113923",
       "updated": "2026-03-25T09:43:45.113925",
       "summary": "GitHub Copilot: Retest after DB template fix (raw HTTP 403 -> clean warning)"
+    },
+    {
+      "id": "162",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T09:55:06.878962",
+      "updated": "2026-03-25T09:55:06.878964",
+      "summary": "Notion: Capture raw NDJSON body from normal response for format analysis"
     }
   ],
-  "last_updated": "2026-03-25T09:43:45.113926",
+  "last_updated": "2026-03-25T09:55:06.878966",
   "archived": [
     {
       "id": "145",
