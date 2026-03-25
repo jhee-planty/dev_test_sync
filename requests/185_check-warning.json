@@ -1,0 +1,9 @@
+{
+  "id": "185",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "build": "260325 #11",
+  "strategy": "Reverted to is_http2=1 (was =2). on_disconnected() flushes TLS buffer + closes connection. use_goaway=false still set.",
+  "prompt": "한글날 행사 일정을 정리해줘",
+  "notes": "Build #11: Copilot — is_http2=1 for TLS flush via on_disconnected. PING flush only for is_http2=2 services."
+}

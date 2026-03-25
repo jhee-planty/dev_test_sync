@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-25T15:04:37.000000",
+  "updated_at": "2026-03-25T15:30:00.000000",
   "tasks": [
     {
       "id": "167",
@@ -140,22 +140,40 @@
       "id": "182",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T15:04:37.000000",
-      "updated": "2026-03-25T15:04:37.000000",
-      "summary": "Build #10: Gamma — PING flush after write to force TLS buffer delivery"
+      "updated": "2026-03-25T15:12:00.000000",
+      "summary": "Build #10 Gamma: PING flush WORKS (SSE body delivered). But warning consumed as card outline → presentation generated normally."
     },
     {
       "id": "183",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T15:04:37.000000",
-      "updated": "2026-03-25T15:04:37.000000",
-      "summary": "Build #10: Copilot — PING flush after write to force TLS buffer delivery"
+      "updated": "2026-03-25T15:16:00.000000",
+      "summary": "Build #10 Copilot: PING flush NOT effective. Still infinite Thinking... hang with empty SSE."
+    },
+    {
+      "id": "184",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T15:30:00.000000",
+      "updated": "2026-03-25T15:30:00.000000",
+      "summary": "Build #11: Gamma — event:error SSE + empty cards[] to trigger error UI"
+    },
+    {
+      "id": "185",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T15:30:00.000000",
+      "updated": "2026-03-25T15:30:00.000000",
+      "summary": "Build #11: Copilot — is_http2=1 (reverted from =2) for on_disconnected TLS flush"
     }
   ],
-  "last_updated": "2026-03-25T15:04:37.000000",
+  "last_updated": "2026-03-25T15:30:00.000000",
   "archived": [
     {
       "id": "157",
