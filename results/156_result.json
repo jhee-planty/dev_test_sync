@@ -1,0 +1,45 @@
+{
+  "request_id": 156,
+  "task": "check-warning",
+  "service": "Notion AI",
+  "url": "https://notion.so/chat?t=32d7e0fa91d48014bfdb00a931d27a99&wfv=chat",
+  "timestamp": "2026-03-25T09:01:00+09:00",
+  "status": "completed",
+  "result": {
+    "blocked": false,
+    "warning_displayed": false,
+    "api_endpoint": "https://www.notion.so/api/v3/runInferenceTranscript",
+    "request_method": "POST",
+    "response_status": 200,
+    "response_format": {
+      "content_type": "application/x-ndjson",
+      "content_encoding": "zstd",
+      "transfer_encoding": "chunked (implied by NDJSON streaming)",
+      "format_type": "NDJSON (Newline-Delimited JSON)",
+      "body_structure": "JSON Patch operations, each line is a JSON object with fields: o (operation, e.g. 'a' for add), p (path, e.g. '/s/10/warnings'), v (value). Paths include: /s/10/warnings, /s/10/threadOperations, /s/10/appliedRecordVersion, /s/10/additionalResultForR..., /s/10/renderedResultArtifact (contains workflow_artifact table reference with id and spaceId)",
+      "is_sse": false,
+      "is_ndjson": true,
+      "is_plain_json": false
+    },
+    "response_headers": {
+      "Alt-Svc": "h3=\":443\"; ma=86400",
+      "Cf-Cache-Status": "DYNAMIC",
+      "Cf-Ray": "9e197ac79d6f327d-ICN",
+      "Content-Encoding": "zstd",
+      "Content-Security-Policy": "default-src 'none'",
+      "Content-Type": "application/x-ndjson",
+      "Referrer-Policy": "strict-origin-when-cross-origin"
+    },
+    "network_observations": {
+      "response_size": "48.9 kB",
+      "response_time": "17.80s",
+      "request_type": "fetch",
+      "remote_address": "[2602:f79a::1]:443",
+      "note": "Response is streamed via NDJSON. Each line is a JSON Patch op. The AI text content is delivered through renderedResultArtifact entries."
+    },
+    "page_response": "Notion AI responded normally with Seoul weather info. No block or warning displayed.",
+    "prompt_used": "오늘 날씨 어때?"
+  },
+  "files": ["files/156/check_warning_156_response.png"],
+  "notes": "KEY FINDING: Notion AI uses application/x-ndjson (NDJSON) for streaming responses via runInferenceTranscript API. Each line is a JSON Patch operation with 'o' (operation type), 'p' (path), 'v' (value) fields. This confirms the NDJSON format for warning implementation. For block responses, Etap should return 200 OK with Content-Type: application/x-ndjson and inject warning text via the same JSON Patch format."
+}

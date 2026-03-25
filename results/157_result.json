@@ -1,0 +1,51 @@
+{
+  "request_id": 157,
+  "task": "check-warning",
+  "service": "Notion AI",
+  "url": "https://notion.so/chat?t=32d7e0fa91d48014bfdb00a931d27a99&wfv=chat",
+  "timestamp": "2026-03-25T09:06:00+09:00",
+  "status": "completed",
+  "result": {
+    "blocked": true,
+    "warning_displayed": false,
+    "api_endpoint": "https://www.notion.so/api/v3/runInferenceTranscript",
+    "request_method": "POST",
+    "response_status": 200,
+    "prompt_used": "주민등록번호 123456-1234567",
+    "block_detection": {
+      "response_size": "0.5 kB",
+      "response_time": "113 ms",
+      "normal_response_size": "48.9 kB (from #156)",
+      "normal_response_time": "17.80s (from #156)",
+      "size_ratio": "~1% of normal",
+      "conclusion": "Etap proxy intercepted and returned small blocked response"
+    },
+    "blocked_response_body": {
+      "type": "success",
+      "completion": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: 142\r\nConnection: close\r\nServer: OfficeGuard-APF/3.0\r\n\r\n{\"error\":{\"code\":\"SENSITIVE_DATA_DETECTED\",\"message\":\"요청에 민감정보가 포함되어 차단되었습니다.\",\"contact\":\"security@company.com\"}}"
+    },
+    "blocked_response_analysis": {
+      "etap_server": "OfficeGuard-APF/3.0",
+      "http_status_in_completion": "403 Forbidden",
+      "error_code": "SENSITIVE_DATA_DETECTED",
+      "error_message": "요청에 민감정보가 포함되어 차단되었습니다.",
+      "contact": "security@company.com",
+      "response_format": "NDJSON wrapper with raw HTTP response in completion field",
+      "outer_http_status": "200 OK (proxy rewrites to 200)",
+      "content_type_mismatch": "Etap returns application/json inside NDJSON completion, but Notion expects JSON Patch operations"
+    },
+    "ui_behavior": {
+      "chat_area": "Completely empty - no AI response, no warning text",
+      "user_prompt_visible": true,
+      "loading_indicator": false,
+      "error_message_displayed": false,
+      "warning_text_rendered": false
+    },
+    "warning_failure_reason": "Etap proxy wraps blocked response as {type:success, completion:raw_HTTP_response} in NDJSON format. Notion frontend receives 200 OK and parses the NDJSON, but the completion field contains a raw HTTP response string instead of JSON Patch operations. Since there are no valid patch ops to render, the chat area remains empty. The warning message exists in the response body but is buried inside the completion string and never rendered to the user."
+  },
+  "files": [
+    "files/157/check_warning_157_blocked.png",
+    "files/157/check_warning_157_response_body.png"
+  ],
+  "notes": "CRITICAL FINDING: Etap blocks sensitive data correctly (주민등록번호 detected) but warning is NOT visible to user. The blocked response is wrapped in NDJSON {type:success, completion:...} format. The completion field contains a raw HTTP/1.1 403 response with JSON error body. However, Notion expects JSON Patch operations in NDJSON lines, not raw HTTP responses. Result: chat area is completely blank - user sees nothing. WARNING DESIGN NEEDED: To make warnings visible in Notion, the block response must use Notion's NDJSON JSON Patch format (type:patch with operations like o:p, o:a, o:x) to inject warning text into the chat rendering path."
+}
