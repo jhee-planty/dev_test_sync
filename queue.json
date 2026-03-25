@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-25T14:37:33.000000",
+  "updated_at": "2026-03-25T15:04:37.000000",
   "tasks": [
     {
       "id": "167",
@@ -113,31 +113,49 @@
       "id": "179",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T14:37:33.000000",
-      "updated": "2026-03-25T14:37:33.000000",
-      "summary": "Build #9: Gamma — double-write fix (clear _block_response_string after write)"
+      "updated": "2026-03-25T15:04:37.000000",
+      "summary": "Build #9 Gamma: double-write fixed (1 write) but body STILL empty. TLS buffer flush needed."
     },
     {
       "id": "180",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T14:37:33.000000",
-      "updated": "2026-03-25T14:37:33.000000",
-      "summary": "Build #9: Copilot — double-write fix + is_http2=2"
+      "updated": "2026-03-25T15:04:37.000000",
+      "summary": "Build #9 Copilot: 1 write, body STILL empty. Same TLS flush issue."
     },
     {
       "id": "181",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T14:37:33.000000",
-      "updated": "2026-03-25T14:37:33.000000",
-      "summary": "Build #9: Notion — double-write fix + NDJSON (schema may still mismatch)"
+      "updated": "2026-03-25T15:04:37.000000",
+      "summary": "Build #9 Notion: NDJSON body delivered (0.7KB). UI doesn't render. Schema mismatch."
+    },
+    {
+      "id": "182",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T15:04:37.000000",
+      "updated": "2026-03-25T15:04:37.000000",
+      "summary": "Build #10: Gamma — PING flush after write to force TLS buffer delivery"
+    },
+    {
+      "id": "183",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T15:04:37.000000",
+      "updated": "2026-03-25T15:04:37.000000",
+      "summary": "Build #10: Copilot — PING flush after write to force TLS buffer delivery"
     }
   ],
-  "last_updated": "2026-03-25T14:37:33.000000",
+  "last_updated": "2026-03-25T15:04:37.000000",
   "archived": [
     {
       "id": "157",
