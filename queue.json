@@ -59,40 +59,67 @@
       "id": "163",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:10:41.428228",
-      "summary": "notion: Notion JSON Patch NDJSON generator rewrite + Strategy D (no GOAWAY). Build 260325 #2."
+      "updated": "2026-03-25T10:46:59.167412",
+      "summary": "Notion: NDJSON format CORRECT but non-stream delivery rejected. Error: Expected stream response. Need Strategy B (end_stream=false)."
     },
     {
       "id": "164",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:10:41.428228",
-      "summary": "github_copilot: Copilot: Added to no-GOAWAY list (Strategy D). Build 260325 #2."
+      "updated": "2026-03-25T10:42:16.296069",
+      "summary": "Copilot: Strategy D (no-GOAWAY) working but SSE body STILL EMPTY. HTTP/2 DATA frame has no payload. Need deeper investigation."
     },
     {
       "id": "165",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:10:41.428228",
-      "summary": "gamma: Gamma: DB template updated to clean warning message. First test after fix."
+      "updated": "2026-03-25T10:42:16.296069",
+      "summary": "Gamma: NOT intercepted. ai.api.gamma.app not in DB (only gamma.app registered). Need DB domain fix."
     },
     {
       "id": "166",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:10:41.428228",
-      "summary": "m365_copilot: M365 Copilot: DB template updated to clean warning message. First test after fix."
+      "updated": "2026-03-25T10:42:16.296069",
+      "summary": "M365 Copilot: NOT intercepted. Normal AI response arrived. Need DB verification + retest with Network tab."
+    },
+    {
+      "id": "167",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:46:59.167412",
+      "updated": "2026-03-25T10:46:59.167412",
+      "summary": "notion: Notion: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. JSON Patch NDJSON + streaming mode."
+    },
+    {
+      "id": "168",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:46:59.167412",
+      "updated": "2026-03-25T10:46:59.167412",
+      "summary": "github_copilot: Copilot: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. SSE streaming mode."
+    },
+    {
+      "id": "169",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:46:59.167412",
+      "updated": "2026-03-25T10:46:59.167412",
+      "summary": "gamma: Gamma: DB domain fixed to ai.api.gamma.app. Build 260325 #4."
     }
   ],
-  "last_updated": "2026-03-25T10:10:41.428228",
+  "last_updated": "2026-03-25T10:46:59.167412",
   "archived": [
     {
       "id": "145",

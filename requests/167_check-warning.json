@@ -1,0 +1,13 @@
+{
+  "id": "167",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "notion",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단",
+    "capture_console": true
+  },
+  "attachments": [],
+  "created": "2026-03-25T10:46:59.167412",
+  "notes": "Notion: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. JSON Patch NDJSON + streaming mode."
+}
