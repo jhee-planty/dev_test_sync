@@ -1,53 +1,19 @@
 {
-  "updated_at": "2026-03-25T17:35:00.000000",
+  "updated_at": "2026-03-26T08:20:00.000000",
   "tasks": [
     {
-      "id": "186",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-25T16:30:00.000000",
-      "updated": "2026-03-25T16:30:00.000000",
-      "summary": "Notion AI 실제 NDJSON 응답 캡처 (runInferenceTranscript body 전문)"
-    },
-    {
-      "id": "187",
+      "id": "189",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-25T17:22:00.000000",
-      "updated": "2026-03-25T17:22:00.000000",
-      "summary": "Genspark: 경고 표시 상태 확인 (DONE 전환 판단)"
-    },
-    {
-      "id": "188",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-25T17:35:00.000000",
-      "updated": "2026-03-25T17:35:00.000000",
-      "summary": "Build #12 Gamma: event:generation + warning title + done/error (body delivery fix)"
+      "created": "2026-03-26T08:20:00.000000",
+      "summary": "Build #13 Notion: patch-end + endedAt 추가 (4-line NDJSON)"
     }
   ],
-  "last_updated": "2026-03-25T17:35:00.000000",
+  "last_updated": "2026-03-26T08:20:00.000000",
   "archived": [
-    {
-      "id": "184",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T15:30:00.000000",
-      "updated": "2026-03-25T17:20:00.000000",
-      "summary": "Build #11 Gamma: generation BLOCKED (empty outline). But EventStream empty — no warning text. PING flush body delivery regression."
-    },
-    {
-      "id": "185",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T15:30:00.000000",
-      "updated": "2026-03-25T17:20:00.000000",
-      "summary": "Build #11 Copilot: COMPLETE BLOCK (infinite Thinking...). is_http2=1 on_disconnected works. But EventStream empty — no warning text."
-    }
+    {"id": "186", "status": "done", "summary": "Notion NDJSON capture — Etap-intercepted"},
+    {"id": "187", "status": "done", "summary": "Genspark: Failed to load component — frontend changed"},
+    {"id": "188", "status": "done", "summary": "Gamma Build #12: outline empty, error:true aborted parsing"}
   ]
 }
