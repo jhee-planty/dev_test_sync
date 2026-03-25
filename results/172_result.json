@@ -1,0 +1,60 @@
+{
+  "id": "172",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "gamma",
+  "build": "260325 #5",
+  "strategy": "Changed from 403 to 200 OK response",
+  "timestamp": "2026-03-25T11:57:00+09:00",
+  "results": {
+    "etap_interception": "200_ok_but_empty_body",
+    "prompt_sent": "한글날",
+    "test_method": "Gamma 'generation' endpoint (presentation outline generation, NOT chat bubble)",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "generation_failure",
+      "warning_displayed": false,
+      "ui_state": "Outline shows single empty card '1' with no title/content. No error toast or warning banner shown to user. 'Regenerate outline' button available.",
+      "error_in_console": "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+    },
+    "network_analysis": {
+      "endpoint": "https://ai.api.gamma.app/ai/v2/generation",
+      "method": "POST",
+      "status_code": 200,
+      "content_type_response": "application/json; charset=utf-8",
+      "accept_header_request": "text/event-stream",
+      "remote_address": "[2606:4700:6812:ac8]:443",
+      "response_body": "Failed to load - empty or corrupted (DevTools shows 'No data found for resource with given identifier')",
+      "response_size": "0.5 kB total (likely headers only)",
+      "response_time": "564 ms",
+      "format_mismatch": "Request Accept: text/event-stream, Response Content-Type: application/json — Etap changed the response format"
+    },
+    "previous_behavior": {
+      "before_build5": "403 Forbidden — Gamma showed clear error, console logged 'net::ERR_ABORTED 403 (Forbidden)'",
+      "after_build5": "200 OK with empty/invalid JSON body — Gamma silently fails, console logs 'Unable to complete request'"
+    },
+    "console_state": {
+      "errors": 5,
+      "warnings": 7,
+      "issues": 32,
+      "key_errors": [
+        "POST ai.api.gamma.app/ai/v2/generation net::ERR_ABORTED 403 (first attempt, pre-build5 cached)",
+        "[PromptAndOutlineSettings] error generating outline: Unable to complete request (×2)",
+        "LaunchDarkly ERR_CONNECTION_RESET and ERR_CONNECTION_CLOSED"
+      ]
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "pattern": "Etap returns 200 OK with empty/invalid body instead of previous 403 block",
+    "gamma_specifics": "Gamma is a presentation generator, NOT a chat interface. The 'generation' endpoint produces card outlines. Warning text cannot appear in chat bubbles — it would need to be embedded in the JSON response matching Gamma's expected schema.",
+    "user_experience": "Worse than 403: previously 403 was a clear block signal. Now 200 OK with empty body causes silent failure — user sees empty outline with no explanation.",
+    "action_needed": [
+      "For Gamma warning: response body must contain valid JSON matching Gamma's outline schema",
+      "Investigate what JSON structure Gamma expects from /ai/v2/generation",
+      "Warning text could be embedded as card title/content in the expected JSON format",
+      "Alternatively, consider keeping 403 for Gamma since it handles it better than empty 200",
+      "Content-Type mismatch (SSE requested, JSON returned) may also cause parsing issues"
+    ]
+  }
+}

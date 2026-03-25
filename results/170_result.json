@@ -1,0 +1,49 @@
+{
+  "id": "170",
+  "command": "check-warning",
+  "status": "error_connection",
+  "service": "notion",
+  "build": "260325 #5",
+  "strategy": "D (end_stream=true, no GOAWAY) + correct NDJSON JSON Patch",
+  "timestamp": "2026-03-25T11:40:00+09:00",
+  "results": {
+    "etap_interception": "likely_blocking_realtime",
+    "prompt_sent": "한글날",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "connection_error",
+      "warning_displayed": false,
+      "ui_state": "Persistent error banner: '문제가 발생했습니다. N초 후에 다시 시도합니다.' with escalating retry timer (3s→45s). Chat area empty despite message submission."
+    },
+    "network_analysis": {
+      "captured": true,
+      "total_requests_after_clear": 182,
+      "key_observations": [
+        "All syncRecordValuesSpaceInitial requests: 200 OK",
+        "All saveTransactionsFanout requests: 200 OK",
+        "users?sessionId: 304 Not Modified",
+        "No getInferenceTranscriptsForUser endpoint observed",
+        "No AI inference request visible in Fetch/XHR filter",
+        "Error banner appeared immediately on page load before any AI request"
+      ],
+      "inference_endpoint_behavior": "AI inference endpoint never called - Notion real-time connection broken before AI request could be initiated"
+    },
+    "console_state": {
+      "errors": 16,
+      "warnings": 6,
+      "breaking_changes": 1
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "pattern": "Notion real-time/WebSocket connection persistently fails, preventing AI chat from functioning at all",
+    "likely_cause": "Etap proxy may be interfering with Notion's WebSocket or real-time streaming connection (not just the AI inference endpoint). The error appears on page load before any AI query is made.",
+    "comparison_with_167": "Different from #167 (Strategy B) which at least showed 'generating' state. Strategy D never gets to the AI request stage due to broken real-time connection.",
+    "action_needed": [
+      "Investigate if Etap blocks Notion WebSocket connections",
+      "Check if non-AI Notion endpoints are affected by new build",
+      "Verify Notion works normally when Etap is bypassed",
+      "Consider if Strategy D changes affected non-AI Notion traffic"
+    ]
+  }
+}
