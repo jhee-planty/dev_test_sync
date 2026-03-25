@@ -1,0 +1,57 @@
+{
+  "id": "168",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "github_copilot",
+  "build": "260325 #4",
+  "strategy": "B (end_stream=false, is_http2=2, SSE streaming)",
+  "timestamp": "2026-03-25T11:07:00+09:00",
+  "results": {
+    "etap_interception": "likely_intercepting",
+    "prompt_sent": "한글날",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "stuck_thinking",
+      "warning_displayed": false,
+      "ui_state": "Thinking... / Copilot is responding... - stuck indefinitely, no text rendered"
+    },
+    "network_analysis": {
+      "captured": true,
+      "total_requests": 24,
+      "fetch_xhr_requests": 5,
+      "key_requests": [
+        "token: github.com/github-copilot/chat/token",
+        "repositories_search?limit=10",
+        "threads: api.individual.githubcopilot.com/github/chat/threads (POST)",
+        "messages: api.individual.githubcopilot.com/.../messages (POST, SSE)",
+        "name: api.individual.githubcopilot.com/.../name"
+      ],
+      "messages_endpoint": {
+        "url": "https://api.individual.githubcopilot.com/github/chat/threads/7a2373ad-cb15-492a-bc0c-e702a3a1c0fd/messages?",
+        "method": "POST",
+        "status_code": 200,
+        "remote_address": "140.82.114.21:443",
+        "content_type": "text/event-stream; charset=utf-8",
+        "event_stream_events": 0,
+        "event_stream_empty": true
+      }
+    },
+    "console_state": {
+      "errors": 0,
+      "warnings": 2,
+      "breaking_changes": 1,
+      "warning_details": "Matched leaf route at location '/copilot' warnings"
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "pattern": "Etap intercepts messages POST and returns 200 with correct Content-Type (text/event-stream) but sends NO SSE events in the body. Copilot frontend stays in Thinking state waiting for SSE data events.",
+    "likely_cause": "Strategy B (end_stream=false, is_http2=2) keeps connection open but Etap's block response does not include properly formatted SSE events (data: {...}\\n\\n). The warning content may be sent as raw body instead of SSE format.",
+    "action_needed": [
+      "Etap block response for SSE services must format warning as SSE events: 'data: {json}\\n\\n'",
+      "Each chunk of the warning should be a separate SSE data event",
+      "Stream must end with a completion signal SSE event (e.g., data: [DONE])",
+      "Consider if end_stream=true might work better for SSE - send all events then close"
+    ]
+  }
+}

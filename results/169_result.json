@@ -1,0 +1,55 @@
+{
+  "id": "169",
+  "command": "check-warning",
+  "status": "blocked_no_warning",
+  "service": "gamma",
+  "build": "260325 #4",
+  "timestamp": "2026-03-25T11:14:00+09:00",
+  "results": {
+    "etap_interception": "confirmed_blocking",
+    "prompt_sent": "한글날",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "empty_outline",
+      "warning_displayed": false,
+      "ui_state": "Outline generated with empty card (just '1'), no warning text shown. Generation button still available."
+    },
+    "network_analysis": {
+      "captured": true,
+      "total_requests": 63,
+      "fetch_xhr_requests": 24,
+      "key_requests": [
+        "graphql (api.gamma.app): multiple 200 OK",
+        "generation (ai.api.gamma.app): 403 Forbidden - BLOCKED by Etap",
+        "render-generation: 201 Created",
+        "launcher_settings (intercom): 200",
+        "61e83cfd8ac5a016e6f... (launchdarkly): 202"
+      ],
+      "generation_endpoint": {
+        "status_code": 403,
+        "domain": "ai.api.gamma.app",
+        "blocked": true,
+        "response_size": "0.5 kB",
+        "time": "2.08 s"
+      }
+    },
+    "console_state": {
+      "errors": 2,
+      "warnings": 6,
+      "issues": 4
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "domain_fix_confirmed": true,
+    "domain_fix_detail": "DB domain fixed to ai.api.gamma.app is now being intercepted by Etap (403 response confirms)",
+    "pattern": "Etap blocks the generation request with 403 but does not inject warning text. Gamma frontend shows empty outline without any user-facing error or warning message.",
+    "likely_cause": "403 response is a plain block without warning content. For warning to display, Etap needs to return 200 with warning text in the response body rather than 403.",
+    "action_needed": [
+      "Confirm Gamma APF entry uses warning mode (blocked=0 or warning flag) not block mode",
+      "If warning mode: check that response format matches what Gamma expects from ai.api.gamma.app",
+      "Gamma generation endpoint may need specific response format - check HAR for expected Content-Type",
+      "403 suggests block mode is active, not warning mode - need to update APF config"
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "id": "167",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "notion",
+  "build": "260325 #4",
+  "strategy": "B (end_stream=false, is_http2=2, JSON Patch NDJSON + streaming)",
+  "timestamp": "2026-03-25T11:05:00+09:00",
+  "results": {
+    "etap_interception": "likely_intercepting",
+    "prompt_sent": "한글날",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "stuck_generating",
+      "warning_displayed": false,
+      "ui_state": "제작 중 (generating) - stuck indefinitely, no text rendered"
+    },
+    "network_analysis": {
+      "captured": true,
+      "total_requests": 52,
+      "key_observations": [
+        "getInferenceTranscriptsForUser: first call 200 (0.4kB), second call FAILED (0.0kB, 34.98s timeout)",
+        "markInferenceTranscriptSeen: 404 Not Found",
+        "saveTransactionsFanout: multiple FAILED requests (7+ failures)",
+        "etClient: mixed - some 200 (0.9kB), some FAILED (0.0kB)",
+        "raw: 200 (h2)",
+        "getInferenceTranscriptsUnr...: present in request list"
+      ],
+      "inference_endpoint_behavior": "First getInferenceTranscript returned 200 with small payload (0.4kB), subsequent calls failed with timeout"
+    },
+    "console_state": {
+      "errors": 32,
+      "warnings": 5,
+      "breaking_changes": 1
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "pattern": "Etap appears to intercept the inference request, but Strategy B streaming response causes Notion to enter permanent 'generating' state without rendering any text",
+    "comparison_with_163": "Similar to #163 - NDJSON format acknowledged but streaming delivery issue persists. Strategy B (end_stream=false) keeps connection open, Notion waits indefinitely for more data",
+    "likely_cause": "end_stream=false with is_http2=2 sends response but never signals completion, causing Notion frontend to remain in 'generating' state",
+    "action_needed": [
+      "Consider end_stream=true to properly close the stream after warning delivery",
+      "Or adjust NDJSON chunk format to include a completion signal that Notion recognizes",
+      "Check if Notion expects a specific 'done' message in the NDJSON stream to exit generating state"
+    ]
+  }
+}
