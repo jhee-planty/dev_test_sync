@@ -14,10 +14,10 @@
       "id": "158",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T08:27:05.339574",
-      "updated": "2026-03-25T08:27:05.339574",
-      "summary": "Gemini: batchexecute Protocol 정밀 확인 (h2 vs h3). Remote Address 포함."
+      "updated": "2026-03-25T09:21:34.803701",
+      "summary": "Gemini: CONFIRMED h3/QUIC. batchexecute uses HTTP/3 → Etap bypass. Need UDP 443 firewall block."
     },
     {
       "id": "159",
@@ -29,7 +29,7 @@
       "summary": "Notion: Retest after DB template fix. Clean warning message instead of raw HTTP 403."
     }
   ],
-  "last_updated": "2026-03-25T09:13:13.976549",
+  "last_updated": "2026-03-25T09:21:34.803710",
   "archived": [
     {
       "id": "145",
