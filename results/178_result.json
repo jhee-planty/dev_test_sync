@@ -1,0 +1,68 @@
+{
+  "id": "178",
+  "command": "check-warning",
+  "status": "blocked_but_no_warning",
+  "service": "github_copilot",
+  "build": "260325 #8",
+  "strategy": "is_http2=2 + no GOAWAY + END_STREAM (retest)",
+  "timestamp": "2026-03-25T14:28:00+09:00",
+  "results": {
+    "etap_interception": "200_ok_sse_hanging",
+    "prompt_sent": "한글날",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "infinite_thinking_hang",
+      "warning_displayed": false,
+      "ui_state": "Copilot showed 'Thinking...' and 'Copilot is responding...' indefinitely. No response text, error message, or warning displayed. User must manually cancel via Cancel button or Escape key."
+    },
+    "network_analysis": {
+      "blocked_endpoint": "https://api.individual.githubcopilot.com/github/chat/threads/.../messages?",
+      "method": "POST",
+      "status_code": 200,
+      "status_text": "OK",      "remote_address": "140.82.112.21:443",
+      "protocol": "h2",
+      "response_content_type": "text/event-stream; charset=utf-8",
+      "cors_headers": {
+        "access_control_allow_credentials": "true",
+        "access_control_allow_origin": "https://github.com"
+      },
+      "cache_control": "no-cache",
+      "eventstream_tab": "EMPTY — no SSE events received",
+      "response_body_empty": true,
+      "response_body_note": "Etap returned 200 OK with SSE headers via is_http2=2 (END_STREAM without GOAWAY). Headers delivered successfully but NO data frames followed. SSE connection open but empty — Copilot hangs waiting for events.",
+      "other_requests": {
+        "threads": "200 OK — thread creation succeeded",
+        "repositories_search": "200 OK — repo search unaffected",
+        "name": "200 OK — thread naming unaffected"
+      },
+      "path_narrowing": "Only messages endpoint intercepted, other Copilot APIs pass through normally"
+    },
+    "console_analysis": {
+      "errors": 0,
+      "warnings": 1,
+      "key_error": "No console errors — the 200 OK response prevents error logging. Copilot treats it as a valid open SSE stream.",
+      "interpretation": "is_http2=2 produces a cleaner interception than is_http2=1. No ERR_HTTP2_PROTOCOL_ERROR visible. The hang is silent."
+    },    "is_http2_comparison": {
+      "is_http2_1_build6": "ERR_HTTP2_PROTOCOL_ERROR — browser detected protocol violation, connection reset",
+      "is_http2_2_build8": "200 OK + SSE headers but empty body — browser sees valid response, silent hang",
+      "improvement": "is_http2=2 is significantly cleaner: no protocol errors, no GOAWAY, proper 200 OK. But the result is an infinite hang instead of an error, which is worse UX."
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "blocking_effective": true,
+    "pattern": "is_http2=2 with END_STREAM returns 200 OK + correct SSE headers but zero data frames. Copilot receives a 'valid' response with no content, causing infinite 'Thinking...' hang. The block is effective (no AI response) but provides terrible UX — user sees no error, no warning, just perpetual loading.",
+    "comparison_with_build6": "Build #6 (is_http2=1): ERR_HTTP2_PROTOCOL_ERROR caused visible error in console. Build #8 (is_http2=2): Silent hang with no errors — cleaner interception but worse user experience.",
+    "action_needed": [
+      "BLOCKING WORKS — Copilot cannot generate a response with is_http2=2",
+      "FOR WARNING: Need to send actual SSE events in the response body after the 200 OK headers",
+      "Copilot SSE format: 'data: {\"type\":\"content\",\"body\":\"warning text\"}\\n\\n'",
+      "The generator must write SSE data frames into the HTTP/2 stream before END_STREAM",
+      "Alternative: Send SSE events with warning text, then close the stream normally",
+      "Key insight: is_http2=2 gives us a clean 200 OK channel — we just need to fill it with SSE warning data"
+    ]
+  },
+  "screenshots": [
+    "files/178/178_copilot_sse_eventstream.png"
+  ]
+}
