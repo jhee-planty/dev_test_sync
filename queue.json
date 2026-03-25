@@ -41,10 +41,10 @@
       "id": "161",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T09:43:45.113923",
-      "updated": "2026-03-25T09:43:45.113925",
-      "summary": "GitHub Copilot: Retest after DB template fix (raw HTTP 403 -> clean warning)"
+      "updated": "2026-03-25T10:02:10.530022",
+      "summary": "Copilot: SSE events NOT delivered (0 events). 200+text/event-stream but empty body. Need HTTP/2 framing investigation."
     },
     {
       "id": "162",
@@ -56,7 +56,7 @@
       "summary": "Notion: Capture raw NDJSON body from normal response for format analysis"
     }
   ],
-  "last_updated": "2026-03-25T09:55:06.878966",
+  "last_updated": "2026-03-25T10:02:10.530034",
   "archived": [
     {
       "id": "145",
