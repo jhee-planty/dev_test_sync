@@ -1,14 +1,6 @@
 {
-  "updated_at": "2026-03-26T08:33:00.000000",
+  "updated_at": "2026-03-26T08:51:00.000000",
   "tasks": [
-    {
-      "id": "189",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-26T08:20:00.000000",
-      "summary": "Build #13 Notion: patch-end + endedAt 추가 (4-line NDJSON)"
-    },
     {
       "id": "190",
       "command": "check-warning",
@@ -16,12 +8,42 @@
       "status": "pending",
       "created": "2026-03-26T08:33:00.000000",
       "summary": "Build #13 Gamma: error:true 제거, done:true만 유지"
+    },
+    {
+      "id": "191",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T08:51:00.000000",
+      "summary": "Build #14 Gamma: warning in cards[0].title"
     }
   ],
-  "last_updated": "2026-03-26T08:33:00.000000",
+  "last_updated": "2026-03-26T08:51:00.000000",
   "archived": [
-    {"id": "186", "status": "done", "summary": "Notion NDJSON capture — Etap-intercepted"},
-    {"id": "187", "status": "done", "summary": "Genspark: Failed to load component — frontend changed"},
-    {"id": "188", "status": "done", "summary": "Gamma Build #12: outline empty, error:true aborted parsing"}
+    {
+      "id": "186",
+      "status": "done",
+      "summary": "Notion NDJSON capture — Etap-intercepted"
+    },
+    {
+      "id": "187",
+      "status": "done",
+      "summary": "Genspark: Failed to load component — frontend changed"
+    },
+    {
+      "id": "188",
+      "status": "done",
+      "summary": "Gamma Build #12: outline empty, error:true aborted parsing"
+    },
+    {
+      "id": "189",
+      "status": "done",
+      "summary": "Notion Build #13: warning not rendered (Strike 4, deferred)"
+    },
+    {
+      "id": "190",
+      "status": "done",
+      "summary": "Gamma Build #13: outline empty, done:true only ineffective"
+    }
   ]
 }

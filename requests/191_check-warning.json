@@ -1,0 +1,23 @@
+{
+  "id": "191",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T08:51:00.000000",
+  "params": {
+    "service": "gamma",
+    "url": "https://gamma.app",
+    "prompt": "한글날에 대해 설명해줘",
+    "expected_behavior": "차단 + 경고 문구가 카드 제목으로 표시",
+    "build": "260326 #14",
+    "strategy": "event:generation SSE with warning in cards[0].title (outline.title is empty metadata). done:true.",
+    "checks": [
+      "ai_response_blocked",
+      "warning_text_visible",
+      "screenshot_chat_area",
+      "screenshot_network_tab",
+      "capture_console_errors"
+    ]
+  },
+  "notes": "Build #14: 경고 텍스트를 outline.title 대신 cards[0].title에 배치. Build #10~#13에서 outline.title이 UI에 표시되지 않는다는 것을 확인. cards 배열의 title/description이 실제 사용자에게 보이는 필드."
+}
