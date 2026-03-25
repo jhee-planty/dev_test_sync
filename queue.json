@@ -2,6 +2,36 @@
   "updated_at": "2026-03-23T15:15:00.000000",
   "tasks": [
     {
+      "id": "157",
+      "command": "check-warning",
+      "to": "test",
+      "status": "done",
+      "created": "2026-03-24T12:44:40.931638",
+      "updated": "2026-03-25T09:12:28.189857",
+      "summary": "Notion: BLOCKED but warning NOT visible. Root cause: no notion entry in response_templates DB → fallback to * wildcard (raw HTTP 403). Also Notion uses JSON Patch NDJSON, not {type:success}."
+    },
+    {
+      "id": "158",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T08:27:05.339574",
+      "updated": "2026-03-25T08:27:05.339574",
+      "summary": "Gemini: batchexecute Protocol 정밀 확인 (h2 vs h3). Remote Address 포함."
+    },
+    {
+      "id": "159",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T09:13:13.976546",
+      "updated": "2026-03-25T09:13:13.976548",
+      "summary": "Notion: Retest after DB template fix. Clean warning message instead of raw HTTP 403."
+    }
+  ],
+  "last_updated": "2026-03-25T09:13:13.976549",
+  "archived": [
+    {
       "id": "145",
       "command": "check-warning",
       "to": "test",
@@ -108,25 +138,6 @@
       "created": "2026-03-24T12:33:01.921414",
       "updated": "2026-03-24T12:44:40.931638",
       "summary": "Notion: 정상 응답 format 캡처 (runInferenceTranscript Content-Type + body 구조) (test PC 중단으로 취소)"
-    },
-    {
-      "id": "157",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-24T12:44:40.931638",
-      "updated": "2026-03-24T12:44:40.931638",
-      "summary": "Notion: NDJSON block response fix 후 경고 표시 테스트"
-    },
-    {
-      "id": "158",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-25T08:27:05.339574",
-      "updated": "2026-03-25T08:27:05.339574",
-      "summary": "Gemini: batchexecute Protocol 정밀 확인 (h2 vs h3). Remote Address 포함."
     }
-  ],
-  "last_updated": "2026-03-25T08:27:05.339574"
+  ]
 }
