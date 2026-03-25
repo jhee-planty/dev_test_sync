@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-25T13:20:00.000000",
+  "updated_at": "2026-03-25T13:53:44.000000",
   "tasks": [
     {
       "id": "167",
@@ -59,31 +59,58 @@
       "id": "173",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T13:20:00.000000",
-      "updated": "2026-03-25T13:20:00.000000",
-      "summary": "Build #6: Copilot Strategy D (no GOAWAY) + vts_write diagnostic logs"
+      "updated": "2026-03-25T13:53:44.000000",
+      "summary": "Build #6 Copilot: SSE stream open but 0 events (is_http2=1). Needs retest with Build #8 (is_http2=2)."
     },
     {
       "id": "174",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T13:20:00.000000",
-      "updated": "2026-03-25T13:20:00.000000",
-      "summary": "Build #6: Notion — DB path narrowed to /api/v3/runInferenceTranscript + Strategy D"
+      "updated": "2026-03-25T13:53:44.000000",
+      "summary": "Build #6 Notion: path narrowing SUCCESS. 403 JSON body delivered but frontend ignores it. Need 200+NDJSON."
     },
     {
       "id": "175",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T13:20:00.000000",
-      "updated": "2026-03-25T13:20:00.000000",
-      "summary": "Build #6: Gamma — reverted to 403 Forbidden JSON"
+      "updated": "2026-03-25T13:53:44.000000",
+      "summary": "Build #6 Gamma: 403 silently swallowed. Need 200+SSE (Accept: text/event-stream)."
+    },
+    {
+      "id": "176",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T13:53:44.000000",
+      "updated": "2026-03-25T13:53:44.000000",
+      "summary": "Build #8: Notion — NEW 200 OK + NDJSON JSON Patch format (replaced 403 JSON)"
+    },
+    {
+      "id": "177",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T13:53:44.000000",
+      "updated": "2026-03-25T13:53:44.000000",
+      "summary": "Build #8: Gamma — NEW 200 OK + SSE event-stream (replaced 403 JSON)"
+    },
+    {
+      "id": "178",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T13:53:44.000000",
+      "updated": "2026-03-25T13:53:44.000000",
+      "summary": "Build #8: Copilot — retest with is_http2=2 (was is_http2=1 in Build #6)"
     }
   ],
-  "last_updated": "2026-03-25T13:20:00.000000",
+  "last_updated": "2026-03-25T13:53:44.000000",
   "archived": [
     {
       "id": "157",

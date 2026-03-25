@@ -1,0 +1,9 @@
+{
+  "id": "178",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "build": "260325 #8",
+  "strategy": "is_http2=2 + no GOAWAY + END_STREAM (retest)",
+  "prompt": "한글날",
+  "notes": "Build #8: Copilot — retest with is_http2=2 (was is_http2=1 in Build #6)"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "177",
+  "command": "check-warning",
+  "service": "gamma",
+  "build": "260325 #8",
+  "strategy": "200 OK + SSE event-stream (new generator)",
+  "prompt": "한글날",
+  "notes": "Build #8: Gamma — NEW 200 OK + SSE event-stream (replaced 403 JSON)"
+}
