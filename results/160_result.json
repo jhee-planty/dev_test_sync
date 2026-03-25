@@ -1,0 +1,59 @@
+{
+  "id": "160",
+  "command": "check-warning",
+  "status": "partial_success",
+  "service": "notion",
+  "test_time": "2026-03-25T09:50:00+09:00",
+  "retest_of": "159",
+  "params": {
+    "prompt": "주민등록번호 123456-1234567",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단"
+  },
+  "changes_tested": {
+    "content_type_fix": "application/json → application/x-ndjson",
+    "goaway_false": "GOAWAY=false to prevent ERR_CONNECTION_CLOSED cascade",
+    "etapd_restarted": "09:40"
+  },
+  "results": {
+    "etap_interception": true,
+    "etap_response": {
+      "status_code": 200,
+      "content_type_returned": "application/x-ndjson",
+      "content_type_expected": "application/x-ndjson",
+      "content_type_match": true,
+      "body": "{\"type\":\"success\",\"completion\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\"}"
+    },
+    "goaway_false_effect": {
+      "err_connection_closed": false,
+      "improvement": "No more ERR_CONNECTION_CLOSED cascade — GOAWAY=false fix works"
+    },
+    "warning_displayed": false,
+    "chat_area_empty": true,
+    "network_details": {
+      "runInferenceTranscript": {"status": 200, "size": "0.3 kB", "time": "9 ms", "protocol": "h2"},
+      "getInferenceTranscriptsForUser": {"status": 200, "note": "was ERR_CONNECTION_CLOSED in #159 — FIXED"},
+      "warmScriptAgentDynamicModuleCache": {"status": 200, "note": "was ERR_CONNECTION_CLOSED in #159 — FIXED"},
+      "markInferenceTranscriptSeen": {"status": 404, "note": "was ERR_CONNECTION_CLOSED in #159 — new 404 error"}
+    },
+    "console_errors": [
+      "runInferenceTranscriptApiError: {error: {…}, data: {…}} (2 occurrences)",
+      "POST markInferenceTranscriptSeen 404 (Not Found)",
+      "HttpRequestError: Received HTTP 404"
+    ],
+    "sentry_reports": 4
+  },
+  "diagnosis": {
+    "content_type_fix": "VERIFIED — Response Content-Type is now application/x-ndjson (was application/json in #159)",
+    "goaway_fix": "VERIFIED — No ERR_CONNECTION_CLOSED errors (3 in #159 → 0 in #160)",
+    "root_cause": "NDJSON body format mismatch: Etap returns single JSON object but Notion client expects NDJSON streaming events. runInferenceTranscriptApiError indicates the JS parser fails to process the response body even though Content-Type is correct.",
+    "body_format_issue": "Etap sends: {\"type\":\"success\",\"completion\":\"...\"} — Notion likely expects chunked NDJSON lines like: {\"type\":\"delta\",\"text\":\"...\"} per line",
+    "secondary_issue": "markInferenceTranscriptSeen returns 404 — transcript record may not be created because response parsing failed"
+  },
+  "recommendation": "Fix NDJSON body format to match Notion streaming protocol. Capture real Notion AI NDJSON response to reverse-engineer exact event format.",
+  "comparison_with_159": {
+    "content_type": "FIXED (application/json → application/x-ndjson)",
+    "err_connection_closed": "FIXED (3 → 0)",
+    "warning_displayed": "STILL NOT DISPLAYED",
+    "new_issue": "markInferenceTranscriptSeen 404, runInferenceTranscriptApiError persists"
+  }
+}
