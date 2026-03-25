@@ -1,0 +1,76 @@
+{
+  "id": "188",
+  "command": "check-warning",
+  "status": "warning_not_rendered",
+  "service": "gamma",
+  "url": "https://gamma.app",
+  "prompt": "한글날에 대한 프레젠테이션 만들어줘",
+  "build": "260325 #12",
+  "tested_at": "2026-03-25T17:52:00+09:00",
+  "checks": {
+    "ai_response_blocked": true,
+    "warning_text_visible": false,
+    "outline_card_content": "empty - single card numbered '1' with no title or content",
+    "screenshot_generation_area": "files/188/gamma_generation_result.png",
+    "screenshot_network_tab": "captured in main screenshot",
+    "capture_sse_events": "generation endpoint intercepted (see network section)",
+    "check_render_generation_called": true
+  },
+  "ui_result": {
+    "page_url": "gamma.app/create/generate/b7hq5spga5zuapn",
+    "outline_generated": true,
+    "outline_cards": 1,
+    "outline_card_titles": ["(empty - no title)"],
+    "warning_text_in_outline": false,
+    "error_in_console": true,
+    "console_error": "[PromptAndOutlineSettings] error generating outline: Unable to complete request",
+    "console_errors_count": 1,
+    "console_warnings_count": 7
+  },
+  "network": {
+    "generation_endpoint": {
+      "url": "https://ai.api.gamma.app/ai/v2/generation",
+      "status": 200,
+      "protocol": "h2",
+      "size": "0.4 kB",
+      "time": "2.06 s",
+      "type": "fetch",
+      "note": "Etap intercepted this SSE endpoint and returned block response"
+    },
+    "render_generation_endpoint": {
+      "url": "https://ai.api.gamma.app/ai/v2/render-generation",
+      "status": 201,
+      "protocol": "h2",
+      "size": "0.5 kB",
+      "time": "948 ms",
+      "note": "Called after generation, received 201 Created but outline was empty"
+    },
+    "total_requests": 36,
+    "graphql_requests": 4
+  },
+  "diagnosis": {
+    "etap_intercepted": true,
+    "warning_rendered": false,
+    "failure_mode": "outline_empty_after_interception",
+    "description": "Build #12 strategy (event:generation + warning title + done/error flags) failed. The generation endpoint was intercepted and returned status 200, but the Gamma frontend received 'Unable to complete request' error. The outline card appeared with just number '1' and no title/content. Warning text was not placed in the outline title as intended.",
+    "possible_causes": [
+      "SSE event:generation format mismatch - Gamma may expect specific SSE event names or JSON structure",
+      "The generation SSE stream was closed too quickly before Gamma could parse outline data",
+      "done:true + error:true flags may cause Gamma to abort outline parsing before reading warning title",
+      "Gamma frontend treats the response as a failure rather than displaying the block response content"
+    ],
+    "comparison_with_previous_builds": {
+      "build_10": "body delivery worked (text appeared)",
+      "build_11": "gen blocking attempted",
+      "build_12": "event:generation type restored from build_10, but warning title approach not rendering"
+    },
+    "action_needed": [
+      "Check exact SSE event format sent by Etap for generation endpoint",
+      "Verify that Gamma expects 'event: generation' or a different event name",
+      "Test without error:true flag to see if outline parses warning title",
+      "Consider delivering warning in the SSE data payload instead of outline title field"
+    ]
+  },
+  "screenshots": ["files/188/gamma_generation_result.png"],
+  "verdict": "NOT_DONE - Warning not rendering in Build #12. Outline empty with 'Unable to complete request' error."
+}
