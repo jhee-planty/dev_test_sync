@@ -1,0 +1,14 @@
+{
+  "id": "175",
+  "command": "check-warning",
+  "params": {
+    "service": "gamma",
+    "url": "https://gamma.app",
+    "prompt": "한글날",
+    "expected_text": "보안 경고",
+    "expected_format": "Error dialog or toast with warning message",
+    "capture_console": true
+  },
+  "created": "2026-03-25T13:20:00",
+  "notes": "Build #6 — Gamma reverted to 403 Forbidden JSON response (Build #5 had 200 which was worse). DB domain is ai.api.gamma.app, path '/'. Test if 403 triggers error display in Gamma frontend."
+}

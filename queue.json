@@ -1,96 +1,6 @@
 {
-  "updated_at": "2026-03-23T15:15:00.000000",
+  "updated_at": "2026-03-25T13:20:00.000000",
   "tasks": [
-    {
-      "id": "157",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-24T12:44:40.931638",
-      "updated": "2026-03-25T09:12:28.189857",
-      "summary": "Notion: BLOCKED but warning NOT visible. Root cause: no notion entry in response_templates DB → fallback to * wildcard (raw HTTP 403). Also Notion uses JSON Patch NDJSON, not {type:success}."
-    },
-    {
-      "id": "158",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T08:27:05.339574",
-      "updated": "2026-03-25T09:21:34.803701",
-      "summary": "Gemini: CONFIRMED h3/QUIC. batchexecute uses HTTP/3 → Etap bypass. Need UDP 443 firewall block."
-    },
-    {
-      "id": "159",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-25T09:13:13.976546",
-      "updated": "2026-03-25T09:13:13.976548",
-      "summary": "Notion: Retest after DB template fix. Clean warning message instead of raw HTTP 403."
-    },
-    {
-      "id": "160",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:42:23.959857",
-      "updated": "2026-03-25T09:55:06.878712",
-      "summary": "Notion: Content-Type + GOAWAY fixes VERIFIED, but warning still NOT displayed. NDJSON body format mismatch — need JSON Patch format."
-    },
-    {
-      "id": "161",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:43:45.113923",
-      "updated": "2026-03-25T10:02:10.530022",
-      "summary": "Copilot: SSE events NOT delivered (0 events). 200+text/event-stream but empty body. Need HTTP/2 framing investigation."
-    },
-    {
-      "id": "162",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:55:06.878962",
-      "updated": "2026-03-25T10:05:40.833541",
-      "summary": "Notion: NDJSON body captured. JSON Patch format confirmed: patch-start + patch(o:a, agent-inference). Need to rewrite generator."
-    },
-    {
-      "id": "163",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:46:59.167412",
-      "summary": "Notion: NDJSON format CORRECT but non-stream delivery rejected. Error: Expected stream response. Need Strategy B (end_stream=false)."
-    },
-    {
-      "id": "164",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:42:16.296069",
-      "summary": "Copilot: Strategy D (no-GOAWAY) working but SSE body STILL EMPTY. HTTP/2 DATA frame has no payload. Need deeper investigation."
-    },
-    {
-      "id": "165",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:42:16.296069",
-      "summary": "Gamma: NOT intercepted. ai.api.gamma.app not in DB (only gamma.app registered). Need DB domain fix."
-    },
-    {
-      "id": "166",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:42:16.296069",
-      "summary": "M365 Copilot: NOT intercepted. Normal AI response arrived. Need DB verification + retest with Network tab."
-    },
     {
       "id": "167",
       "command": "check-warning",
@@ -98,7 +8,7 @@
       "status": "done",
       "created": "2026-03-25T10:46:59.167412",
       "updated": "2026-03-25T11:25:53.067157",
-      "summary": "notion: Notion: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. JSON Patch NDJSON + streaming mode."
+      "summary": "notion: Strategy B. stuck_generating."
     },
     {
       "id": "168",
@@ -107,7 +17,7 @@
       "status": "done",
       "created": "2026-03-25T10:46:59.167412",
       "updated": "2026-03-25T11:25:53.067157",
-      "summary": "github_copilot: Copilot: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. SSE streaming mode."
+      "summary": "github_copilot: Strategy B. SSE body empty."
     },
     {
       "id": "169",
@@ -116,145 +26,154 @@
       "status": "done",
       "created": "2026-03-25T10:46:59.167412",
       "updated": "2026-03-25T11:25:53.067157",
-      "summary": "gamma: Gamma: DB domain fixed to ai.api.gamma.app. Build 260325 #4."
+      "summary": "gamma: 403 Forbidden. No warning shown."
     },
     {
       "id": "170",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T11:25:53.067157",
-      "updated": "2026-03-25T11:25:53.067157",
-      "summary": "Notion Strategy D"
+      "updated": "2026-03-25T12:30:00.000000",
+      "summary": "Notion: Strategy D → connection_error (ALL requests intercepted by path '/')"
     },
     {
       "id": "171",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T11:25:53.067157",
-      "updated": "2026-03-25T11:25:53.067157",
-      "summary": "Copilot Strategy D+log"
+      "updated": "2026-03-25T12:30:00.000000",
+      "summary": "Copilot: Strategy D → SSE body still empty. body_size=380 generated but 0 received."
     },
     {
       "id": "172",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T11:25:53.067157",
-      "updated": "2026-03-25T11:25:53.067157",
-      "summary": "Gamma 200 OK"
+      "updated": "2026-03-25T12:30:00.000000",
+      "summary": "Gamma: 200 OK JSON → worse than 403. Content-Type mismatch."
+    },
+    {
+      "id": "173",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T13:20:00.000000",
+      "updated": "2026-03-25T13:20:00.000000",
+      "summary": "Build #6: Copilot Strategy D (no GOAWAY) + vts_write diagnostic logs"
+    },
+    {
+      "id": "174",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T13:20:00.000000",
+      "updated": "2026-03-25T13:20:00.000000",
+      "summary": "Build #6: Notion — DB path narrowed to /api/v3/runInferenceTranscript + Strategy D"
+    },
+    {
+      "id": "175",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T13:20:00.000000",
+      "updated": "2026-03-25T13:20:00.000000",
+      "summary": "Build #6: Gamma — reverted to 403 Forbidden JSON"
     }
   ],
-  "last_updated": "2026-03-25T11:25:53.067157",
+  "last_updated": "2026-03-25T13:20:00.000000",
   "archived": [
     {
-      "id": "145",
+      "id": "157",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T12:02:54.977557",
-      "summary": "Gemini: NOT blocked. DB domain(signaler-pa)≠실제 API(gemini.google.com). 미감지."
+      "created": "2026-03-24T12:44:40.931638",
+      "updated": "2026-03-25T09:12:28.189857",
+      "summary": "Notion: BLOCKED but warning NOT visible."
     },
     {
-      "id": "146",
+      "id": "158",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T12:02:54.977557",
-      "summary": "GitHub Copilot: blocked=true but warning NOT visible. SSE data 미수신, Thinking... 무한대기."
+      "created": "2026-03-25T08:27:05.339574",
+      "updated": "2026-03-25T09:21:34.803701",
+      "summary": "Gemini: CONFIRMED h3/QUIC bypass."
     },
     {
-      "id": "147",
+      "id": "159",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T12:02:54.977557",
-      "summary": "Gamma: NOT blocked. ai.api.gamma.app 미감지. 모든 요청 200 정상."
+      "created": "2026-03-25T09:13:13.976546",
+      "updated": "2026-03-25T09:55:06.000000",
+      "summary": "Notion: Retest after DB template fix."
     },
     {
-      "id": "148",
+      "id": "160",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T09:55:12.573616",
-      "updated": "2026-03-24T12:02:54.977557",
-      "summary": "Notion: NOT blocked. [*.]notion.so/api/v3/ 미감지. AI 정상 응답."
+      "created": "2026-03-25T09:42:23.959857",
+      "updated": "2026-03-25T09:55:06.878712",
+      "summary": "Notion: NDJSON body format mismatch."
     },
     {
-      "id": "149",
+      "id": "161",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:06:53.407857",
-      "updated": "2026-03-24T12:30:00.000000",
-      "summary": "Gemini: NOT blocked (etapd restart 전, DB 미반영)"
+      "created": "2026-03-25T09:43:45.113923",
+      "updated": "2026-03-25T10:02:10.530022",
+      "summary": "Copilot: SSE events NOT delivered (0 events)."
     },
     {
-      "id": "150",
+      "id": "162",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:06:53.407857",
-      "updated": "2026-03-24T12:30:00.000000",
-      "summary": "Gamma: NOT blocked (etapd restart 전, DB 미반영)"
+      "created": "2026-03-25T09:55:06.878962",
+      "updated": "2026-03-25T10:05:40.833541",
+      "summary": "Notion: JSON Patch NDJSON confirmed."
     },
     {
-      "id": "151",
+      "id": "163",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:06:53.407857",
-      "updated": "2026-03-24T12:30:00.000000",
-      "summary": "Notion: NOT blocked (etapd restart 전, DB 미반영)"
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:46:59.167412",
+      "summary": "Notion: Expected stream response error."
     },
     {
-      "id": "152",
+      "id": "164",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:18:49.543878",
-      "updated": "2026-03-24T12:28:11.920808",
-      "summary": "Gemini: NOT blocked (재시작 후에도). batchexecute 200. domain/path mismatch 지속"
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:42:16.296069",
+      "summary": "Copilot: Strategy D SSE body still empty."
     },
     {
-      "id": "153",
+      "id": "165",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:18:49.543878",
-      "updated": "2026-03-24T12:28:11.920808",
-      "summary": "Gamma: 부분차단. graphql 403 발생하나 generation 완료. 패턴 정밀화 필요"
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:42:16.296069",
+      "summary": "Gamma: NOT intercepted."
     },
     {
-      "id": "154",
+      "id": "166",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:18:49.543878",
-      "updated": "2026-03-24T12:28:11.920808",
-      "summary": "Notion: BLOCKED! runInferenceTranscriptApiError. 경고 미표시 → warning impl 필요"
-    },
-    {
-      "id": "155",
-      "command": "check-warning",
-      "to": "test",
-      "status": "cancelled",
-      "created": "2026-03-24T12:31:25.991144",
-      "updated": "2026-03-24T12:44:40.931638",
-      "summary": "Gemini: Protocol 확인 (h2 vs h3/QUIC) + 실제 API domain 확인 (test PC 중단으로 취소)"
-    },
-    {
-      "id": "156",
-      "command": "check-warning",
-      "to": "test",
-      "status": "cancelled",
-      "created": "2026-03-24T12:33:01.921414",
-      "updated": "2026-03-24T12:44:40.931638",
-      "summary": "Notion: 정상 응답 format 캡처 (runInferenceTranscript Content-Type + body 구조) (test PC 중단으로 취소)"
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:42:16.296069",
+      "summary": "M365 Copilot: NOT intercepted."
     }
   ]
 }

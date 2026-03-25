@@ -1,0 +1,14 @@
+{
+  "id": "174",
+  "command": "check-warning",
+  "params": {
+    "service": "notion",
+    "url": "https://www.notion.so",
+    "prompt": "한글날",
+    "expected_text": "보안 경고",
+    "expected_format": "Notion AI response area with warning message",
+    "capture_console": true
+  },
+  "created": "2026-03-25T13:20:00",
+  "notes": "Build #6 — Notion DB path_patterns narrowed from '/' to '/api/v3/runInferenceTranscript'. Strategy D (no GOAWAY). This should fix connection_error from Build #5 where ALL requests were being intercepted."
+}
