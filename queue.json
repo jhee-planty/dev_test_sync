@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-25T17:22:00.000000",
+  "updated_at": "2026-03-25T17:35:00.000000",
   "tasks": [
     {
       "id": "186",
@@ -18,9 +18,18 @@
       "created": "2026-03-25T17:22:00.000000",
       "updated": "2026-03-25T17:22:00.000000",
       "summary": "Genspark: 경고 표시 상태 확인 (DONE 전환 판단)"
+    },
+    {
+      "id": "188",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T17:35:00.000000",
+      "updated": "2026-03-25T17:35:00.000000",
+      "summary": "Build #12 Gamma: event:generation + warning title + done/error (body delivery fix)"
     }
   ],
-  "last_updated": "2026-03-25T17:22:00.000000",
+  "last_updated": "2026-03-25T17:35:00.000000",
   "archived": [
     {
       "id": "184",
