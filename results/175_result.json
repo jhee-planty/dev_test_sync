@@ -1,0 +1,55 @@
+{
+  "id": "175",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "gamma",
+  "build": "260325 #6",
+  "strategy": "403 Forbidden (reverted from Build #5 200)",
+  "timestamp": "2026-03-25T14:05:00+09:00",
+  "results": {
+    "etap_interception": "403_forbidden",
+    "prompt_sent": "한글날",
+    "ui_response": {
+      "response_received": false,
+      "response_type": "empty_outline_no_error_dialog",
+      "warning_displayed": false,
+      "ui_state": "Gamma showed '생성' page with prompt '한글날'. Outline displayed '1' (empty placeholder) with no content generated. No error dialog, toast, or warning message visible to user."
+    },
+    "network_analysis": {
+      "blocked_endpoint": "https://ai.api.gamma.app/ai/v2/generation",
+      "method": "POST",
+      "status_code": 403,
+      "status_text": "Forbidden",
+      "content_type": "application/json",
+      "remote_address": "[2606:4700:6812:bc8]:443",
+      "protocol": "h2",
+      "request_accept": "text/event-stream",
+      "response_body_readable": false,
+      "response_body_note": "DevTools could not load response data — likely CORS restriction on cross-origin 403 from ai.api.gamma.app"
+    },
+    "console_analysis": {
+      "errors": 8,
+      "warnings": 8,
+      "key_error": "error generating outline: Unable to complete request",
+      "interpretation": "Gamma frontend catches the 403 error and logs it, but does not surface it to the user as a visible dialog or toast"
+    },
+    "gamma_specific": {
+      "service_type": "presentation_generator",
+      "interaction_model": "NOT bubble chat — user enters topic, Gamma generates outline then slides",
+      "generation_flow": "prompt → POST /ai/v2/generation (SSE) → outline → slides",
+      "note": "Gamma is fundamentally different from chat-based AI services. Warning delivery must account for its presentation generation workflow, not chat bubble injection."
+    }
+  },
+  "diagnosis": {
+    "warning_displayed": false,
+    "pattern": "403 Forbidden blocks the generation SSE endpoint. Gamma catches the error internally ('error generating outline: Unable to complete request') but shows no user-facing error message — just an empty outline placeholder.",
+    "comparison_with_build5": "Build #5 returned 200 (worse — no error signal). Build #6 returns 403 (better — clear error signal), but Gamma still doesn't show user-facing warning.",
+    "action_needed": [
+      "403 is correctly intercepted but Gamma swallows the error silently",
+      "Consider returning 200 with SSE-formatted warning data that Gamma would render as outline content",
+      "Alternative: Return 200 with event-stream containing a single error event Gamma would display",
+      "Gamma expects Accept: text/event-stream — SSE-based warning delivery may work better than HTTP error codes"
+    ]
+  },
+  "screenshots": ["files/175/175_gamma_403_network.png"]
+}
