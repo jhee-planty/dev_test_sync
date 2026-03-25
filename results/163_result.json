@@ -1,0 +1,60 @@
+{
+  "id": "163",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "notion",
+  "build": "260325 #2",
+  "test_time": "2026-03-25T00:28:57Z",
+  "prompt_used": "한글날",
+  "results": {
+    "etap_interception": true,
+    "network_request": {
+      "url": "https://www.notion.so/api/v3/runInferenceTranscript",
+      "status_code": 200,
+      "protocol": "h2",
+      "remote_address": "[2602:f79a::1]:443",
+      "size": "0.7 kB",
+      "time": "8 ms"
+    },
+    "response_headers": {
+      "content_type": "application/x-ndjson",
+      "access_control_allow_origin": "https://www.notion.so",
+      "cache_control": "no-cache"
+    },
+    "ndjson_body": {
+      "format_correct": true,
+      "line_count": 2,
+      "line_1_type": "patch-start",
+      "line_1_content": "agent-instruction-state with empty state",
+      "line_2_type": "patch",
+      "line_2_operation": "a (add to /s/-)",
+      "line_2_element_type": "agent-inference",
+      "line_2_warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+    },
+    "warning_displayed": false,
+    "chat_behavior": "Chat area completely empty, default state 'AI에게 질문하기' shown"
+  },
+  "console_errors": {
+    "primary_error": "runInferenceTranscriptApiError",
+    "error_message": "Expected stream response and got non-stream response.",
+    "error_source": "25965-840eb86fd22f16b3.js:1:34609",
+    "secondary_errors": [
+      "POST /api/v3/getInferenceTranscriptsForUser net::ERR_CONNECTION_CLOSED",
+      "POST /api/v3/warmScriptAgentDynamicModuleCache net::ERR_CONNECTION_CLOSED",
+      "POST /api/v3/markInferenceTranscriptSeen net::ERR_CONNECTION_CLOSED"
+    ],
+    "error_count": "10 errors, 3 warnings total"
+  },
+  "diagnosis": {
+    "root_cause": "Etap sends NDJSON body as complete non-streaming response. Notion client expects ReadableStream (chunked/streaming delivery) and rejects non-stream responses.",
+    "ndjson_format_status": "CORRECT — JSON Patch format matches #162 capture exactly",
+    "content_type_status": "CORRECT — application/x-ndjson",
+    "delivery_method_status": "INCORRECT — Response delivered as single complete body, not as stream",
+    "connection_issue": "ERR_CONNECTION_CLOSED on subsequent API calls — Etap closing connections aggressively after block response",
+    "fix_needed": [
+      "1. Send NDJSON response as chunked/streaming (each line as separate HTTP/2 DATA frame with small delays between them)",
+      "2. Do NOT close the HTTP/2 connection after sending the block response — allow subsequent requests to use the same connection",
+      "3. Consider sending Transfer-Encoding: chunked (HTTP/1.1) or using proper HTTP/2 DATA frame streaming"
+    ]
+  }
+}
