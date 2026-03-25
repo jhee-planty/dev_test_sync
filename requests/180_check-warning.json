@@ -1,9 +1,0 @@
-{
-  "id": "180",
-  "command": "check-warning",
-  "service": "github_copilot",
-  "build": "260325 #9",
-  "strategy": "double-write fix: clear _block_response_string after vts write",
-  "prompt": "한글날",
-  "notes": "Build #9: Copilot — double-write fix + is_http2=2"
-}

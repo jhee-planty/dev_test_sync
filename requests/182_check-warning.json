@@ -1,9 +1,0 @@
-{
-  "id": "182",
-  "command": "check-warning",
-  "service": "gamma",
-  "build": "260325 #10",
-  "strategy": "PING frame flush after block response write (TLS buffer force flush)",
-  "prompt": "한글날",
-  "notes": "Build #10: Gamma — PING flush after write to force TLS buffer delivery"
-}
