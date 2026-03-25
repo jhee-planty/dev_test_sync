@@ -1,0 +1,21 @@
+{
+  "id": "187",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-25T17:22:00.000000",
+  "params": {
+    "service": "genspark",
+    "url": "https://www.genspark.ai",
+    "prompt": "한글날에 대해 알려줘",
+    "expected_behavior": "차단 + 경고 문구 표시",
+    "checks": [
+      "ai_response_blocked",
+      "warning_text_visible",
+      "screenshot_warning_area",
+      "screenshot_network_tab",
+      "capture_sse_events"
+    ]
+  },
+  "notes": "Genspark은 이전에 경고 표시 성공 이력 있음 (is_http2=2, PING flush). 현재 상태 재확인. DONE 전환 가능한지 판단."
+}

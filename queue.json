@@ -1,24 +1,6 @@
 {
-  "updated_at": "2026-03-25T15:30:00.000000",
+  "updated_at": "2026-03-25T17:22:00.000000",
   "tasks": [
-    {
-      "id": "184",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-25T15:30:00.000000",
-      "updated": "2026-03-25T15:30:00.000000",
-      "summary": "Build #11: Gamma — event:error SSE + empty cards[] to trigger error UI"
-    },
-    {
-      "id": "185",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-25T15:30:00.000000",
-      "updated": "2026-03-25T15:30:00.000000",
-      "summary": "Build #11: Copilot — is_http2=1 (reverted from =2) for on_disconnected TLS flush"
-    },
     {
       "id": "186",
       "command": "run-scenario",
@@ -27,252 +9,36 @@
       "created": "2026-03-25T16:30:00.000000",
       "updated": "2026-03-25T16:30:00.000000",
       "summary": "Notion AI 실제 NDJSON 응답 캡처 (runInferenceTranscript body 전문)"
+    },
+    {
+      "id": "187",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T17:22:00.000000",
+      "updated": "2026-03-25T17:22:00.000000",
+      "summary": "Genspark: 경고 표시 상태 확인 (DONE 전환 판단)"
     }
   ],
-  "last_updated": "2026-03-25T16:30:00.000000",
+  "last_updated": "2026-03-25T17:22:00.000000",
   "archived": [
     {
-      "id": "157",
+      "id": "184",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-24T12:44:40.931638",
-      "updated": "2026-03-25T09:12:28.189857",
-      "summary": "Notion: BLOCKED but warning NOT visible."
+      "created": "2026-03-25T15:30:00.000000",
+      "updated": "2026-03-25T17:20:00.000000",
+      "summary": "Build #11 Gamma: generation BLOCKED (empty outline). But EventStream empty — no warning text. PING flush body delivery regression."
     },
     {
-      "id": "158",
+      "id": "185",
       "command": "check-warning",
       "to": "test",
       "status": "done",
-      "created": "2026-03-25T08:27:05.339574",
-      "updated": "2026-03-25T09:21:34.803701",
-      "summary": "Gemini: CONFIRMED h3/QUIC bypass."
-    },
-    {
-      "id": "159",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:13:13.976546",
-      "updated": "2026-03-25T09:55:06.000000",
-      "summary": "Notion: Retest after DB template fix."
-    },
-    {
-      "id": "160",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:42:23.959857",
-      "updated": "2026-03-25T09:55:06.878712",
-      "summary": "Notion: NDJSON body format mismatch."
-    },
-    {
-      "id": "161",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:43:45.113923",
-      "updated": "2026-03-25T10:02:10.530022",
-      "summary": "Copilot: SSE events NOT delivered (0 events)."
-    },
-    {
-      "id": "162",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T09:55:06.878962",
-      "updated": "2026-03-25T10:05:40.833541",
-      "summary": "Notion: JSON Patch NDJSON confirmed."
-    },
-    {
-      "id": "163",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:46:59.167412",
-      "summary": "Notion: Expected stream response error."
-    },
-    {
-      "id": "164",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:42:16.296069",
-      "summary": "Copilot: Strategy D SSE body still empty."
-    },
-    {
-      "id": "165",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:42:16.296069",
-      "summary": "Gamma: NOT intercepted."
-    },
-    {
-      "id": "166",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:10:41.428228",
-      "updated": "2026-03-25T10:42:16.296069",
-      "summary": "M365 Copilot: NOT intercepted."
-    },
-    {
-      "id": "167",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:46:59.167412",
-      "updated": "2026-03-25T11:25:53.067157",
-      "summary": "notion: Strategy B. stuck_generating."
-    },
-    {
-      "id": "168",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:46:59.167412",
-      "updated": "2026-03-25T11:25:53.067157",
-      "summary": "github_copilot: Strategy B. SSE body empty."
-    },
-    {
-      "id": "169",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T10:46:59.167412",
-      "updated": "2026-03-25T11:25:53.067157",
-      "summary": "gamma: 403 Forbidden. No warning shown."
-    },
-    {
-      "id": "170",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T11:25:53.067157",
-      "updated": "2026-03-25T12:30:00.000000",
-      "summary": "Notion: Strategy D → connection_error (ALL requests intercepted by path '/')"
-    },
-    {
-      "id": "171",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T11:25:53.067157",
-      "updated": "2026-03-25T12:30:00.000000",
-      "summary": "Copilot: Strategy D → SSE body still empty. body_size=380 generated but 0 received."
-    },
-    {
-      "id": "172",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T11:25:53.067157",
-      "updated": "2026-03-25T12:30:00.000000",
-      "summary": "Gamma: 200 OK JSON → worse than 403. Content-Type mismatch."
-    },
-    {
-      "id": "173",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T13:20:00.000000",
-      "updated": "2026-03-25T13:53:44.000000",
-      "summary": "Build #6 Copilot: SSE stream open but 0 events (is_http2=1). Needs retest with Build #8 (is_http2=2)."
-    },
-    {
-      "id": "174",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T13:20:00.000000",
-      "updated": "2026-03-25T13:53:44.000000",
-      "summary": "Build #6 Notion: path narrowing SUCCESS. 403 JSON body delivered but frontend ignores it. Need 200+NDJSON."
-    },
-    {
-      "id": "175",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T13:20:00.000000",
-      "updated": "2026-03-25T13:53:44.000000",
-      "summary": "Build #6 Gamma: 403 silently swallowed. Need 200+SSE (Accept: text/event-stream)."
-    },
-    {
-      "id": "176",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T13:53:44.000000",
-      "updated": "2026-03-25T14:37:33.000000",
-      "summary": "Build #8 Notion: NDJSON delivered, parsed, but runInferenceTranscriptApiError (schema mismatch)"
-    },
-    {
-      "id": "177",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T13:53:44.000000",
-      "updated": "2026-03-25T14:37:33.000000",
-      "summary": "Build #8 Gamma: SSE headers OK but body EMPTY — DOUBLE WRITE bug detected"
-    },
-    {
-      "id": "178",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T13:53:44.000000",
-      "updated": "2026-03-25T14:37:33.000000",
-      "summary": "Build #8 Copilot: 200 OK SSE headers but empty body — infinite Thinking... hang"
-    },
-    {
-      "id": "179",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T14:37:33.000000",
-      "updated": "2026-03-25T15:04:37.000000",
-      "summary": "Build #9 Gamma: double-write fixed (1 write) but body STILL empty. TLS buffer flush needed."
-    },
-    {
-      "id": "180",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T14:37:33.000000",
-      "updated": "2026-03-25T15:04:37.000000",
-      "summary": "Build #9 Copilot: 1 write, body STILL empty. Same TLS flush issue."
-    },
-    {
-      "id": "181",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T14:37:33.000000",
-      "updated": "2026-03-25T15:04:37.000000",
-      "summary": "Build #9 Notion: NDJSON body delivered (0.7KB). UI doesn't render. Schema mismatch."
-    },
-    {
-      "id": "182",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T15:04:37.000000",
-      "updated": "2026-03-25T15:12:00.000000",
-      "summary": "Build #10 Gamma: PING flush WORKS (SSE body delivered). But warning consumed as card outline → presentation generated normally."
-    },
-    {
-      "id": "183",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-25T15:04:37.000000",
-      "updated": "2026-03-25T15:16:00.000000",
-      "summary": "Build #10 Copilot: PING flush NOT effective. Still infinite Thinking... hang with empty SSE."
+      "created": "2026-03-25T15:30:00.000000",
+      "updated": "2026-03-25T17:20:00.000000",
+      "summary": "Build #11 Copilot: COMPLETE BLOCK (infinite Thinking...). is_http2=1 on_disconnected works. But EventStream empty — no warning text."
     }
   ]
 }
