@@ -27,9 +27,18 @@
       "created": "2026-03-25T09:13:13.976546",
       "updated": "2026-03-25T09:13:13.976548",
       "summary": "Notion: Retest after DB template fix. Clean warning message instead of raw HTTP 403."
+    },
+    {
+      "id": "160",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T09:42:23.959857",
+      "updated": "2026-03-25T09:42:23.959859",
+      "summary": "Notion: Retest #3 — Content-Type x-ndjson + Strategy D (no GOAWAY)"
     }
   ],
-  "last_updated": "2026-03-25T09:21:34.803710",
+  "last_updated": "2026-03-25T09:42:23.959861",
   "archived": [
     {
       "id": "145",
