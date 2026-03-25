@@ -1,0 +1,56 @@
+{
+  "id": "179",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "gamma",
+  "build": "260325 #9",
+  "strategy": "double-write fix: clear _block_response_string after vts write",
+  "test_keyword": "한글날",
+  "timestamp": "2026-03-25T14:47:00+09:00",
+  "results": {
+    "etap_interception": "200_ok_sse_empty_body",
+    "network_analysis": {
+      "request_url": "https://ai.api.gamma.app/ai/v2/generation",
+      "request_method": "POST",
+      "status_code": 200,
+      "protocol": "h2",
+      "response_content_type": "text/event-stream; charset=utf-8",
+      "cors_headers_present": true,
+      "access_control_allow_origin": "https://gamma.app",
+      "cache_control": "no-cache",
+      "eventstream_tab": "EMPTY - no SSE events parsed by DevTools",
+      "response_tab": "Nothing to preview - This request has no response data available",
+      "response_body_empty": true
+    },
+    "ui_response": {
+      "outline_generated": false,
+      "card_content": "empty - only card number '1' shown",
+      "error_displayed": false,
+      "error_in_console": true
+    },
+    "console_errors": [
+      "POST https://ai.api.gamma.app/ai/v2/generation net::ERR_ABORTED 403 (Forbidden) - earlier attempt",
+      "[PromptAndOutlineSettings] error generating outline: Unable to complete request",
+      "Multiple LaunchDarkly ERR_CONNECTION_RESET errors (separate issue)"
+    ]
+  },
+  "comparison_with_build8": {
+    "headers": "SAME - 200 OK + text/event-stream; charset=utf-8",
+    "body": "SAME - empty, no SSE event data",
+    "console_error": "SAME - Unable to complete request",
+    "conclusion": "double-write fix had NO effect on Gamma SSE response"
+  },
+  "diagnosis": {
+    "root_cause": "SSE headers are set correctly but response body contains zero SSE event data frames",
+    "double_write_fix_effect": "NOT effective for Gamma - the issue is not double-write but that SSE body data is never generated/sent",
+    "action_needed": [
+      "Gamma SSE generator needs to write actual event: data lines in the response body",
+      "Format: 'event: message\\ndata: {json}\\n\\n' for each SSE event",
+      "The _block_response_string clear fix only helps if body was being overwritten - for Gamma the body was never written"
+    ]
+  },
+  "screenshots": [
+    "files/179/179_gamma_build9_response_empty.png",
+    "files/179/179_gamma_build9_console.png"
+  ]
+}

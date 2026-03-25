@@ -1,0 +1,68 @@
+{
+  "id": "181",
+  "command": "check-warning",
+  "status": "partial_success",
+  "service": "notion",
+  "build": "260325 #9",
+  "strategy": "double-write fix: clear _block_response_string after vts write + NDJSON",
+  "test_keyword": "한글날",
+  "timestamp": "2026-03-25T15:05:00+09:00",
+  "results": {
+    "etap_interception": "200_ok_ndjson_with_data",
+    "network_analysis": {
+      "request_url": "https://www.notion.so/api/v3/runInferenceTranscript",
+      "request_method": "POST",
+      "status_code": 200,
+      "protocol": "h2",
+      "response_size": "0.7 kB",
+      "response_content_type": "application/x-ndjson",
+      "ndjson_body_present": true,
+      "ndjson_objects": [
+        {
+          "type": "patch-start",
+          "target": "agent-instruction-state"
+        },
+        {
+          "type": "patch",
+          "target": "agent-inference",
+          "contains_warning_text": true,
+          "warning_text_preview": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+        }
+      ]
+    },
+    "console_errors": [
+      "POST etClient net::ERR_HTTP2_PROTOCOL_ERROR",
+      "Amplitude tracking errors (separate issue)"
+    ],
+    "ui_response": {
+      "warning_rendered_in_chat": false,
+      "chat_area_state": "empty - no response displayed despite NDJSON data in body",
+      "user_visible_effect": "message sent but no AI response appeared"
+    }
+  },
+  "comparison_with_build8": {
+    "body_data": "IMPROVED - Build #8 had empty body, Build #9 has 0.7 kB NDJSON with warning text",
+    "headers": "SAME - 200 OK + application/x-ndjson",
+    "ui_rendering": "SAME - warning NOT displayed in chat UI",
+    "conclusion": "double-write fix WORKED for Notion body data generation, but UI still does not render the warning"
+  },
+  "diagnosis": {
+    "root_cause": "NDJSON body now contains warning data (double-write fix effective), but Notion frontend does not render it",
+    "possible_reasons": [
+      "ERR_HTTP2_PROTOCOL_ERROR causes frontend to discard the response entirely",
+      "NDJSON patch format may not exactly match what Notion frontend parser expects",
+      "patch-start target 'agent-instruction-state' may not trigger chat bubble rendering",
+      "Frontend may need specific patch operations (e.g., 'replace' op on specific path) to render text"
+    ],
+    "double_write_fix_effect": "EFFECTIVE - body data is now generated and sent (0.7 kB vs 0 bytes in Build #8)",
+    "action_needed": [
+      "Investigate ERR_HTTP2_PROTOCOL_ERROR - if this causes response discard, fix HTTP/2 framing first",
+      "Capture a real Notion AI response NDJSON to compare patch format exactly",
+      "Ensure patch operations target the correct path for chat text rendering",
+      "Consider if GOAWAY/RST_STREAM timing affects body delivery"
+    ]
+  },
+  "screenshots": [
+    "files/181/181_notion_build9_ndjson_data.png"
+  ]
+}
