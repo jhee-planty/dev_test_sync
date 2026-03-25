@@ -1,0 +1,54 @@
+{
+  "id": "164",
+  "command": "check-warning",
+  "status": "warning_not_displayed",
+  "service": "github_copilot",
+  "build": "260325 #2",
+  "timestamp": "2026-03-25T10:28:00+09:00",
+  "results": {
+    "etap_interception": true,
+    "prompt_sent": "한글날",
+    "network_request": {
+      "url": "https://api.individual.githubcopilot.com/github/chat/threads/.../messages",
+      "method": "POST",
+      "status_code": 200,
+      "protocol": "h2",
+      "remote_address": "140.82.114.21:443",
+      "size": "0.6 kB",
+      "type": "fetch"
+    },
+    "response_headers": {
+      "content_type": "text/event-stream; charset=utf-8",
+      "access_control_allow_origin": "https://github.com",
+      "cache_control": "no-cache"
+    },
+    "sse_events": {
+      "event_stream_tab": "empty",
+      "events_received": 0,
+      "response_body": "failed_to_load (request already finished loading)"
+    },
+    "warning_displayed": false,
+    "ui_state": "stuck_on_thinking"
+  },
+  "console_errors": {
+    "errors": [],
+    "warnings": [
+      "Matched leaf route at location /copilot does not have an element or Component (x2)"
+    ],
+    "hidden_messages": 3,
+    "no_sse_related_errors": true
+  },
+  "diagnosis": {
+    "same_as_161": true,
+    "root_cause": "Etap returns HTTP 200 with correct text/event-stream headers but sends NO SSE event data in the body. Response is delivered as complete (non-streaming) empty body.",
+    "comparison_with_161": "Identical behavior. No-GOAWAY (Strategy D) did not change the core SSE streaming issue.",
+    "no_goaway_effect": "No ERR_HTTP2_PROTOCOL_ERROR observed (GOAWAY suppression working), but SSE body is still empty.",
+    "fix_needed": [
+      "Send actual SSE events in the response body: data: {json}\\n\\n format",
+      "Must stream SSE events as chunked transfer, not deliver as complete response",
+      "Warning text should be in SSE event data field"
+    ],
+    "expected_sse_format": "data: {\"type\":\"content\",\"body\":\"⚠️ 경고 메시지\"}\n\ndata: [DONE]\n\n"
+  },
+  "notes": "Strategy D (no-GOAWAY) confirmed working — no connection errors. But the fundamental issue remains: Etap's SSE response contains no event data. The client waits indefinitely for SSE events that never arrive."
+}

@@ -1,0 +1,60 @@
+{
+  "id": "165",
+  "command": "check-warning",
+  "status": "not_intercepted",
+  "service": "gamma",
+  "build": "260325 #2",
+  "timestamp": "2026-03-25T10:35:00+09:00",
+  "results": {
+    "etap_interception": false,
+    "prompt_sent": "한글날",
+    "test_steps": [
+      "gamma.app/create → 생성 (Generate) selected",
+      "Typed 한글날 in prompt field",
+      "Clicked 개요 생성 (Generate outline)",
+      "Outline generated successfully → 10 cards about 한글날",
+      "Clicked 생성 (Generate) for full presentation",
+      "Full presentation generated with AI content + images"
+    ],
+    "network_requests": {
+      "ai_generation": {
+        "url": "https://ai.api.gamma.app/ai/v2/generation",
+        "status_code": 200,
+        "protocol": "h2",
+        "remote_address": "[2606:4700...]",
+        "size": "3.8 kB",
+        "intercepted_by_etap": false
+      },
+      "render_generation": {
+        "url": "https://ai.api.gamma.app/ai/v2/render-generation",
+        "status_code": 201,
+        "protocol": "h2",
+        "remote_address": "[2606:4700...]",
+        "intercepted_by_etap": false
+      },
+      "image_generation": {
+        "url": "https://ai.api.gamma.app/media/images/generate",
+        "status_code": 201,
+        "count": 3,
+        "intercepted_by_etap": false
+      }
+    },
+    "warning_displayed": false,
+    "ai_content_generated": true,
+    "presentation_created": true
+  },
+  "console_errors": {
+    "errors": 4,
+    "warnings": 9,
+    "notes": "All pre-existing errors/warnings (LaunchDarkly, Intercom, etc.), none related to Etap"
+  },
+  "diagnosis": {
+    "root_cause": "Etap is NOT intercepting Gamma's AI API requests. All requests to ai.api.gamma.app go directly to Cloudflare ([2606:4700...]) without proxy interception.",
+    "possible_reasons": [
+      "Gamma's AI domain (ai.api.gamma.app) not registered in Etap's APF database",
+      "Gamma may not be in the Etap service list yet (first test)"
+    ],
+    "action_needed": "Register ai.api.gamma.app and api.gamma.app in Etap APF database before warning can be tested"
+  },
+  "notes": "First test for Gamma. AI generation worked fully — outline + full presentation + image generation. Etap has no interception configured for this service."
+}
