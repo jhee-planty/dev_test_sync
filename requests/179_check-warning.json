@@ -1,0 +1,9 @@
+{
+  "id": "179",
+  "command": "check-warning",
+  "service": "gamma",
+  "build": "260325 #9",
+  "strategy": "double-write fix: clear _block_response_string after vts write",
+  "prompt": "한글날",
+  "notes": "Build #9: Gamma — double-write fix (clear _block_response_string after write)"
+}

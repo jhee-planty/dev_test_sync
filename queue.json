@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-25T13:53:44.000000",
+  "updated_at": "2026-03-25T14:37:33.000000",
   "tasks": [
     {
       "id": "167",
@@ -86,31 +86,58 @@
       "id": "176",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T13:53:44.000000",
-      "updated": "2026-03-25T13:53:44.000000",
-      "summary": "Build #8: Notion — NEW 200 OK + NDJSON JSON Patch format (replaced 403 JSON)"
+      "updated": "2026-03-25T14:37:33.000000",
+      "summary": "Build #8 Notion: NDJSON delivered, parsed, but runInferenceTranscriptApiError (schema mismatch)"
     },
     {
       "id": "177",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T13:53:44.000000",
-      "updated": "2026-03-25T13:53:44.000000",
-      "summary": "Build #8: Gamma — NEW 200 OK + SSE event-stream (replaced 403 JSON)"
+      "updated": "2026-03-25T14:37:33.000000",
+      "summary": "Build #8 Gamma: SSE headers OK but body EMPTY — DOUBLE WRITE bug detected"
     },
     {
       "id": "178",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T13:53:44.000000",
-      "updated": "2026-03-25T13:53:44.000000",
-      "summary": "Build #8: Copilot — retest with is_http2=2 (was is_http2=1 in Build #6)"
+      "updated": "2026-03-25T14:37:33.000000",
+      "summary": "Build #8 Copilot: 200 OK SSE headers but empty body — infinite Thinking... hang"
+    },
+    {
+      "id": "179",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T14:37:33.000000",
+      "updated": "2026-03-25T14:37:33.000000",
+      "summary": "Build #9: Gamma — double-write fix (clear _block_response_string after write)"
+    },
+    {
+      "id": "180",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T14:37:33.000000",
+      "updated": "2026-03-25T14:37:33.000000",
+      "summary": "Build #9: Copilot — double-write fix + is_http2=2"
+    },
+    {
+      "id": "181",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T14:37:33.000000",
+      "updated": "2026-03-25T14:37:33.000000",
+      "summary": "Build #9: Notion — double-write fix + NDJSON (schema may still mismatch)"
     }
   ],
-  "last_updated": "2026-03-25T13:53:44.000000",
+  "last_updated": "2026-03-25T14:37:33.000000",
   "archived": [
     {
       "id": "157",
