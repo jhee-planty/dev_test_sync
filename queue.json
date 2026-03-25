@@ -95,31 +95,58 @@
       "id": "167",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:46:59.167412",
-      "updated": "2026-03-25T10:46:59.167412",
+      "updated": "2026-03-25T11:25:53.067157",
       "summary": "notion: Notion: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. JSON Patch NDJSON + streaming mode."
     },
     {
       "id": "168",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:46:59.167412",
-      "updated": "2026-03-25T10:46:59.167412",
+      "updated": "2026-03-25T11:25:53.067157",
       "summary": "github_copilot: Copilot: Strategy B (end_stream=false, is_http2=2). Build 260325 #4. SSE streaming mode."
     },
     {
       "id": "169",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T10:46:59.167412",
-      "updated": "2026-03-25T10:46:59.167412",
+      "updated": "2026-03-25T11:25:53.067157",
       "summary": "gamma: Gamma: DB domain fixed to ai.api.gamma.app. Build 260325 #4."
+    },
+    {
+      "id": "170",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T11:25:53.067157",
+      "updated": "2026-03-25T11:25:53.067157",
+      "summary": "Notion Strategy D"
+    },
+    {
+      "id": "171",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T11:25:53.067157",
+      "updated": "2026-03-25T11:25:53.067157",
+      "summary": "Copilot Strategy D+log"
+    },
+    {
+      "id": "172",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T11:25:53.067157",
+      "updated": "2026-03-25T11:25:53.067157",
+      "summary": "Gamma 200 OK"
     }
   ],
-  "last_updated": "2026-03-25T10:46:59.167412",
+  "last_updated": "2026-03-25T11:25:53.067157",
   "archived": [
     {
       "id": "145",
