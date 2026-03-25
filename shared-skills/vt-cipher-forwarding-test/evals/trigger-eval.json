@@ -1,0 +1,55 @@
+{
+  "skill_name": "vt-cipher-forwarding-test",
+  "evals": [
+    {
+      "id": 1,
+      "query": "VT cipher suite 포워딩 테스트해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 2,
+      "query": "JA3 지문 다양화 테스트",
+      "should_trigger": true
+    },
+    {
+      "id": 3,
+      "query": "sside cipher forwarding 검증",
+      "should_trigger": true
+    },
+    {
+      "id": 4,
+      "query": "Dell 서버에서 TLS 테스트 실행",
+      "should_trigger": true
+    },
+    {
+      "id": 5,
+      "query": "cipher suite가 제대로 전달되는지 확인",
+      "should_trigger": true
+    },
+    {
+      "id": 6,
+      "query": "EtapV3 빌드해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 7,
+      "query": "APF 차단 테스트",
+      "should_trigger": false
+    },
+    {
+      "id": 8,
+      "query": "auto bypass 확인해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 9,
+      "query": "check-warning 실행",
+      "should_trigger": false
+    },
+    {
+      "id": 10,
+      "query": "HAR 파일 분석",
+      "should_trigger": false
+    }
+  ]
+}
