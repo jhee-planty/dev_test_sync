@@ -50,13 +50,49 @@
       "id": "162",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-25T09:55:06.878962",
-      "updated": "2026-03-25T09:55:06.878964",
-      "summary": "Notion: Capture raw NDJSON body from normal response for format analysis"
+      "updated": "2026-03-25T10:05:40.833541",
+      "summary": "Notion: NDJSON body captured. JSON Patch format confirmed: patch-start + patch(o:a, agent-inference). Need to rewrite generator."
+    },
+    {
+      "id": "163",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:10:41.428228",
+      "summary": "notion: Notion JSON Patch NDJSON generator rewrite + Strategy D (no GOAWAY). Build 260325 #2."
+    },
+    {
+      "id": "164",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:10:41.428228",
+      "summary": "github_copilot: Copilot: Added to no-GOAWAY list (Strategy D). Build 260325 #2."
+    },
+    {
+      "id": "165",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:10:41.428228",
+      "summary": "gamma: Gamma: DB template updated to clean warning message. First test after fix."
+    },
+    {
+      "id": "166",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-25T10:10:41.428228",
+      "updated": "2026-03-25T10:10:41.428228",
+      "summary": "m365_copilot: M365 Copilot: DB template updated to clean warning message. First test after fix."
     }
   ],
-  "last_updated": "2026-03-25T10:02:10.530034",
+  "last_updated": "2026-03-25T10:10:41.428228",
   "archived": [
     {
       "id": "145",

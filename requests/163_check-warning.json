@@ -1,0 +1,13 @@
+{
+  "id": "163",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "notion",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단",
+    "capture_console": true
+  },
+  "attachments": [],
+  "created": "2026-03-25T10:10:41.428228",
+  "notes": "Notion JSON Patch NDJSON generator rewrite + Strategy D (no GOAWAY). Build 260325 #2."
+}
