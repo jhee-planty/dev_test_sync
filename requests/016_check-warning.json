@@ -1,0 +1,23 @@
+{
+  "id": "016",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T23:42:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "url": "https://www.perplexity.ai",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in answer area",
+    "check_items": [
+      "차단 여부 확인 (URL이 /search/blocked-* 인지)",
+      "answer_area에 경고 텍스트가 표시되는지 확인",
+      "에러 토스트 발생 여부 확인",
+      "stop 버튼이 사라지는지 확인",
+      "경고 문구 내용을 스크린샷과 함께 보고",
+      "DevTools Console에 JS 에러가 있으면 보고"
+    ],
+    "special_instructions": "시크릿/InPrivate 모드에서 테스트. v6 generator — v5 대비 변경: (1) gpt4/search_focus/source/attachments 등 공통필드 추가, (2) read_write_token 추가(event3부터), (3) final event: status=COMPLETED/mode=COPILOT/message_mode=FULL/reconnectable=false, (4) final markdown_block: answer 필드에 텍스트 채움+media_items=[]."
+  },
+  "notes": "Iteration 7 (v6 generator). #015에서 plan_done/final_sse_message 해결 확인. 남은 문제: markdown_block 콘텐츠 미렌더링. HAR 원본 대비 누락 필드 보완. 특히 final event의 status=COMPLETED와 answer 필드가 핵심 변경."
+}

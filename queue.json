@@ -125,11 +125,19 @@
       "id": "015",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T23:25:00+09:00",
-      "summary": "Perplexity: Iteration 6 (v5 generator) — HAR 기반 6-event SSE: tabs+plan_done+markdown_block+final"
+      "summary": "Perplexity: PARTIAL+ — Thinking/stop 해결, markdown_block 미렌더링 (answer area 비어있음)"
+    },
+    {
+      "id": "016",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T23:42:00+09:00",
+      "summary": "Perplexity: Iteration 7 (v6) — 공통필드+read_write_token+final COMPLETED/answer 필드"
     }
   ],
-  "last_updated": "2026-03-26T14:25:00.000000",
+  "last_updated": "2026-03-26T14:42:00.000000",
   "archived": []
 }
