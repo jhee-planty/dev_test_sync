@@ -1,0 +1,55 @@
+﻿{
+  "id": "009",
+  "command": "run-scenario",
+  "status": "completed",
+  "service": "perplexity",
+  "build": "260326",
+  "timestamp": "2026-03-26T13:18:00+09:00",
+  "summary": "Perplexity SSE 응답 포맷 캡처 성공. POST /rest/sse/perplexity_ask 엔드포인트로 text/event-stream 응답 수신. 25개 SSE 이벤트 확인. 정상 프롬프트(오늘 날씨 알려줘)에 대해 날씨 정보 정상 렌더링됨.",
+  "test_details": {
+    "prompt": "오늘 날씨 알려줘",
+    "endpoint": "POST https://www.perplexity.ai/rest/sse/perplexity_ask",
+    "request_headers": {
+      "accept": "text/event-stream",
+      "content-type": "application/json",
+      "x-perplexity-request-reason": "perplexity-query-state-provider"
+    },
+    "protocol": "h2",
+    "total_sse_events": 25,
+    "sse_event_type": "event: message",
+    "sse_data_format": "JSON object per event",
+    "key_fields_per_event": {
+      "backend_uuid": "string (서버 할당 UUID)",
+      "uuid": "string (프론트엔드 요청 UUID)",
+      "display_model": "turbo",
+      "mode": "COPILOT -> CONCISE (변경됨)",
+      "text_completed": "false -> true (이벤트 23에서 true)",
+      "final_sse_message": "false (모든 이벤트)",
+      "message_mode": "STREAMING",
+      "status": "PENDING",
+      "blocks": "array (diff_block 패치 포함)",
+      "thread_url_slug": "string (URL slug)",
+      "reconnectable": true,
+      "cursor": "string (이벤트별 고유)"
+    },
+    "event_flow": {
+      "event_1": "초기 이벤트: status=PENDING, text_completed=false, blocks=[pending_followups]",
+      "event_2": "탭 구성: answer_tabs_block (ANSWER/SOURCES/IMAGE 모드), classifier_results (weather_widget=true)",
+      "event_3_to_22": "스트리밍 텍스트: blocks 내 diff_block으로 markdown 청크 점진적 추가 (op=add, path=/chunks/N)",
+      "event_23": "text_completed=true: 마지막 텍스트 청크 전달",
+      "event_24": "text_completed=true: 후속 질문(followups) 포함",
+      "event_25": "최종 이벤트: text 필드에 전체 step 로그 (INITIAL_QUERY -> SEARCH_WEB -> SEARCH_RESULTS -> ANSWER 등)"
+    },
+    "text_delivery_mechanism": "blocks[].diff_block.patches[] — JSON Patch 형식 (op: add/replace, path: /chunks/N, value: 텍스트)",
+    "step_types_in_final": ["INITIAL_QUERY", "SEARCH_WEB", "SEARCH_RESULTS"],
+    "response_rendered": true,
+    "page_url": "perplexity.ai/search/oneul-nalssi-alryeojweo-AIb2ZSHpTeauFXummpjW0A",
+    "har_exported": true
+  },
+  "analysis": {
+    "warning_delivery_insight": "Etap 차단 시 perplexity_ask POST 요청의 SSE 응답을 중단하면 프론트엔드에 빈 응답이 표시됨(#003 결과와 일치). 경고 텍스트를 삽입하려면 첫 번째 SSE 이벤트의 blocks 필드에 diff_block 형태로 markdown 텍스트를 전달해야 함. 혹은 text 필드에 경고 메시지를 포함한 최종 이벤트를 전송해야 함.",
+    "key_finding": "Perplexity는 JSON Patch(diff_block) 기반 스트리밍을 사용. 단순 텍스트 SSE가 아닌 구조화된 blocks 배열 내 patches로 UI를 점진적으로 업데이트. 경고 렌더링을 위해서는 이 diff_block 구조를 따라야 함."
+  },
+  "verdict": "COMPLETED — Perplexity SSE 응답 구조 캡처 성공. POST /rest/sse/perplexity_ask → text/event-stream, 25개 이벤트, JSON Patch 기반 스트리밍 확인.",
+  "screenshot": "results/files/009/perplexity_sse_capture.png"
+}
