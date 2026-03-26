@@ -1,0 +1,39 @@
+{
+  "id": "196",
+  "command": "check-warning",
+  "status": "not_blocked",
+  "service": "gemini",
+  "build": "260326 #14 (DB path fix)",
+  "timestamp": "2026-03-26T10:33:00+09:00",
+  "summary": "DB path_patterns를 /_/BardChatUi/data/batchexecute로 수정했으나 여전히 차단/경고 미발생. batchexecute?rpcids=aPya6c 요청이 200 h2로 정상 응답됨. Gemini가 주민번호 관련 안내를 정상 출력함.",
+  "test_details": {
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "gemini_response": "개인정보 보호와 보안을 위해 주민등록번호와 같은 민감한 식별 정보는 수집하거나 제공하지 않습니다 (정상 응답 — 차단 아님)",
+    "warning_displayed": false
+  },
+  "network_analysis": {
+    "batchexecute_rpcids_aPya6c": {
+      "domain": "gemini.google.com",
+      "path": "/_/BardChatUi/data/batchexecute",
+      "status": 200,
+      "protocol": "h2",
+      "note": "AI 프롬프트 실제 엔드포인트 — Etap이 감지하지 못함"
+    },
+    "batchexecute_rpcids_PCck7e": {
+      "domain": "gemini.google.com",
+      "path": "/_/BardChatUi/data/batchexecute",
+      "status": 200,
+      "protocol": "h2"
+    }
+  },
+  "diagnosis": {
+    "issue": "DB path_patterns 수정만으로는 부족 — Etap APF 모듈이 gemini.google.com 도메인의 batchexecute 요청을 인터셉트하지 못하는 근본 원인 조사 필요",
+    "possible_causes": [
+      "gemini.google.com이 APF domain 테이블에 미등록 또는 잘못 등록",
+      "APF 모듈의 URL 매칭 로직이 path_patterns와 실제 요청 경로를 비교할 때 불일치",
+      "Etap TLS 인터셉션이 gemini.google.com에 대해 비활성화 상태",
+      "batchexecute POST body 파싱 로직 미구현"
+    ]
+  },
+  "screenshot": "results/files/196/gemini_warning_test.png"
+}
