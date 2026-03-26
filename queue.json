@@ -181,9 +181,17 @@
       "id": "022",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T00:45:00+09:00",
-      "summary": "GitHub Copilot: H2 fix — is_http2=2 + END_STREAM=false + SSE \\n 줄바꿈"
+      "summary": "GitHub Copilot: BLOCKED_BY_LOGIN — 시크릿 모드에서 로그인 필요. 재테스트 필요."
+    },
+    {
+      "id": "024",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T01:20:00+09:00",
+      "summary": "GitHub Copilot: 로그인 상태 재테스트 — H2 fix (is_http2=2, END_STREAM=false)"
     },
     {
       "id": "023",
@@ -192,8 +200,16 @@
       "status": "pending",
       "created": "2026-03-27T01:12:00+09:00",
       "summary": "Gamma: Build #15 — SSE \\n + outline.title+cards.title+description에 경고"
+    },
+    {
+      "id": "025",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T01:30:00+09:00",
+      "summary": "Genspark: SSE 포맷 재캡처 — 슈퍼 에이전트 프론트엔드 변경 확인"
     }
   ],
-  "last_updated": "2026-03-26T16:12:00.000000",
+  "last_updated": "2026-03-26T16:30:00.000000",
   "archived": []
 }
