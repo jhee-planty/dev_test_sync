@@ -243,6 +243,7 @@ Phase 3에서 test PC에 check-warning 요청을 보낸 후, **Scheduled Task가
 macOS 알림으로 핵심 이벤트(결과 도착, 성공/실패)도 자동 통보.
 
 → See `../cowork-remote/SKILL.md` → Mode 2 for Scheduled Task 상세 (도구 제약, state 파일, dashboard 형식)
+→ See `../cowork-remote/SKILL.md` → "실패 시 자동 액션 흐름" for 실패 원인 분류, 자동 수정 가능/불가 판단, 3-Strike Rule 연계
 
 ---
 
@@ -273,8 +274,8 @@ When a warning doesn't display correctly during Phase 3 testing:
 test PC result reports issue → dev Cowork checks etap logs + console errors
   │
   ├─ Log shows blocked=1 but warning not visible → 프론트엔드 도메인 vs API 도메인 불일치
-  │   → 프론트엔드 도메인(github.com)의 페이지 로드 가 차단된 것을지
-  │   → 실제 프롬프트 API(api.individual.githubcopilot.com)는 통과
+  │   → 프론트엔드 도메인(예: frontend.example.com)의 페이지 로드만 차단된 것일 수 있음
+  │   → 실제 프롬프트 API(예: api.example.com/endpoint)는 통과
   │   → DevTools Network에서 프롬프트가 포함된 POST 요청의 도메인/경로가 정답
   │   → path_patterns='/'로 등록하면 모든 요청에 매칭 → 페이지 로드 차단일 수 있음
   │
