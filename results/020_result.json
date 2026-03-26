@@ -1,0 +1,40 @@
+{
+  "id": "020",
+  "command": "check-warning",
+  "status": "completed",
+  "result": {
+    "blocked": true,
+    "warning_rendered": false,
+    "url": "https://www.perplexity.ai/?",
+    "error_toasts": 1,
+    "error_toast_text": "이 스레드는 존재하지 않습니다",
+    "thinking_animation": false,
+    "stream_completed": false,
+    "screenshots": [
+      "files/020/result_01_thread_not_exist.png"
+    ],
+    "observations": [
+      "Blocking triggered — SSE request intercepted by Etap",
+      "REGRESSION: Removing markdown_blocks from final event also breaks thread creation",
+      "Toast: '이 스레드는 존재하지 않습니다' — same regression pattern as v6/v8/v9",
+      "CRITICAL FINDING: final event MUST include markdown_blocks with answer:null — removing them is also invalid",
+      "v5/v7 final event format is the EXACT required format — NO additions AND NO removals allowed",
+      "Summary of final event sensitivity: ADD fields → breaks (v6,v9), REMOVE blocks → breaks (v10), CHANGE answer → breaks (v9)",
+      "The v5 final event format is a precise template that must be replicated exactly"
+    ],
+    "comparison": {
+      "vs_015_v5": "REGRESSION — v5 works with markdown_blocks(answer:null) in final event",
+      "vs_017_v7": "REGRESSION — v7 identical to v5, works correctly",
+      "vs_019_v9": "SAME regression pattern — final event modification breaks thread"
+    },
+    "final_event_rules": {
+      "MUST_INCLUDE": "markdown_blocks with answer:null (ask_text_0_markdown, ask_text)",
+      "MUST_NOT_ADD": "message_mode, reconnectable, status=COMPLETED, read_write_token",
+      "MUST_NOT_CHANGE": "answer must remain null",
+      "MUST_NOT_REMOVE": "markdown_blocks — they are required for thread validation"
+    },
+    "recommendation": "v5/v7 final event is LOCKED — do not modify. Focus ONLY on content event (event 5) diff_block patch format. Specifically: try different JSON Patch op ('add' instead of 'replace'), try different path structure, or try adding text content incrementally across multiple events."
+  },
+  "test_mode": "incognito",
+  "timestamp": "2026-03-26T15:31:00+09:00"
+}
