@@ -1,9 +1,0 @@
-{
-  "id": "186",
-  "command": "run-scenario",
-  "service": "notion-ai",
-  "build": "N/A (capture only)",
-  "strategy": "Capture real Notion AI response NDJSON structure for schema comparison",
-  "prompt": "한글날의 의미를 설명해줘",
-  "notes": "Etap을 경유하지 않고 직접 Notion AI 응답을 캡처. DevTools Network에서 /api/v3/runInferenceTranscript 응답의 full body를 텍스트로 복사해서 result에 포함해줘. Content-Type, 각 NDJSON 줄의 구조, 특히 type 필드와 data/v 구조를 상세히 기록."
-}

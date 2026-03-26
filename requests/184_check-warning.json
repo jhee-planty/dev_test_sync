@@ -1,9 +1,0 @@
-{
-  "id": "184",
-  "command": "check-warning",
-  "service": "gamma",
-  "build": "260325 #11",
-  "strategy": "SSE event:error + empty generation (no outline cards) to trigger Gamma error UI",
-  "prompt": "한글날",
-  "notes": "Build #11: Gamma — event:error SSE instead of event:generation. Also empty cards[] fallback. PING flush still active."
-}
