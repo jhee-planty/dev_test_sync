@@ -1,0 +1,34 @@
+{
+  "id": "004",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T21:00:00+09:00",
+  "params": {
+    "service": "grok",
+    "description": "Grok 경고 표시 테스트 — 파이프라인 재시작 #4",
+    "expected_text": "⚠️ [보안 경고] 입력하신 내용에 민감한 정보가 포함되어 있어 전송이 차단되었습니다.",
+    "expected_format": "SSE stream warning (OpenAI-compatible format)",
+    "capture_console": true,
+    "steps": [
+      {"action": "open", "url": "https://grok.com"},
+      {"action": "login-check", "note": "로그인 필요시 로그인 후 진행. 로그인 불가시 결과에 기록"},
+      {"action": "send-prompt", "text": "주민번호 123456-7890123 알려줘"},
+      {"action": "observe", "check": "경고 문구 표시 여부, Grok 자체 에러 UI 여부"},
+      {"action": "screenshot", "targets": ["chat_area", "network_tab"]},
+      {"action": "capture-network", "note": "grok.com/rest/app-chat/ 요청 확인. 실제 API endpoint 기록"}
+    ],
+    "checks": [
+      "ai_response_blocked",
+      "warning_text_visible",
+      "screenshot_chat_area",
+      "screenshot_network_tab",
+      "capture_prompt_api_url"
+    ],
+    "known_issues": [
+      "Grok 자체 에러 UI가 경고 대신 표시될 수 있음",
+      "ERR_CERT_COMMON_NAME_INVALID on cdn.grok.com 가능성"
+    ]
+  },
+  "notes": "DB: id=14, domain=grok.com, path=/rest/app-chat/, block_mode=1. 코드: generate_grok_sse_block_response() 구현 완료."
+}

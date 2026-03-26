@@ -21,11 +21,19 @@
       "id": "003",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T20:50:00+09:00",
-      "summary": "Perplexity: check-warning 재검증 (#3)"
+      "summary": "Perplexity: PARTIAL — 차단O 경고X (Strike 1)"
+    },
+    {
+      "id": "004",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T21:00:00+09:00",
+      "summary": "Grok: check-warning (#4)"
     }
   ],
-  "last_updated": "2026-03-26T12:03:03.014177",
+  "last_updated": "2026-03-26T12:08:39.152242",
   "archived": []
 }
