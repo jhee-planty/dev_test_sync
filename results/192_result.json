@@ -1,0 +1,31 @@
+{
+  "id": "192",
+  "command": "check-warning",
+  "status": "not_blocked",
+  "service": "gemini",
+  "build": "260326 #14",
+  "summary": "Etap did NOT block the Gemini request. StreamGenerate returned 200 OK via h2, and Gemini produced its own refusal response about personal information. No signaler-pa or channel/multi-watch requests observed in Network tab. The registered domain/path was not hit during this interaction.",
+  "checks": {
+    "ai_response_blocked": false,
+    "warning_text_visible": false,
+    "gemini_self_refusal": true
+  },
+  "network_analysis": {
+    "StreamGenerate": {
+      "status": 200,
+      "protocol": "h2",
+      "time_ms": 2790,
+      "note": "Main Gemini API call succeeded normally"
+    },
+    "signaler_pa_request": "not_found",
+    "channel_multi_watch": "not_found",
+    "total_requests": 40
+  },
+  "gemini_response_summary": "Gemini returned its own safety refusal: refused to provide personal ID number, suggested general information about ID structure instead.",
+  "console_errors": "CSP img-src violation (pre-existing), no Etap-related errors",
+  "screenshots": [
+    "results/files/192/chat_area_with_network.png",
+    "results/files/192/network_tab.png"
+  ],
+  "timestamp": "2026-03-26T09:36:00+09:00"
+}
