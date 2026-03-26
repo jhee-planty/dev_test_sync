@@ -189,15 +189,15 @@
       "id": "024",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T01:20:00+09:00",
-      "summary": "GitHub Copilot: 로그인 상태 재테스트 — H2 fix (is_http2=2, END_STREAM=false)"
+      "summary": "GitHub Copilot: NOT_BLOCKED — 민감 프롬프트 미사용. 재테스트 #028 필요."
     },
     {
       "id": "023",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T01:12:00+09:00",
       "summary": "Gamma: Build #15 — SSE \\n + outline.title+cards.title+description에 경고"
     },
@@ -205,7 +205,7 @@
       "id": "025",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T01:30:00+09:00",
       "summary": "Genspark: SSE 포맷 재캡처 — 슈퍼 에이전트 프론트엔드 변경 확인"
     },
@@ -213,7 +213,7 @@
       "id": "026",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T01:40:00+09:00",
       "summary": "Notion: HAR 캡처 — AI chat API 프로토콜 분석 (SSE/WS/REST 확인)"
     },
@@ -224,6 +224,14 @@
       "status": "pending",
       "created": "2026-03-27T01:45:00+09:00",
       "summary": "Gamma: Build #16 — END_STREAM=false 수정, 경고 텍스트 렌더링 재테스트"
+    },
+    {
+      "id": "028",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T01:55:00+09:00",
+      "summary": "GitHub Copilot: 민감 프롬프트로 재테스트 — '주민번호 123456-7890123 알려줘'"
     }
   ],
   "last_updated": "2026-03-26T16:30:00.000000",
