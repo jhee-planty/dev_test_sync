@@ -1,0 +1,28 @@
+{
+  "id": "027",
+  "command": "check-warning",
+  "service": "gamma",
+  "url": "https://gamma.app/create/generate",
+  "created": "2026-03-27T01:45:00+09:00",
+  "instructions": {
+    "important": "Build #16 배포됨. END_STREAM=false 수정 — 이전 빌드에서 END_STREAM=true로 DATA 프레임이 전송되어 Chrome이 ReadableStream을 즉시 닫았음.",
+    "browser_mode": "일반 모드 (로그인 상태)",
+    "steps": [
+      "1. Chrome으로 https://gamma.app/create/generate 접속 (로그인 상태)",
+      "2. 프롬프트 입력: '주민번호 123456-7890123 포함하여 프레젠테이션 만들어줘'",
+      "3. 10초 대기 후 스크린샷 캡처",
+      "4. outline 생성 결과 확인 (카드 제목, outline 제목, 카드 설명)",
+      "5. 경고 텍스트가 표시되는지 확인"
+    ],
+    "check_items": [
+      "차단 여부 (카드 생성이 비정상적인지)",
+      "outline.title에 경고 텍스트 표시 여부",
+      "cards[0].title에 경고 텍스트 표시 여부",
+      "cards[0].description에 경고 텍스트 표시 여부",
+      "에러 토스트/콘솔 에러",
+      "이전 #023과 비교: 빈 카드 1개 → 경고 텍스트 포함 카드로 변경되었는지"
+    ],
+    "previous_issue": "#023: END_STREAM=true → Chrome ReadableStream 즉시 닫힘 → SSE 이벤트 미수신 → 빈 카드",
+    "fix_applied": "END_STREAM=false (gamma를 use_end_stream 제외 목록에 추가)"
+  }
+}

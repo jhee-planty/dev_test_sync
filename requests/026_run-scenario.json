@@ -1,0 +1,37 @@
+{
+  "id": "026",
+  "command": "run-scenario",
+  "service": "notion",
+  "url": "https://www.notion.so/chat",
+  "created": "2026-03-27T01:40:00+09:00",
+  "instructions": {
+    "goal": "Notion AI chat의 실제 API 프로토콜을 분석하기 위한 HAR 캡처. 현재 generator가 없어서 차단은 되지만 경고 텍스트가 렌더링되지 않음. SSE인지 WebSocket인지 REST인지 확인 필요.",
+    "browser_mode": "일반 모드 (로그인 상태)",
+    "steps": [
+      "1. Chrome DevTools Network 탭 열기 (Preserve log 체크, All 필터)",
+      "2. https://www.notion.so/chat 접속 (로그인 상태)",
+      "3. 채팅 입력창에 'Hello, how are you?' 입력 후 전송",
+      "4. 응답이 완전히 끝날 때까지 대기",
+      "5. Network 탭에서 AI 응답 관련 요청 찾기 (Fetch/XHR + WS 필터 모두 확인)",
+      "6. 찾은 요청의 상세 정보 캡처"
+    ],
+    "capture_items": [
+      "AI 응답 관련 API 엔드포인트 URL (어떤 도메인? 어떤 경로?)",
+      "프로토콜: SSE (text/event-stream) / WebSocket / REST JSON / 기타",
+      "Request 헤더 (Content-Type, Accept, Authorization 등)",
+      "Request body (JSON 구조)",
+      "Response Content-Type",
+      "Response body 형식 (SSE면 이벤트 시퀀스, JSON이면 구조, WS면 메시지 형식)",
+      "응답 스트리밍 여부 (chunked? polling? websocket?)",
+      "스크린샷: 응답 완료 후 UI + Network 탭",
+      "WebSocket 확인: msgstore-*.notion.so/primus-* 경유 여부"
+    ],
+    "known_info": {
+      "domains": ["www.notion.so", "exp.notion.so", "msgstore-001.www.notion.so"],
+      "websocket": "msgstore-001.www.notion.so/primus-v8/ (real-time messaging)",
+      "sync_api": "notion.so/api/v3/syncRecordValuesSpaceInitial",
+      "previous_issue": "etap log에서 detect 0건 → TLS 인터셉션 안 됨 (test 137). 이후 #005에서 차단 성공하나 경고X.",
+      "note": "AI chat traffic이 WebSocket 기반일 수 있음. APF는 HTTP만 detect하므로 WS면 다른 접근 필요."
+    }
+  }
+}
