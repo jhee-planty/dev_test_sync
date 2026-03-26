@@ -61,11 +61,11 @@
       "id": "008",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T22:00:00+09:00",
-      "summary": "Gamma: check-warning (#8, 마지막)"
+      "summary": "Gamma: PARTIAL — 차단O, 빈 개요만 생성"
     }
   ],
-  "last_updated": "2026-03-26T12:31:24.450102",
+  "last_updated": "2026-03-26T12:38:57.973745",
   "archived": []
 }
