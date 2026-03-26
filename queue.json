@@ -266,12 +266,36 @@
       "summary": "Gamma: WARNING_NOT_DELIVERED — chunk/done 포맷이지만 EventStream 0건, 데이터 미도달"
     },
     {
+      "id": "032",
+      "command": "check-warning",
+      "to": "test",
+      "status": "done",
+      "created": "2026-03-27T02:30:00+09:00",
+      "summary": "GitHub Copilot: WARNING_NOT_DELIVERED — END_STREAM=true → 0건 (스트림 즉시 종료)"
+    },
+    {
       "id": "033",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "superseded",
       "created": "2026-03-27T02:40:00+09:00",
-      "summary": "Gamma: Build #18b — END_STREAM=true + chunk/done SSE, 데이터 전달 테스트"
+      "summary": "Gamma: Build #18b — Build #19로 대체됨"
+    },
+    {
+      "id": "034",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:49:00+09:00",
+      "summary": "GitHub Copilot: Build #19 — END_STREAM=false + GOAWAY=true"
+    },
+    {
+      "id": "035",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:49:00+09:00",
+      "summary": "Gamma: Build #19 — END_STREAM=false + GOAWAY=true + chunk/done"
     }
   ],
   "last_updated": "2026-03-26T16:30:00.000000",
