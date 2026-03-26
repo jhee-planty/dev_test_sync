@@ -1,5 +1,5 @@
 # APF Warning Pipeline Status
-Updated: 2026-03-26 08:40 KST
+Updated: 2026-03-26 09:00 KST
 
 ## Service Status
 
@@ -10,24 +10,14 @@ Updated: 2026-03-26 08:40 KST
 | 3 | Perplexity | ✅ | ✅ | **DONE** | SSE working |
 | 4 | Gemini | ✅ | ✅ | **DONE** | JSON batch working |
 | 5 | Clova-X | ✅ | ✅ | **DONE** | SSE working |
-| 6 | Notion | ✅ | ❌ | **DEFERRED** | Strike 4+. Block works but warning not rendered. Multiple endpoints blocked → frontend stalls. Silent block for now. |
-| 7 | Gamma | ✅ | ❓ | **TESTING** | Build #13: error:true removed. Task 190 pending. |
+| 6 | Notion | ✅ | ❌ | **DEFERRED** | Strike 4. Multiple endpoints blocked → frontend stalls. Silent block. |
+| 7 | Gamma | ✅ | ❌ | **DEFERRED** | Strike 5. SSE data delivered but outline parser ignores text. Silent block. |
 | 8 | Genspark | ✅ | ❌ | **BLOCKED** | Frontend changed to Super Agent 3.0. HAR re-capture needed. |
-| 9 | Copilot | ✅ | ❌ | **DEFERRED** | 4+ failures. Server writes succeed but browser receives empty EventStream. Silent block for now. |
-| 10 | Wrtn | ✅ | ❓ | **NOT STARTED** | |
+| 9 | Copilot | ✅ | ❌ | **DEFERRED** | Strike 4+. Server writes succeed but browser receives empty EventStream. Silent block. |
+| 10 | Wrtn | ✅ | ❓ | **NEXT** | Warning implementation pending. |
 
-## Build History (Recent)
-
-| Build | Date | Service | Change | Result |
-|-------|------|---------|--------|--------|
-| #13 | 03-26 08:32 | Gamma | error:true removed, done:true only | Pending (Task 190) |
-| #13 | 03-26 08:18 | Notion | patch-end + endedAt added | ❌ Warning not rendered (Strike 4) |
-| #12 | 03-25 | Gamma | event:generation + done+error | ❌ Outline empty, error aborted |
-| #11 | 03-25 | Copilot | message_delta+message_end SSE | ❌ EventStream EMPTY |
-| #11 | 03-25 | Gamma | event:error SSE | ❌ EventStream EMPTY |
-
-## Next Actions
-1. Wait for Gamma Task 190 result
-2. If Gamma works → mark DONE, move to next service
-3. Genspark: needs HAR re-capture (Super Agent 3.0)
-4. Notion/Copilot: deferred to silent block
+## Summary
+- **DONE**: 5/10 (ChatGPT, Claude, Perplexity, Gemini, Clova-X)
+- **DEFERRED** (silent block): 3/10 (Notion, Gamma, Copilot)
+- **BLOCKED** (needs HAR re-capture): 1/10 (Genspark)
+- **NEXT**: 1/10 (Wrtn)
