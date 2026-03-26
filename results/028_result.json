@@ -1,0 +1,60 @@
+{
+  "request_id": "028",
+  "task": "check-warning",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "timestamp": "2026-03-26T17:03:00+09:00",
+  "status": "WARNING_PARTIALLY_DELIVERED",
+  "summary": "SSE 경고 이벤트가 EventStream에 2건 수신되었으나, ERR_CONNECTION_CLOSED로 인해 Copilot UI에는 generic error만 표시됨",
+  "details": {
+    "prompt_sent": "주민번호 123456-7890123 알려줘",
+    "browser_mode": "일반 모드 (로그인 상태)",
+    "model_selected": "Claude Haiku 4.5",
+    "api_endpoint": "https://api.individual.githubcopilot.com/github/chat/threads/{thread_id}/messages?",
+    "request_method": "POST",
+    "protocol": "h2",
+    "remote_address": "140.82.114.21:443",
+    "network_requests": [
+      {"name": "repositories_search?limit=10", "status": 304, "protocol": "h2"},
+      {"name": "threads", "status": 201, "protocol": "h2"},
+      {"name": "messages", "status": "failed - 200 OK but ERR_CONNECTION_CLOSED", "protocol": "h2", "type": "fetch", "note": "Main AI SSE endpoint"},
+      {"name": "name", "status": 200, "protocol": "h2"}
+    ],
+    "blocking": {
+      "blocked": true,
+      "mechanism": "H2 connection close after SSE warning delivery",
+      "status_code": 200,
+      "connection_error": "net::ERR_CONNECTION_CLOSED 200 (OK)"
+    },
+    "warning_delivery": {
+      "sse_events_received": 2,
+      "eventstream_tab": "2 SSE events visible with Korean warning text",
+      "warning_text_preview": "민감정보가 포함된 요청은 보...",
+      "warning_displayed_in_ui": false,
+      "ui_shows": "I'm sorry but there was an error. Please try again.",
+      "retry_button": true,
+      "thinking_infinite_wait": false,
+      "loading_spinner": true
+    },
+    "console_errors": [
+      "POST https://api.individual.githubcopilot.com/github/chat/threads/{thread_id}/messages? net::ERR_CONNECTION_CLOSED 200 (OK)"
+    ],
+    "response_tab": "Nothing to preview - This request has no response data available"
+  },
+  "diagnosis": {
+    "root_cause": "Etap sends SSE warning events successfully (2 events received in EventStream tab) but then closes the H2 connection. Copilot frontend treats ERR_CONNECTION_CLOSED as a fatal error and shows generic error message instead of rendering the received SSE events.",
+    "comparison_with_previous": {
+      "issue_007": "Thinking 무한대기 -> RESOLVED (no longer infinite waiting)",
+      "issue_022": "로그인 필요 -> RESOLVED (logged in, normal mode works)",
+      "issue_024": "민감 프롬프트 미사용 -> RESOLVED (Korean sensitive prompt used)"
+    },
+    "improvement_from_build16": "is_http2=2 keep-alive + END_STREAM=false + SSE formatting allows SSE events to be received by Chrome. 2 events in EventStream. Previous builds had 0 events or Thinking infinite wait.",
+    "remaining_issue": "Connection close after SSE events triggers ERR_CONNECTION_CLOSED, which Copilot treats as error. Need to either: 1) keep connection alive longer, 2) send proper SSE done event before closing, or 3) match Copilot expected SSE termination sequence e.g. data: [DONE].",
+    "fix_suggestion": "Send data: [DONE] SSE termination event before closing connection, matching GitHub Copilot expected SSE protocol. Copilot likely expects a clean SSE stream termination rather than an abrupt connection close."
+  },
+  "screenshots": [
+    "results/files/028/028_error_overview.png",
+    "results/files/028/028_eventstream_warning.png",
+    "results/files/028/028_headers.png"
+  ]
+}
