@@ -101,73 +101,42 @@ $base (dev_test_sync)/
 
 사용자가 "새 요청 확인해줘" 하면 `git pull` 후 `requests/`를 스캔하고 처리한다.
 
-### Mode 2 — 자동 폴링 (Scheduled Task 기반)
+### Mode 2 — 자동 폴링
 
 사용자가 "자동으로 확인해줘", "폴링 시작" 하면 활성화.
-**Scheduled Task**를 생성하여 cron 스케줄로 자동 폴링한다.
-Scheduled Task는 독립 세션에서 실행되므로 **메인 세션의 context 소진과 무관**하게 동작한다.
 
-**왜 Scheduled Task인가:**
-기존 방식(메인 세션에서 직접 폴링)은 context 소진(~1.5시간),
-desktop-commander 60s timeout, conversation turn 의존성으로 폴링이 중단되었다.
-Scheduled Task는 독립 세션이라 이 세 가지 문제를 모두 해결한다.
-
-**Scheduled Task 생성:**
+**폴링 시작 전 스킬 재확인:**
+세션이 새로 시작되었거나 작업이 끊긴 후 재개하는 경우,
+폴링을 시작하기 전에 반드시 이 스킬(test-pc-worker)을 다시 읽는다.
+스킬이 업데이트되었을 수 있고, 절차를 기억에 의존하면 단계를 빠뜨린다.
 ```
-mcp__scheduled-tasks__create_scheduled_task({
-  taskId: "test-dev-polling",
-  description: "dev_test_sync 폴링: 새 요청 확인 및 자동 실행",
-  cronExpression: "*/5 * * * *",    // 5분마다 (조정 가능)
-  content: "<폴링 스킬 내용>"
-})
-```
-
-**Scheduled Task 내 도구 제약사항:**
-검증 결과 (2026-03-25 polling-feasibility-test):
-
-| 도구 | 사용 가능 | 비고 |
-|------|----------|------|
-| desktop-commander | ✅ | start_process, read_file 모두 정상 |
-| GitHub MCP | ❌ | 인증 실패 (Scheduled Task 세션에서 자격증명 미전달) |
-
-**따라서 Scheduled Task에서는 git CLI를 desktop-commander로 실행한다:**
-```powershell
-# Scheduled Task 폴링 절차 (test PC)
-# 1. git fetch + 새 요청 확인
-git -C "C:\Users\최장희\Documents\dev_test_sync" fetch origin
-git -C "C:\Users\최장희\Documents\dev_test_sync" diff --name-only HEAD..origin/main -- requests/
-
-# 2. 새 파일 없으면 → "No new requests" 보고 후 종료
-# 3. 새 파일 있으면 → git pull → 요청 읽기 → 작업 실행 → 결과 작성 → git push
-```
-
-**적응형 스케줄 (cron 변경):**
-```
-활발한 작업 중: */1 * * * * (1분마다)
-일반 대기:     */5 * * * * (5분마다)
-장기 대기:     */30 * * * * (30분마다)
-```
-스케줄 변경은 `mcp__scheduled-tasks__update_scheduled_task`로 수행한다.
-
-**폴링 시작/중지:**
-```
-시작: create_scheduled_task로 생성 (enabled: true)
-일시중지: update_scheduled_task({enabled: false})
-재개: update_scheduled_task({enabled: true})
-삭제: 사용자가 "모니터링 완전 종료" 요청 시
-```
-
-**폴링 시작 전 체크리스트:**
-```
+폴링 시작 체크리스트:
   1. Skill 도구로 test-pc-worker 스킬 로드 (최신 절차 확인)
   2. state.json 읽어서 last_processed_id 확인
   3. git pull로 최신 요청 수신
-  4. Scheduled Task 생성 (cron 설정)
+  4. 폴링 루프 시작
 ```
 
 **핵심 원칙: 폴링 모드에서는 사용자 동의 없이 자율 실행한다.**
 새 요청을 발견하면 사용자에게 확인을 구하지 않고 바로 실행하고,
 완료 후 결과만 보고한다. 사용자가 폴링을 시작한 시점에 이미 동의한 것이다.
+
+**적응형 폴링 (Adaptive Polling):**
+```
+Stage 1: 1분 간격 × 10회 (10분)
+  → 새 요청 없으면 Stage 2로 전환
+Stage 2: 10분 간격 × 6회 (1시간)
+  → 새 요청 없으면 Stage 3으로 전환
+Stage 3: 1시간 간격
+  → 새 요청 도착 시 Stage 1로 복귀
+```
+
+  새 요청 있으면 → 사용자 확인 없이 즉시 실행 → 결과 작성 → 완료 보고
+  없으면 → 무음 대기 (불필요한 "없음" 보고 생략)
+
+종료 조건:
+  - 사용자가 "멈춰", "중단" → 즉시 종료
+  - 에러 3회 연속 → 일시 중지 후 보고
 
 ---
 
@@ -266,6 +235,9 @@ $metric | ConvertTo-Json -Compress | Add-Content $metricsFile -Encoding UTF8
 **필수 필드:** id, command, service, timestamp, duration_seconds, success, phase_timings
 **phase_timings 최소 단계:** browser_focus, prompt_input, wait_response, screenshot, analysis
 
+→ See `references/metrics-collection.md` for 메트릭 수집 상세 및 분석 연동.
+→ See `references/phase-definitions.md` for command별 측정 단계 정의.
+
 오늘(3/25) 29건 check-warning에 대한 메트릭이 누락되어 정밀 분석이 불가능했다.
 "어디가 느린지"를 수치로 파악하려면 단계별 시간 데이터가 필수이다.
 
@@ -342,6 +314,8 @@ APF 차단/경고 테스트에 사용하는 민감 키워드: **`한글날`**
 | SendKeys 미입력 | Chrome 포커스 상실 | `AppActivate`로 포커스 재확보 |
 | 스크린샷 빈 화면 | 캡처 타이밍 | `Start-Sleep` 대기 시간 증가 |
 | 차단이 발생하지 않음 | Etap 설정 미적용 | 정확히 기록, dev가 서버 설정 확인 |
+
+→ See `references/error-patterns.md` for 에러 패턴별 상세 원인 및 대응 방법.
 
 ---
 

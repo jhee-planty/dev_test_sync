@@ -19,13 +19,13 @@ correctly as a visible, user-friendly warning in the AI service's frontend.
 
 Both operate on the same codebase (`ai_prompt_filter`) and share `etap-build-deploy`.
 
-→ **All skills follow `guidelines.md`** — read it before any work.
+→ **All skills follow `../guidelines.md`** — read it before any work.
 
 ---
 
 ## Required Paths
 
-→ See `guidelines.md` → Section 8: Required Paths
+→ See `../guidelines.md` → Section 8: Required Paths
 
 ---
 
@@ -99,7 +99,7 @@ Phase 5 — Experience [Cowork responsibility, runs alongside each phase]
   Cross-service patterns promoted to references/ when confirmed in 2+ services.
   Promotion trigger: Cowork checks after each Phase 3 completion whether
     the pattern used matches any existing service — if yes, promote.
-  → See guidelines.md → Section 4: Experience Management
+  → See ../guidelines.md → Section 4: Experience Management
 ```
 
 ### Phase 전환 시 스킬 재로드 규칙
@@ -249,7 +249,7 @@ Update status.md whenever a service changes phase or state.
 
 ## Test Log Protocol
 
-→ See `guidelines.md` → Section 6: Test Log Protocol
+→ See `../guidelines.md` → Section 6: Test Log Protocol
 
 Summary:
 - **Inject:** `bo_mlog_info("[APF_WARNING_TEST:{service_id}] ...", ...);`
@@ -257,25 +257,30 @@ Summary:
 
 ---
 
-## Phase 3 결과 대기: Scheduled Task 폴링
+## Phase 3 결과 대기: Scheduled Task 자동화
 
-Phase 3에서 test PC에 check-warning 요청을 보낸 후, 결과를 기다리는 동안
-메인 세션의 context를 소진하지 않도록 **Scheduled Task로 폴링**한다.
+Phase 3에서 test PC에 check-warning 요청을 보낸 후, **Scheduled Task가
+결과 감지 → 판단 → 다음 액션까지 자율 수행**한다.
+사용자 개입 없이 동작하는 것이 목표이다.
 
 ```
-결과 대기 흐름:
-  1. check-warning 요청 → git push
-  2. Scheduled Task 생성 (또는 기존 task 활성화)
-     → cronExpression: "*/1 * * * *" (1분마다)
-     → 내용: git fetch → results/ 새 파일 확인 → 있으면 보고
-  3. 메인 세션은 다른 작업 가능 (또는 대기)
-  4. Scheduled Task가 결과 감지 → 보고
-  5. 메인 세션에서 결과 확인 후 Scheduled Task 비활성화
+자동화 흐름:
+  1. 메인 세션: check-warning 요청 생성 → git push
+  2. 메인 세션: Scheduled Task 활성화 (또는 신규 생성)
+  3. Scheduled Task (매 cron 실행):
+     git pull → results/ 새 파일 확인 →
+     결과 있으면: 읽기 → 성공/실패 판단 →
+       성공: pipeline_state + dashboard 갱신, macOS 알림
+       실패: SSH로 etap 로그 확인, 분석 결과 기록, macOS 알림
+     결과 없으면: dashboard만 갱신 ("대기 중")
+  4. 사용자는 pipeline_dashboard.md로 진척도 확인 가능
 ```
 
-**주의:** Scheduled Task에서는 GitHub MCP 사용 불가.
-desktop-commander + git CLI로 동기화한다.
-→ See `cowork-remote/SKILL.md` → Mode 2 → Scheduled Task 내 도구 제약사항
+**사용자 진척도 확인:**
+`local_archive/pipeline_dashboard.md` — Scheduled Task가 매 실행마다 갱신.
+macOS 알림으로 핵심 이벤트(결과 도착, 성공/실패)도 자동 통보.
+
+→ See `cowork-remote/SKILL.md` → Mode 2 for Scheduled Task 상세 (도구 제약, state 파일, dashboard 형식)
 
 ---
 
@@ -398,7 +403,7 @@ DB명: etap
 
 ## Experience Storage
 
-→ See `guidelines.md` → Section 4: Experience Management
+→ See `../guidelines.md` → Section 4: Experience Management
 
 Quick reference:
 
