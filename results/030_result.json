@@ -1,0 +1,58 @@
+{
+  "request_id": "030",
+  "status": "WARNING_PARTIALLY_DELIVERED",
+  "summary": "Build #17 [DONE] SSE 종료 시그널 추가 확인됨. EventStream에 경고 2건 + [DONE] 1건 = 총 3건 수신. 그러나 ERR_HTTP2_PROTOCOL_ERROR로 인해 Copilot UI에는 여전히 generic error 표시.",
+  "build": "#17 (is_http2=2 + END_STREAM=false + SSE + [DONE] termination)",
+  "comparison_with_028": {
+    "028_error": "ERR_CONNECTION_CLOSED 200 (OK)",
+    "030_error": "ERR_HTTP2_PROTOCOL_ERROR 200 (OK)",
+    "028_events": "2 SSE warning events (no [DONE])",
+    "030_events": "2 SSE warning events + 1 [DONE] termination = 3 total",
+    "improvement": "[DONE] signal is now being sent and received, error type changed from CONNECTION_CLOSED to HTTP2_PROTOCOL_ERROR"
+  },
+  "network": {
+    "endpoint": "POST https://api.individual.githubcopilot.com/github/chat/threads/27c24c53-d996-4c76-8654-5daa57762f6b/messages?",
+    "status": "200 (OK) but with ERR_HTTP2_PROTOCOL_ERROR",
+    "protocol": "h2",
+    "remote_address": "140.82.114..."
+  },
+  "eventstream": {
+    "total_events": 3,
+    "events": [
+      {
+        "id": 1,
+        "type": "m... (message)",
+        "data_preview": "{\"content\":\" ⚠️ 민감정보가 포함된 요청은 보..."
+      },
+      {
+        "id": 2,
+        "type": "m... (message)",
+        "data_preview": "{\"content\":\" ⚠️ 민감정보가 포함된 요청은 보..."
+      },
+      {
+        "id": 3,
+        "type": "m... (message)",
+        "data": "[DONE]"
+      }
+    ]
+  },
+  "console_error": "POST https://api.individual.githubcopilot.com/github/chat/threads/27c24c53-d99... ERR_HTTP2_PROTOCOL_ERROR 200 (OK)",
+  "ui_result": "I'm sorry but there was an error. Please try again. (generic error, warning text NOT displayed)",
+  "diagnosis": {
+    "root_cause": "Etap sends 2 warning SSE events + [DONE] termination correctly, but then triggers an H2 protocol error during connection teardown. Chrome treats ERR_HTTP2_PROTOCOL_ERROR as fatal, causing Copilot frontend to discard all received SSE events and show generic error instead.",
+    "what_changed": "[DONE] signal IS being sent and received (visible in EventStream tab), error type changed from ERR_CONNECTION_CLOSED (#028) to ERR_HTTP2_PROTOCOL_ERROR (#030). This suggests the [DONE] is being processed but the H2 stream is not being closed cleanly after [DONE].",
+    "fix_suggestions": [
+      "1. After sending [DONE], send proper H2 END_STREAM flag on the DATA frame (not RST_STREAM)",
+      "2. Ensure the H2 stream ends with a DATA frame with END_STREAM=true containing the [DONE] SSE event",
+      "3. Do NOT send RST_STREAM or GOAWAY after [DONE] — let the stream end naturally with END_STREAM flag",
+      "4. The issue is likely: Etap sends [DONE] then forcibly closes the H2 stream/connection, causing protocol error",
+      "5. Alternative: Send [DONE] as the last SSE event in a DATA frame with END_STREAM=true flag set on the same frame"
+    ]
+  },
+  "screenshots": [
+    "results/files/030/030_ui_result.png",
+    "results/files/030/030_eventstream.png",
+    "results/files/030/030_payload_and_console.png"
+  ],
+  "timestamp": "2026-03-26T17:26:00+09:00"
+}
