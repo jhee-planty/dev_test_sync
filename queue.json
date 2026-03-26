@@ -53,11 +53,19 @@
       "id": "007",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T21:45:00+09:00",
-      "summary": "GitHub Copilot: check-warning (#7)"
+      "summary": "GitHub Copilot: PARTIAL — 차단O, Thinking 무한대기"
+    },
+    {
+      "id": "008",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T22:00:00+09:00",
+      "summary": "Gamma: check-warning (#8, 마지막)"
     }
   ],
-  "last_updated": "2026-03-26T12:24:48.691210",
+  "last_updated": "2026-03-26T12:31:24.450102",
   "archived": []
 }
