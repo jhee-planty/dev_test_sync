@@ -290,12 +290,36 @@
       "summary": "GitHub Copilot: Build #19 — END_STREAM=false + GOAWAY=true"
     },
     {
+      "id": "034",
+      "command": "check-warning",
+      "to": "test",
+      "status": "done",
+      "created": "2026-03-27T02:49:00+09:00",
+      "summary": "GitHub Copilot: WARNING_NOT_DELIVERED — 3건 수신 but ERR_HTTP2_PROTOCOL_ERROR (GOAWAY 효과 없음)"
+    },
+    {
       "id": "035",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "superseded",
       "created": "2026-03-27T02:49:00+09:00",
-      "summary": "Gamma: Build #19 — END_STREAM=false + GOAWAY=true + chunk/done"
+      "summary": "Gamma: Build #19 — Build #20으로 대체"
+    },
+    {
+      "id": "036",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:57:00+09:00",
+      "summary": "GitHub Copilot: Build #20 — 2-frame DATA(body→empty+END_STREAM) + GOAWAY"
+    },
+    {
+      "id": "037",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:57:00+09:00",
+      "summary": "Gamma: Build #20 — 2-frame DATA + chunk/done SSE + GOAWAY"
     }
   ],
   "last_updated": "2026-03-26T16:30:00.000000",
