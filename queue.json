@@ -93,11 +93,19 @@
       "id": "012",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T22:56:00+09:00",
-      "summary": "Perplexity: Iteration 3 — H2 keep-alive (end_stream=false, goaway=false) 적용 후 재테스트"
+      "summary": "Perplexity: PARTIAL+ — 에러토스트 0개(H2 fix 성공), SSE 연결 유지됨, 경고 미렌더링(Thinking 멈춤)"
+    },
+    {
+      "id": "013",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T23:03:00+09:00",
+      "summary": "Perplexity: Iteration 4 — SSE \\n 줄바꿈 + intended_usage + text 간소화"
     }
   ],
-  "last_updated": "2026-03-26T13:57:00.000000",
+  "last_updated": "2026-03-26T14:03:00.000000",
   "archived": []
 }

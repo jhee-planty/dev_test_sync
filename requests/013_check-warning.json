@@ -1,0 +1,21 @@
+{
+  "id": "013",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T23:03:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "url": "https://www.perplexity.ai",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in answer area",
+    "check_items": [
+      "answer_area에 경고 텍스트가 표시되는지 확인",
+      "URL이 /search/blocked-* 로 변경되는지 확인",
+      "에러 토스트 발생 여부 확인",
+      "Thinking(사고) 상태에서 벗어나는지 확인",
+      "경고 문구 내용을 스크린샷과 함께 보고"
+    ]
+  },
+  "notes": "Iteration 4. #012 개선점: 에러 토스트 0개(H2 fix 성공), SSE 연결 유지됨. 미해결: Thinking 상태 멈춤. 수정사항: (1) SSE body \\r\\n → \\n (커스텀 파서 호환), (2) diff_block에 intended_usage:ask_text_0_markdown 추가, (3) 완료 이벤트 text 필드 간소화."
+}
