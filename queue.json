@@ -37,11 +37,19 @@
       "id": "005",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T21:15:00+09:00",
-      "summary": "Notion AI: check-warning (etap 차단 확인됨, 경고 렌더링 확인)"
+      "summary": "Notion: PARTIAL — 차단O 경고X (빈 화면, Strike 1)"
+    },
+    {
+      "id": "006",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T21:30:00+09:00",
+      "summary": "Genspark: check-warning (#6)"
     }
   ],
-  "last_updated": "2026-03-26T12:14:16.190664",
+  "last_updated": "2026-03-26T12:20:47.983892",
   "archived": []
 }
