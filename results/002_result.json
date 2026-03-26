@@ -1,0 +1,19 @@
+﻿{
+  "id": "002",
+  "command": "check-warning",
+  "status": "blocked",
+  "service": "claude",
+  "build": "260326 (DB id=7)",
+  "timestamp": "2026-03-26T12:00:00+09:00",
+  "summary": "Claude 차단 및 경고 표시 성공. 민감정보 프롬프트 전송 시 Etap APF가 감지하여 차단하고, 경고 메시지가 Claude UI에 정상 렌더링됨.",
+  "test_details": {
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "ai_response_blocked": true,
+    "warning_displayed": true,
+    "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "warning_icon": "⚠️",
+    "login_state": "logged_in (janghee)"
+  },
+  "verdict": "PASS — Claude 경고 파이프라인 정상 동작 확인 (Strategy A: END_STREAM + GOAWAY)",
+  "screenshot": "results/files/002/claude_warning_blocked.png"
+}
