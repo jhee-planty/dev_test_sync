@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-26T11:48:26.998860",
+  "updated_at": "2026-03-26T13:57:00.000000",
   "tasks": [
     {
       "id": "001",
@@ -85,11 +85,19 @@
       "id": "011",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T22:41:00+09:00",
-      "summary": "Perplexity: Iteration 2 — perfle generator 등록 후 재테스트"
+      "summary": "Perplexity: FAIL — SSE generator 호출됨(2868B) but H2 END_STREAM+GOAWAY로 ReadableStream 즉시 닫힘"
+    },
+    {
+      "id": "012",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T22:56:00+09:00",
+      "summary": "Perplexity: Iteration 3 — H2 keep-alive (end_stream=false, goaway=false) 적용 후 재테스트"
     }
   ],
-  "last_updated": "2026-03-26T13:05:22.102446",
+  "last_updated": "2026-03-26T13:57:00.000000",
   "archived": []
 }
