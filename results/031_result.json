@@ -1,0 +1,61 @@
+{
+  "request_id": "031",
+  "status": "WARNING_NOT_DELIVERED",
+  "timestamp": "2026-03-26T17:32:00+09:00",
+  "summary": "Build #18 Gamma SSE 포맷 수정 테스트. generation 요청 200 OK이나 EventStream 0건, Response body 없음. 이전 #027과 동일하게 경고 미전달. render-generation 후속 요청도 실패.",
+  "comparison_with_027": {
+    "027_eventstream": "0 events",
+    "031_eventstream": "0 events (동일)",
+    "027_response": "no response data",
+    "031_response": "no response data (동일)",
+    "027_render_generation": "not attempted (no outline)",
+    "031_render_generation": "(failed) - outline had only '1' with no content",
+    "change": "Build #18 SSE 포맷(chunk/done) 변경은 EventStream 결과에 영향 없음"
+  },
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 200,
+    "remote_address": "[2606:4700::6812:bc8]:443",
+    "response_size": "0.3 kB (header only, no body data)",
+    "time": "1.90 s"
+  },
+  "eventstream": {
+    "total_events": 0,
+    "events": [],
+    "key_finding": "EventStream 탭에 이벤트 0건. Response 탭에 'Nothing to preview - This request has no response data available' 표시"
+  },
+  "response_headers": {
+    "status": "200 OK",
+    "access_control_allow_credentials": "true",
+    "access_control_allow_origin": "https://gamma.app",
+    "cache_control": "no-cache",
+    "note": "Response headers collapsed to only 4 headers - Content-Type not visible (likely text/event-stream from Etap)"
+  },
+  "request_headers": {
+    "accept": "text/event-stream",
+    "content_type": "application/json",
+    "content_length": "308"
+  },
+  "ui_result": {
+    "outline": "카드 1개, 내용 '1'만 표시 (정상은 10개 카드 + 각 제목/설명)",
+    "render_generation": "failed (0.0 kB, 24ms)",
+    "page_errors": "5 Issues: 4 page errors, 1 possible improvement"
+  },
+  "diagnosis": {
+    "root_cause": "H2 응답 바디가 브라우저에 전달되지 않음. Etap이 SSE 이벤트를 H2 DATA frame으로 전송하지만, 브라우저가 응답 바디를 수신하지 못함. chunk/done 포맷 변경만으로는 해결 불가.",
+    "hypothesis": "is_http2=2 (keep-alive + END_STREAM=false) 모드에서 DATA frame이 실제로 전송되지 않거나, H2 framing 오류로 브라우저가 바디를 파싱하지 못하는 것으로 추정",
+    "fix_suggestions": [
+      "H2 DATA frame 전송 로직 디버깅 — 실제로 DATA frame이 wire에 나가는지 tcpdump/wireshark로 확인",
+      "is_http2=1 (단일 응답) 모드로 전환하여 전체 경고를 한 번에 전송 시도",
+      "Content-Type: text/event-stream 응답 헤더가 실제로 전송되는지 확인 (Response headers가 4개뿐)",
+      "H2 HEADERS frame에 content-type 포함 여부 확인"
+    ]
+  },
+  "screenshots": [
+    "results/files/031/031_eventstream.png",
+    "results/files/031/031_headers_general.png",
+    "results/files/031/031_ui_result.png"
+  ]
+}
