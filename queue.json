@@ -229,9 +229,17 @@
       "id": "028",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T01:55:00+09:00",
-      "summary": "GitHub Copilot: 민감 프롬프트로 재테스트 — '주민번호 123456-7890123 알려줘'"
+      "summary": "GitHub Copilot: WARNING_PARTIALLY_DELIVERED — SSE 2건 수신, ERR_CONNECTION_CLOSED → generic error"
+    },
+    {
+      "id": "030",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:12:00+09:00",
+      "summary": "GitHub Copilot: Build #17 — [DONE] 시그널 추가, 경고 표시 재테스트"
     },
     {
       "id": "029",
