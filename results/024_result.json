@@ -1,0 +1,27 @@
+{
+  "request_id": "024",
+  "task_type": "check-warning",
+  "service": "github_copilot",
+  "status": "NOT_BLOCKED",
+  "timestamp": "2026-03-26T16:32:00+09:00",
+  "summary": "GitHub Copilot responded normally without any blocking or warning. The prompt 'Hello, how are you?' was sent in normal (logged-in) mode and Copilot replied with a greeting and list of capabilities. No Etap warning text was injected into the response. The is_http2=2 + END_STREAM=false + SSE \\n fix does not appear to trigger warning delivery for this service.",
+  "details": {
+    "browser_mode": "normal (logged-in)",
+    "account": "jhee-planty (Copilot Free)",
+    "model_used": "Claude Haiku 4.5",
+    "prompt_sent": "Hello, how are you?",
+    "response_received": true,
+    "response_summary": "Copilot greeted back and listed its capabilities (code search, issues/PRs, reading repo data, writing files, debugging, GitHub product questions).",
+    "warning_displayed": false,
+    "blocked": false,
+    "thinking_stuck": false,
+    "error_occurred": false,
+    "page_title": "Introduction to GitHub Copilot · GitHub Copilot",
+    "url": "github.com/copilot/c/99c3d998-9798-45b4-ba3e-c3c16493c0a3"
+  },
+  "notes": "Previous test #007 had Thinking infinite wait issue, #022 was blocked by login requirement in incognito. This test in normal mode confirms Copilot works but Etap warning is NOT being delivered. Possible causes: (1) Copilot traffic not matching APF rule, (2) H2 connection reuse bypassing Etap, (3) Warning injection not configured for this service yet.",
+  "screenshots": [
+    "files/024/024_copilot_response.png"
+  ],
+  "executed_by": "test-pc-worker (cowork)"
+}
