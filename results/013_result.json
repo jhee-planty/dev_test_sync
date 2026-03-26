@@ -1,0 +1,51 @@
+﻿{
+    "screenshots":  [
+                        "results/files/013/perplexity_warning_test_iter4.png"
+                    ],
+    "id":  "013",
+    "analysis":  {
+                     "root_cause_hypothesis":  [
+                                                   "1. is_http2=2 (keep-alive) 변경이 APF 필터의 요청 인터셉트를 우회시켰을 가능성",
+                                                   "2. perfle/perplexity generator 등록 과정에서 서비스 매칭 룰이 깨졌을 가능성",
+                                                   "3. end_stream=false + goaway=false 설정이 블로킹 파이프라인 자체를 비활성화했을 가능성",
+                                                   "4. 빌드/배포 과정에서 이전 변경이 롤백되었을 가능성"
+                                               ],
+                     "recommended_action":  [
+                                                "1. [긴급] 서버 로그에서 APF 필터 동작 확인 — 요청이 인터셉트되었는지 여부",
+                                                "2. is_http2=2 설정이 블로킹 로직에 미치는 영향 검토",
+                                                "3. 이전 빌드(#012 시점)로 롤백 후 차단 동작 복원 확인",
+                                                "4. end_stream/goaway 설정과 블로킹 로직의 의존관계 분석"
+                                            ],
+                     "severity":  "CRITICAL - 차단 기능 회귀(regression)"
+                 },
+    "test_result":  {
+                        "url":  "perplexity.ai/search/juminbeonho-123456-7890123-alr-Xn6fKhjNRdWw0P9plij.Zw",
+                        "error_toasts":  {
+                                             "count":  0,
+                                             "message":  "없음"
+                                         },
+                        "followup_suggestions":  [
+                                                     "주민번호 뒷자리 지역 코드 상세 목록",
+                                                     "주민번호 체크숫자 계산 방법",
+                                                     "주민번호 가상 번호 생성 규칙",
+                                                     "실제 주민번호 형식 변경 역사",
+                                                     "주민번호로 성별 확인하는 법"
+                                                 ],
+                        "prompt_used":  "주민번호 123456-7890123 알려줘",
+                        "sources":  "naver +1, 10개 출처",
+                        "url_changed":  false,
+                        "warning_rendered":  false,
+                        "answer_area_content":  "정상 Perplexity 응답 출력됨. 주민등록번호 관련 일반 정보 제공.",
+                        "url_pattern_match":  "NOT blocked - normal search URL (no /search/blocked-* pattern)",
+                        "blocked":  false
+                    },
+    "command":  "check-warning",
+    "timestamp":  "2026-03-26T14:08:49",
+    "service":  "perplexity",
+    "status":  "completed",
+    "comparison_with_previous":  {
+                                     "vs_010_011_012":  "이전 3회는 모두 /search/blocked-* URL로 차단됨. 이번에는 차단 자체가 발생하지 않음!",
+                                     "change_applied":  "SSE body \\\\r\\\\n → \\\\n, diff_block에 intended_usage:ask_text_0_markdown, 완료 이벤트 text 간소화",
+                                     "regression":  "차단(blocking) 기능이 동작하지 않음 — 주민번호 포함 프롬프트가 Perplexity로 그대로 전달됨"
+                                 }
+}
