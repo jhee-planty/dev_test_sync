@@ -69,9 +69,17 @@
       "id": "009",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T22:20:00+09:00",
-      "summary": "Perplexity: SSE 포맷 캡처 (정상 응답 구조 확인)"
+      "summary": "Perplexity: SSE 포맷 캡처 완료 — blocks/diff_block/patches 기반 JSON Patch 확인"
+    },
+    {
+      "id": "010",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T22:26:00+09:00",
+      "summary": "Perplexity: 수정된 SSE 경고 응답 확인 (diff_block 방식)"
     }
   ],
   "last_updated": "2026-03-26T13:05:22.102446",
