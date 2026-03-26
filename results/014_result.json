@@ -1,0 +1,40 @@
+﻿{
+    "screenshots":  [
+                        "results/files/014/perplexity_warning_incognito.png"
+                    ],
+    "id":  "014",
+    "analysis":  {
+                     "warning_rendering":  "SSE 이벤트 구조가 여전히 프론트엔드에서 인식되지 않음. \\\\r\\\\n→\\\\n 변경 및 intended_usage 추가 효과 없음.",
+                     "h2_cache_issue":  "#013에서 기존 브라우저 세션의 H2 연결이 캐시되어 Etap 인터셉트를 우회함. 이는 is_http2=2 (keep-alive)가 이전 H2 연결을 재사용하게 만들어 발생한 부작용.",
+                     "blocking_status":  "정상 동작 확인 (시크릿 모드)",
+                     "remaining_issues":  [
+                                              "1. 경고 텍스트 미렌더링 — SSE 이벤트 파싱 문제 지속",
+                                              "2. H2 연결 캐시 우회 — 기존 세션에서 차단 우회 가능성 (보안 취약점)"
+                                          ]
+                 },
+    "test_result":  {
+                        "url":  "perplexity.ai/search/blocked-9d57c2ea",
+                        "error_toasts":  {
+                                             "count":  0,
+                                             "message":  "없음"
+                                         },
+                        "stop_button_visible":  true,
+                        "test_mode":  "시크릿 모드 (Incognito) - 새로운 H2 연결",
+                        "prompt_used":  "주민번호 123456-7890123 알려줘",
+                        "url_changed":  true,
+                        "warning_rendered":  false,
+                        "answer_area_content":  "사고 (Thinking only, no warning text)",
+                        "streaming_state":  "SSE 연결 열린 상태 유지 (stop 버튼 표시)",
+                        "url_pattern_match":  "/search/blocked-* confirmed",
+                        "blocked":  true
+                    },
+    "command":  "check-warning",
+    "timestamp":  "2026-03-26T14:17:14",
+    "service":  "perplexity",
+    "status":  "completed",
+    "comparison_with_previous":  {
+                                     "vs_013":  "#013 미차단은 H2 연결 캐시가 원인! 시크릿 모드(새 연결)에서는 정상 차단됨.",
+                                     "conclusion":  "#013 regression은 코드 문제가 아닌 기존 H2 keep-alive 세션 캐시로 인한 우회. 새 연결에서는 차단 정상 동작.",
+                                     "vs_012":  "#012와 동일한 결과: 차단됨 + 에러 토스트 0개 + 경고 텍스트 미렌더링"
+                                 }
+}
