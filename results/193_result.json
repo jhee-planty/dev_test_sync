@@ -1,0 +1,62 @@
+﻿{
+  "id": "193",
+  "command": "run-scenario",
+  "status": "not_blocked",
+  "service": "gemini",
+  "build": "260326 #14",
+  "summary": "QUIC disabled, all traffic confirmed h2. Etap still did NOT block. Root cause: actual prompt goes via gemini.google.com/_/BardChatUi/data/batchexecute (rpcids=aPya6c), NOT via signaler-pa.clients6.google.com. The DB-registered domain/path is only a notification channel, not the AI prompt endpoint. Correct DB registration should be: domain=gemini.google.com, path=/_/BardChatUi/data/batchexecute",
+  "checks": {
+    "quic_disabled": true,
+    "all_traffic_h2": true,
+    "ai_response_blocked": false,
+    "warning_text_visible": false,
+    "gemini_responded_normally": true
+  },
+  "network_analysis": {
+    "batchexecute": {
+      "url": "https://gemini.google.com/_/BardChatUi/data/batchexecute?rpcids=aPya6c&source-path=%2Fapp%2F882c56253f5046a2&bl=boq_assistant-bard-web-server_20260324.01_p0&f.sid=4288990202094426851&hl=ko&_reqid=3235082&rt=c",
+      "domain": "gemini.google.com",
+      "path": "/_/BardChatUi/data/batchexecute",
+      "status": 200,
+      "protocol": "h2",
+      "remote_address": "[2404:6800...]",
+      "time_ms": 216,
+      "note": "THIS is the actual AI prompt endpoint. Must register this in DB."
+    },
+    "signaler_pa_channel": {
+      "url": "https://signaler-pa.clients6.google.com/punctual/multi-watch/channel?VER=8&gsessionid=ilZPachQiHDvCevzTJxTjNXt-PDF57T7OYuSISh3y-s&...",
+      "domain": "signaler-pa.clients6.google.com",
+      "path": "/punctual/multi-watch/channel",
+      "status": 200,
+      "protocol": "h2",
+      "note": "This is only a notification/polling channel, NOT the prompt endpoint. Currently registered in DB but wrong target."
+    },
+    "signaler_pa_refreshCreds": {
+      "url": "https://signaler-pa.clients6.google.com/punctual/v1/refreshCreds",
+      "domain": "signaler-pa.clients6.google.com",
+      "path": "/punctual/v1/refreshCreds",
+      "status": 200,
+      "protocol": "h2",
+      "note": "Credential refresh for signaler channel"
+    },
+    "total_requests": 38
+  },
+  "db_correction_needed": {
+    "current_registration": {
+      "domain": "signaler-pa.clients6.google.com",
+      "path": "/punctual/multi-watch/channel",
+      "issue": "This is a notification channel, not the AI prompt endpoint"
+    },
+    "correct_registration": {
+      "domain": "gemini.google.com",
+      "path": "/_/BardChatUi/data/batchexecute",
+      "rpcids": "aPya6c",
+      "note": "batchexecute with rpcids=aPya6c carries the actual user prompt to Gemini AI"
+    },
+    "additional_note": "QUIC bypass was a secondary issue. Even with QUIC disabled (h2 fallback), blocking fails because the wrong endpoint is registered in DB."
+  },
+  "screenshots": [
+    "results/files/193/chat_area_with_network.png"
+  ],
+  "timestamp": "2026-03-26T09:49:00+09:00"
+}
