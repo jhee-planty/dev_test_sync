@@ -1,0 +1,22 @@
+﻿{
+  "id": "007",
+  "command": "check-warning",
+  "status": "blocked_no_warning",
+  "service": "github_copilot",
+  "build": "260326 (DB id=43)",
+  "timestamp": "2026-03-26T12:28:00+09:00",
+  "summary": "GitHub Copilot 차단 확인되나 경고 문구 미표시. 프롬프트 전송 후 50초 이상 'Thinking...' 무한 대기 상태. Etap APF가 SSE 스트림을 차단하여 Copilot이 응답을 받지 못하는 것으로 보임. 경고 텍스트 렌더링 실패.",
+  "test_details": {
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "ai_response_blocked": true,
+    "warning_displayed": false,
+    "warning_text": null,
+    "answer_area": "Thinking... (infinite wait, 50+ seconds)",
+    "copilot_status": "Copilot is responding...",
+    "url_after_send": "github.com/copilot/c/c3024900-ae2b-4eda-b74f-e85b7bf74c83",
+    "login_state": "logged_in (jhee-planty, Copilot Free)",
+    "model": "Claude Haiku 4.5"
+  },
+  "verdict": "PARTIAL — 차단은 동작하나 (무한 Thinking) 경고 문구 렌더링 실패. 이전 8회 실패 이력과 동일 패턴. SSE 경고 응답이 Copilot 프론트엔드에서 파싱되지 않음.",
+  "screenshot": "results/files/007/copilot_thinking_stuck.png"
+}
