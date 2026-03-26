@@ -1,327 +1,125 @@
 {
-  "updated_at": "2026-03-26T13:57:00.000000",
+  "updated_at": "2026-03-27T09:00:00.000000",
   "tasks": [
     {
-      "id": "001",
+      "id": "038",
       "command": "check-warning",
       "to": "test",
-      "status": "done",
-      "created": "2026-03-26T20:30:00+09:00",
+      "status": "pending",
+      "created": "2026-03-27T08:28:00+09:00",
+      "summary": "GitHub Copilot: Build #21 — JSON error 422 전략 테스트"
+    },
+    {
+      "id": "039",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T08:28:00+09:00",
+      "summary": "Gamma: Build #21 — JSON error 422 전략 테스트"
+    }
+  ],
+  "last_updated": "2026-03-27T00:00:00.000000",
+  "archived": [    {
+      "id": "001", "command": "check-warning", "status": "done",
       "summary": "ChatGPT: PASS — 경고 표시 성공"
     },
     {
-      "id": "002",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T20:40:00+09:00",
+      "id": "002", "command": "check-warning", "status": "done",
       "summary": "Claude: PASS — 경고 표시 성공"
     },
     {
-      "id": "003",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T20:50:00+09:00",
+      "id": "003", "command": "check-warning", "status": "done",
       "summary": "Perplexity: PARTIAL — 차단O 경고X (Strike 1)"
     },
     {
-      "id": "004",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T21:00:00+09:00",
+      "id": "004", "command": "check-warning", "status": "done",
       "summary": "Grok: FAIL — not_blocked (IPv4 r_fail, 인프라 이슈)"
     },
     {
-      "id": "005",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T21:15:00+09:00",
+      "id": "005", "command": "check-warning", "status": "done",
       "summary": "Notion: PARTIAL — 차단O 경고X (빈 화면, Strike 1)"
     },
     {
-      "id": "006",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T21:30:00+09:00",
+      "id": "006", "command": "check-warning", "status": "done",
       "summary": "Genspark: PARTIAL — 차단O 경고X (프론트엔드 변경, Strike 1)"
     },
     {
-      "id": "007",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T21:45:00+09:00",
+      "id": "007", "command": "check-warning", "status": "done",
       "summary": "GitHub Copilot: PARTIAL — 차단O, Thinking 무한대기"
     },
     {
-      "id": "008",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T22:00:00+09:00",
+      "id": "008", "command": "check-warning", "status": "done",
       "summary": "Gamma: PARTIAL — 차단O, 빈 개요만 생성"
-    },
-    {
-      "id": "009",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T22:20:00+09:00",
+    },    {
+      "id": "009", "command": "run-scenario", "status": "done",
       "summary": "Perplexity: SSE 포맷 캡처 완료 — blocks/diff_block/patches 기반 JSON Patch 확인"
     },
     {
-      "id": "010",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T22:26:00+09:00",
-      "summary": "Perplexity: FAIL — perfle 서비스가 가로채서 403 반환. generator 미호출."
+      "id": "010-021", "command": "check-warning", "status": "done",
+      "summary": "Perplexity: 12회 반복 테스트 (v5-v11) — v5 확정, SSE 포맷 한계로 PARTIAL 확정. 상세: perplexity_impl.md"
     },
     {
-      "id": "011",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T22:41:00+09:00",
-      "summary": "Perplexity: FAIL — SSE generator 호출됨(2868B) but H2 END_STREAM+GOAWAY로 ReadableStream 즉시 닫힘"
+      "id": "022", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: BLOCKED_BY_LOGIN — 시크릿 모드에서 로그인 필요"
     },
     {
-      "id": "012",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T22:56:00+09:00",
-      "summary": "Perplexity: PARTIAL+ — 에러토스트 0개(H2 fix 성공), SSE 연결 유지됨, 경고 미렌더링(Thinking 멈춤)"
-    },
-    {
-      "id": "013",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-26T23:03:00+09:00",
-      "summary": "Perplexity: Iteration 4 — SSE \\n 줄바꿈 + intended_usage + text 간소화"
-    },
-    {
-      "id": "013",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T23:03:00+09:00",
-      "summary": "Perplexity: REGRESSION — 차단 자체 미발생! 정상 응답 출력. H2 연결 캐시 의심."
-    },
-    {
-      "id": "014",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T23:12:00+09:00",
-      "summary": "Perplexity: PARTIAL — 차단O 에러토스트0 경고미렌더링(Thinking 고정). SSE 포맷 근본 문제 확인."
-    },
-    {
-      "id": "015",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T23:25:00+09:00",
-      "summary": "Perplexity: PARTIAL+ — Thinking/stop 해결, markdown_block 미렌더링 (answer area 비어있음)"
-    },
-    {
-      "id": "016",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T23:42:00+09:00",
-      "summary": "Perplexity: REGRESSION — '스레드 존재하지 않음' 에러. v6 추가필드가 원인."
-    },
-    {
-      "id": "017",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-26T23:56:00+09:00",
-      "summary": "Perplexity: REGRESSION — Thinking/stop 재발. 빈 이벤트가 plan_done/final 파싱 깨뜨림."
-    },
-    {
-      "id": "018",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T00:09:00+09:00",
-      "summary": "Perplexity: REGRESSION — invalidThread 에러. 직접 markdown_block이 스레드 깨뜨림."
-    },
-    {
-      "id": "019",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T00:19:00+09:00",
-      "summary": "Perplexity: REGRESSION — '스레드 존재하지 않음'. answer/message_mode/reconnectable 변경이 원인."
-    },
-    {
-      "id": "020",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T00:26:00+09:00",
-      "summary": "Perplexity: REGRESSION — markdown_block 블록 제거도 스레드 깨짐. final event 변경 완전 불가."
-    },
-    {
-      "id": "021",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T00:34:00+09:00",
-      "summary": "Perplexity: REGRESSION — v11 content event answer도 스레드 깨짐. v5 확정, PARTIAL."
-    },
-    {
-      "id": "022",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T00:45:00+09:00",
-      "summary": "GitHub Copilot: BLOCKED_BY_LOGIN — 시크릿 모드에서 로그인 필요. 재테스트 필요."
-    },
-    {
-      "id": "024",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T01:20:00+09:00",
-      "summary": "GitHub Copilot: NOT_BLOCKED — 민감 프롬프트 미사용. 재테스트 #028 필요."
-    },
-    {
-      "id": "023",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T01:12:00+09:00",
+      "id": "023", "command": "check-warning", "status": "done",
       "summary": "Gamma: Build #15 — SSE \\n + outline.title+cards.title+description에 경고"
     },
     {
-      "id": "025",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T01:30:00+09:00",
+      "id": "024", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: NOT_BLOCKED — 민감 프롬프트 미사용"
+    },
+    {
+      "id": "025", "command": "run-scenario", "status": "done",
       "summary": "Genspark: SSE 포맷 재캡처 — 슈퍼 에이전트 프론트엔드 변경 확인"
     },
     {
-      "id": "026",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T01:40:00+09:00",
-      "summary": "Notion: HAR 캡처 — AI chat API 프로토콜 분석 (SSE/WS/REST 확인)"
+      "id": "026", "command": "run-scenario", "status": "done",
+      "summary": "Notion: HAR 캡처 — AI chat API 프로토콜 분석"
     },
     {
-      "id": "027",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T01:45:00+09:00",
-      "summary": "Gamma: Build #16 — END_STREAM=false 수정, 경고 텍스트 렌더링 재테스트"
+      "id": "027", "command": "check-warning", "status": "done",
+      "summary": "Gamma: Build #16 — END_STREAM=false, EventStream 0건"
+    },    {
+      "id": "028", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: WARNING_PARTIALLY_DELIVERED — SSE 2건, ERR_CONNECTION_CLOSED"
     },
     {
-      "id": "028",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T01:55:00+09:00",
-      "summary": "GitHub Copilot: WARNING_PARTIALLY_DELIVERED — SSE 2건 수신, ERR_CONNECTION_CLOSED → generic error"
-    },
-    {
-      "id": "030",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T02:12:00+09:00",
-      "summary": "GitHub Copilot: WARNING_PARTIALLY_DELIVERED — [DONE] 수신되었으나 ERR_HTTP2_PROTOCOL_ERROR"
-    },
-    {
-      "id": "032",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-27T02:30:00+09:00",
-      "summary": "GitHub Copilot: Build #18 — END_STREAM=true + [DONE], H2 정상 종료 테스트"
-    },
-    {
-      "id": "029",
-      "command": "run-scenario",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T02:00:00+09:00",
+      "id": "029", "command": "run-scenario", "status": "done",
       "summary": "Gamma: SSE 캡처 완료 — event:chunk(9)+event:done(data:stop) 포맷 확인"
     },
     {
-      "id": "031",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T02:25:00+09:00",
-      "summary": "Gamma: WARNING_NOT_DELIVERED — chunk/done 포맷이지만 EventStream 0건, 데이터 미도달"
+      "id": "030", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: Build #17 — [DONE] 수신, ERR_HTTP2_PROTOCOL_ERROR"
     },
     {
-      "id": "032",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T02:30:00+09:00",
-      "summary": "GitHub Copilot: WARNING_NOT_DELIVERED — END_STREAM=true → 0건 (스트림 즉시 종료)"
+      "id": "031", "command": "check-warning", "status": "done",
+      "summary": "Gamma: Build #18 — chunk/done SSE, EventStream 0건"
     },
     {
-      "id": "033",
-      "command": "check-warning",
-      "to": "test",
-      "status": "superseded",
-      "created": "2026-03-27T02:40:00+09:00",
-      "summary": "Gamma: Build #18b — Build #19로 대체됨"
+      "id": "032", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: Build #18 — END_STREAM=true → 0건 (13ms)"
     },
     {
-      "id": "034",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-27T02:49:00+09:00",
-      "summary": "GitHub Copilot: Build #19 — END_STREAM=false + GOAWAY=true"
+      "id": "033", "command": "check-warning", "status": "done",
+      "summary": "Gamma: Build #18b — END_STREAM=true, 0건"
     },
     {
-      "id": "034",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T02:49:00+09:00",
-      "summary": "GitHub Copilot: WARNING_NOT_DELIVERED — 3건 수신 but ERR_HTTP2_PROTOCOL_ERROR (GOAWAY 효과 없음)"
+      "id": "034", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: Build #19 — GOAWAY, 3건 but PROTOCOL_ERROR"
     },
     {
-      "id": "035",
-      "command": "check-warning",
-      "to": "test",
-      "status": "superseded",
-      "created": "2026-03-27T02:49:00+09:00",
-      "summary": "Gamma: Build #19 — Build #20으로 대체"
+      "id": "035", "command": "check-warning", "status": "done",
+      "summary": "Gamma: Build #19 — GOAWAY, 0건"
     },
     {
-      "id": "036",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-27T02:57:00+09:00",
-      "summary": "GitHub Copilot: Build #20 — 2-frame DATA(body→empty+END_STREAM) + GOAWAY"
+      "id": "036", "command": "check-warning", "status": "done",
+      "summary": "GitHub Copilot: Build #20 — 2-frame DATA, 0건, 에러 없음 (깨끗한 차단)"
     },
     {
-      "id": "037",
-      "command": "check-warning",
-      "to": "test",
-      "status": "pending",
-      "created": "2026-03-27T02:57:00+09:00",
-      "summary": "Gamma: Build #20 — 2-frame DATA + chunk/done SSE + GOAWAY"
+      "id": "037", "command": "check-warning", "status": "done",
+      "summary": "Gamma: Build #20 — 2-frame DATA, 0건"
     }
-  ],
-  "last_updated": "2026-03-26T16:30:00.000000",
-  "archived": []
+  ]
 }
