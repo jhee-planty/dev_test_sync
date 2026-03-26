@@ -104,8 +104,24 @@
       "status": "pending",
       "created": "2026-03-26T23:03:00+09:00",
       "summary": "Perplexity: Iteration 4 — SSE \\n 줄바꿈 + intended_usage + text 간소화"
+    },
+    {
+      "id": "013",
+      "command": "check-warning",
+      "to": "test",
+      "status": "done",
+      "created": "2026-03-26T23:03:00+09:00",
+      "summary": "Perplexity: REGRESSION — 차단 자체 미발생! 정상 응답 출력. H2 연결 캐시 의심."
+    },
+    {
+      "id": "014",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T23:12:00+09:00",
+      "summary": "Perplexity: Iteration 5 (재테스트) — 새 브라우저 세션으로 차단 확인"
     }
   ],
-  "last_updated": "2026-03-26T14:03:00.000000",
+  "last_updated": "2026-03-26T14:12:00.000000",
   "archived": []
 }
