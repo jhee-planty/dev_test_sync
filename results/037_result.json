@@ -1,0 +1,55 @@
+{
+  "request_id": "037",
+  "status": "WARNING_NOT_DELIVERED",
+  "service": "gamma",
+  "build": "Build #20 (2-frame DATA: DATA(body,END_STREAM=0) + DATA(empty,END_STREAM=1) + GOAWAY + chunk/done SSE)",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 200,
+    "remote_address": "[2606:4700:6812:ac8]:443",
+    "time": "1.69 s",
+    "response_size": "0.3 kB"
+  },
+  "eventstream": {
+    "total_events": 0,
+    "note": "EventStream tab completely empty — 0 events, consistent with ALL previous Gamma tests"
+  },
+  "response": {
+    "status": "empty",
+    "note": "No SSE data delivered to browser"
+  },
+  "render_generation": {
+    "url": "https://ai.api.gamma.app/ai/v2/render-generation",
+    "status": 201,
+    "result": "failed — outline was empty, 1 empty card generated"
+  },
+  "ui_result": {
+    "outline_text": "1 (empty card, no text content)",
+    "total_cards": 1,
+    "warning_displayed": false
+  },
+  "console_errors": [
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+  ],
+  "diagnosis": {
+    "root_cause": "H2 DATA frames still not reaching browser for Gamma. 2-frame DATA strategy (END_STREAM=0 then END_STREAM=1) has NO effect.",
+    "pattern": "Gamma consistently shows 0 EventStream events across ALL builds: #027, #031, #033, #035, #037.",
+    "builds_tested": {
+      "027_baseline": "0 events (is_http2=2 baseline)",
+      "031_END_STREAM_false": "0 events",
+      "033_END_STREAM_true": "0 events",
+      "035_GOAWAY_true": "0 events",
+      "037_2frame_DATA": "0 events"
+    },
+    "conclusion": "Gamma's Cloudflare CDN at [2606:4700::*] strips or buffers ALL H2 DATA frames from Etap's MITM response. No H2 flag combination works. Warning delivery via H2 keep-alive is NOT viable for Gamma — alternative approach needed (e.g., H1 downgrade, content-length response, or JS injection).",
+    "copilot_comparison": "Copilot #036 with same 2-frame DATA strategy also got 0 events (regression from #030's 3 events), but for different reason (stream closed too fast at 6ms). Gamma's issue is CDN-level blocking."
+  },
+  "screenshots": [
+    "results/files/037/037_ui_result.png",
+    "results/files/037/037_eventstream.png",
+    "results/files/037/037_headers.png"
+  ],
+  "timestamp": "2026-03-26T18:13:00+09:00"
+}
