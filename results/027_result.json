@@ -1,0 +1,64 @@
+{
+  "request_id": "027",
+  "task_type": "check-warning",
+  "service": "gamma",
+  "status": "WARNING_NOT_DISPLAYED",
+  "timestamp": "2026-03-26T16:53:00+09:00",
+  "environment": {
+    "browser": "Chrome (일반 모드, 로그인 상태)",
+    "account": "jjanghee28@gmail.com",
+    "url": "https://gamma.app/create/generate",
+    "build": "#16 (END_STREAM=false)"
+  },
+  "test_prompt": "주민번호 123456-7890123 포함하여 프레젠테이션 만들어줘",
+  "result": {
+    "blocked": true,
+    "warning_displayed": false,
+    "outline_title": null,
+    "cards_generated": 1,
+    "card_1_title": "1",
+    "card_1_description": null,
+    "card_content_empty": true,
+    "error_toast": false,
+    "console_errors": [
+      "WebSocket connection to 'wss://api.gamma.app/graphql' failed: WebSocket is closed before the connection is established."
+    ]
+  },
+  "network_analysis": {
+    "generation_endpoint": {
+      "url": "https://ai.api.gamma.app/ai/v2/generation",
+      "status": 200,
+      "protocol": "h2",
+      "size": "0.6 kB",
+      "time": "1.51s",
+      "type": "SSE (EventSource)",
+      "eventstream_events": 0,
+      "note": "Status 200 but EventStream tab EMPTY — no SSE events received by Chrome"
+    },
+    "render_generation_endpoint": {
+      "url": "https://ai.api.gamma.app/ai/v2/render-generation",
+      "status": "FAILED",
+      "protocol": "h2",
+      "size": "0.0 kB",
+      "time": "23ms",
+      "response_data": "Failed to load response data - No data found for resource with given identifier",
+      "note": "Complete failure — no response received at all"
+    },
+    "websocket_error": "wss://api.gamma.app/graphql WebSocket closed before established"
+  },
+  "comparison_with_023": {
+    "previous_issue": "#023: END_STREAM=true → Chrome ReadableStream 즉시 닫힘 → SSE 이벤트 미수신 → 빈 카드",
+    "current_issue": "#027: END_STREAM=false applied but STILL empty — generation endpoint returns 200 with 0 SSE events, render-generation completely fails",
+    "improvement": "PARTIAL — END_STREAM=false allows the connection to stay open (200 status received), but no actual SSE event data is delivered to the browser. The H2 DATA frame containing the warning text is likely not formatted as valid SSE events (missing 'data: ' prefix and double newline delimiters).",
+    "remaining_problem": "Warning content needs to be formatted as proper SSE events: 'data: {json}\n\n' — current implementation likely sends raw text/HTML which Chrome's EventSource parser ignores"
+  },
+  "diagnosis": {
+    "root_cause": "The Etap block response for gamma's generation endpoint sends warning content but NOT in SSE format. Chrome's EventSource (fetch with ReadableStream text/event-stream parser) receives the HTTP 200 + headers but cannot parse the body as SSE events because the warning content lacks 'data: ' line prefixes and '\n\n' event delimiters.",
+    "why_render_generation_fails": "render-generation is called after generation completes. Since generation produced no valid SSE events, the outline has no real data. render-generation then fails because it tries to render an empty/invalid outline.",
+    "fix_needed": "Etap generator for gamma must format warning as SSE events: each line prefixed with 'data: ' and terminated with '\n\n'. The JSON structure must match gamma's expected outline format (title, cards array with title/description)."
+  },
+  "screenshots": [
+    "results/files/027/027_gamma_outline_result.png",
+    "results/files/027/027_gamma_eventstream_empty.png"
+  ]
+}
