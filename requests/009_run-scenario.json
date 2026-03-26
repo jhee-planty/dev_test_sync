@@ -1,0 +1,20 @@
+{
+  "id": "009",
+  "command": "run-scenario",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T22:20:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "description": "Perplexity 실제 SSE 응답 포맷 캡처 — 차단 안 되는 일반 프롬프트로 정상 응답 구조 확인",
+    "steps": [
+      {"action": "open-devtools", "note": "DevTools Network 탭 열기, Fetch/XHR 필터"},
+      {"action": "open", "url": "https://www.perplexity.ai"},
+      {"action": "send-prompt", "text": "오늘 날씨 알려줘"},
+      {"action": "wait", "seconds": 10, "note": "응답 완전히 끝날 때까지 대기"},
+      {"action": "capture-network", "note": "perplexity_ask 또는 SSE 관련 요청 찾기. EventStream 응답 전체를 복사. 특히: (1) event type 이름들, (2) data JSON의 최상위 필드 목록, (3) text 필드의 JSON 구조, (4) step_type 값들, (5) status 필드 값"},
+      {"action": "report", "format": "SSE 응답의 처음 3개 이벤트와 마지막 2개 이벤트를 결과에 포함. 전체가 너무 길면 구조만 요약"}
+    ]
+  },
+  "notes": "Perplexity 경고가 차단은 되지만 텍스트가 렌더링되지 않음(#003). SSE 포맷이 변경되었을 가능성. 차단 안 되는 일반 프롬프트('오늘 날씨')로 정상 SSE 구조를 확인해야 함. 핵심: text 필드 JSON 구조와 event type 확인."
+}

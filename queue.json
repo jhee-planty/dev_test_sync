@@ -64,8 +64,16 @@
       "status": "done",
       "created": "2026-03-26T22:00:00+09:00",
       "summary": "Gamma: PARTIAL — 차단O, 빈 개요만 생성"
+    },
+    {
+      "id": "009",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T22:20:00+09:00",
+      "summary": "Perplexity: SSE 포맷 캡처 (정상 응답 구조 확인)"
     }
   ],
-  "last_updated": "2026-03-26T12:38:57.973745",
+  "last_updated": "2026-03-26T13:05:22.102446",
   "archived": []
 }
