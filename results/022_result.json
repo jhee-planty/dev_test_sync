@@ -1,0 +1,41 @@
+{
+  "id": "022",
+  "command": "check-warning",
+  "status": "BLOCKED_BY_LOGIN",
+  "executed": "2026-03-27T00:13:00+09:00",
+  "results": {
+    "service": "github_copilot",
+    "url_before": "github.com/copilot",
+    "url_after": "github.com/copilot",
+    "url_changed": false,
+    "login_required": true,
+    "prompt_sent": false,
+    "blocked": "N/A - prompt never reached server",
+    "warning_rendered": false,
+    "warning_text": null,
+    "thinking_state": "N/A",
+    "stop_button": false,
+    "error_messages": "Sign in to continue - GitHub requires authentication before any prompt can be sent",
+    "toast_messages": null,
+    "sse_eventstream": "N/A - no request sent to server",
+    "console_errors": null,
+    "network_tab": "N/A - no API request made"
+  },
+  "check_items": {
+    "차단 여부 확인": "N/A - 로그인 필수로 프롬프트가 서버로 전송되지 않음. Etap 차단 테스트 불가",
+    "경고 텍스트 chat pane 표시": "N/A - 프롬프트 미전송",
+    "에러/콘솔 에러": "없음 (Sign in 팝업만 표시됨)",
+    "SSE EventStream 데이터": "N/A - API 요청 자체가 발생하지 않음",
+    "stop 버튼/Thinking 상태": "N/A",
+    "스크린샷 캡처": "01_login_popup.png, 02_signin_required.png"
+  },
+  "analysis": {
+    "summary": "GitHub Copilot 웹 (github.com/copilot)은 로그인 없이는 프롬프트를 전송할 수 없음. Send 버튼 클릭 또는 Enter 시 'Sign in to continue' 팝업이 표시되며, 실제 API 요청이 서버로 전송되지 않음. 따라서 시크릿 모드(비로그인)에서는 Etap H2 차단/경고 테스트가 불가능함.",
+    "recommendation": "GitHub Copilot 경고 테스트를 위해서는 GitHub 계정 로그인이 필요. 로그인 상태에서 재테스트 권장. 또는 Etap이 github.com/copilot 페이지 로드 자체를 차단하는 방식(페이지 레벨 차단)이 필요할 수 있음.",
+    "h2_fix_verification": "H2 fix (is_http2=2, END_STREAM=false) 검증 불가 - API 요청이 발생하지 않았으므로 body delivery 여부 확인 불가"
+  },
+  "screenshots": [
+    "results/files/022/01_login_popup.png",
+    "results/files/022/02_signin_required.png"
+  ]
+}
