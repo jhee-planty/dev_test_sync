@@ -45,11 +45,19 @@
       "id": "006",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T21:30:00+09:00",
-      "summary": "Genspark: check-warning (#6)"
+      "summary": "Genspark: PARTIAL — 차단O 경고X (프론트엔드 변경, Strike 1)"
+    },
+    {
+      "id": "007",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T21:45:00+09:00",
+      "summary": "GitHub Copilot: check-warning (#7)"
     }
   ],
-  "last_updated": "2026-03-26T12:20:47.983892",
+  "last_updated": "2026-03-26T12:24:48.691210",
   "archived": []
 }
