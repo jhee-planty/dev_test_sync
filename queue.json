@@ -8,9 +8,25 @@
       "status": "pending",
       "created": "2026-03-26T09:45:00.000000",
       "summary": "Gemini: QUIC 비활성화 후 check-warning 재테스트"
+    },
+    {
+      "id": "195",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T19:15:00+09:00",
+      "summary": "Grok: check-warning"
+    },
+    {
+      "id": "198",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T20:15:00+09:00",
+      "summary": "Notion AI: check-warning (DB pattern updated)"
     }
   ],
-  "last_updated": "2026-03-26T09:45:00.000000",
+  "last_updated": "2026-03-26T11:05:35.486250",
   "archived": [
     {
       "id": "186",
