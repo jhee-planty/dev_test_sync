@@ -13,11 +13,19 @@
       "id": "002",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T20:40:00+09:00",
-      "summary": "Claude: check-warning 재검증 (#2)"
+      "summary": "Claude: PASS — 경고 표시 성공"
+    },
+    {
+      "id": "003",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T20:50:00+09:00",
+      "summary": "Perplexity: check-warning 재검증 (#3)"
     }
   ],
-  "last_updated": "2026-03-26T11:56:41.867174",
+  "last_updated": "2026-03-26T12:03:03.014177",
   "archived": []
 }
