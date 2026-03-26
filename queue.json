@@ -77,9 +77,17 @@
       "id": "010",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T22:26:00+09:00",
-      "summary": "Perplexity: 수정된 SSE 경고 응답 확인 (diff_block 방식)"
+      "summary": "Perplexity: FAIL — perfle 서비스가 가로채서 403 반환. generator 미호출."
+    },
+    {
+      "id": "011",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T22:41:00+09:00",
+      "summary": "Perplexity: Iteration 2 — perfle generator 등록 후 재테스트"
     }
   ],
   "last_updated": "2026-03-26T13:05:22.102446",

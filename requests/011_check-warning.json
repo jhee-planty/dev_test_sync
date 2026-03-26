@@ -1,0 +1,20 @@
+{
+  "id": "011",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T22:41:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "url": "https://www.perplexity.ai",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in answer area",
+    "check_items": [
+      "answer_area에 경고 텍스트가 표시되는지 확인",
+      "URL이 /search/blocked-* 로 변경되는지 확인",
+      "에러 토스트 발생 여부 확인",
+      "경고 문구 내용을 스크린샷과 함께 보고"
+    ]
+  },
+  "notes": "Iteration 2. #010 실패 원인: perfle(id=9) 서비스가 perplexity_ask를 가로채서 기본 403 반환. 수정: _response_generators['perfle']에도 SSE generator 등록 + [APF_WARNING_TEST:perplexity] 로그 추가."
+}
