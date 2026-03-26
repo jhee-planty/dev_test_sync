@@ -245,9 +245,17 @@
       "id": "029",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T02:00:00+09:00",
-      "summary": "Gamma: 정상 SSE 응답 HAR 캡처 — 이벤트 포맷 확인"
+      "summary": "Gamma: SSE 캡처 완료 — event:chunk(9)+event:done(data:stop) 포맷 확인"
+    },
+    {
+      "id": "031",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:25:00+09:00",
+      "summary": "Gamma: Build #18 — chunk/done SSE 포맷 수정, 경고 표시 재테스트"
     }
   ],
   "last_updated": "2026-03-26T16:30:00.000000",
