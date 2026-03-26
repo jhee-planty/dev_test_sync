@@ -1,0 +1,81 @@
+{
+  "request_id": "029",
+  "status": "COMPLETED",
+  "summary": "Gamma 정상 SSE 응답 포맷 캡처 완료. generation 엔드포인트는 10개 SSE 이벤트를 스트리밍하며, 마지막 이벤트로 type=done, data=stop을 전송하여 종료한다.",
+  "service": "gamma",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 200,
+    "remote_address": "[2606:4700:6812:bc8]:443"
+  },
+  "request_payload": {
+    "promptKey": "GenerateOutlineStory",
+    "interactionId": "161c2fb965134b84-4b337fbeae38c75b",
+    "variables": {
+      "topic": "Make a 3-slide presentation about cats"
+    },
+    "workspaceId": "yfjr6ojr0534nzf"
+  },
+  "response_headers": {
+    "content_type": "text/event-stream (implied by EventStream tab presence)",
+    "access_control_allow_credentials": "true",
+    "access_control_allow_origin": "https://gamma.app",
+    "cache_control": "private, no-cache, no-store, must-revalidate"
+  },
+  "sse_events": {
+    "total_count": 10,
+    "event_structure": {
+      "columns": ["Id", "Type", "Data", "Time"],
+      "description": "Events 1-9 are content chunks (type=chunk/content), Event 10 is termination (type=done, data=stop)"
+    },
+    "events_summary": [
+      {"id": 1, "type": "chunk (c...)", "data_preview": "고"},
+      {"id": 2, "type": "chunk (c...)", "data_preview": "양이의 매력적인 세계를 3개의 슬라이드로 압축..."},
+      {"id": 3, "type": "chunk (c...)", "data_preview": "고양이의 귀여움과 독특한 특징을 강조하다..."},
+      {"id": 4, "type": "chunk (c...)", "data_preview": "선을 사로잡는 스토리텔링으로 구성하겠습..."},
+      {"id": 5, "type": "chunk (c...)", "data_preview": "고양이의 매력 탐구 - **독립적이면서도 애정 넘..."},
+      {"id": 6, "type": "chunk (c...)", "data_preview": "한 깊은 애정을 표현합니다. - **놀라운 민첩성..."},
+      {"id": 7, "type": "chunk (c...)", "data_preview": "양한 품종과 개성:** 페르시안의 우아함부터..."},
+      {"id": 8, "type": "chunk (c...)", "data_preview": "의 변화 - **스트레스 해소와 정서적 안정:**..."},
+      {"id": 9, "type": "chunk (c...)", "data_preview": "히는 활동을 통해 삶의 활력을 얻습니다. - **..."},
+      {"id": 10, "type": "done (d...)", "data": "stop"}
+    ],
+    "key_findings": {
+      "termination_event": "type=done, data=stop (Event #10)",
+      "content_events": "type=chunk, data contains Korean text (outline content streamed incrementally)",
+      "event_count": "9 content chunks + 1 termination = 10 total",
+      "stream_duration": "~5.28 seconds",
+      "response_size": "2.5 kB"
+    }
+  },
+  "additional_requests": [
+    {
+      "name": "render-generation",
+      "url": "https://ai.api.gamma.app/ai/v2/render-generation",
+      "method": "POST (Fetch)",
+      "status": 201,
+      "note": "Called after outline generation completes, renders the final outline"
+    },
+    {
+      "name": "track-span",
+      "url": "https://api.gamma.app/ai/v2/track-span",
+      "method": "POST (Fetch)",
+      "note": "Telemetry/tracking for the generation span"
+    }
+  ],
+  "implications_for_etap_warning": {
+    "sse_format": "Gamma uses standard SSE with event types (chunk for content, done for termination)",
+    "termination": "Last event has type=done and data=stop - Etap generator should send similar termination",
+    "content_type": "Response uses text/event-stream Content-Type",
+    "protocol": "h2 over TLS to Cloudflare-hosted API (2606:4700:xxxx IPv6)",
+    "recommendation": "Etap warning generator should: (1) send warning text as chunk events, (2) end with type=done data=stop event, (3) use text/event-stream Content-Type"
+  },
+  "screenshots": [
+    "results/files/029/029_headers_general.png",
+    "results/files/029/029_eventstream_overview.png",
+    "results/files/029/029_payload.png"
+  ],
+  "timestamp": "2026-03-26T17:20:00+09:00"
+}
