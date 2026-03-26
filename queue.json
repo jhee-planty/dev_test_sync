@@ -149,11 +149,19 @@
       "id": "018",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T00:09:00+09:00",
-      "summary": "Perplexity: Iteration 9 (v8) — diff_block→직접 markdown_block 표기법. 빈 이벤트 제거."
+      "summary": "Perplexity: REGRESSION — invalidThread 에러. 직접 markdown_block이 스레드 깨뜨림."
+    },
+    {
+      "id": "019",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T00:19:00+09:00",
+      "summary": "Perplexity: Iteration 10 (v9) — v5 diff_block 유지 + final event answer 필드 채움 + message_mode=FULL"
     }
   ],
-  "last_updated": "2026-03-26T15:09:00.000000",
+  "last_updated": "2026-03-26T15:19:00.000000",
   "archived": []
 }
