@@ -1,0 +1,21 @@
+﻿{
+  "id": "006",
+  "command": "check-warning",
+  "status": "blocked_no_warning",
+  "service": "genspark",
+  "build": "260326 (DB id=40)",
+  "timestamp": "2026-03-26T12:22:00+09:00",
+  "summary": "Genspark 차단 확인되나 경고 문구 미표시. 프롬프트 전송 후 응답 영역이 비어있고 '변경 사항을 적용하려면 새로고침이 필요합니다' 메시지 표시. Etap APF 차단은 동작하나 경고 텍스트가 Genspark UI에 렌더링되지 않음.",
+  "test_details": {
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "ai_response_blocked": true,
+    "warning_displayed": false,
+    "warning_text": null,
+    "answer_area": "empty with refresh banner: '변경 사항을 적용하려면 새로고침이 필요합니다'",
+    "url_after_send": "genspark.ai/agents?type=super_agent&action=init-agent",
+    "login_state": "logged_in",
+    "agent_type": "Genspark 슈퍼 에이전트"
+  },
+  "verdict": "PARTIAL — 차단은 동작하나 경고 문구 렌더링 실패. 이전 테스트와 다른 결과(이전: WARNING_SHOWN_ARTIFACT_ISSUE). 경고 전략 재검토 필요.",
+  "screenshot": "results/files/006/genspark_blocked_no_warning.png"
+}
