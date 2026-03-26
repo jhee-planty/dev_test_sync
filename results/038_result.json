@@ -1,0 +1,48 @@
+{
+  "request_id": "038",
+  "status": "WARNING_NOT_DELIVERED",
+  "service": "github_copilot",
+  "build": "Build #21 (SSE→JSON error response 422 Unprocessable Entity)",
+  "endpoint": {
+    "url": "https://api.individual.githubcopilot.com/github/chat/threads/.../messages?",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 200,
+    "remote_address": "140.82.112.22:443"
+  },
+  "eventstream": {
+    "total_events": 0,
+    "note": "EventStream tab completely empty — 0 events"
+  },
+  "response": {
+    "status": "failed_to_load",
+    "note": "Failed to load response data — Request with the provided ID has already finished loading"
+  },
+  "ui_result": {
+    "error_displayed": true,
+    "error_message": "I'm sorry but there was an error. Please try again.",
+    "warning_text_displayed": false,
+    "warning_displayed": false,
+    "note": "Generic error shown, NOT APF warning text"
+  },
+  "console_errors": [
+    "Matched leaf route at location '/copilot/c/...' does not have an element or Component (React routing warning, not APF-related)"
+  ],
+  "model": "Claude Haiku 4.5",
+  "diagnosis": {
+    "status_code": "200 OK instead of expected 422",
+    "observation": "Build #21 intended to return 422 + JSON error body, but actual status was 200 OK. EventStream shows 0 events — SSE stream was received but no events parsed. Response data could not be loaded (already finished). UI shows generic Copilot error, not APF warning text.",
+    "possible_causes": [
+      "Build #21 may not have been deployed to the test server yet",
+      "422 status code may have been converted back to 200 by Etap proxy",
+      "SSE content-type header may still be set, causing 200 status with empty SSE body"
+    ],
+    "conclusion": "The 422 JSON error approach was NOT observed. Status was 200 with 0 EventStream events. UI showed generic error, not APF-specific warning. Need to verify Build #21 deployment status on Etap server."
+  },
+  "screenshots": [
+    "results/files/038/038_ui_result.png",
+    "results/files/038/038_network_response.png",
+    "results/files/038/038_console.png"
+  ],
+  "timestamp": "2026-03-27T08:40:00+09:00"
+}
