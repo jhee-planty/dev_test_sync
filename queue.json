@@ -1,1 +1,15 @@
-{"tasks": [], "updated_at": "2026-03-26T00:00:00+09:00", "note": "Reset for Cowork-driven workflow"}
+{
+  "updated_at": "2026-03-26T11:48:26.998860",
+  "tasks": [
+    {
+      "id": "001",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T20:30:00+09:00",
+      "summary": "ChatGPT: check-warning 재검증 (파이프라인 재시작 #1)"
+    }
+  ],
+  "last_updated": "2026-03-26T11:48:26.998868",
+  "archived": []
+}
