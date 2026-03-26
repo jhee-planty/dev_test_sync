@@ -216,6 +216,14 @@
       "status": "pending",
       "created": "2026-03-27T01:40:00+09:00",
       "summary": "Notion: HAR 캡처 — AI chat API 프로토콜 분석 (SSE/WS/REST 확인)"
+    },
+    {
+      "id": "027",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T01:45:00+09:00",
+      "summary": "Gamma: Build #16 — END_STREAM=false 수정, 경고 텍스트 렌더링 재테스트"
     }
   ],
   "last_updated": "2026-03-26T16:30:00.000000",
