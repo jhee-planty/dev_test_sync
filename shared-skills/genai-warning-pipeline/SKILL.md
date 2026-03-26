@@ -253,7 +253,7 @@ Update status.md whenever a service changes phase or state.
 
 Summary:
 - **Inject:** `bo_mlog_info("[APF_WARNING_TEST:{service_id}] ...", ...);`
-- **Monitor / Remove / Gate:** → See `apf-warning-impl/references/test-log-templates.md`
+- **Monitor / Remove / Gate:** → See `../apf-warning-impl/references/test-log-templates.md`
 
 ---
 
@@ -280,7 +280,7 @@ Phase 3에서 test PC에 check-warning 요청을 보낸 후, **Scheduled Task가
 `local_archive/pipeline_dashboard.md` — Scheduled Task가 매 실행마다 갱신.
 macOS 알림으로 핵심 이벤트(결과 도착, 성공/실패)도 자동 통보.
 
-→ See `cowork-remote/SKILL.md` → Mode 2 for Scheduled Task 상세 (도구 제약, state 파일, dashboard 형식)
+→ See `../cowork-remote/SKILL.md` → Mode 2 for Scheduled Task 상세 (도구 제약, state 파일, dashboard 형식)
 
 ---
 
@@ -323,7 +323,7 @@ test PC result reports issue → dev Cowork checks etap logs + console errors
   │   → Adjust block response format → rebuild → retest
   ├─ Log shows write failure → infrastructure issue
   │   → Check visible_tls, proxy connection
-  │   → See _backup_20260317/apf-test-diagnosis/SKILL.md for diagnosis patterns
+  │   → See `../_backup_20260317/apf-test-diagnosis/SKILL.md` for diagnosis patterns
   └─ No log at all → service detection not triggered → check domain/path patterns
 ```
 
