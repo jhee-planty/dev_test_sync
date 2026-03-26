@@ -243,7 +243,7 @@ Phase 3에서 test PC에 check-warning 요청을 보낸 후, **Scheduled Task가
 macOS 알림으로 핵심 이벤트(결과 도착, 성공/실패)도 자동 통보.
 
 → See `../cowork-remote/SKILL.md` → Mode 2 for Scheduled Task 상세 (도구 제약, state 파일, dashboard 형식)
-→ See `../cowork-remote/SKILL.md` → "실패 시 자동 액션 흐름" for 실패 원인 분류, 자동 수정 가능/불가 판단, 3-Strike Rule 연계
+→ 실패 시 자동 액션 (원인 분류, 자동 수정, 3-Strike Rule)은 Scheduled Task 프롬프트(`apf-poll-results`)에 정의됨
 
 ---
 

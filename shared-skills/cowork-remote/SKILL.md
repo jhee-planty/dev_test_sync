@@ -162,22 +162,9 @@ state 파일로 이전 실행을 이어받아 연속성을 유지한다.
 따라서 Scheduled Task에서는 **git CLI를 desktop-commander로 실행**한다.
 git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull**을 사용한다.
 
-**동시 실행 방지 (Lock):**
-Scheduled Task가 5분 간격으로 실행되므로 이전 실행이 끝나기 전에 새 실행이 시작될 수 있다.
-`local_archive/pipeline.lock` 파일로 동시 실행을 방지한다.
-- 실행 시작: Lock 파일 생성 (ISO timestamp 기록)
-- Lock 존재 + 10분 이내: 이번 실행 스킵
-- Lock 존재 + 10분 이상: 이전 실행 비정상 종료로 간주, Lock 삭제 후 진행
-- **실행 종료 시 (정상/에러 모두): 반드시 Lock 파일 삭제**
-
-메인 세션에서 수동으로 pipeline 작업(DB 수정, 요청 생성 등)을 할 때도
-Scheduled Task와 충돌하지 않도록 Lock 파일 존재 여부를 확인하거나
-`update_scheduled_task({enabled: false})`로 일시 중지한다.
-
 **Scheduled Task 실행 흐름 (dev PC 기준):**
 ```
 매 실행 시 (cron):
-  0. Lock 확인 → Lock 생성
   1. pipeline_state.json 읽기 (이전 상태 복원)
   2. git pull로 최신 상태 동기화
   3. results/에 새 결과 파일 확인
@@ -240,46 +227,10 @@ osascript -e 'display notification "{message}" with title "APF Pipeline"'
 알림 조건: 결과 도착(성공/실패), 에러 3회 연속, 서비스 완료.
 빈 폴링("새 결과 없음")에는 알림하지 않는다.
 
-**실패 시 자동 액션 흐름:**
-
+**실패 시 자동 액션:**
 Scheduled Task는 결과를 감지하고 분석한 후 **다음 액션까지 실행**해야 한다.
 감지 → 보고에서 멈추면 사용자 개입이 필요해지므로 "전체 작업자" 목표에 어긋난다.
-
-```
-실패 결과 수신 →
-  1. 원인 분류:
-     - not_blocked (서비스 미감지) → DB 엔드포인트 불일치 가능
-     - blocked but not_visible → 코드/Strategy 문제
-     - error → 인프라 문제
-
-  2. 자동 수정 가능한 경우 (DB 수정 등):
-     SSH로 DB 조회 → 결과의 recommended_action 참조 →
-     DB UPDATE 실행 → reload_services → detect 확인 →
-     새 check-warning 요청 생성 → git push →
-     pipeline_state를 "waiting_result"로 갱신
-
-  3. 자동 수정 불가한 경우 (코드 변경 필요):
-     분석 결과 + 추천 액션을 pipeline_dashboard.md에 기록 →
-     macOS 알림으로 "수동 개입 필요: {서비스} {원인}" 통보 →
-     pipeline_state를 "needs_manual_action"으로 갱신
-
-  4. 3-Strike Rule:
-     동일 서비스 3회 연속 실패 →
-     pipeline_state를 "strike_3_review"로 갱신 →
-     macOS 알림으로 "3-Strike: {서비스} 전략 재검토 필요" 통보
-```
-
-**자동 수정 가능한 액션 목록:**
-- DB 엔드포인트 수정: SSH → mysql UPDATE → reload_services
-- DB path_patterns 수정: SSH → mysql UPDATE → reload_services
-- etapd 재시작: SSH → systemctl restart etapd
-- 새 check-warning 요청 전송: 요청 파일 생성 → git push
-
-**자동 수정 불가 (사용자 개입 필요):**
-- C++ 코드 변경 (generator 함수 수정)
-- Strategy 변경 (A/B/C/D 전환)
-- 새 generator 함수 작성
-- HAR 재캡처
+구체적인 실패 분류, 자동 수정 액션, 3-Strike Rule 등은 Scheduled Task 프롬프트에 정의되어 있다.
 
 **Scheduled Task 생성/관리:**
 ```
