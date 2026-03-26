@@ -1,0 +1,20 @@
+{
+  "request_id": "038",
+  "task": "check-warning",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "created_at": "2026-03-27T09:30:00+09:00",
+  "instructions": {
+    "browser_mode": "일반 모드 (로그인 상태)",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "model": "Claude Haiku 4.5",
+    "check_points": [
+      "Build #21 — SSE→JSON 에러 응답 전환 (422 Unprocessable Entity)",
+      "이전 SSE 방식: 이벤트 수신되지만 H2 에러로 폐기, 또는 이벤트 미수신",
+      "새 접근: 422 + JSON error body → 프론트엔드 에러 핸들러가 메시지 표시 기대",
+      "UI에 경고 텍스트가 표시되면 PASS",
+      "generic error 표시되면 에러 메시지 내용 확인 (경고 텍스트 포함 여부)",
+      "스크린샷 3장: (1) UI 결과, (2) Network Response 탭, (3) Console"
+    ]
+  }
+}
