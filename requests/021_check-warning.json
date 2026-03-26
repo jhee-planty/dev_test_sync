@@ -1,0 +1,23 @@
+{
+  "id": "021",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-27T00:34:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "url": "https://www.perplexity.ai",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in answer area",
+    "check_items": [
+      "차단 여부 확인 (URL이 /search/blocked-* 인지)",
+      "answer_area에 경고 텍스트가 표시되는지 확인",
+      "에러 토스트 발생 여부 확인",
+      "Thinking 상태 여부 확인",
+      "stop 버튼 표시 여부 확인",
+      "경고 문구 내용을 스크린샷과 함께 보고"
+    ],
+    "special_instructions": "시크릿/InPrivate 모드에서 테스트. v11 generator — final event는 v5와 100% 동일(LOCKED). 유일한 변경: content event의 diff_block patch value에서 answer:null → answer:'경고텍스트'. chunks 배열과 동일한 텍스트."
+  },
+  "notes": "Iteration 12 (v11 generator). final event LOCKED(v5). v10: 블록 제거도 스레드 깨짐 확인. content event diff_block patch value 내 answer 필드만 변경. 프론트엔드가 markdown_block 상태의 answer를 읽어 렌더링할 가능성 테스트."
+}

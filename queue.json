@@ -165,11 +165,19 @@
       "id": "020",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T00:26:00+09:00",
-      "summary": "Perplexity: Iteration 11 (v10) — v5 베이스 + final event에서 markdown_block 블록 제거 (answer:null 덮어쓰기 방지)"
+      "summary": "Perplexity: REGRESSION — markdown_block 블록 제거도 스레드 깨짐. final event 변경 완전 불가."
+    },
+    {
+      "id": "021",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T00:34:00+09:00",
+      "summary": "Perplexity: Iteration 12 (v11) — content event diff_block patch value.answer에 텍스트 설정. final event v5 LOCKED."
     }
   ],
-  "last_updated": "2026-03-26T15:26:00.000000",
+  "last_updated": "2026-03-26T15:34:00.000000",
   "archived": []
 }
