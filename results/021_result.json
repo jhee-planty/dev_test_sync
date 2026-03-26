@@ -1,0 +1,39 @@
+{
+  "id": "021",
+  "command": "check-warning",
+  "status": "completed",
+  "result": {
+    "blocked": true,
+    "warning_rendered": false,
+    "url": "https://www.perplexity.ai/?",
+    "error_toasts": 1,
+    "error_toast_text": "이 스레드는 존재하지 않습니다",
+    "thinking_animation": false,
+    "stream_completed": false,
+    "screenshots": [
+      "files/021/result_01_thread_not_exist.png"
+    ],
+    "observations": [
+      "Blocking triggered — SSE request intercepted by Etap",
+      "REGRESSION: content event diff_block answer field change (null→text) also breaks thread",
+      "Toast: '이 스레드는 존재하지 않습니다'",
+      "EXTREME SENSITIVITY: Perplexity validates ENTIRE SSE payload including content event diff_block patch values",
+      "Even content event's markdown_block answer field must be null for thread creation",
+      "v5 is a COMPLETE frozen template — every field in every event must match exactly",
+      "The rendering issue is NOT about setting answer text in diff_block patches",
+      "Perplexity likely uses a checksum or hash validation on the SSE response structure"
+    ],
+    "all_tested_changes_summary": {
+      "v5_baseline": "WORKS — Thinking + empty answer + active stream (answer:null everywhere)",
+      "v6_add_common_fields": "BREAKS — extra fields in final event",
+      "v7_add_empty_events": "WORKS — identical to v5 (empty events ignored)",
+      "v8_direct_markdown": "BREAKS — content without diff_block",
+      "v9_answer_text_final": "BREAKS — answer field text in final event",
+      "v10_remove_blocks_final": "BREAKS — missing blocks in final event",
+      "v11_answer_text_content": "BREAKS — answer field text in content event diff_block"
+    },
+    "recommendation": "The answer field cannot be used for warning text delivery. Only v5/v7 works. The ONLY field that hasn't been tested is the chunks array text/content in the diff_block. Try: keep answer:null but change chunks[].text to warning text. Alternatively, the rendering gap may be in the diff_block patch 'path' pointing to wrong block index or missing intermediary states."
+  },
+  "test_mode": "incognito",
+  "timestamp": "2026-03-26T15:38:00+09:00"
+}
