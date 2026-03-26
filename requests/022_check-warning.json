@@ -1,0 +1,23 @@
+{
+  "id": "022",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-27T00:45:00+09:00",
+  "params": {
+    "service": "github_copilot",
+    "url": "https://github.com/copilot",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in chat pane",
+    "check_items": [
+      "차단 여부 확인 (Thinking 상태가 해결되었는지)",
+      "경고 텍스트가 chat pane에 표시되는지",
+      "에러 메시지 또는 콘솔 에러 확인",
+      "SSE EventStream 탭에 데이터가 있는지",
+      "stop 버튼/Thinking 상태 확인",
+      "스크린샷 + network 탭 캡처"
+    ],
+    "special_instructions": "시크릿/InPrivate 모드에서 테스트. H2 변경: is_http2=2(keep-alive) + END_STREAM=false + SSE \\n 줄바꿈. 이전 빌드와 비교하여 body delivery 여부 확인."
+  },
+  "notes": "Copilot H2 fix: Strategy B (keep-alive) 적용. is_http2=2 + END_STREAM=false + GOAWAY=false. SSE 줄바꿈 \\r\\n → \\n 변경. 이전 실패 원인: END_STREAM=true가 ReadableStream 즉시 닫음."
+}

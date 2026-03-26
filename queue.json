@@ -173,11 +173,19 @@
       "id": "021",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T00:34:00+09:00",
-      "summary": "Perplexity: Iteration 12 (v11) — content event diff_block patch value.answer에 텍스트 설정. final event v5 LOCKED."
+      "summary": "Perplexity: REGRESSION — v11 content event answer도 스레드 깨짐. v5 확정, PARTIAL."
+    },
+    {
+      "id": "022",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T00:45:00+09:00",
+      "summary": "GitHub Copilot: H2 fix — is_http2=2 + END_STREAM=false + SSE \\n 줄바꿈"
     }
   ],
-  "last_updated": "2026-03-26T15:34:00.000000",
+  "last_updated": "2026-03-26T15:45:00.000000",
   "archived": []
 }
