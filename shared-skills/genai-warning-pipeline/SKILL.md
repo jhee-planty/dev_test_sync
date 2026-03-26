@@ -150,25 +150,9 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
 
 ## Service Status
 
-각 서비스의 진행상태. 새 서비스 추가 / 상태 변경 시 업데이트한다.
-
-| 서비스 | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 5 | 비고 |
-|--------|---------|---------|---------|---------|---------|------|
-| ChatGPT | ✅ | ✅ | ✅ | ✅ | ✅ | Strategy C (HTTP/1.1) |
-| Claude | ✅ | ✅ | ✅ | ✅ (GOAWAY fix) | ✅ | Strategy A (END_STREAM + GOAWAY) |
-| Perplexity | ✅ | ✅ | ✅ | ✅ | ✅ | SSE stream warning |
-| Genspark | ✅ | ✅ | ⚠️ | 보류 | — | Strategy B, network error artifact 잔존 |
-| Gemini | ✅ | ✅ | ⚠️ | — | — | DB 수정 완료, detect 성공, check-warning 미수행 |
-| Grok | ✅ | ✅ | ⚠️ | — | — | DB OK, 코드 완료, check-warning 미수행 |
-| GitHub Copilot | ✅ | ✅ | ⚠️ | — | — | DB 수정 완료(api.individual.githubcopilot.com) |
-| Gamma | ✅ | ✅ | ⚠️ | — | — | DB 수정 완료(api.gamma.app) |
-| M365 Copilot | ✅ | ✅ | ❌ | — | — | substrate.office.com, 자동화 불가 |
-| Notion AI | ✅ | ✅ | ⚠️ | — | — | 신규 DB+코드 완료(www.notion.so/api/v3/) |
-
-### 서비스별 알려진 한계
-
-→ See `references/service-known-issues.md` for Gemini, Grok, Genspark, M365 Copilot 상세.
-새 서비스 작업 시 해당 서비스의 알려진 한계를 먼저 확인하고 시작한다.
+→ See `services/status.md` — 서비스별 진행상태, 우선순위, experience 파일 경로를 관리한다.
+→ See `references/service-known-issues.md` — 서비스별 알려진 한계.
+새 서비스 작업 시 두 파일을 먼저 확인하고 시작한다.
 
 ---
 
@@ -210,32 +194,10 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
   5. 3-Strike 후에도 진전 없으면 → 해당 서비스 보류, 다음 서비스로
 ```
 
-### 서비스 우선순위 (난이도 기준)
+### 서비스 우선순위
 
-목표는 **경고 문구를 빠르게 보여줄 수 있는 서비스부터** 처리하는 것이다.
-난이도가 낮을수록 먼저 작업한다.
-
-| 우선순위 | 서비스 | 현재 상태 | 난이도 | 근거 |
-|---------|--------|----------|--------|------|
-| 1 | Gemini | DB+detect 완료 | 낮음 | check-warning만 하면 됨, Strategy D |
-| 2 | Grok | DB+코드 완료 | 낮음 | check-warning만 하면 됨 |
-| 3 | Notion AI | DB+코드 완료 | 낮음 | check-warning만 하면 됨 |
-| 4 | Genspark | body 전달 성공 | 중간 | network error artifact 해결 필요 |
-| 5 | GitHub Copilot | DB 완료 | 높음 | 8회 연속 실패 이력, 접근법 재검토 필요 |
-| 6 | Gamma | DB 완료 | 높음 | 7빌드 실패, UI 렌더링 이슈 |
-| 7 | M365 Copilot | Phase 3 미진입 | 매우 높음 | 자동화 불가, 수동 테스트 필요 |
-
-**난이도 판단 기준:**
-- **낮음**: DB+코드 완료, check-warning 테스트만 남음
-- **중간**: 부분 성공, 부수적 이슈 해결 필요
-- **높음**: 다수 실패 이력, 근본 접근법 재검토 필요
-- **매우 높음**: 자동화 불가 또는 구조적 제약
-
-**우선순위 테이블 갱신 시점:** 서비스 완료 시, 또는 난이도 재평가 시.
-
-이 전략을 택한 이유: 3/25 회고에서 3개 서비스를 동시 진행하며
-7빌드 × 3서비스 = 21테스트를 수행했지만 성공 0건이었다.
-한 서비스에 집중했다면 디버깅이 빠르고 성공까지의 빌드 수가 줄었을 것이다.
+→ See `services/status.md` → 우선순위 섹션 — 서비스별 우선순위와 난이도를 관리한다.
+다음 서비스를 선택할 때 이 테이블을 참조하고, 서비스 완료/재평가 시 갱신한다.
 
 ### Status Tracking
 
@@ -422,21 +384,5 @@ Quick reference:
 
 ## Implementation References
 
-기존 구현 경험은 새 서비스 작업 시 참조할 수 있다.
-각 서비스의 상세 상태는 위의 **Service Status** 테이블이 정보(single source of truth)이다.
-
-| Service | Experience files |
-|---------|-----------------|
-| ChatGPT | `apf-warning-design/services/chatgpt_design.md`, `apf-warning-impl/services/chatgpt_impl.md` |
-| Claude | `apf-warning-impl/services/claude_impl.md` |
-| Perplexity | `apf-warning-design/services/perplexity_design.md`, `apf-warning-impl/services/perplexity_impl.md` |
-| Genspark | `apf-warning-impl/services/genspark_impl.md` |
-| Gemini | `apf-warning-design/services/gemini_design.md`, `apf-warning-impl/services/gemini_impl.md` |
-| Grok | `apf-warning-design/services/grok_design.md` |
-| GitHub Copilot | `apf-warning-design/services/github-copilot_design.md` |
-| Gamma | `apf-warning-design/services/gamma_design.md` |
-| M365 Copilot | `apf-warning-design/services/m365-copilot_design.md` |
-| Notion AI | `apf-warning-design/services/notion_design.md` |
-
-특히 ChatGPT(Strategy C)와 Claude(Strategy A)의 구현 저널은
-새 서비스의 전략을 결정할 때 유용한 비교 참조가 된다.
+→ See `services/status.md` → Experience Files 섹션 — 서비스별 design/impl 파일 경로를 관리한다.
+새 서비스 작업 시 유사 전략의 기존 구현 경험을 참조한다.
