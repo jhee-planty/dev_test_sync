@@ -237,9 +237,17 @@
       "id": "030",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T02:12:00+09:00",
-      "summary": "GitHub Copilot: Build #17 — [DONE] 시그널 추가, 경고 표시 재테스트"
+      "summary": "GitHub Copilot: WARNING_PARTIALLY_DELIVERED — [DONE] 수신되었으나 ERR_HTTP2_PROTOCOL_ERROR"
+    },
+    {
+      "id": "032",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T02:30:00+09:00",
+      "summary": "GitHub Copilot: Build #18 — END_STREAM=true + [DONE], H2 정상 종료 테스트"
     },
     {
       "id": "029",
