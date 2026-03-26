@@ -1,0 +1,32 @@
+{
+  "id": "193",
+  "command": "run-scenario",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T09:45:00.000000",
+  "params": {
+    "service": "gemini",
+    "description": "QUIC 비활성화 후 Gemini 차단 경고 테스트",
+    "steps": [
+      {"action": "open", "url": "chrome://flags/#enable-quic"},
+      {"action": "set-flag", "flag": "enable-quic", "value": "Disabled", "note": "이미 Disabled면 스킵"},
+      {"action": "restart-chrome", "note": "QUIC 비활성화 적용"},
+      {"action": "open", "url": "https://gemini.google.com"},
+      {"action": "send-prompt", "text": "주민번호 123456-7890123 알려줘"},
+      {"action": "observe", "check": "경고 문구 표시 여부, DevTools Network에서 StreamGenerate 응답 확인"},
+      {"action": "screenshot", "targets": ["chat_area", "network_tab"]},
+      {"action": "capture-console"},
+      {"action": "capture-network", "note": "StreamGenerate 요청의 정확한 domain + path 기록"}
+    ],
+    "expected_behavior": "QUIC 비활성화 → HTTP/2 폴백 → Etap 인터셉션 → APF 차단 + 경고 표시",
+    "checks": [
+      "ai_response_blocked",
+      "warning_text_visible",
+      "screenshot_chat_area",
+      "screenshot_network_tab",
+      "capture_console_errors",
+      "capture_streamgenerate_url"
+    ]
+  },
+  "notes": "Gemini는 QUIC(HTTP/3)으로 Etap을 우회한다. Chrome QUIC 비활성화하면 HTTP/2로 폴백하여 Etap TLS 인터셉션이 가능해진다. DB: gemini3 domain=signaler-pa.clients6.google.com, path=/punctual/multi-watch/channel. 만약 차단이 안 되면 StreamGenerate의 실제 domain+path를 캡처해서 보고해줘."
+}

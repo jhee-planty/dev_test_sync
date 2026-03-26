@@ -1,16 +1,16 @@
 {
-  "updated_at": "2026-03-26T09:25:00.000000",
+  "updated_at": "2026-03-26T09:45:00.000000",
   "tasks": [
     {
-      "id": "192",
-      "command": "check-warning",
+      "id": "193",
+      "command": "run-scenario",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-26T09:25:00.000000",
-      "summary": "Gemini check-warning: DB updated to signaler-pa.clients6.google.com"
+      "created": "2026-03-26T09:45:00.000000",
+      "summary": "Gemini: QUIC 비활성화 후 check-warning 재테스트"
     }
   ],
-  "last_updated": "2026-03-26T09:25:00.000000",
+  "last_updated": "2026-03-26T09:45:00.000000",
   "archived": [
     {
       "id": "186",
@@ -41,6 +41,11 @@
       "id": "191",
       "status": "done",
       "summary": "Gamma Build #14: cards[0].title failed (Strike 5, deferred)"
+    },
+    {
+      "id": "192",
+      "status": "done",
+      "summary": "Gemini: not_blocked — QUIC bypass, signaler-pa not hit"
     }
   ]
 }
