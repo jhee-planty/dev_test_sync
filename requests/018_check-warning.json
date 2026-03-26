@@ -1,0 +1,23 @@
+{
+  "id": "018",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-27T00:09:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "url": "https://www.perplexity.ai",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in answer area",
+    "check_items": [
+      "차단 여부 확인 (URL이 /search/blocked-* 인지)",
+      "answer_area에 경고 텍스트가 표시되는지 확인",
+      "에러 토스트 발생 여부 확인",
+      "Thinking 상태 여부 확인",
+      "stop 버튼 표시 여부 확인",
+      "경고 문구 내용을 스크린샷과 함께 보고"
+    ],
+    "special_instructions": "시크릿/InPrivate 모드에서 테스트. v8 generator — v5 베이스(6개 이벤트). 핵심 변경: content 이벤트에서 diff_block 대신 직접 markdown_block 표기법 사용 (final event와 동일 형식). v7의 빈 이벤트 제거. v6의 추가 필드 없음."
+  },
+  "notes": "Iteration 9 (v8 generator). v5: plan/final OK but content 미렌더링(diff_block). v6: REGRESSION(추가필드). v7: REGRESSION(빈이벤트). v8: diff_block.patches 우회 — content 이벤트에서 직접 markdown_block:{progress,chunks,...} 형식 사용. final event(event 17)과 동일한 직접 블록 표기법으로 프론트엔드 패치 처리 의존도 제거."
+}

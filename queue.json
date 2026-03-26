@@ -141,11 +141,19 @@
       "id": "017",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T23:56:00+09:00",
-      "summary": "Perplexity: Iteration 8 (v7) — v5 베이스+빈 이벤트(sabu) 추가. v6 regression 필드 제거."
+      "summary": "Perplexity: REGRESSION — Thinking/stop 재발. 빈 이벤트가 plan_done/final 파싱 깨뜨림."
+    },
+    {
+      "id": "018",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T00:09:00+09:00",
+      "summary": "Perplexity: Iteration 9 (v8) — diff_block→직접 markdown_block 표기법. 빈 이벤트 제거."
     }
   ],
-  "last_updated": "2026-03-26T14:56:00.000000",
+  "last_updated": "2026-03-26T15:09:00.000000",
   "archived": []
 }
