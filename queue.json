@@ -208,6 +208,14 @@
       "status": "pending",
       "created": "2026-03-27T01:30:00+09:00",
       "summary": "Genspark: SSE 포맷 재캡처 — 슈퍼 에이전트 프론트엔드 변경 확인"
+    },
+    {
+      "id": "026",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T01:40:00+09:00",
+      "summary": "Notion: HAR 캡처 — AI chat API 프로토콜 분석 (SSE/WS/REST 확인)"
     }
   ],
   "last_updated": "2026-03-26T16:30:00.000000",
