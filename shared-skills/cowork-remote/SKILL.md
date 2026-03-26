@@ -162,16 +162,30 @@ state 파일로 이전 실행을 이어받아 연속성을 유지한다.
 따라서 Scheduled Task에서는 **git CLI를 desktop-commander로 실행**한다.
 git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull**을 사용한다.
 
+**동시 실행 방지 (Lock):**
+Scheduled Task가 5분 간격으로 실행되므로 이전 실행이 끝나기 전에 새 실행이 시작될 수 있다.
+`local_archive/pipeline.lock` 파일로 동시 실행을 방지한다.
+- 실행 시작: Lock 파일 생성 (ISO timestamp 기록)
+- Lock 존재 + 10분 이내: 이번 실행 스킵
+- Lock 존재 + 10분 이상: 이전 실행 비정상 종료로 간주, Lock 삭제 후 진행
+- **실행 종료 시 (정상/에러 모두): 반드시 Lock 파일 삭제**
+
+메인 세션에서 수동으로 pipeline 작업(DB 수정, 요청 생성 등)을 할 때도
+Scheduled Task와 충돌하지 않도록 Lock 파일 존재 여부를 확인하거나
+`update_scheduled_task({enabled: false})`로 일시 중지한다.
+
 **Scheduled Task 실행 흐름 (dev PC 기준):**
 ```
 매 실행 시 (cron):
+  0. Lock 확인 → Lock 생성
   1. pipeline_state.json 읽기 (이전 상태 복원)
   2. git pull로 최신 상태 동기화
   3. results/에 새 결과 파일 확인
   4-a. 새 결과 없음 → dashboard 갱신("대기 중") → 종료
   4-b. 새 결과 있음 →
        결과 읽기 → 성공/실패 판단 →
-       성공: status 업데이트 + 다음 서비스 요청 준비 + git push
+       성공: status 업데이트 + 다음 서비스 자동 진행 + git push
+            (다음 서비스: service_queue에서 status=="pending_check"인 최상위 우선순위)
        실패: 원인 분석 → 자동 수정 가능 여부 판단 → 액션 실행
   5. pipeline_state.json 갱신
   6. pipeline_dashboard.md 갱신
@@ -188,9 +202,29 @@ git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull*
   "last_checked_result_id": 16,
   "last_poll_at": "2026-03-26T14:30:00",
   "consecutive_empty_polls": 3,
-  "updated_at": "2026-03-26T14:30:05"
+  "poll_stage": 1,
+  "poll_stage_count": 1,
+  "updated_at": "2026-03-26T14:30:05",
+  "service_queue": [
+    {"service": "{service_id}", "priority": 1, "status": "waiting_result", "task_id": 194},
+    {"service": "{service_id}", "priority": 2, "status": "pending_check", "task_id": null}
+  ],
+  "done_services": ["{service_id}", "{service_id}"],
+  "notes": "free-form text"
 }
 ```
+**중요:** State를 갱신할 때 기존 필드(poll_stage, poll_stage_count, service_queue, done_services 등)를
+누락하지 않는다. 읽은 JSON을 기반으로 필요한 필드만 수정하고 전체를 다시 쓴다.
+
+**service_queue status 값:**
+- `pending_check`: check-warning 테스트 대기 중 (자동 진행 가능)
+- `waiting_result`: 요청 전송 완료, 결과 대기 중
+- `test_fail`: 테스트 실패 (수동 개입 필요)
+- `needs_manual_action`: 자동 수정 불가, 사용자 개입 필요
+- `strike_3_review`: 3회 연속 실패, 전략 재검토 필요
+- `warning_shown_artifact_issue`: 경고 표시 성공이나 부수적 이슈 잔존
+- `excluded`: 자동화 불가 또는 구조적 제약으로 제외
+- `done`: 완료 (done_services로 이동)
 
 **Dashboard (사용자 진척도 확인용):**
 ```
