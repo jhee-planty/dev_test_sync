@@ -133,11 +133,19 @@
       "id": "016",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-26T23:42:00+09:00",
-      "summary": "Perplexity: Iteration 7 (v6) — 공통필드+read_write_token+final COMPLETED/answer 필드"
+      "summary": "Perplexity: REGRESSION — '스레드 존재하지 않음' 에러. v6 추가필드가 원인."
+    },
+    {
+      "id": "017",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-26T23:56:00+09:00",
+      "summary": "Perplexity: Iteration 8 (v7) — v5 베이스+빈 이벤트(sabu) 추가. v6 regression 필드 제거."
     }
   ],
-  "last_updated": "2026-03-26T14:42:00.000000",
+  "last_updated": "2026-03-26T14:56:00.000000",
   "archived": []
 }

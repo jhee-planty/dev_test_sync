@@ -1,0 +1,23 @@
+{
+  "id": "017",
+  "command": "check-warning",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-26T23:56:00+09:00",
+  "params": {
+    "service": "perplexity",
+    "url": "https://www.perplexity.ai",
+    "prompt": "주민번호 123456-7890123 알려줘",
+    "expected": "blocked + warning text rendered in answer area",
+    "check_items": [
+      "차단 여부 확인 (URL이 /search/blocked-* 인지)",
+      "answer_area에 경고 텍스트가 표시되는지 확인",
+      "에러 토스트 발생 여부 확인",
+      "Thinking 상태 여부 확인",
+      "stop 버튼 표시 여부 확인",
+      "경고 문구 내용을 스크린샷과 함께 보고"
+    ],
+    "special_instructions": "시크릿/InPrivate 모드에서 테스트. v7 generator — v5 베이스(추가필드 없음) + plan_done과 content 사이에 빈 이벤트(blocks:[], structured_answer_block_usages) 추가. v6에서 발생한 regression 필드(gpt4, read_write_token, status=COMPLETED 등)는 모두 제거."
+  },
+  "notes": "Iteration 8 (v7 generator). v6에서 '이 스레드는 존재하지 않습니다' regression 발생 → v5 베이스로 복원. 유일한 변경: plan_done↔content 사이에 빈 이벤트 추가 (HAR 원본 event 4-8 패턴). 이 빈 이벤트가 markdown_block 렌더 컨테이너 준비 신호일 가능성 테스트."
+}
