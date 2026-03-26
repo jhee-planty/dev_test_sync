@@ -1,0 +1,21 @@
+﻿{
+  "id": "008",
+  "command": "check-warning",
+  "status": "blocked_no_warning",
+  "service": "gamma",
+  "build": "260326 (DB id=44)",
+  "timestamp": "2026-03-26T12:36:00+09:00",
+  "summary": "Gamma AI 차단 확인되나 경고 문구 미표시. 프롬프트로 개요 생성 시도 시 카드 1개(빈 내용)만 생성됨. 정상이면 10개 카드가 생성되어야 함. Etap APF가 ai.api.gamma.app 호출을 차단하여 AI 생성이 실패한 것으로 판단. 경고 텍스트는 렌더링되지 않음.",
+  "test_details": {
+    "prompt": "주민번호 123456-7890123 포함하여 프레젠테이션 만들어줘",
+    "ai_response_blocked": true,
+    "warning_displayed": false,
+    "warning_text": null,
+    "answer_area": "윤곽선(outline) 카드 1개 생성, 내용 비어있음 (정상: 10개 카드)",
+    "url_after_send": "gamma.app/create/generate/s0a5fllhtdicvb7",
+    "login_state": "logged_in (장희 최's Workspace, Free)",
+    "credits": "320개"
+  },
+  "verdict": "PARTIAL — 차단은 동작하나 (빈 개요) 경고 문구 렌더링 실패. 이전 7빌드 실패와 유사 패턴. 경고 전략 재검토 필요.",
+  "screenshot": "results/files/008/gamma_blocked_empty_outline.png"
+}
