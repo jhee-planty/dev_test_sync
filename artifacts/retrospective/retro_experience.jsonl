@@ -1,1 +1,0 @@
-{"type":"retrospective","date":"2026-03-25","period":"2026-03-19 ~ 2026-03-25","tasks_analyzed":29,"issues_found":5,"improvements_proposed":6,"improvements_applied":0,"summary":"핵심 병목: test PC 결과 대기(40~60%), 직렬 가설 테스트, 서버 로그 진단 도입 지연. Copilot 8연속 실패는 3회 실패 시 전략 전환 트리거로 방지 가능."}
