@@ -1,0 +1,19 @@
+{
+  "id": "074",
+  "command": "run-scenario",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-27T18:00:00+09:00",
+  "priority": "normal",
+  "summary": "Grok Phase 1 재검증",
+  "params": {
+    "service": "grok",
+    "url": "https://grok.com",
+    "checklist_ref": "REINSPECT_CHECKLIST.md",
+    "steps": [
+      {"action": "navigate", "url": "https://grok.com"},
+      {"action": "full-inspect", "description": "REINSPECT_CHECKLIST.md 전체 항목 수행. 이전 판정 참조 금지."}
+    ]
+  },
+  "notes": "전면 재검증. 이전 경험 무시. 체크리스트 항목 빠짐없이 확인."
+}
