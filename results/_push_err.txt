@@ -1,0 +1,1 @@
+C:\Users\ìµœì¥í¬\AppData\Local\Temp\git_push_batch.sh: line 2: cd: $'/c/Users/ï§¤ì\222\226ì\230£??Documents/dev_test_sync': No such file or directory

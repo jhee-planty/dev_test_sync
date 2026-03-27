@@ -1,0 +1,38 @@
+{
+  "id": "070",
+  "command": "check-frontend",
+  "service": "ChatGPT",
+  "url": "https://chatgpt.com",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": false,
+    "login_type": "optional (anonymous chat available without login)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://chatgpt.com/backend-anon/conversation",
+    "api_base": "https://chatgpt.com/backend-anon/",
+    "sentinel_ping": "https://chatgpt.com/backend-anon/sentinel/ping",
+    "protocol": "h2",
+    "response_format": "text/event-stream (SSE streaming)",
+    "communication_type": "HTTP fetch (no WebSocket)",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 288,
+    "total_requests_chat": 440,
+    "observations": {
+      "anonymous_api_path": "backend-anon (not backend-api which requires login)",
+      "cdn_assets": "chatgpt.com/cdn/assets/",
+      "remote_address": "[2a06:98c1:...] (Cloudflare)",
+      "response_streaming": "SSE text/event-stream confirmed by streaming behavior",
+      "ui_language": "Korean (ko-KR)",
+      "chat_functional": "YES - sent 'hello test', received response 'Hey! What would you like to test?'"
+    },
+    "screenshots": ["results/files/070/chatgpt_chat_response.png"]
+  },
+  "notes": "ChatGPT accessible without login. Anonymous API uses /backend-anon/ path (confirmed from sentinel/ping endpoint). Protocol h2 (HTTP/2). No WebSocket connections. SSE streaming for chat responses. ~288 requests on page load, ~440 after chat interaction."
+}

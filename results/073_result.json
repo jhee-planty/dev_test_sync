@@ -1,0 +1,43 @@
+{
+  "id": "073",
+  "command": "check-frontend",
+  "service": "Gemini",
+  "url": "https://gemini.google.com",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": true,
+    "login_type": "Google account required (logged in as 최장희, jjanghee28@gmail.com)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://gemini.google.com/_/BardChatUi/data/batchexecute",
+    "api_base": "https://gemini.google.com/_/BardChatUi/data/",
+    "known_endpoints": [
+      "batchexecute?rpcids=L5adhe (main RPC endpoint)",
+      "play.google.com/log (analytics logging)",
+      "www.google-analytics.com/g/collect (GA4)"
+    ],
+    "protocol": "h2",
+    "response_format": "Google batchexecute RPC (protobuf-like JSON array)",
+    "communication_type": "HTTP fetch (Google batchexecute RPC pattern)",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 270,
+    "observations": {
+      "redirect": "gemini.google.com → gemini.google.com/app",
+      "api_pattern": "Google batchexecute RPC at /_/BardChatUi/data/batchexecute",
+      "cdn": "www.gstatic.com/_/mss/boq-bard-web/ (JS modules)",
+      "analytics": "Google Analytics GA4 (G-WC57KJ50ZZ), play.google.com/log",
+      "ui_framework": "BardChatUi (boq-bard-web)",
+      "model_name": "Gemini 3",
+      "logged_in_as": "최장희 (jjanghee28@gmail.com)",
+      "features": "이미지 만들기, 음악 만들기, 학습 도움, 글 작성"
+    },
+    "screenshots": ["results/files/073/gemini_main_page.png"]
+  },
+  "notes": "Gemini accessible with Google login. Redirects to /app. Uses Google batchexecute RPC pattern at /_/BardChatUi/data/batchexecute. Protocol h2. No WebSocket. ~270 requests on page load. GA4 + play.google.com analytics."
+}

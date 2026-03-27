@@ -1,0 +1,44 @@
+{
+  "id": "072",
+  "command": "check-frontend",
+  "service": "Perplexity",
+  "url": "https://www.perplexity.ai",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": true,
+    "login_type": "account required (logged in as 최장희)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://www.perplexity.ai/rest/",
+    "api_base": "https://www.perplexity.ai/rest/",
+    "known_endpoints": [
+      "rest/ping",
+      "rest/thread/list_recent",
+      "rest/collections/list_bookmarks",
+      "rest/homepage-widgets",
+      "rest/enterprise/user/pending-invitation",
+      "rest/notifications/in-app/unread-count",
+      "rest/event/analytics"
+    ],
+    "protocol": "h2",
+    "response_format": "REST API (JSON)",
+    "communication_type": "HTTP fetch (REST pattern)",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 87,
+    "observations": {
+      "api_pattern": "REST API at /rest/ path prefix",
+      "cdn": "pplx-next-static-public.perplexity.ai/_spa/assets/",
+      "analytics": "DataDog RUM (browser-intake-datadoghq.com), Singular (sdk-api-v1.singular.net)",
+      "logged_in_as": "최장희",
+      "ui_framework": "Next.js SPA"
+    },
+    "screenshots": ["results/files/072/perplexity_main_page.png"]
+  },
+  "notes": "Perplexity accessible with login. REST API at /rest/ prefix. Protocol h2 (HTTP/2). No WebSocket connections observed. DataDog + Singular analytics. Next.js SPA framework. ~87 requests on page load."
+}

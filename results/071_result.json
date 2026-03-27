@@ -1,0 +1,38 @@
+{
+  "id": "071",
+  "command": "check-frontend",
+  "service": "Claude",
+  "url": "https://claude.ai",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": true,
+    "login_type": "account required (redirects to claude.ai/new when logged in)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://a-api.anthropic.com/v1/",
+    "api_base": "https://a-api.anthropic.com",
+    "known_chat_endpoint": "https://claude.ai/api/organizations/{org_id}/chat_conversations/{conv_id}/completion",
+    "protocol": "h2",
+    "response_format": "text/event-stream (SSE streaming)",
+    "communication_type": "HTTP fetch + Intercom WebSocket (support chat only)",
+    "websocket_count": 1,
+    "ws_endpoints": ["wss://nexus-websocket-a.intercom.io/pubsub/ (Intercom support chat, NOT AI API)"],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 87,
+    "total_requests_chat": 0,
+    "observations": {
+      "analytics": "DataDog RUM (browser-intake-us5-datadoghq.com), Segment, Facebook Pixel, Intercom",
+      "cdn": "a-cdn.anthropic.com, assets-proxy.anthropic.com, s-cdn.anthropic.com",
+      "api_endpoints_seen": ["a-api.anthropic.com/v1/b (analytics)", "a-api.anthropic.com/v1/m (metrics)", "api-iam.intercom.io/messenger/web/ping"],
+      "websocket_is_intercom": "YES - wss://nexus-websocket-a.intercom.io is Intercom support widget, NOT Claude AI streaming",
+      "model": "Sonnet 4.6 확장",
+      "logged_in_as": "janghee"
+    },
+    "screenshots": ["results/files/071/claude_main_page.png"]
+  },
+  "notes": "Claude accessible with login. API goes through a-api.anthropic.com. WebSocket is Intercom support (not AI API). Chat completion uses SSE streaming via HTTP. ~87 requests on page load."
+}

@@ -1,0 +1,49 @@
+{
+  "id": "074",
+  "command": "check-frontend",
+  "service": "Grok",
+  "url": "https://grok.com",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": true,
+    "login_type": "account required (logged in, X account connection optional)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://grok.com/rest/",
+    "api_base": "https://grok.com/rest/",
+    "known_endpoints": [
+      "rest/system-prompt/list",
+      "rest/tasks",
+      "rest/tasks/inactive",
+      "rest/notifications/list?pageSize=50",
+      "rest/app-chat/conversations?pageSize=60",
+      "_data/v1/a/t/ (analytics)",
+      "_data/v1/a/engage/ (engagement analytics)",
+      "_data/v1/events (event tracking)",
+      "api/log_metric (metrics)"
+    ],
+    "protocol": "h2",
+    "response_format": "REST API (JSON)",
+    "communication_type": "HTTP fetch (REST pattern)",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 431,
+    "observations": {
+      "api_pattern": "REST API at /rest/ prefix + /api/ + /_data/v1/",
+      "cdn": "cdn.grok.com/_next/static/chunks/ (Next.js)",
+      "analytics": "Custom analytics (_data/v1/), api/log_metric",
+      "ui_framework": "Next.js with Monaco editor (code editing support)",
+      "monaco_editor": "vs/loader.js, vs/editor/editor.main.js loaded",
+      "x_integration": "X account connection prompt shown (optional)",
+      "features": "검색, 새 채팅, 음성, Imagine, 프로젝트, SuperGrok 업셀",
+      "stories_api_403": "rest/stories?limit=... returned 403"
+    },
+    "screenshots": ["results/files/074/grok_main_page.png"]
+  },
+  "notes": "Grok accessible with login. REST API at /rest/ prefix. Protocol h2. No WebSocket observed. Next.js framework with Monaco editor embedded. CDN at cdn.grok.com. ~431 requests on page load. X account connection optional."
+}
