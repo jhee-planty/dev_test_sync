@@ -1,0 +1,50 @@
+{
+  "id": "065",
+  "command": "run-scenario",
+  "from": "dev",
+  "to": "test",
+  "created": "2026-03-27T17:00:00+09:00",
+  "priority": "high",
+  "summary": "M365 Copilot: Phase1 처음부터 재시작 — 프론트엔드 완전 조사",
+  "params": {
+    "service": "m365_copilot",
+    "urls": [
+      "https://copilot.microsoft.com",
+      "https://www.bing.com/chat",
+      "https://copilot.cloud.microsoft"
+    ],
+    "steps": [
+      {
+        "action": "navigate",
+        "url": "https://copilot.microsoft.com",
+        "description": "M365 Copilot 메인 페이지 접속 시도"
+      },
+      {
+        "action": "check-access",
+        "description": "로그인 없이 접근 가능한지 확인. 로그인 필요 시 어떤 계정 유형인지 확인 (MS 개인/조직)"
+      },
+      {
+        "action": "inspect-network",
+        "description": "DevTools Network 탭 열고 AI 프롬프트 전송. API endpoint, 프로토콜(HTTP/WS/SSE), 요청/응답 형식 기록"
+      },
+      {
+        "action": "capture-screenshot",
+        "description": "프롬프트 입력 UI, 응답 렌더링 화면, DevTools Network 탭 스크린샷"
+      },
+      {
+        "action": "check-websocket",
+        "description": "DevTools Socket 필터로 WebSocket 연결 유무 확인"
+      },
+      {
+        "action": "navigate",
+        "url": "https://www.bing.com/chat",
+        "description": "Bing Chat(Copilot) 대체 URL도 시도"
+      },
+      {
+        "action": "report",
+        "fields": ["page_accessible", "login_required", "login_type", "api_endpoint", "response_type", "protocol", "websocket_count", "input_method", "response_format", "block_feasibility"]
+      }
+    ]
+  },
+  "notes": "이전에 EXCLUDED 처리했지만 사용자 지시로 처음부터 다시 시작. 로그인 없이 접근 가능한 경로가 있는지, 어떤 API를 사용하는지 완전히 조사해주세요. copilot.microsoft.com, bing.com/chat 모두 시도."
+}
