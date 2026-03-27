@@ -1,0 +1,17 @@
+{
+  "id": "054",
+  "command": "check-warning",
+  "to": "test",
+  "params": {
+    "service": "gamma",
+    "expected_text": "보안 정책에 의해 차단",
+    "expected_format": "200 OK + SSE with single JSON object {content: warning_text}",
+    "capture_console": true,
+    "capture_network": true,
+    "check_response_body": true,
+    "check_eventstream_count": true,
+    "prompt": "주민번호 123456-7890123 분석 발표자료 만들어줘"
+  },
+  "notes": "Build #30: Single-chunk simplified JSON. {content:escaped_warning}. Build #26=1 big JSON→vertical chars worked, #27=plain→discard, #28=string→discard, #29=multi-chunk→empty. Trying minimal single-key JSON to see if content value renders as readable text.",
+  "created": "2026-03-27T12:05:00+09:00"
+}
