@@ -1,0 +1,53 @@
+{
+  "request_id": "040",
+  "status": "PARTIAL_PASS",
+  "service": "github_copilot",
+  "build": "Build #21 (REAL deploy) — JSON error 422 strategy",
+  "endpoint": {
+    "url": "https://api.individual.githubcopilot.com/github/chat/threads/.../messages?",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 422,
+    "status_text": "Unprocessable Content",
+    "remote_address": "140.82.112.22:443"
+  },
+  "response_body": {
+    "format": "JSON",
+    "content": {
+      "error": {
+        "message": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "type": "policy_violation",
+        "code": "content_filter"
+      }
+    },
+    "note": "422 + JSON error body successfully delivered with APF warning text in Korean."
+  },
+  "ui_result": {
+    "error_displayed": true,
+    "error_message": "I'm sorry but there was an error. Please try again.",
+    "warning_text_displayed": false,
+    "apf_warning_in_ui": false,
+    "note": "Copilot frontend shows generic error message, NOT the APF warning text from JSON body. The warning message IS in the response but Copilot's error handler shows its own fallback."
+  },
+  "console_errors": [
+    "POST https://api.individual.githubcopilot.com/github/chat/threads/.../messages? 422 (Unprocessable Content)",
+    "Matched leaf route at location '/copilot/c/...' does not have an element or Component (React routing warning)"
+  ],
+  "model": "Claude Haiku 4.5",
+  "diagnosis": {
+    "status_code": "422 Unprocessable Content — BUILD #21 CONFIRMED DEPLOYED AND WORKING",
+    "json_error_delivered": true,
+    "warning_text_in_json": true,
+    "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "warning_displayed_to_user": false,
+    "observation": "Build #21 is LIVE and working correctly at the network level. 422 status + JSON error body with {type: policy_violation, code: content_filter, message: APF warning in Korean}. However, Copilot's frontend catches the 422 and shows generic error instead of the APF message.",
+    "conclusion": "422 JSON error delivery CONFIRMED. APF warning text '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' IS delivered in the response body. But Copilot UI does NOT render it — shows generic fallback instead. Next step: either JS injection to show the message, or accept that the backend blocking works and the generic error is sufficient."
+  },
+  "screenshots": [
+    "results/files/040/040_ui_result.png",
+    "results/files/040/040_network_headers.png",
+    "results/files/040/040_network_response.png",
+    "results/files/040/040_console.png"
+  ],
+  "timestamp": "2026-03-27T09:05:00+09:00"
+}
