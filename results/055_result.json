@@ -1,0 +1,56 @@
+{
+  "request_id": "055",
+  "status": "PARTIAL_PASS",
+  "service": "gamma",
+  "build": "Build #31 — 200 OK + SSE with multi-key JSON {1:warning, 2:contact, 3:restricted}, no done event",
+  "timestamp": "2026-03-27T13:14:00+09:00",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "attempt_1": {
+      "status": 0,
+      "size": 0,
+      "duration_ms": 514,
+      "error": "net::ERR_CONNECTION_CLOSED — connection closed before response"
+    },
+    "attempt_2": {
+      "status": 200,
+      "size": 0,
+      "duration_ms": 426,
+      "error": "net::ERR_CONNECTION_CLOSED 200 (OK) — headers received with 200 OK but connection closed during body transfer"
+    }
+  },
+  "render_generation_endpoint": {
+    "status": 201,
+    "duration_ms": 1222
+  },
+  "ui_result": {
+    "error_toast_displayed": true,
+    "error_toast_message": "개요 생성 중 오류 발생 / 다시 시도해 주세요.",
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "total_cards": 1
+  },
+  "console_errors": [
+    "error generating outline: Unable to complete request",
+    "POST https://ai.api.gamma.app/ai/v2/generation net::ERR_CONNECTION_CLOSED 200 (OK)",
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+  ],
+  "diagnosis": {
+    "apf_interception": "confirmed — APF intercepted and returned 200 OK with SSE headers",
+    "response_delivery": "PARTIAL — 200 OK status received but ERR_CONNECTION_CLOSED during body transfer",
+    "key_finding": "Build #31 improved over Build #30: (1) Status 200 was received (Build #30 got status 0 = Failed to fetch), (2) Error changed from 'Failed to fetch' to 'Unable to complete request' with explicit 'ERR_CONNECTION_CLOSED 200 (OK)'. This means the HTTP/2 response headers were successfully delivered but the DATA frames (SSE body) were not properly received. The removal of the 'done' event may have fixed the initial handshake but the connection still closes prematurely.",
+    "comparison": {
+      "build_26_success": "SSE 2-frame DATA, use_end_stream=false, use_goaway=false — data rendered",
+      "build_30_fail": "Single-chunk JSON — Failed to fetch (status 0, headers not received)",
+      "build_31_partial": "Multi-key JSON, no done — ERR_CONNECTION_CLOSED 200 (status received, body not)"
+    },
+    "hypothesis": "The HTTP/2 DATA frame delivery is closing the stream/connection too early. Build #26 worked because use_end_stream=false kept the stream open long enough for EventSource to read data. Build #31 may be setting END_STREAM flag on the DATA frame, causing immediate stream closure before EventSource processes the body.",
+    "next_recommendation": "Ensure use_end_stream=false on ALL DATA frames, and only close stream via GOAWAY or RST_STREAM after a delay. Compare exact HTTP/2 frame flags between Build #26 and Build #31.",
+    "warning_displayed_to_user": false,
+    "conclusion": "Build #31 is an improvement over #30 (headers delivered) but still fails body delivery due to ERR_CONNECTION_CLOSED. HTTP/2 stream management needs to match Build #26's exact frame timing."
+  },
+  "files": {
+    "screenshot": "results/files/055/055_ui_result.png"
+  }
+}
