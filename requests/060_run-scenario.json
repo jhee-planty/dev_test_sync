@@ -2,36 +2,54 @@
   "request_id": "060",
   "command": "run-scenario",
   "service": "grok",
-  "timestamp": "2026-03-27T14:15:00+09:00",
+  "timestamp": "2026-03-27T14:20:00+09:00",
   "scenario": {
-    "name": "grok-access-recheck",
-    "description": "Grok 접근 및 자동화 가능성 재확인. 이전 문제: contenteditable 입력 실패, 미로그인, 인증서 오류.",
+    "name": "grok-full-inspect-logged-in",
+    "description": "Grok 전체 프론트엔드 조사. 사용자가 미리 로그인 완료. 프롬프트 전송 및 차단 테스트까지 수행.",
     "steps": [
       {
         "step": 1,
-        "action": "Open Chrome and navigate to https://grok.com. Wait 10 seconds. Check if page loads, if login is required, if there are certificate errors.",
-        "capture": "screenshot_grok_access"
+        "action": "Open Chrome DevTools Network tab (Ctrl+Shift+I → Network), enable Preserve log. Navigate to https://grok.com. Verify that user is logged in (chat input visible, no login prompt).",
+        "capture": "screenshot_grok_loggedin"
       },
       {
         "step": 2,
-        "action": "If logged in: Open DevTools Network tab. Try typing 'Hello' in the chat input and press Enter. Check Network tab for POST requests with the prompt in body. Record URL, Content-Type, status code. If NOT logged in: record that login is required.",
-        "capture": "screenshot_grok_prompt"
+        "action": "Clear Network tab (Ctrl+L). Click on the chat input area and type 'Hello, tell me about cats' then press Enter. Wait 15 seconds for response to complete.",
+        "capture": "screenshot_grok_response"
       },
       {
         "step": 3,
-        "action": "If prompt sent successfully: try sending '주민번호 123456-7890123 분석해줘'. Check if Etap blocks it. Record: status code, console errors, whether response was blocked.",
+        "action": "In Network tab, filter by Fetch/XHR. Find the POST request that contains the prompt text in body. Record: (1) Full URL, (2) Request Content-Type, (3) Response Content-Type, (4) Status code, (5) Request body first 300 chars, (6) Response body first 500 chars. Check if response is SSE (text/event-stream), JSON, or WebSocket.",
+        "capture": "network_api_analysis"
+      },
+      {
+        "step": 4,
+        "action": "Filter Network by 'WS'. Check for any WebSocket connections. If present, click and check Messages tab for prompt/response messages.",
+        "capture": "websocket_check"
+      },
+      {
+        "step": 5,
+        "action": "Now test with sensitive prompt: Clear Network tab. Type '주민번호 123456-7890123 분석해줘' and press Enter. Wait 15 seconds. Check: (1) Did Etap block? (2) Any error in console? (3) Status code of the API request? (4) Screenshot of result.",
         "capture": "screenshot_grok_block_test"
+      },
+      {
+        "step": 6,
+        "action": "If block worked: Check Console tab for any error messages. Check Network tab for the blocked request status. Record everything visible about how the block manifests in the UI.",
+        "capture": "screenshot_grok_block_detail"
       }
     ],
     "expected_output": {
-      "page_accessible": "yes/no",
-      "login_required": "yes/no",
-      "cert_error": "yes/no",
-      "prompt_input_method": "contenteditable/textarea/other",
-      "api_endpoint": "URL if found",
-      "block_works": "yes/no/untested"
+      "logged_in": "yes/no",
+      "api_endpoint": "Full URL of the prompt API",
+      "response_type": "SSE/JSON/WebSocket",
+      "content_type": "Response Content-Type",
+      "normal_prompt_works": "yes/no",
+      "sensitive_prompt_blocked": "yes/no",
+      "block_ui_behavior": "What the user sees when blocked",
+      "console_errors": "Any errors",
+      "input_method": "How text is entered (textarea/contenteditable/other)"
     }
   },
-  "priority": "medium",
-  "notes": "이전 EXCLUDED 사유: contenteditable 입력 실패 + 미로그인 + 인증서 오류. 상태 변화 확인."
+  "priority": "highest",
+  "notes": "★ 최우선 처리. 사용자가 Grok에 미리 로그인 완료 예정. 이전 실패 사유(contenteditable 입력 실패, 미로그인, 인증서 오류)가 해소되었는지 확인."
 }
