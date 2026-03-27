@@ -1,0 +1,68 @@
+{
+  "request_id": "057",
+  "status": "FAIL",
+  "service": "gamma",
+  "build": "Build #33 FINAL — 200 OK + SSE with 9 plain text chunks + done event (exact real Gamma format from HAR #029)",
+  "timestamp": "2026-03-27T13:30:00+09:00",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "attempt_1": {
+      "status": 0,
+      "size": 0,
+      "duration_ms": 392
+    },
+    "attempt_2": {
+      "status": 200,
+      "size": 0,
+      "duration_ms": 46,
+      "error": "net::ERR_CONNECTION_CLOSED 200 (OK)"
+    }
+  },
+  "render_generation_endpoint": {
+    "status": 201,
+    "duration_ms": 1680
+  },
+  "ui_result": {
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "total_cards": 1
+  },
+  "console_errors": [
+    "POST https://ai.api.gamma.app/ai/v2/generation net::ERR_CONNECTION_CLOSED 200 (OK)",
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+  ],
+  "diagnosis": {
+    "verdict": "BLOCKED_ONLY — Warning delivery via SSE response injection is NOT feasible for Gamma",
+    "apf_interception": "confirmed — 200 OK headers consistently received",
+    "response_delivery": "CONSISTENTLY FAILED — ERR_CONNECTION_CLOSED on every build since #30",
+    "builds_tested_summary": {
+      "build_21_422": "PARTIAL_PASS — error toast, no warning text",
+      "build_22_422_html": "PARTIAL_PASS — identical to #21",
+      "build_23_403": "PARTIAL_PASS — same 1-card degraded output",
+      "build_24_429": "PARTIAL_PASS — identical to 403/422",
+      "build_25_200_html": "PARTIAL_PASS — HTML ignored by EventSource",
+      "build_26_sse_2frame": "BREAKTHROUGH — data rendered (vertical chars), use_end_stream=false",
+      "build_27_sse_plaintext": "REGRESSION — plain text discarded",
+      "build_28_sse_json_string": "PARTIAL_PASS — JSON string discarded",
+      "build_29_sse_multi_chunk": "PARTIAL_PASS — multi-chunk JSON empty",
+      "build_30_sse_single_json": "FAIL — Failed to fetch (status 0)",
+      "build_31_sse_multikey_nodone": "PARTIAL_PASS — ERR_CONNECTION_CLOSED 200",
+      "build_32_sse_large_multikey": "PARTIAL_PASS — ERR_CONNECTION_CLOSED 200 (body size irrelevant)",
+      "build_33_sse_exact_format": "FAIL — ERR_CONNECTION_CLOSED 200 (exact format irrelevant)"
+    },
+    "key_findings": [
+      "1. Only Build #26 ever delivered data to Gamma's UI (vertical chars, not readable warning)",
+      "2. Builds #30-#33 all get ERR_CONNECTION_CLOSED despite 200 OK headers — HTTP/2 stream closes before body delivery",
+      "3. Content format (JSON, plain text, multi-chunk) does NOT matter — the failure is at HTTP/2 transport layer",
+      "4. Body size does NOT matter (tested small to ~2.5kB)",
+      "5. Even exact real Gamma SSE format fails — proving the issue is APF's HTTP/2 frame delivery, not content",
+      "6. Build #26's success was likely due to specific use_end_stream=false + use_goaway=false flags that are no longer being applied correctly in newer builds"
+    ],
+    "recommendation": "For Gamma: use BLOCK_ONLY strategy (HTTP error codes like 403/422 which reliably trigger error toasts). Warning text injection via SSE is not achievable with current APF HTTP/2 implementation. If warning text is required, consider: (1) Fix HTTP/2 DATA frame delivery to match Build #26 exactly, (2) Use a completely different approach like DNS-level redirect to a warning page.",
+    "conclusion": "FINAL VERDICT: Gamma warning delivery via SSE response injection is NOT feasible. Recommend BLOCK_ONLY strategy."
+  },
+  "files": {
+    "screenshot": "results/files/057/057_ui_result.png"
+  }
+}
