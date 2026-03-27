@@ -1,21 +1,22 @@
 {
-  "updated_at": "2026-03-27T11:05:00.000000",
+  "updated_at": "2026-03-27T11:34:00.000000",
   "tasks": [
     {
-      "id": "051",
+      "id": "052",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-27T11:05:00+09:00",
-      "summary": "Gamma: Build #27 — SSE plain text chunks (fix from #26 BREAKTHROUGH)"
+      "created": "2026-03-27T11:34:00+09:00",
+      "summary": "Gamma: Build #28 — SSE JSON string literal in chunk data"
     }
   ],
-  "last_updated": "2026-03-27T11:05:00.000000",
+  "last_updated": "2026-03-27T11:34:00.000000",
   "archived": [
     {"id": "001", "status": "done", "summary": "ChatGPT: PASS"},
     {"id": "002", "status": "done", "summary": "Claude: PASS"},
-    {"id": "046", "status": "done", "summary": "Copilot: Build #23 — 403 PASS!"},
+    {"id": "046", "status": "done", "summary": "Copilot: 403 PASS!"},
     {"id": "047-049", "status": "done", "summary": "Gamma: 403/429/html → all 1카드"},
-    {"id": "050", "status": "done", "summary": "Gamma: Build #26 — BREAKTHROUGH! SSE delivered but JSON chars vertical"}
+    {"id": "050", "status": "done", "summary": "Gamma: Build #26 BREAKTHROUGH — SSE JSON chars vertical"},
+    {"id": "051", "status": "done", "summary": "Gamma: Build #27 REGRESSION — plain text discarded"}
   ]
 }
