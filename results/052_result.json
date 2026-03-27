@@ -1,0 +1,41 @@
+{
+  "request_id": "052",
+  "status": "PARTIAL_PASS",
+  "service": "gamma",
+  "build": "Build #28 — 200 OK + SSE with JSON string literal in chunk data",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 200,
+    "status_text": "OK"
+  },
+  "ui_result": {
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "apf_warning_visible": false,
+    "sse_data_rendered": false,
+    "user_experience": "Same empty 1-card outline as Build #27. JSON string literal not rendered."
+  },
+  "console_errors": [
+    "Stack traces in minified functions: H, h, c, u — parsing error in Gamma's outline handler",
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request (inferred from pattern)"
+  ],
+  "diagnosis": {
+    "apf_interception_confirmed": true,
+    "sse_delivery_successful": true,
+    "eventstream_parsed": false,
+    "warning_displayed_to_user": false,
+    "conclusion": "Build #28 (JSON string literal) produced same empty result as Build #27 (plain text). The JSON string literal was not rendered in the outline. Build #26 (JSON object with arbitrary key/value) was the ONLY format that produced visible text.",
+    "format_comparison": {
+      "build_26_json_object": "Visible characters in UI (BREAKTHROUGH) — JSON.parse returns object, iterated char-by-char",
+      "build_27_plain_text": "No visible content — plain text discarded",
+      "build_28_json_string": "No visible content — JSON string literal also discarded"
+    },
+    "key_finding": "Gamma's chunk handler specifically expects an object (not a string) from JSON.parse(). Build #26's JSON object was iterated (Object.keys or similar), producing character-level rendering. A JSON string returns a primitive which Gamma's iterator cannot process. Build #26's JSON object approach is the right direction — need to structure the object to match Gamma's expected outline schema.",
+    "recommendation": "Use JSON object format (Build #26 approach) but structure as Gamma-compatible outline: { cards: [{ title: 'WARNING', content: '...' }] } or similar schema that Gamma's outline parser can consume."
+  },
+  "tested_at": "2026-03-27T11:43:00+09:00",
+  "screenshots": ["results/files/052/052_ui_result.png"]
+}
