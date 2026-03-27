@@ -1,0 +1,17 @@
+{
+  "id": "051",
+  "command": "check-warning",
+  "to": "test",
+  "params": {
+    "service": "gamma",
+    "expected_text": "보안 정책에 의해 차단",
+    "expected_format": "200 OK + SSE text/event-stream with PLAIN TEXT chunk data (not JSON)",
+    "capture_console": true,
+    "capture_network": true,
+    "check_response_body": true,
+    "check_eventstream_count": true,
+    "prompt": "주민번호 123456-7890123 분석 발표자료 만들어줘"
+  },
+  "notes": "Build #27: SSE plain text chunks. Build #26은 BREAKTHROUGH — SSE 전달 성공했지만 JSON data가 문자별 파싱됨. 이번은 plain text data로 변경. Gamma HAR(#029) 분석: chunk data는 plain text.",
+  "created": "2026-03-27T11:05:00+09:00"
+}
