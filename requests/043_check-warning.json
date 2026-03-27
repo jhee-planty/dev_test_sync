@@ -1,0 +1,15 @@
+{
+  "id": "043",
+  "command": "check-warning",
+  "to": "test",
+  "params": {
+    "service": "gamma",
+    "expected_text": "보안 정책에 의해 차단",
+    "expected_format": "200 OK + text/plain — warning text delivered as plain response",
+    "capture_console": true,
+    "capture_network": true,
+    "check_response_body": true
+  },
+  "notes": "Build #22: 200 OK + text/plain + 경고 텍스트. EventSource 실패 시 프론트엔드 반응 확인.",
+  "created": "2026-03-27T09:38:00+09:00"
+}

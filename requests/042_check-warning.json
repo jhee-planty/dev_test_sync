@@ -1,0 +1,15 @@
+{
+  "id": "042",
+  "command": "check-warning",
+  "to": "test",
+  "params": {
+    "service": "github_copilot",
+    "expected_text": "보안 정책에 의해 차단",
+    "expected_format": "200 OK + OpenAI completion JSON — warning rendered as AI response in chat bubble",
+    "capture_console": true,
+    "capture_network": true,
+    "check_response_body": true
+  },
+  "notes": "Build #22: 200 OK + application/json + chat completion format. 경고를 AI 응답처럼 전달.",
+  "created": "2026-03-27T09:38:00+09:00"
+}

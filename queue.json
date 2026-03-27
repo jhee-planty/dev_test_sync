@@ -1,21 +1,21 @@
 {
-  "updated_at": "2026-03-27T08:58:26.398473",
+  "updated_at": "2026-03-27T09:38:49.998147",
   "tasks": [
     {
-      "id": "040",
+      "id": "042",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-27T08:58:00+09:00",
-      "summary": "GitHub Copilot: Build #21 REAL deploy — JSON error 422"
+      "created": "2026-03-27T09:38:00+09:00",
+      "summary": "GitHub Copilot: Build #22 — 200+completion JSON"
     },
     {
-      "id": "041",
+      "id": "043",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-27T08:58:00+09:00",
-      "summary": "Gamma: Build #21 REAL deploy — JSON error 422"
+      "created": "2026-03-27T09:38:00+09:00",
+      "summary": "Gamma: Build #22 — 200+text/plain"
     }
   ],
   "last_updated": "2026-03-27T00:00:00.000000",
@@ -187,6 +187,22 @@
       "command": "check-warning",
       "status": "done",
       "summary": "Gamma: Build #20 binary — WARNING_NOT_DELIVERED (200 OK, not 422)"
+    },
+    {
+      "id": "040",
+      "command": "check-warning",
+      "to": "test",
+      "status": "done",
+      "created": "2026-03-27T08:58:00+09:00",
+      "summary": "GitHub Copilot: Build #21 REAL deploy — JSON error 422"
+    },
+    {
+      "id": "041",
+      "command": "check-warning",
+      "to": "test",
+      "status": "done",
+      "created": "2026-03-27T08:58:00+09:00",
+      "summary": "Gamma: Build #21 REAL deploy — JSON error 422"
     }
   ]
 }
