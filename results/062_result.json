@@ -1,0 +1,32 @@
+{
+  "id": "062",
+  "status": "done",
+  "result": {
+    "frontend_changed": true,
+    "changes_detected": "UI updated - new type options (social, graphic), new generation URL pattern gamma.app/create/generate/{id}",
+    "api_endpoints": {
+      "primary": "https://api.gamma.app/graphql",
+      "websocket": "wss://api.gamma.app/graphql",
+      "tracking": "https://api.gamma.app/track-span",
+      "previous_ai_endpoint": "ai.api.gamma.app/ai/v2/generation (NOT observed in this session)"
+    },
+    "response_format": "GraphQL JSON via HTTP/2 fetch AND WebSocket",
+    "communication_type": "Mixed HTTP + WebSocket",
+    "protocol": "h2 (HTTP/2)",
+    "websocket_count": "2+ active graphql WebSocket connections (wss://api.gamma.app/graphql)",
+    "error_handling": {
+      "console_warnings": ["Canny widget re-initialization", "Intercom Launcher disabled", "Vantara already initializing", "Google Analytics not installed"],
+      "no_critical_errors": true
+    },
+    "observations": {
+      "ai_generation_flow": "Outline generation uses api.gamma.app/graphql (fetch, h2, 200) returning 2.6kB JSON",
+      "graphql_websocket": "Multiple persistent wss://api.gamma.app/graphql WebSocket connections (status 101)",
+      "telemetry": "track-span requests to Cloudflare (204 preflight, 200/201 actual)",
+      "third_party": "LaunchDarkly feature flags, Stripe, Intercom, DataDog logging",
+      "total_requests": "35 requests during AI generation",
+      "no_sse_observed": "No text/event-stream (SSE) responses detected - all GraphQL JSON"
+    },
+    "block_feasibility": "POSSIBLE via HTTP/2 interception of api.gamma.app/graphql, but WebSocket also carries AI data"
+  },
+  "notes": "Gamma AI generation now routes through api.gamma.app/graphql (both HTTP fetch and WebSocket). Previous ai.api.gamma.app endpoint was NOT observed. SSE format NOT detected - responses are standard GraphQL JSON. WebSocket connections are persistent and may carry real-time generation updates."
+}
