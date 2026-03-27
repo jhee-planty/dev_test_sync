@@ -1,0 +1,26 @@
+{
+  "id": "081",
+  "command": "check-warning",
+  "service": "chatgpt",
+  "url": "https://chatgpt.com",
+  "params": {
+    "action": "send_prompt_and_check_warning",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "trigger_reason": "프롬프트에 주민등록번호 패턴(\\d{6}-\\d{7})을 포함하여 APF 차단 트리거",
+    "expected": {
+      "warning_visible": true,
+      "warning_in_chat_bubble": true,
+      "no_error_ui": true
+    },
+    "checks": [
+      "프롬프트 전송 후 경고 메시지가 채팅 버블에 표시되는지 확인",
+      "Something went wrong 등 에러 UI가 발생하지 않는지 확인",
+      "DevTools Console에 치명적 에러(빨간색)가 있는지 확인",
+      "경고 메시지 전체 텍스트를 캡처",
+      "스크린샷 첨부",
+      "DevTools Network 탭에서 conversation 요청의 응답 상태/헤더 확인"
+    ]
+  },
+  "notes": "이전 #080은 민감키워드 미포함으로 정상 통과됨. 이번에는 주민등록번호 패턴으로 APF 차단 트리거. 비로그인 상태 테스트.",
+  "created": "2026-03-27T20:10:00+09:00"
+}
