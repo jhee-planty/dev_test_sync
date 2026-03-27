@@ -1,0 +1,54 @@
+{
+  "request_id": "056",
+  "status": "PARTIAL_PASS",
+  "service": "gamma",
+  "build": "Build #32 — 200 OK + SSE with large multi-key JSON (11 keys, ~800+ bytes), done event=data:{}",
+  "timestamp": "2026-03-27T13:22:00+09:00",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "attempt_1": {
+      "status": 0,
+      "size": 0,
+      "duration_ms": 406,
+      "error": "Failed — connection closed before response"
+    },
+    "attempt_2": {
+      "status": 200,
+      "size": 0,
+      "duration_ms": 71,
+      "error": "net::ERR_CONNECTION_CLOSED 200 (OK) — headers received but body empty"
+    }
+  },
+  "render_generation_endpoint": {
+    "status": 201,
+    "duration_ms": 863
+  },
+  "ui_result": {
+    "error_toast_displayed": true,
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "total_cards": 1
+  },
+  "console_errors": [
+    "POST https://ai.api.gamma.app/ai/v2/generation net::ERR_CONNECTION_CLOSED 200 (OK)",
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+  ],
+  "diagnosis": {
+    "apf_interception": "confirmed — 200 OK headers received",
+    "response_delivery": "FAILED — ERR_CONNECTION_CLOSED, body size 0 bytes despite 200 OK",
+    "key_finding": "Identical behavior to Build #31. Larger body size (~800+ bytes vs small) made NO difference. The problem is NOT body size — it's HTTP/2 stream/connection management. The connection closes immediately after sending headers, before DATA frames reach the browser.",
+    "comparison": {
+      "build_26_success": "use_end_stream=false, use_goaway=false, 2-frame DATA — data rendered",
+      "build_31_fail": "multi-key JSON, no done event — ERR_CONNECTION_CLOSED 200",
+      "build_32_fail": "large multi-key JSON (11 keys), done=data:{} — ERR_CONNECTION_CLOSED 200 (identical)"
+    },
+    "root_cause_hypothesis": "Build #26 used a SPECIFIC 2-frame DATA delivery pattern with use_end_stream=false and use_goaway=false. Builds #30-#32 likely have different HTTP/2 frame flags (possibly END_STREAM=true on the DATA frame, or using GOAWAY). The critical difference is NOT the JSON content or body size, but the HTTP/2 framing flags that control when the stream/connection closes.",
+    "next_recommendation": "Reproduce Build #26's EXACT HTTP/2 frame delivery: (1) HEADERS frame with status 200 + content-type text/event-stream, (2) DATA frame with SSE body WITHOUT END_STREAM flag, (3) Second DATA frame (possibly empty) — this 2-frame pattern was key to Build #26's success.",
+    "warning_displayed_to_user": false,
+    "conclusion": "Build #32 confirms body size is NOT the issue. HTTP/2 frame flags (use_end_stream, use_goaway) are the determining factor. Must replicate Build #26's exact framing."
+  },
+  "files": {
+    "screenshot": "results/files/056/056_ui_result.png"
+  }
+}
