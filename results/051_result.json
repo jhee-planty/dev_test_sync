@@ -1,0 +1,42 @@
+{
+  "request_id": "051",
+  "status": "REGRESSION",
+  "service": "gamma",
+  "build": "Build #27 — 200 OK + SSE text/event-stream with PLAIN TEXT chunk data",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 200,
+    "status_text": "OK",
+    "remote_address": "[2606:4700...]",
+    "size": "0.3 kB",
+    "time": "1.79 s"
+  },
+  "ui_result": {
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "apf_warning_visible": false,
+    "sse_data_rendered": false,
+    "user_experience": "Back to empty 1-card outline. NO text content visible unlike Build #26."
+  },
+  "console_errors": [
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+  ],
+  "diagnosis": {
+    "apf_interception_confirmed": true,
+    "sse_delivery_successful": true,
+    "eventstream_parsed": false,
+    "warning_displayed_to_user": false,
+    "conclusion": "REGRESSION from Build #26. Plain text SSE chunks were NOT rendered in Gamma's UI. Build #26 (JSON data in chunks) showed characters in the outline; Build #27 (plain text data) shows nothing. This confirms Gamma's EventSource handler requires JSON-formatted data, not plain text.",
+    "key_finding": "Gamma's outline parser processes chunk.data and expects it to be JSON-parseable. Plain text 'data:' lines are received by EventSource but discarded by the JSON parser. The characters visible in Build #26 were from JSON string parsing (each character of the JSON string treated as a token).",
+    "comparison": {
+      "build_26_json_chunks": "SSE parsed, JSON characters rendered vertically in outline (BREAKTHROUGH)",
+      "build_27_plain_text_chunks": "SSE parsed by EventSource but plain text discarded by JSON parser (REGRESSION)"
+    },
+    "recommendation": "Return to JSON data format (Build #26 approach) but structure the JSON to match Gamma's expected outline format. The outline parser expects a specific JSON schema — need to match it for proper rendering."
+  },
+  "tested_at": "2026-03-27T11:10:00+09:00",
+  "screenshots": ["results/files/051/051_ui_result.png"]
+}
