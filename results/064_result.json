@@ -1,0 +1,23 @@
+{
+  "id": "064",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": true,
+    "warning_text": "Access denied. You do not have permission to view this. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)",
+    "warning_format": "Yellow warning box in chat bubble area with triangle warning icon",
+    "console_errors": "not_checked",
+    "screenshot": "files/064/github_copilot_warning.png",
+    "observations": {
+      "baseline_test": "Benign prompt 'hello test' responded normally - Copilot functional",
+      "block_test": "Prompt with Korean PII (주민번호 123456-7890123) triggered Etap APF block",
+      "response_behavior": "403 Forbidden block response rendered as yellow warning box by Copilot UI",
+      "spinner_after_warning": "Loading spinner appeared below warning, suggesting Copilot retry attempt",
+      "warning_persistence": "Warning remained visible and stable after 15+ seconds",
+      "model_used": "Claude Haiku 4.5 (displayed in Copilot UI)"
+    }
+  },
+  "started": "2026-03-27T14:54:00+09:00",
+  "completed": "2026-03-27T14:58:00+09:00",
+  "notes": "Build #23 blocking confirmed working. 403 Forbidden response is rendered as yellow warning box by GitHub Copilot UI. Block effective for Korean PII pattern."
+}

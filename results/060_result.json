@@ -1,0 +1,37 @@
+{
+  "id": "060",
+  "status": "done",
+  "result": {
+    "logged_in": "yes",
+    "api_endpoint": "https://grok.com/rest/app-chat/conversations/{conv_id}/responses (fetch type, initiator: JS bundle)",
+    "response_type": "Fetch (HTTP streaming via ReadableStream, NOT SSE, NOT WebSocket)",
+    "content_type": "Unable to inspect individual request headers (DevTools click precision issue)",
+    "protocol": "HTTP/2 (h2) for all requests",
+    "normal_prompt_works": "yes",
+    "sensitive_prompt_blocked": "UNTESTED - AnyDesk remote session popup blocked chat input access",
+    "block_ui_behavior": "UNTESTED",
+    "console_errors": "7 issues: 2 errors, 3 warnings, 2 info (CSP-related: multiple domain blocks including onedrive, x.com, twitter, ads-api, analytics, appsflyer, paypal, braintree)",
+    "input_method": "contenteditable div (not standard textarea/input - not detected as interactive UI element in accessibility tree)",
+    "websocket": "NONE detected (Socket filter: 0/29 requests)",
+    "conversation_url_pattern": "grok.com/c/{conversation_uuid}?rid={response_uuid}",
+    "key_endpoints_observed": [
+      "responses - main AI response (fetch, 200, h2, 2.1kB, 2.70s)",
+      "subscriptions - subscription check (fetch, 200, h2, 0.2kB, 404ms)",
+      "monitoring?o=... - analytics (fetch, 200, h2, ~2.8kB)",
+      "rate-limits - rate limit check (fetch, 200, h2, 0.6kB)",
+      "conversations?pageSize=60 - conversation list (fetch, 200, h2)",
+      "ListUserInvitations - user invitations (fetch, 200, h2)",
+      "oauth-connectors - OAuth connectors (fetch, 200, h2, 2.8kB)",
+      "share_links?pageSize=... - share links (fetch, 200, h2)",
+      "log_metric - frequent analytics pings (ping type, ~3kB each)",
+      "t/?verbose=1&ip=1&... - tracking analytics (xhr, 200, h2)"
+    ],
+    "screenshots": [
+      "files/060/step1_loggedin.png"
+    ],
+    "notes": "Grok uses HTTP/2 fetch-based streaming (not SSE/WebSocket). The 'responses' endpoint is the main AI response handler. Response time ~2.7s for simple queries. Input field is contenteditable div which complicates SendKeys automation. AnyDesk remote session popup interfered with block test - needs manual re-test."
+  },
+  "started": "2026-03-27T14:35:00+09:00",
+  "completed": "2026-03-27T14:50:00+09:00",
+  "notes": "Partial completion. Frontend inspect done, block test untested due to AnyDesk interference."
+}
