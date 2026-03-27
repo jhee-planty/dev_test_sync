@@ -1,12 +1,13 @@
 {
-  "updated_at": "2026-03-27T12:05:00.000000",
-  "tasks": [{"id": "054", "command": "check-warning", "to": "test", "status": "pending", "created": "2026-03-27T12:05:00+09:00", "summary": "Gamma: Build #30 — single-key JSON {content:warning}"}],
-  "last_updated": "2026-03-27T12:05:00.000000",
+  "updated_at": "2026-03-27T13:08:00.000000",
+  "tasks": [{"id": "055", "command": "check-warning", "to": "test", "status": "pending", "created": "2026-03-27T13:08:00+09:00", "summary": "Gamma: Build #31 — multi-key JSON values as warning sentences"}],
+  "last_updated": "2026-03-27T13:08:00.000000",
   "archived": [
     {"id": "046", "status": "done", "summary": "Copilot: 403 PASS!"},
     {"id": "050", "status": "done", "summary": "Gamma #26: BREAKTHROUGH SSE JSON"},
     {"id": "051", "status": "done", "summary": "Gamma #27: plain text REGRESSION"},
     {"id": "052", "status": "done", "summary": "Gamma #28: JSON string discarded"},
-    {"id": "053", "status": "done", "summary": "Gamma #29: multi-chunk JSON empty"}
+    {"id": "053", "status": "done", "summary": "Gamma #29: multi-chunk JSON empty"},
+    {"id": "054", "status": "done", "summary": "Gamma #30: Failed to fetch (status 0)"}
   ]
 }

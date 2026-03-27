@@ -1,0 +1,17 @@
+{
+  "id": "055",
+  "command": "check-warning",
+  "to": "test",
+  "params": {
+    "service": "gamma",
+    "expected_text": "보안 정책에 의해 차단",
+    "expected_format": "200 OK + SSE with multi-key JSON (each value = warning sentence), no done event",
+    "capture_console": true,
+    "capture_network": true,
+    "check_response_body": true,
+    "check_eventstream_count": true,
+    "prompt": "주민번호 123456-7890123 분석 발표자료 만들어줘"
+  },
+  "notes": "Build #31: Multi-key JSON {1:warning, 2:contact, 3:restricted}. Build #26=large JSON→vertical chars. Hypothesis: if Gamma iterates Object.values(), each value becomes a card with readable text. Also removed 'event:done/data:stop' (Build #30 got Failed to fetch, possibly due to non-JSON 'stop' data).",
+  "created": "2026-03-27T13:08:00+09:00"
+}
