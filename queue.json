@@ -1,12 +1,6 @@
 {
-  "updated_at": "2026-03-27T13:27:00.000000",
-  "tasks": [{"id": "057", "command": "check-warning", "to": "test", "status": "pending", "created": "2026-03-27T13:27:00+09:00", "summary": "Gamma: Build #33 FINAL — real SSE format (9 chunks + done)"}],
-  "last_updated": "2026-03-27T13:27:00.000000",
-  "archived": [
-    {"id": "046", "status": "done", "summary": "Copilot: 403 PASS!"},
-    {"id": "050", "status": "done", "summary": "Gamma #26: BREAKTHROUGH SSE JSON"},
-    {"id": "054", "status": "done", "summary": "Gamma #30: Failed to fetch"},
-    {"id": "055", "status": "done", "summary": "Gamma #31: ERR_CONNECTION_CLOSED 200 OK"},
-    {"id": "056", "status": "done", "summary": "Gamma #32: ERR_CONNECTION_CLOSED (size NOT issue)"}
-  ]
+  "updated_at": "2026-03-27T14:00:00.000000",
+  "tasks": [],
+  "last_updated": "2026-03-27T14:00:00.000000",
+  "archived": []
 }
