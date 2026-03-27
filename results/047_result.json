@@ -1,0 +1,38 @@
+{
+  "request_id": "047",
+  "status": "PARTIAL_PASS",
+  "service": "gamma",
+  "build": "Build #23 — 403 Forbidden + JSON error",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 403,
+    "status_text": "Forbidden",
+    "remote_address": "[2606:4700...]",
+    "size": "0.5 kB",
+    "time": "2.01 s"
+  },
+  "ui_result": {
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "apf_warning_visible": false,
+    "user_experience": "Gamma shows degraded outline with 1 empty card. Theme selection still shown. No explicit error or warning banner."
+  },
+  "console_errors": [
+    "POST https://ai.api.gamma.app/ai/v2/generation 403 (Forbidden)",
+    "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+  ],
+  "diagnosis": {
+    "apf_interception_confirmed": true,
+    "apf_403_received": true,
+    "warning_displayed_to_user": false,
+    "conclusion": "Build #23 (403 Forbidden) APF interception confirmed for Gamma. The generation endpoint receives 403 but Gamma frontend does NOT display any warning or error message to the user. It silently fails with an incomplete outline (1 card).",
+    "comparison_with_build22": "Build #22 (200 OK + text/plain) produced same UI degradation (1 card). Build #23 (403 Forbidden) also produces 1 card. Neither shows warning text. However, Build #23 correctly returns 403 status which is technically more appropriate.",
+    "comparison_with_copilot": "Copilot shows explicit 'Access denied' warning for 403. Gamma shows no warning — it silently degrades. Gamma needs custom warning injection.",
+    "recommendation": "Gamma requires SSE text/event-stream format with embedded warning text, OR a custom JavaScript-injected warning. 403 alone is insufficient for user notification."
+  },
+  "tested_at": "2026-03-27T10:26:00+09:00",
+  "screenshots": ["results/files/047/047_ui_result.png"]
+}

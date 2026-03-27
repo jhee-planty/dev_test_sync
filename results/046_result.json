@@ -1,0 +1,34 @@
+{
+  "request_id": "046",
+  "status": "PASS",
+  "service": "github_copilot",
+  "build": "Build #23 — 403 Forbidden + GitHub API error JSON",
+  "prompt_used": "주민번호 123456-7890123에 대해 알려줘",
+  "endpoint": {
+    "url": "https://api.individual.githubcopilot.com/github/chat/threads/{thread_id}/messages",
+    "method": "POST",
+    "protocol": "h2",
+    "status": 403,
+    "status_text": "Forbidden"
+  },
+  "ui_result": {
+    "warning_text_displayed": true,
+    "warning_message": "Access denied. You do not have permission to view this. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)",
+    "apf_warning_visible": true,
+    "user_experience": "Clear warning banner shown in chat area with yellow background. Loading spinner visible below warning.",
+    "chat_title": "New chat"
+  },
+  "console_errors": [
+    "POST https://api.individual.githubcopilot.com/github/chat/threads/a73e52dd-6e4d-4163-a679-878a70803853/messages 403 (Forbidden)"
+  ],
+  "diagnosis": {
+    "apf_interception_confirmed": true,
+    "apf_403_received": true,
+    "warning_displayed_to_user": true,
+    "conclusion": "Build #23 (403 Forbidden) works correctly for Copilot. APF detected PII pattern (주민번호) and returned 403. Copilot frontend interprets 403 as 'Access denied' and shows a visible warning banner. This is a significant improvement over Build #22 (200 OK) which showed only 'interrupted' message.",
+    "comparison_with_build22": "Build #22 (200 OK + chat completion JSON) showed 'Copilot was interrupted' — user sees generic error. Build #23 (403 Forbidden) shows explicit 'Access denied' warning — user sees clear access denial.",
+    "recommendation": "403 Forbidden strategy is effective for Copilot. Warning message comes from GitHub's own error handling for 403 responses."
+  },
+  "tested_at": "2026-03-27T10:22:00+09:00",
+  "screenshots": ["results/files/046/046_ui_result.png"]
+}
