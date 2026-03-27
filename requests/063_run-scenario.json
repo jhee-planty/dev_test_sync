@@ -1,0 +1,36 @@
+{
+  "request_id": "063",
+  "command": "run-scenario",
+  "service": "m365_copilot",
+  "timestamp": "2026-03-27T14:15:00+09:00",
+  "scenario": {
+    "name": "m365-copilot-access-recheck",
+    "description": "M365 Copilot 접근 및 API 엔드포인트 재확인. 이전 EXCLUDED 사유: 자동화 불가 + API endpoint 불확실.",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Open Chrome and navigate to https://copilot.microsoft.com or https://www.bing.com/chat. Wait 10 seconds. Check if Copilot chat is accessible.",
+        "capture": "screenshot_m365_access"
+      },
+      {
+        "step": 2,
+        "action": "If accessible: Open DevTools Network tab. Type 'Hello' in chat and press Enter. Wait 15 seconds. Check Network for POST requests with prompt in body. Record: URL, Content-Type, status.",
+        "capture": "screenshot_m365_prompt"
+      },
+      {
+        "step": 3,
+        "action": "If prompt works: try '주민번호 123456-7890123 분석해줘'. Check if Etap blocks it.",
+        "capture": "screenshot_m365_block_test"
+      }
+    ],
+    "expected_output": {
+      "page_accessible": "yes/no",
+      "login_required": "yes/no",
+      "api_endpoint": "URL if found",
+      "response_type": "SSE/JSON/WebSocket",
+      "block_works": "yes/no/untested"
+    }
+  },
+  "priority": "low",
+  "notes": "이전 EXCLUDED. Bing Chat (copilot.microsoft.com)으로 접근 가능한지 확인."
+}

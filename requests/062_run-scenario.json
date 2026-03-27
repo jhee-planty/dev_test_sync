@@ -1,0 +1,41 @@
+{
+  "request_id": "062",
+  "command": "run-scenario",
+  "service": "gamma",
+  "timestamp": "2026-03-27T14:15:00+09:00",
+  "scenario": {
+    "name": "gamma-frontend-reinspect",
+    "description": "Gamma 프론트엔드 재조사. 이전 13빌드 실패. 프론트엔드 변경 여부 및 새로운 경고 전달 경로 탐색.",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Open Chrome DevTools Console+Network tab. Navigate to https://gamma.app. Create new presentation. Wait for editor to load.",
+        "capture": "screenshot_gamma_baseline"
+      },
+      {
+        "step": 2,
+        "action": "In the AI prompt area, type '고양이에 대한 3장짜리 발표자료 만들어줘' and submit. Watch Network tab carefully. Record ALL requests that appear during generation: URL, type, status, content-type. Especially note if there are any NEW endpoints not seen before (non ai.api.gamma.app/ai/v2/generation).",
+        "capture": "network_generation_analysis"
+      },
+      {
+        "step": 3,
+        "action": "Check Console tab for any error handling code. Look for: try-catch blocks, error boundary messages, 'Unable to complete request' source. This tells us how Gamma handles errors from the generation API.",
+        "capture": "console_error_handling"
+      },
+      {
+        "step": 4,
+        "action": "Check if Gamma now uses any different response format. In Network tab, click on the ai/v2/generation request. Check Response tab: is it still SSE (text/event-stream)? Or has it changed to JSON, WebSocket, etc?",
+        "capture": "response_format_check"
+      }
+    ],
+    "expected_output": {
+      "frontend_changed": "yes/no",
+      "api_endpoint": "Current generation API URL",
+      "response_type": "SSE/JSON/WebSocket/other",
+      "error_handling": "How does Gamma handle generation failures?",
+      "new_warning_paths": "Any new endpoints or mechanisms discovered?"
+    }
+  },
+  "priority": "medium",
+  "notes": "13빌드 시도 후 BLOCKED_ONLY. 프론트엔드 업데이트로 에러 처리 방식이 변경되었을 가능성 확인."
+}

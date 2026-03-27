@@ -1,0 +1,41 @@
+{
+  "request_id": "061",
+  "command": "run-scenario",
+  "service": "notion",
+  "timestamp": "2026-03-27T14:15:00+09:00",
+  "scenario": {
+    "name": "notion-frontend-reinspect",
+    "description": "Notion AI 통신 메커니즘 재조사. 이전: WebSocket 전용. HTTP 기반 API가 있는지 재확인.",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Open Chrome DevTools Network tab, enable Preserve log. Navigate to https://www.notion.so. Open any page with Notion AI available.",
+        "capture": "screenshot_notion_baseline"
+      },
+      {
+        "step": 2,
+        "action": "Clear Network tab. Trigger Notion AI: press Space for AI, type 'Hello, summarize this page' and press Enter. Wait 15 seconds.",
+        "capture": "screenshot_notion_response"
+      },
+      {
+        "step": 3,
+        "action": "Check Network tab for ALL request types: Fetch/XHR, WS, EventSource. For each POST/PUT request after AI trigger, record: URL, Content-Type, status, body preview. Especially look for any non-WebSocket request that contains the AI prompt.",
+        "capture": "network_analysis"
+      },
+      {
+        "step": 4,
+        "action": "Filter Network by 'WS'. Click on WebSocket connection. Check Messages tab. Look for messages containing the AI prompt text. Record the message format.",
+        "capture": "websocket_messages"
+      }
+    ],
+    "expected_output": {
+      "communication_type": "WebSocket only / HTTP+WebSocket / HTTP only",
+      "http_ai_endpoint": "URL if any HTTP endpoint carries AI prompts",
+      "ws_endpoint": "WebSocket URL",
+      "ws_message_format": "JSON structure of AI prompt messages",
+      "block_feasibility": "Can Etap intercept the AI communication?"
+    }
+  },
+  "priority": "medium",
+  "notes": "이전 BLOCKED_ONLY 사유: WebSocket 전용 통신. HTTP 응답 주입 불가. 혹시 HTTP fallback이나 새 엔드포인트가 있는지 재확인."
+}

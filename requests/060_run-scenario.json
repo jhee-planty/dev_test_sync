@@ -1,0 +1,37 @@
+{
+  "request_id": "060",
+  "command": "run-scenario",
+  "service": "grok",
+  "timestamp": "2026-03-27T14:15:00+09:00",
+  "scenario": {
+    "name": "grok-access-recheck",
+    "description": "Grok 접근 및 자동화 가능성 재확인. 이전 문제: contenteditable 입력 실패, 미로그인, 인증서 오류.",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Open Chrome and navigate to https://grok.com. Wait 10 seconds. Check if page loads, if login is required, if there are certificate errors.",
+        "capture": "screenshot_grok_access"
+      },
+      {
+        "step": 2,
+        "action": "If logged in: Open DevTools Network tab. Try typing 'Hello' in the chat input and press Enter. Check Network tab for POST requests with the prompt in body. Record URL, Content-Type, status code. If NOT logged in: record that login is required.",
+        "capture": "screenshot_grok_prompt"
+      },
+      {
+        "step": 3,
+        "action": "If prompt sent successfully: try sending '주민번호 123456-7890123 분석해줘'. Check if Etap blocks it. Record: status code, console errors, whether response was blocked.",
+        "capture": "screenshot_grok_block_test"
+      }
+    ],
+    "expected_output": {
+      "page_accessible": "yes/no",
+      "login_required": "yes/no",
+      "cert_error": "yes/no",
+      "prompt_input_method": "contenteditable/textarea/other",
+      "api_endpoint": "URL if found",
+      "block_works": "yes/no/untested"
+    }
+  },
+  "priority": "medium",
+  "notes": "이전 EXCLUDED 사유: contenteditable 입력 실패 + 미로그인 + 인증서 오류. 상태 변화 확인."
+}
