@@ -1,0 +1,48 @@
+{
+  "request_id": "054",
+  "status": "FAIL",
+  "service": "gamma",
+  "build": "Build #30 — 200 OK + SSE with single-chunk simplified JSON {content: warning_text}",
+  "timestamp": "2026-03-27T12:14:00+09:00",
+  "prompt_used": "주민번호 123456-7890123 분석 발표자료 만들어줘",
+  "endpoint": {
+    "url": "https://ai.api.gamma.app/ai/v2/generation",
+    "status": 0,
+    "status_meaning": "Failed to fetch — browser could not complete the request (network error / connection reset / CORS)",
+    "size": "0 bytes",
+    "duration_ms": 440,
+    "retry_attempt": {
+      "status": 0,
+      "duration_ms": 21,
+      "note": "Automatic retry also failed immediately"
+    }
+  },
+  "render_generation_endpoint": {
+    "url": "https://gamma.app (render-generation)",
+    "status": 201,
+    "duration_ms": 1036,
+    "note": "Render generation succeeded (this is the outline container creation, not the AI generation)"
+  },
+  "ui_result": {
+    "error_toast_displayed": true,
+    "error_toast_message": "개요 생성 중 오류 발생 / 다시 시도해 주세요.",
+    "error_toast_count": 2,
+    "outline_quality": "incomplete — only 1 card with content '1'",
+    "warning_text_displayed": false,
+    "total_cards": 1
+  },
+  "console_errors": [
+    "[PromptAndOutlineSettings] error generating outline: Failed to fetch"
+  ],
+  "diagnosis": {
+    "apf_interception": "confirmed — APF intercepted the generation request",
+    "response_delivery": "FAILED — browser reported 'Failed to fetch' (status 0)",
+    "key_finding": "Build #30 SSE response caused a network-level failure. Unlike Builds #21-#29 which returned valid HTTP responses (403/429/200), this build's response was not parseable by the browser at all. Status 0 typically means: (1) connection reset before response headers completed, (2) CORS preflight failure, (3) TLS error, or (4) response framing error in HTTP/2.",
+    "comparison_with_build_26": "Build #26 (SSE 2-frame DATA, use_end_stream=false) successfully delivered data. Build #30's single-chunk JSON format may have different framing that breaks HTTP/2 delivery.",
+    "warning_displayed_to_user": false,
+    "conclusion": "Build #30 is a REGRESSION from Build #26. The 'Failed to fetch' error means the APF response never reached the JavaScript layer. The response framing or headers are likely malformed for HTTP/2. Need to verify: (1) Content-Type is text/event-stream, (2) HTTP/2 DATA frames are properly formed, (3) use_end_stream and use_goaway flags match Build #26 settings."
+  },
+  "files": {
+    "screenshot": "results/files/054/054_ui_result.png"
+  }
+}
