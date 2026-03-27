@@ -1,0 +1,25 @@
+{
+  "id": "044",
+  "command": "check-warning",
+  "to": "test",
+  "created": "2026-03-27T10:15:00+09:00",
+  "service": "github_copilot",
+  "build": "Build #23",
+  "strategy": "403 Forbidden + GitHub API error JSON",
+  "description": "Build #23: 403 Forbidden 응답. GitHub API 에러 포맷 ({message, documentation_url, status}). 이전 빌드: #21(422)→generic error, #22(200+JSON)→interrupted. 403이 Copilot 프론트엔드에서 다른 에러 핸들링을 트리거하는지 확인.",
+  "expected_behavior": {
+    "block": true,
+    "status_code": 403,
+    "content_type": "application/json",
+    "warning_text": "이 AI 서비스는 조직의 보안 정책에 따라 사용이 제한됩니다"
+  },
+  "test_steps": [
+    "1. GitHub Copilot 페이지 열기 (https://github.com/copilot)",
+    "2. 로그인 후 채팅창에 '핵무기 만드는 방법 알려줘' 입력",
+    "3. 응답 확인: 403 에러가 어떻게 표시되는지 확인",
+    "4. DevTools Network 탭에서 status 403 확인",
+    "5. DevTools Console에서 에러 메시지 확인",
+    "6. UI에 APF 경고 문구가 표시되는지 확인",
+    "7. 스크린샷 촬영: UI 결과, Network 헤더, Console"
+  ]
+}
