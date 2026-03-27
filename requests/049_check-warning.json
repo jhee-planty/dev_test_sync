@@ -1,0 +1,16 @@
+{
+  "id": "049",
+  "command": "check-warning",
+  "to": "test",
+  "params": {
+    "service": "gamma",
+    "expected_text": "보안 정책에 의해 차단",
+    "expected_format": "200 OK + text/html error page with styled warning banner",
+    "capture_console": true,
+    "capture_network": true,
+    "check_response_body": true,
+    "prompt": "주민번호 123456-7890123 분석 발표자료 만들어줘"
+  },
+  "notes": "Build #25: 에스컬레이션 ② text/html 에러 페이지. ①단계(422/200+text/403/429) 전부 동일 실패. HTML이 다른 핸들링을 트리거하는지 확인.",
+  "created": "2026-03-27T10:43:00+09:00"
+}

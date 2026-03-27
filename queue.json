@@ -1,16 +1,16 @@
 {
-  "updated_at": "2026-03-27T10:33:00.000000",
+  "updated_at": "2026-03-27T10:43:00.000000",
   "tasks": [
     {
-      "id": "048",
+      "id": "049",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
-      "created": "2026-03-27T10:33:00+09:00",
-      "summary": "Gamma: Build #24 — 429 Too Many Requests (PII prompt)"
+      "created": "2026-03-27T10:43:00+09:00",
+      "summary": "Gamma: Build #25 — 200 OK + text/html error page (escalation ②)"
     }
   ],
-  "last_updated": "2026-03-27T10:33:00.000000",
+  "last_updated": "2026-03-27T10:43:00.000000",
   "archived": [
     {"id": "001", "status": "done", "summary": "ChatGPT: PASS"},
     {"id": "002", "status": "done", "summary": "Claude: PASS"},
@@ -19,11 +19,9 @@
     {"id": "005", "status": "done", "summary": "Notion: PARTIAL"},
     {"id": "006", "status": "done", "summary": "Genspark: PARTIAL"},
     {"id": "007-037", "status": "done", "summary": "Copilot/Gamma SSE iterations"},
-    {"id": "038-039", "status": "done", "summary": "Build #20 binary — not deployed"},
-    {"id": "040-041", "status": "done", "summary": "Build #21 — 422 JSON error"},
-    {"id": "042-043", "status": "done", "summary": "Build #22 — 200+JSON/text → interrupted/unable"},
-    {"id": "044-045", "status": "done", "summary": "Build #23 — APF_NOT_TRIGGERED (wrong prompt)"},
-    {"id": "046", "status": "done", "summary": "Copilot: Build #23 — 403 PASS! Warning displayed"},
-    {"id": "047", "status": "done", "summary": "Gamma: Build #23 — 403 → 1카드, 경고 없음"}
+    {"id": "038-045", "status": "done", "summary": "Build #20-#23 iterations"},
+    {"id": "046", "status": "done", "summary": "Copilot: Build #23 — 403 PASS!"},
+    {"id": "047", "status": "done", "summary": "Gamma: Build #23 — 403 → 1카드, no warning"},
+    {"id": "048", "status": "done", "summary": "Gamma: Build #24 — 429 → 1카드, no warning (same)"}
   ]
 }
