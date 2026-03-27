@@ -1,17 +1,34 @@
 {
   "updated_at": "2026-03-27T19:30:00.000000",
   "tasks": [
-    {"id": "070", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "ChatGPT Phase 1 재검증 — SSE streaming, proxy active"},
-    {"id": "071", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Claude Phase 1 재검증 — SSE streaming, proxy active"},
-    {"id": "072", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Perplexity Phase 1 재검증 — REST JSON, proxy active"},
-    {"id": "073", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Gemini Phase 1 재검증 — batchexecute RPC, proxy active"},
-    {"id": "074", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Grok Phase 1 재검증 — REST JSON, proxy active"},
-    {"id": "075", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Notion AI Phase 1 재검증 — REST JSON, NO WebSocket"},
-    {"id": "076", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Genspark Phase 1 재검증 — REST JSON, API불완전"},
-    {"id": "077", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "GitHub Copilot Phase 1 재검증 — SSE streaming, API불완전"},
-    {"id": "078", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "Gamma Phase 1 재검증 — REST JSON, API불완전"},
-    {"id": "079", "command": "run-scenario", "to": "test", "status": "done", "created": "2026-03-27T18:00:00+09:00", "summary": "M365 Copilot Phase 1 재검증 — SSE streaming, proxy active"}
+    {
+      "id": "080",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T20:00:00+09:00",
+      "summary": "ChatGPT Phase 3 경고 표시 테스트"
+    }
   ],
-  "last_updated": "2026-03-27T19:30:00.000000",
-  "archived": ["058", "059", "060", "061", "062", "063", "064", "065"]
+  "last_updated": "2026-03-27T19:42:38.246700",
+  "archived": [
+    "058",
+    "059",
+    "060",
+    "061",
+    "062",
+    "063",
+    "064",
+    "065",
+    "070",
+    "071",
+    "072",
+    "073",
+    "074",
+    "075",
+    "076",
+    "077",
+    "078",
+    "079"
+  ]
 }
