@@ -1,14 +1,12 @@
 {
-  "updated_at": "2026-03-27T14:20:00.000000",
+  "updated_at": "2026-03-27T15:30:00.000000",
   "tasks": [
     {"id": "060", "command": "run-scenario", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "★ Grok: 접근/자동화 재확인 (사용자 로그인 완료 예정)"},
-    {"id": "058", "command": "run-scenario", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "Gemini: DPDK IPv6 인프라 재확인 + 차단 테스트"},
-    {"id": "059", "command": "run-scenario", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "Genspark: 슈퍼에이전트 프론트엔드 재조사 (새 API 탐색)"},
     {"id": "061", "command": "run-scenario", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "Notion: 통신 메커니즘 재조사 (HTTP fallback 확인)"},
     {"id": "062", "command": "run-scenario", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "Gamma: 프론트엔드 변경 여부 + 새 경고 경로 탐색"},
     {"id": "063", "command": "run-scenario", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "M365 Copilot: 접근 가능성 재확인"},
     {"id": "064", "command": "check-warning", "to": "test", "status": "pending", "created": "2026-03-27T14:15:00+09:00", "summary": "GitHub Copilot: PASS 리그레션 확인 (403 Forbidden)"}
   ],
-  "last_updated": "2026-03-27T14:20:00.000000",
-  "archived": []
+  "last_updated": "2026-03-27T15:30:00.000000",
+  "archived": ["058", "059"]
 }
