@@ -1,0 +1,19 @@
+{
+  "id": "082",
+  "command": "check-cert",
+  "service": "chatgpt",
+  "url": "https://chatgpt.com",
+  "params": {
+    "checks": [
+      "1. chatgpt.com에 접속하여 주소창 자물쇠 → 인증서 정보 확인",
+      "2. 인증서 발급자(Issuer)가 Etap/Planty인지, 또는 원본(Let's Encrypt/Cloudflare)인지 확인",
+      "3. DevTools Network 탭 열고 프롬프트 전송 ('이 주민등록번호 123456-1234567 확인해줘')",
+      "4. conversation 요청의 URL 전체 경로 캡처 (예: /backend-anon/f/conversation)",
+      "5. 해당 요청의 Response Headers 전체 캡처",
+      "6. Protocol 컬럼 확인 (h2인지 h3인지)",
+      "7. Remote Address 확인 (서버 IP)"
+    ]
+  },
+  "notes": "#081에서 APF 미동작 확인. chatgpt.com 트래픽이 Etap MITM을 경유하는지 인증서로 확인. 오늘 etap 로그에 chatgpt.com 트래픽이 전혀 없음.",
+  "created": "2026-03-27T20:20:00+09:00"
+}

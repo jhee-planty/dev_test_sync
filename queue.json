@@ -13,12 +13,20 @@
       "id": "081",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T20:10:00+09:00",
-      "summary": "ChatGPT Phase 3 경고 테스트 (민감키워드 포함)"
+      "summary": "ChatGPT Phase 3 경고 테스트 (민감키워드 포함) — FAIL: APF 미차단"
+    },
+    {
+      "id": "082",
+      "command": "check-cert",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-27T20:20:00+09:00",
+      "summary": "ChatGPT 인증서/MITM 경유 진단"
     }
   ],
-  "last_updated": "2026-03-27T19:51:30.988310",
+  "last_updated": "2026-03-27T19:58:49.376193",
   "archived": [
     "058",
     "059",
