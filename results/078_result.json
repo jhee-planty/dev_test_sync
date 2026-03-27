@@ -1,0 +1,40 @@
+{
+  "id": "078",
+  "command": "check-frontend",
+  "service": "Gamma",
+  "url": "https://gamma.app",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": true,
+    "login_type": "account required (logged in as 장희 최's Workspace, Free plan)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://gamma.app/api/",
+    "api_base": "https://gamma.app",
+    "known_endpoints": [
+      "API endpoints not fully visible due to grok.com filter"
+    ],
+    "protocol": "h2",
+    "response_format": "REST API (JSON)",
+    "communication_type": "HTTP fetch",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 2588,
+    "observations": {
+      "workspace": "장희 최's Workspace (Free)",
+      "credits": "320개",
+      "ai_features": "새로 만들기 AI, AI 이미지, API 생성됨",
+      "ui_framework": "React with Webpack bundling",
+      "sidebar": "Gammas, 홈, 템플릿, 라이브러리, 검색, 가져오기, 공유됨, 사이트, API 생성됨, AI 이미지, 설정",
+      "recent_items": "Untitled (1일 전), 한글날 (2일 전), 위대한 우리의 글 한글날",
+      "js_initiators": "webpack bundle patterns (webpackChunk)"
+    },
+    "screenshots": ["results/files/078/gamma_main_page.png"]
+  },
+  "notes": "Gamma accessible with login. Free plan with 320 credits. AI-powered presentation/document creation. React + Webpack bundled SPA. Protocol h2. Features: 새로 만들기 AI, AI 이미지, API 생성, 가져오기, 사이트."
+}

@@ -1,1 +1,3 @@
 C:\Users\ÏµúÏû•Ìù¨\AppData\Local\Temp\git_push_batch.sh: line 2: cd: $'/c/Users/Ôß§Ï\222\226Ï\230£??Documents/dev_test_sync': No such file or directory
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git

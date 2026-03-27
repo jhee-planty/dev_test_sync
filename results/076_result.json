@@ -1,0 +1,41 @@
+{
+  "id": "076",
+  "command": "check-frontend",
+  "service": "Genspark",
+  "url": "https://www.genspark.ai",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": true,
+    "login_type": "account required (logged in, workspace visible)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://www.genspark.ai/api/",
+    "api_base": "https://www.genspark.ai",
+    "known_endpoints": [
+      "API endpoints not fully visible due to filter (grok.com filter was active)"
+    ],
+    "protocol": "h2",
+    "response_format": "REST API (JSON)",
+    "communication_type": "HTTP fetch",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 2014,
+    "observations": {
+      "version": "Genspark AI 워크스페이스 3.0",
+      "ultra_mode": "Claude Opus 4.6의 1M 컨텍스트 윈도우 지원",
+      "cdn": "CDN paths not fully visible due to filter",
+      "js_initiators": "CMuwx6, 5K4Ry-b, ewtQ7N, 9lxYxr6B (from Snapshot initiator column)",
+      "features": "Genspark Claw, AI 슬라이드, AI 시트, AI 문서, AI 디자이너, AI 채팅(무제한), AI 이미지(무제한), AI 음악, AI 동영상",
+      "sidebar": "New, 홈, 받은 편지함, 워크플로우, 팀즈, 허브, AI 드라이브",
+      "update_banner": "새 버전 사용 가능 (새로고침하여 업데이트)",
+      "promotion": "AI 직원 50% 할인 세일"
+    },
+    "screenshots": ["results/files/076/genspark_main_page.png"]
+  },
+  "notes": "Genspark accessible with login. Workspace 3.0 with Ultra Mode (Claude Opus 4.6 1M context). Multiple AI tools: slides, sheets, docs, designer, chat, image, music, video. Protocol h2. ~2014 total requests (includes previous sites due to Preserve log)."
+}

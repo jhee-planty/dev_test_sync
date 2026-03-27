@@ -1,0 +1,42 @@
+{
+  "id": "079",
+  "command": "check-frontend",
+  "service": "M365 Copilot",
+  "url": "https://copilot.microsoft.com",
+  "status": "done",
+  "result": {
+    "accessible": true,
+    "login_required": false,
+    "login_type": "optional (anonymous chat available, Microsoft account for enhanced features)",
+    "etap_proxy_active": true,
+    "api_endpoint": "https://copilot.microsoft.com/api/",
+    "api_base": "https://copilot.microsoft.com",
+    "known_endpoints": [
+      "API endpoints not fully visible due to grok.com filter",
+      "MSAL authentication endpoints (msal-B5 pattern in initiators)"
+    ],
+    "protocol": "h2",
+    "response_format": "SSE streaming",
+    "communication_type": "HTTP fetch (SSE streaming)",
+    "websocket_count": 0,
+    "ws_endpoints": [],
+    "service_worker": false,
+    "sw_intercepts_api": false,
+    "block_works": "untested_this_session",
+    "block_response": "untested_this_session",
+    "frontend_block_behavior": "untested_this_session",
+    "total_requests_load": 2770,
+    "observations": {
+      "title": "Microsoft Copilot: AI 컴패니언",
+      "greeting": "안녕하세요. 오늘 무엇을 살펴볼까요?",
+      "mode": "Smart (selectable)",
+      "input_placeholder": "Copilot에 메시지",
+      "suggested_prompts": "이미지 만들기, 일출을 그리세요, 제품 추천, 퀴즈 풀기, 글쓰기 향상시키기, 타투 디자인하기, 주제를 단순화하기, 최상의 거래 찾기",
+      "auth_library": "MSAL (Microsoft Authentication Library) - msal-B5 pattern",
+      "ui_framework": "React-based SPA",
+      "js_initiators": "msal-B5, VM172, use-is-re, copy-fill"
+    },
+    "screenshots": ["results/files/079/m365_copilot_main.png"]
+  },
+  "notes": "M365 Copilot accessible without login. Smart mode. Korean UI. Features: image creation, writing, quiz, product recommendation. Uses MSAL for authentication. Protocol h2. React-based SPA."
+}
