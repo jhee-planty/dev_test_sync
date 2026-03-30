@@ -1,0 +1,20 @@
+{
+  "id": "083",
+  "command": "check-cert-batch",
+  "params": {
+    "description": "여러 AI 서비스의 인증서를 확인하여 Etap MITM 경유 여부를 일괄 진단",
+    "services": [
+      {"service": "claude", "url": "https://claude.ai"},
+      {"service": "perplexity", "url": "https://www.perplexity.ai"},
+      {"service": "gemini", "url": "https://gemini.google.com"},
+      {"service": "grok", "url": "https://grok.com"},
+      {"service": "notion", "url": "https://www.notion.so"}
+    ],
+    "checks_per_service": [
+      "해당 URL 접속 후 주소창 자물쇠 → 인증서 발급자(Issuer) 확인",
+      "Issuer에 Etap/Planty/entobilsoft가 포함되면 MITM 경유, 아니면 원본 인증서(bypass)"
+    ]
+  },
+  "notes": "#082에서 chatgpt.com이 Etap MITM bypass 확인됨. 다른 서비스도 동일 상황인지 확인. 이것이 인프라 전체 문제인지 chatgpt만의 문제인지 판별 필요.",
+  "created": "2026-03-31T10:00:00+09:00"
+}

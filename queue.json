@@ -21,12 +21,20 @@
       "id": "082",
       "command": "check-cert",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-27T20:20:00+09:00",
-      "summary": "ChatGPT 인증서/MITM 경유 진단"
+      "summary": "ChatGPT 인증서/MITM 경유 진단 — CONFIRMED: MITM bypass"
+    },
+    {
+      "id": "083",
+      "command": "check-cert-batch",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T10:00:00+09:00",
+      "summary": "5개 서비스 인증서 일괄 확인 (MITM 범위 진단)"
     }
   ],
-  "last_updated": "2026-03-27T19:58:49.376193",
+  "last_updated": "2026-03-31T08:38:48.858750",
   "archived": [
     "058",
     "059",
