@@ -2,39 +2,15 @@
   "updated_at": "2026-03-27T19:30:00.000000",
   "tasks": [
     {
-      "id": "080",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T20:00:00+09:00",
-      "summary": "ChatGPT Phase 3 경고 표시 테스트 — FAIL: 민감키워드 미포함으로 정상통과"
-    },
-    {
-      "id": "081",
-      "command": "check-warning",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-27T20:10:00+09:00",
-      "summary": "ChatGPT Phase 3 경고 테스트 (민감키워드 포함) — FAIL: APF 미차단"
-    },
-    {
-      "id": "082",
+      "id": "084",
       "command": "check-cert",
       "to": "test",
-      "status": "done",
-      "created": "2026-03-27T20:20:00+09:00",
-      "summary": "ChatGPT 인증서/MITM 경유 진단 — CONFIRMED: MITM bypass"
-    },
-    {
-      "id": "083",
-      "command": "check-cert-batch",
-      "to": "test",
-      "status": "done",
-      "created": "2026-03-31T10:00:00+09:00",
-      "summary": "5개 서비스 인증서 일괄 확인 — ALL_BYPASS: 전체 원본 인증서 확인됨"
+      "status": "pending",
+      "created": "2026-03-31T09:00:00+09:00",
+      "summary": "MITM 복구 확인 — 3개 서비스 인증서 확인 (SW bypass 해제 후)"
     }
   ],
-  "last_updated": "2026-03-31T11:00:00.000000",
+  "last_updated": "2026-03-31T09:00:00.000000",
   "archived": [
     "058",
     "059",
@@ -53,6 +29,10 @@
     "076",
     "077",
     "078",
-    "079"
+    "079",
+    "080",
+    "081",
+    "082",
+    "083"
   ]
 }

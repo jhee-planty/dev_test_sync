@@ -1,0 +1,16 @@
+{
+  "id": "084",
+  "command": "check-cert",
+  "priority": "urgent",
+  "params": {
+    "urls": [
+      "https://chatgpt.com",
+      "https://claude.ai",
+      "https://www.perplexity.ai"
+    ],
+    "check_type": "mitm_verify",
+    "expected_issuer_contains": "Plantynet"
+  },
+  "created": "2026-03-31T09:00:00+09:00",
+  "notes": "소프트웨어 바이패스 해제 후 MITM 암복호화 정상 동작 확인. Etap MITM 인증서(Plantynet CA)가 보여야 정상."
+}
