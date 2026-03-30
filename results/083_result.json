@@ -1,0 +1,62 @@
+{
+  "request_id": "083",
+  "task": "check-cert-batch",
+  "services": ["claude.ai", "perplexity.ai", "gemini.google.com", "grok.com", "notion.so"],
+  "test_environment": {
+    "pc": "test-pc (Windows)",
+    "network": "실망 (real network with Etap proxy)",
+    "method": "PowerShell TcpClient + SslStream certificate inspection"
+  },
+  "results": [
+    {
+      "service": "claude.ai",
+      "url": "https://claude.ai",
+      "subject": "CN=claude.ai",
+      "issuer": "CN=E8, O=Let's Encrypt, C=US",
+      "protocol": "Tls13",
+      "mitm_detected": false,
+      "verdict": "NO_MITM"
+    },
+    {
+      "service": "perplexity.ai",
+      "url": "https://perplexity.ai",
+      "subject": "CN=perplexity.ai",
+      "issuer": "CN=E7, O=Let's Encrypt, C=US",
+      "protocol": "Tls13",
+      "mitm_detected": false,
+      "verdict": "NO_MITM"
+    },
+    {
+      "service": "gemini",
+      "url": "https://gemini.google.com",
+      "subject": "CN=*.google.com",
+      "issuer": "CN=WE2, O=Google Trust Services, C=US",
+      "protocol": "Tls13",
+      "mitm_detected": false,
+      "verdict": "NO_MITM"
+    },
+    {
+      "service": "grok",
+      "url": "https://grok.com",
+      "subject": "CN=grok.com",
+      "issuer": "CN=WE1, O=Google Trust Services, C=US",
+      "protocol": "Tls13",
+      "mitm_detected": false,
+      "verdict": "NO_MITM"
+    },
+    {
+      "service": "notion",
+      "url": "https://notion.so",
+      "subject": "CN=notion.so",
+      "issuer": "CN=WE1, O=Google Trust Services, C=US",
+      "protocol": "Tls13",
+      "mitm_detected": false,
+      "verdict": "NO_MITM"
+    }
+  ],
+  "verdict": "ALL_BYPASS",
+  "summary": "5개 AI 서비스 모두 원본 인증서 확인됨. Etap MITM 인증서(Issuer에 Etap/Planty 포함) 미검출. 인프라 전체적으로 AI 서비스 트래픽이 Etap 프록시를 우회하고 있음.",
+  "conclusion": "APF 경고/차단이 동작하지 않는 근본 원인은 APF 코드 문제가 아니라 Etap MITM 프록시가 해당 서비스 트래픽을 가로채지 못하는 인프라 설정 문제임.",
+  "timestamp": "2026-03-31T16:30:00+09:00",
+  "status": "COMPLETED"
+}
