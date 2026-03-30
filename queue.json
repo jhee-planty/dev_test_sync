@@ -29,12 +29,12 @@
       "id": "083",
       "command": "check-cert-batch",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T10:00:00+09:00",
-      "summary": "5개 서비스 인증서 일괄 확인 (MITM 범위 진단)"
+      "summary": "5개 서비스 인증서 일괄 확인 — ALL_BYPASS: 전체 원본 인증서 확인됨"
     }
   ],
-  "last_updated": "2026-03-31T08:38:48.858750",
+  "last_updated": "2026-03-31T11:00:00.000000",
   "archived": [
     "058",
     "059",
