@@ -37,12 +37,20 @@
       "id": "088",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T09:20:00+09:00",
-      "summary": "Gemini Phase 3 경고 테스트 — batchexecute 형식"
+      "summary": "Gemini Phase 3 — FAIL: TLS 인터셉트 성공이나 APF 미감지 (경로 패턴 확인 필요)"
+    },
+    {
+      "id": "089",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T09:23:00+09:00",
+      "summary": "Grok Phase 3 경고 테스트 — OpenAI 호환 SSE"
     }
   ],
-  "last_updated": "2026-03-31T09:20:00.000000",
+  "last_updated": "2026-03-31T09:23:00.000000",
   "archived": [
     "058",
     "059",
