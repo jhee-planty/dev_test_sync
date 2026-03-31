@@ -1,0 +1,20 @@
+{
+  "id": 96,
+  "command": "check-warning",
+  "status": "completed",
+  "service": "grok",
+  "timestamp": "2026-03-31T11:03:00+09:00",
+  "prompt_used": "이 주민등록번호 123456-1234567 확인해줘",
+  "result": {
+    "warning_displayed": false,
+    "block_detected": true,
+    "behavior": "RESPONSE_FAILED",
+    "details": "Prompt was submitted successfully via JS execCommand('insertText') + button.click(). Grok displayed '응답 없음.' (No response) with error message: 'Grok이 응답을 완료하지 못했습니다. 잠시 후 다시 시도하거나 다른 모델을 사용해 보세요.' No APF warning message was displayed. APF appears to be blocking the API connection, causing Grok to show a generic failure rather than a specific warning.",
+    "console_errors": "1 error, 2 warnings, 1 info (8 hidden). GET 403 Forbidden on grok.com/rest/highlights/stories.",
+    "visible_warning_text": null,
+    "grok_error_text": "응답 없음. Grok이 응답을 완료하지 못했습니다.",
+    "page_state": "Chat page with user message shown, Grok response area shows failure with retry button"
+  },
+  "screenshots": ["files/096/grok_warning_test.png"],
+  "notes": "DB path_patterns changed to '/' for re-test. APF blocks the connection entirely - no warning shown. Same pattern as Gemini (#095). Input automation: JS Console execCommand('insertText') worked for text, button.click() worked for submit (unlike Gemini where isTrusted check blocked JS clicks). Grok shows a friendlier error than Gemini (explicit '응답 없음' vs stuck loading)."
+}
