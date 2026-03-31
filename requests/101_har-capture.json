@@ -1,0 +1,13 @@
+{
+  "id": "101",
+  "command": "har-capture",
+  "params": {
+    "service": "notion",
+    "url": "https://www.notion.so",
+    "prompt": "안녕하세요 오늘 날씨 어때요?",
+    "capture_target": "api/v3/runInferenceTranscript",
+    "save_as": "notion_ai_response.har",
+    "notes": "Notion AI의 실제 응답 포맷(NDJSON/JSON)을 캡처. 특히 Content-Type, 응답 body 구조, event 시퀀스 확인. #090에서 NDJSON 경고 응답이 무응답 처리됨 — 실제 포맷 확인 필요."
+  },
+  "notes": "HAR capture for Notion AI — 실제 runInferenceTranscript 응답 포맷 확인용. 차단하지 않는 일반 프롬프트 사용."
+}
