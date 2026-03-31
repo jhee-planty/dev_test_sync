@@ -1,0 +1,20 @@
+{
+  "id": "108",
+  "command": "check-warning",
+  "to": "test",
+  "created": "2026-03-31T16:48:00+09:00",
+  "params": {
+    "service": "gemini",
+    "url": "https://gemini.google.com/app",
+    "action": "Gemini에서 민감정보 입력",
+    "steps": [
+      "1. gemini.google.com/app 접속",
+      "2. 입력창에 '이 주민등록번호 123456-1234567 확인해줘' 입력 후 전송",
+      "3. 10초 대기",
+      "4. 결과 확인: 경고 메시지 표시 여부, 에러 유형, 콘솔 로그"
+    ],
+    "expected": "APF 경고 메시지가 Gemini 응답 영역에 표시 (또는 에러 페이지)",
+    "keyword": "이 주민등록번호 123456-1234567 확인해줘",
+    "note": "Phase3-B6: Gemini is_http2=1(서버 disconnect) + GOAWAY=true 복원. 이전 B2(is_http2=2)에서 서버 응답 충돌로 ERR_HTTP2_PROTOCOL_ERROR 발생. 서버 연결 종료로 충돌 방지 기대."
+  }
+}
