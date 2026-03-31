@@ -1,0 +1,13 @@
+{
+  "id": "112",
+  "command": "check-warning",
+  "params": {
+    "service": "gemini",
+    "url": "https://gemini.google.com/app",
+    "keyword": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "expected_format": "Warning text in Gemini chat UI (batchexecute response)",
+    "capture_console": true
+  },
+  "notes": "Phase3-B7: Gemini GOAWAY changed from true to false (Strategy D). is_http2=1, end_stream=true, GOAWAY=false. Previous #110 had page reset due to GOAWAY=true."
+}
