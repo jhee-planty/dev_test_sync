@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T15:58:00.000000",
+  "updated_at": "2026-03-31T16:30:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -184,9 +184,17 @@
       "status": "pending",
       "created": "2026-03-31T15:58:00+09:00",
       "summary": "Genspark 재테스트 — 한글날 키워드 (자체 필터 우회용)"
+    },
+    {
+      "id": "107",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T16:30:00+09:00",
+      "summary": "Notion Phase3-B5 — HAR 기반 NDJSON generator 재설계 테스트"
     }
   ],
-  "last_updated": "2026-03-31T15:58:00.000000",
+  "last_updated": "2026-03-31T16:30:00.000000",
   "archived": [
     "058",
     "059",
