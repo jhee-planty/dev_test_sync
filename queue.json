@@ -61,12 +61,20 @@
       "id": "091",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T09:32:00+09:00",
-      "summary": "Genspark Phase 3 경고 테스트 — SSE 7-event"
+      "summary": "Genspark Phase 3 — PARTIAL: 차단O 경고X (빈 응답 + 새로고침 배너)"
+    },
+    {
+      "id": "092",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T10:01:00+09:00",
+      "summary": "GitHub Copilot Phase 3 경고 테스트 — 403 JSON fallback"
     }
   ],
-  "last_updated": "2026-03-31T09:32:00.000000",
+  "last_updated": "2026-03-31T10:01:00.000000",
   "archived": [
     "058",
     "059",

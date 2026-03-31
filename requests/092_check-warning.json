@@ -1,0 +1,18 @@
+{
+  "id": "092",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "github_copilot",
+    "url": "https://github.com/copilot",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_behavior": "APF가 민감 키워드를 감지하여 403 Forbidden JSON 에러 응답 생성.",
+    "check_items": [
+      "채팅 입력 후 응답 영역에 에러/차단 메시지가 표시되는지 확인",
+      "표시된 메시지 텍스트 캡처",
+      "스크린샷 저장"
+    ]
+  },
+  "created": "2026-03-31T10:01:00+09:00",
+  "notes": "Phase 3. GitHub Copilot은 403 JSON fallback (SSE 실패 → HTTP JSON). GitHub 로그인이 필요할 수 있음."
+}
