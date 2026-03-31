@@ -21,12 +21,20 @@
       "id": "086",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T09:11:00+09:00",
-      "summary": "Claude Phase 3 경고 테스트 — 주민등록번호 패턴"
+      "summary": "Claude Phase 3 경고 — FAIL: api.anthropic.com bypass (BSNM). 설정 변경 후 재테스트 필요"
+    },
+    {
+      "id": "087",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T09:16:00+09:00",
+      "summary": "Perplexity Phase 3 경고 테스트 — 차단/경고 동작 확인"
     }
   ],
-  "last_updated": "2026-03-31T09:11:00.000000",
+  "last_updated": "2026-03-31T09:16:00.000000",
   "archived": [
     "058",
     "059",
