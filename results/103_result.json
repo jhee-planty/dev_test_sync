@@ -1,0 +1,32 @@
+{
+  "id": "103",
+  "command": "check-warning",
+  "service": "grok",
+  "timestamp": "2026-03-31T15:55:00+09:00",
+  "result": {
+    "status": "BLOCKED_NO_WARNING",
+    "warning_displayed": false,
+    "apf_warning_displayed": false,
+    "service_block_displayed": true,
+    "service_block_message": "Grok이 응답을 완료하지 못했습니다. 잠시 후 다시 시도하거나 다른 모델을 사용해 보세요.",
+    "additional_message": "응답 없음.",
+    "http_status": 403,
+    "blocked_api_endpoints": [
+      "POST /rest/app-chat/conversations/new → 403 (Forbidden)",
+      "POST /rest/skills → net::ERR_HTTP2_PROTOCOL_ERROR",
+      "GET /rest/user-skills → 403 (Forbidden) (repeated many times)"
+    ],
+    "page_url": "grok.com",
+    "console_errors": [
+      "POST https://grok.com/rest/app-chat/conversations/new 403 (Forbidden)",
+      "POST https://grok.com/rest/skills net::ERR_HTTP2_PROTOCOL_ERROR",
+      "GET https://grok.com/rest/user-skills 403 (Forbidden) (repeated 10+ times)",
+      "Warning: Missing 'Description' or 'aria-describedby={undefined}' for {DialogContent}"
+    ],
+    "behavior": "APF blocks multiple Grok API endpoints. conversations/new returns 403, skills returns ERR_HTTP2_PROTOCOL_ERROR. Grok shows its own error message '응답 없음' + '응답을 완료하지 못했습니다' with retry button. No APF warning HTML is injected.",
+    "notes": "Phase3-B4 retest (DB template + JSON error fix). APF IS blocking Grok — 403 on conversations/new confirms the DB template fix is working. However, NO APF warning is displayed. The 403 response does not contain warning HTML content. Grok handles the error with its own UI. Same pattern as #102 Gemini — blocking works but warning injection does not."
+  },
+  "evidence": {
+    "screenshot": "results/files/103/grok_phase3b4_retest.png"
+  }
+}

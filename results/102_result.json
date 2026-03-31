@@ -1,0 +1,27 @@
+{
+  "id": "102",
+  "command": "check-warning",
+  "service": "gemini",
+  "timestamp": "2026-03-31T15:51:00+09:00",
+  "result": {
+    "status": "BLOCKED_NO_WARNING",
+    "warning_displayed": false,
+    "apf_warning_displayed": false,
+    "service_block_displayed": false,
+    "http_status": null,
+    "blocked_api_endpoint": "/_/BardChatUi/data/batchexecute",
+    "block_method": "ERR_HTTP2_PROTOCOL_ERROR",
+    "page_url": "gemini.google.com/app",
+    "console_errors": [
+      "POST /_/BardChatUi/data/batchexecute net::ERR_HTTP2_PROTOCOL_ERROR (repeated 4+ times)",
+      "Error code = 7, Path = /_/BardChatUi/data/batchexecute, Message = There was an error during the transport or processing of this request., Unknown HTTP error in underlying XHR (HTTP Status: 0) (XHR Error Code: 6)",
+      "Fetch API cannot load https://www.googleadservices.com/pagead/conversion/... Refused to connect because it violates the document's Content Security Policy",
+      "Failed to load resource: _/BardChatUi/jserror net::ERR_HTTP2_PROTOCOL_ERROR"
+    ],
+    "behavior": "APF blocks batchexecute via HTTP/2 protocol error. Gemini JS catches the XHR failure and silently resets to welcome screen. No warning or error message shown to user. Prompt remains in input field.",
+    "notes": "Phase3-B4 retest (DB template fix). APF IS blocking Gemini requests — ERR_HTTP2_PROTOCOL_ERROR confirms HTTP/2 level blocking. However, NO APF warning is displayed. Gemini handles the block silently by resetting the page. The DB template fix appears to have enabled blocking (previously got fallback 403), but warning injection is not working — the blocked response does not contain the warning HTML/content."
+  },
+  "evidence": {
+    "screenshot": "results/files/102/gemini_phase3b4_retest.png"
+  }
+}
