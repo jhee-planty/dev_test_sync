@@ -5,12 +5,20 @@
       "id": "084",
       "command": "check-cert",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T09:00:00+09:00",
-      "summary": "MITM 복구 확인 — 3개 서비스 인증서 확인 (SW bypass 해제 후)"
+      "summary": "MITM 복구 확인 — ALL_MITM_CONFIRMED (3/3 Plantynet CA)"
+    },
+    {
+      "id": "085",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T09:06:00+09:00",
+      "summary": "ChatGPT Phase 3 경고 테스트 — 주민등록번호 패턴"
     }
   ],
-  "last_updated": "2026-03-31T09:00:00.000000",
+  "last_updated": "2026-03-31T09:06:00.000000",
   "archived": [
     "058",
     "059",
