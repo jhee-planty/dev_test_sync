@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T14:48:00.000000",
+  "updated_at": "2026-03-31T15:10:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -112,9 +112,17 @@
       "status": "pending",
       "created": "2026-03-31T14:48:00+09:00",
       "summary": "Grok Phase 3 retest — H2 Strategy A→B 변경 (GOAWAY 제거, is_http2=2)"
+    },
+    {
+      "id": "098",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T15:10:00+09:00",
+      "summary": "Gemini Phase 3 retest — H2 Strategy D (is_http2=2, GOAWAY=false). Phase3-B2 빌드."
     }
   ],
-  "last_updated": "2026-03-31T14:48:00.000000",
+  "last_updated": "2026-03-31T15:10:00.000000",
   "archived": [
     "058",
     "059",

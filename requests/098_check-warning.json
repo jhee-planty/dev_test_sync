@@ -1,0 +1,12 @@
+{
+  "id": "098",
+  "command": "check-warning",
+  "params": {
+    "service": "gemini",
+    "url": "https://gemini.google.com",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "capture_console": true
+  },
+  "notes": "Phase 3 retest — Gemini H2 전략 변경: Strategy A(GOAWAY) → Strategy D(is_http2=2, END_STREAM+GOAWAY=false). Phase3-B2 빌드 배포 완료."
+}
