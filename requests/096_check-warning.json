@@ -1,0 +1,19 @@
+{
+  "id": "096",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "grok",
+    "url": "https://grok.com",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_behavior": "DB path_patterns를 '/'로 변경하여 모든 경로 매칭. APF가 grok.com의 채팅 요청을 감지하여 차단 응답 생성해야 함.",
+    "check_items": [
+      "Grok 채팅에서 프롬프트 입력 후 경고/차단 메시지 표시 여부 확인",
+      "표시된 메시지 텍스트 캡처",
+      "정상 응답이 나오면 FAIL (이전 #089와 동일), 차단/에러 시 PARTIAL 이상",
+      "스크린샷 저장"
+    ]
+  },
+  "created": "2026-03-31T10:45:00+09:00",
+  "notes": "DB path_patterns 변경 후 재테스트. 이전 #089 FAIL (path 불일치). 이번에는 '/' 패턴으로 전체 매칭."
+}

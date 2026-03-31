@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T10:35:00.000000",
+  "updated_at": "2026-03-31T10:45:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -15,15 +15,14 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:06:00+09:00",
-      "summary": "ChatGPT Phase 3 경고 테스트 — PASS: 경고 메시지 정상 표시"
+      "summary": "ChatGPT Phase 3 — PASS: 경고 메시지 정상 표시"
     },
     {
       "id": "086",
       "command": "check-warning",
-      "to": "test",
-      "status": "done",
+      "to": "test",      "status": "done",
       "created": "2026-03-31T09:11:00+09:00",
-      "summary": "Claude Phase 3 경고 — FAIL: api.anthropic.com bypass (BSNM). 설정 변경 후 재테스트 필요"
+      "summary": "Claude Phase 3 — FAIL: api.anthropic.com bypass (BSNM)"
     },
     {
       "id": "087",
@@ -31,7 +30,7 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:16:00+09:00",
-      "summary": "Perplexity Phase 3 — PARTIAL: 차단O 경고X (answer:null 잠금 확인)"
+      "summary": "Perplexity Phase 3 — PARTIAL: 차단O 경고X"
     },
     {
       "id": "088",
@@ -39,7 +38,7 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:20:00+09:00",
-      "summary": "Gemini Phase 3 — FAIL: TLS 인터셉트 성공이나 APF 미감지 (경로 패턴 확인 필요)"
+      "summary": "Gemini Phase 3 — FAIL: path 불일치 (#095로 재테스트)"
     },
     {
       "id": "089",
@@ -47,15 +46,14 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:23:00+09:00",
-      "summary": "Grok Phase 3 — FAIL: APF 미감지, 정상 응답 반환"
-    },
-    {
+      "summary": "Grok Phase 3 — FAIL: path 불일치 (#096으로 재테스트)"
+    },    {
       "id": "090",
       "command": "check-warning",
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:26:00+09:00",
-      "summary": "Notion AI Phase 3 — PARTIAL: 차단O 경고X (무응답, 에러 메시지도 없음)"
+      "summary": "Notion AI Phase 3 — PARTIAL: 차단O 경고X"
     },
     {
       "id": "091",
@@ -63,7 +61,7 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:32:00+09:00",
-      "summary": "Genspark Phase 3 — PARTIAL: 차단O 경고X (빈 응답 + 새로고침 배너)"
+      "summary": "Genspark Phase 3 — PARTIAL: 차단O 경고X"
     },
     {
       "id": "092",
@@ -71,7 +69,7 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T10:01:00+09:00",
-      "summary": "GitHub Copilot Phase 3 — PARTIAL: 403 차단O, APF 경고 텍스트X (GitHub 에러 표시)"
+      "summary": "GitHub Copilot Phase 3 — PARTIAL: 403 차단O"
     },
     {
       "id": "093",
@@ -79,18 +77,33 @@
       "to": "test",
       "status": "done",
       "created": "2026-03-31T09:42:00+09:00",
-      "summary": "Gamma Phase 3 — PARTIAL: 차단O 경고X (1/10 카드만 생성, 빈 윤곽선)"
-    },
-    {
+      "summary": "Gamma Phase 3 — PARTIAL: 차단O 경고X"
+    },    {
       "id": "094",
       "command": "check-warning",
       "to": "test",
       "status": "pending",
       "created": "2026-03-31T09:42:00+09:00",
-      "summary": "M365 Copilot Phase 3 경고 테스트 — 결과 대기 중 (40분+ 경과)"
+      "summary": "M365 Copilot Phase 3 — 결과 대기 중"
+    },
+    {
+      "id": "095",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T10:45:00+09:00",
+      "summary": "Gemini 재테스트 — DB path='/' 변경 후"
+    },
+    {
+      "id": "096",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T10:45:00+09:00",
+      "summary": "Grok 재테스트 — DB path='/' 변경 후"
     }
   ],
-  "last_updated": "2026-03-31T10:35:00.000000",
+  "last_updated": "2026-03-31T10:45:00.000000",
   "archived": [
     "058","059","060","061","062","063","064","065",
     "070","071","072","073","074","075","076","077","078","079",
