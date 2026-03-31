@@ -20,7 +20,8 @@
     {
       "id": "086",
       "command": "check-warning",
-      "to": "test",      "status": "done",
+      "to": "test",
+      "status": "done",
       "created": "2026-03-31T09:11:00+09:00",
       "summary": "Claude Phase 3 — FAIL: api.anthropic.com bypass (BSNM)"
     },
@@ -47,7 +48,8 @@
       "status": "done",
       "created": "2026-03-31T09:23:00+09:00",
       "summary": "Grok Phase 3 — FAIL: path 불일치 (#096으로 재테스트)"
-    },    {
+    },
+    {
       "id": "090",
       "command": "check-warning",
       "to": "test",
@@ -78,13 +80,14 @@
       "status": "done",
       "created": "2026-03-31T09:42:00+09:00",
       "summary": "Gamma Phase 3 — PARTIAL: 차단O 경고X"
-    },    {
+    },
+    {
       "id": "094",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T09:42:00+09:00",
-      "summary": "M365 Copilot Phase 3 — 결과 대기 중"
+      "summary": "M365 Copilot — MANUAL_INPUT_REQUIRED: 자동화 입력 불가, 수동 테스트 필요"
     },
     {
       "id": "095",
@@ -103,10 +106,29 @@
       "summary": "Grok 재테스트 — DB path='/' 변경 후"
     }
   ],
-  "last_updated": "2026-03-31T10:45:00.000000",
+  "last_updated": "2026-03-31T10:55:00.000000",
   "archived": [
-    "058","059","060","061","062","063","064","065",
-    "070","071","072","073","074","075","076","077","078","079",
-    "080","081","082","083"
+    "058",
+    "059",
+    "060",
+    "061",
+    "062",
+    "063",
+    "064",
+    "065",
+    "070",
+    "071",
+    "072",
+    "073",
+    "074",
+    "075",
+    "076",
+    "077",
+    "078",
+    "079",
+    "080",
+    "081",
+    "082",
+    "083"
   ]
 }
