@@ -1,0 +1,12 @@
+{
+  "id": "105",
+  "command": "check-warning",
+  "params": {
+    "service": "grok",
+    "url": "https://grok.com",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "capture_console": true
+  },
+  "notes": "Phase3-B4 retest #3 — etapd 재시작 후 DB 템플릿 메모리 반영 확인. #099/#103은 DB 미반영으로 무효."
+}

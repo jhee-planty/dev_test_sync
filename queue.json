@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T15:42:00.000000",
+  "updated_at": "2026-03-31T15:58:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -133,36 +133,60 @@
       "id": "100",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T15:26:00+09:00",
-      "summary": "Genspark Phase3-B4 retest — end_stream=false→true 변경"
+      "summary": "Genspark — BLOCKED_BY_SERVICE: Genspark 자체 콘텐츠 필터가 민감정보 차단"
     },
     {
       "id": "101",
       "command": "har-capture",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T15:35:00+09:00",
-      "summary": "Notion AI HAR capture — runInferenceTranscript 실제 응답 포맷 확인"
+      "summary": "Notion HAR — SUCCESS: NDJSON (application/x-ndjson) JSON Patch 구조 확인"
     },
     {
       "id": "102",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T15:42:00+09:00",
-      "summary": "Gemini 재테스트 — DB 템플릿 수정 후 (is_http2=2 + GOAWAY=false + 올바른 경고 메시지)"
+      "summary": "Gemini — INVALID: DB 템플릿 미반영 (etapd 미재시작). #104로 재테스트"
     },
     {
       "id": "103",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T15:42:00+09:00",
-      "summary": "Grok 재테스트 — DB 템플릿 수정 후 (JSON error + 올바른 경고 메시지)"
+      "summary": "Grok — INVALID: DB 템플릿 미반영 (etapd 미재시작). #105로 재테스트"
+    },
+    {
+      "id": "104",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T15:58:00+09:00",
+      "summary": "Gemini 재테스트 — etapd 재시작 후 DB 템플릿 반영 확인"
+    },
+    {
+      "id": "105",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T15:58:00+09:00",
+      "summary": "Grok 재테스트 — etapd 재시작 후 DB 템플릿 반영 확인"
+    },
+    {
+      "id": "106",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T15:58:00+09:00",
+      "summary": "Genspark 재테스트 — 한글날 키워드 (자체 필터 우회용)"
     }
   ],
-  "last_updated": "2026-03-31T15:42:00.000000",
+  "last_updated": "2026-03-31T15:58:00.000000",
   "archived": [
     "058",
     "059",
