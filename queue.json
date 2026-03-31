@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T15:15:00.000000",
+  "updated_at": "2026-03-31T15:26:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -128,9 +128,17 @@
       "status": "pending",
       "created": "2026-03-31T15:15:00+09:00",
       "summary": "Grok Phase3-B3 retest — SSE→JSON 에러 방식 전환 (escalation ②)"
+    },
+    {
+      "id": "100",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T15:26:00+09:00",
+      "summary": "Genspark Phase3-B4 retest — end_stream=false→true 변경"
     }
   ],
-  "last_updated": "2026-03-31T15:15:00.000000",
+  "last_updated": "2026-03-31T15:26:00.000000",
   "archived": [
     "058",
     "059",
