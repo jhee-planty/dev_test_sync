@@ -1,0 +1,18 @@
+{
+  "id": "093",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gamma",
+    "url": "https://gamma.app",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_behavior": "APF가 민감 키워드를 감지하여 9-chunk SSE 형식 차단 응답 생성.",
+    "check_items": [
+      "채팅/AI 기능에서 프롬프트 입력 후 경고/차단 메시지 표시 여부 확인",
+      "표시된 메시지 텍스트 캡처",
+      "스크린샷 저장"
+    ]
+  },
+  "created": "2026-03-31T09:42:00+09:00",
+  "notes": "Phase 3. Gamma는 9-chunk SSE 형식. Strategy B (keep-alive). 로그인이 필요할 수 있음."
+}
