@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T15:10:00.000000",
+  "updated_at": "2026-03-31T15:15:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -109,9 +109,9 @@
       "id": "097",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T14:48:00+09:00",
-      "summary": "Grok Phase 3 retest — H2 Strategy A→B 변경 (GOAWAY 제거, is_http2=2)"
+      "summary": "Grok Phase3-B1 — FAIL: 400 Bad Request (SSE→JSON 기대 불일치, conversations/new는 JSON 응답 기대)"
     },
     {
       "id": "098",
@@ -120,9 +120,17 @@
       "status": "pending",
       "created": "2026-03-31T15:10:00+09:00",
       "summary": "Gemini Phase 3 retest — H2 Strategy D (is_http2=2, GOAWAY=false). Phase3-B2 빌드."
+    },
+    {
+      "id": "099",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T15:15:00+09:00",
+      "summary": "Grok Phase3-B3 retest — SSE→JSON 에러 방식 전환 (escalation ②)"
     }
   ],
-  "last_updated": "2026-03-31T15:10:00.000000",
+  "last_updated": "2026-03-31T15:15:00.000000",
   "archived": [
     "058",
     "059",
