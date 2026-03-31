@@ -1,0 +1,22 @@
+{
+  "id": "111",
+  "command": "check-warning",
+  "status": "BLOCKED_NO_WARNING",
+  "result": {
+    "service": "grok",
+    "url": "https://grok.com",
+    "keyword": "이 주민등록번호 123456-1234567 확인해줘",
+    "warning_displayed": false,
+    "blocked": true,
+    "response_received": false,
+    "expected_warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "actual_display": "Grok native error: '응답 없음.' + 'Grok이 응답을 완료하지 못했습니다. 잠시 후 다시 시도하거나 다른 모델을 사용해 보세요.' with retry button",
+    "submission_successful": true,
+    "submission_method": "Ctrl+Shift+J to focus input + Clipboard paste + Enter",
+    "response_summary": "Prompt submitted successfully. Grok showed '응답 없음.' (No response) with error message indicating response could not be completed. APF SSE stream block prevented the expected warning text from being delivered. The custom SSE warning content did not render - instead Grok's native error handling caught the stream failure.",
+    "note": "Phase3-B7: Grok generator was rewritten from 403 JSON to 200 SSE (chat.completion.chunk format). However, the SSE warning content did not appear in the chat bubble. Instead, Grok displayed its native error UI. This suggests the SSE payload format or headers may need adjustment for Grok's frontend to parse and render the warning text.",
+    "console_captured": false,
+    "console_note": "DevTools was opened briefly but closed before submission to ensure proper input focus."
+  },
+  "timestamp": "2026-03-31T18:31:00+09:00"
+}
