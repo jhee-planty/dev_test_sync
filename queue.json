@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T17:00:00.000000",
+  "updated_at": "2026-03-31T17:40:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -205,12 +205,20 @@
       "id": "109",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T17:00:00+09:00",
-      "summary": "Notion Phase3-B5 재테스트 — SSN 패턴 키워드 (123456-1234567)"
+      "summary": "Notion Phase3-B5 — BLOCKED_SILENT: 차단O 경고X (syncRecordValue timeout, NDJSON 미인식) → BLOCKED_ONLY"
+    },
+    {
+      "id": "110",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T17:40:00+09:00",
+      "summary": "Gemini Phase3-B6 재테스트 — CDP 방식 (Angular zone.js 우회)"
     }
   ],
-  "last_updated": "2026-03-31T17:00:00.000000",
+  "last_updated": "2026-03-31T17:40:00.000000",
   "archived": [
     "058",
     "059",
