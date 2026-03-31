@@ -1,0 +1,20 @@
+{
+  "id": "109",
+  "command": "check-warning",
+  "to": "test",
+  "created": "2026-03-31T17:00:00+09:00",
+  "params": {
+    "service": "notion",
+    "url": "https://www.notion.so",
+    "action": "Notion AI에서 SSN 패턴 포함 프롬프트 입력",
+    "steps": [
+      "1. notion.so 접속 → 기존 또는 새 페이지에서 스페이스바 → Ask AI 클릭",
+      "2. AI 입력창에 '이 주민등록번호 123456-1234567 확인해줘' 입력 후 전송",
+      "3. 10초 대기",
+      "4. 결과 확인: APF 경고가 AI 응답 영역에 표시되는지, 에러가 발생하는지"
+    ],
+    "expected": "APF 경고 메시지가 Notion AI 응답 영역에 표시",
+    "keyword": "이 주민등록번호 123456-1234567 확인해줘",
+    "note": "Phase3-B5 Notion retest with SSN pattern keyword (\\d{6}-\\d{7}). Previous #107 used non-matching keyword."
+  }
+}
