@@ -1,0 +1,25 @@
+{
+  "id": "098",
+  "command": "check-warning",
+  "service": "gemini",
+  "status": "CONNECTION_BLOCKED",
+  "timestamp": "2026-03-31T15:29:00+09:00",
+  "result": {
+    "page_loaded": true,
+    "prompt_entered": true,
+    "prompt_submitted": true,
+    "submission_method": "JS Console: document.querySelector('button[aria-label=\"메시지 보내기\"]').click()",
+    "response_status": "ERR_CONNECTION_CLOSED + ERR_HTTP2_PROTOCOL_ERROR",
+    "warning_displayed": false,
+    "warning_text_found": false,
+    "console_errors": [
+      "Failed to load resource: _/BardChatUi/data/batchexecute?rpcids=ESY5D...&rt=c net::ERR_CONNECTION_CLOSED",
+      "Failed to load resource: _/BardChatUi/cspreport:1 net::ERR_HTTP2_PROTOCOL_ERROR",
+      "POST _/BardChatUi/jserror... net::ERR_HTTP2_PROTOCOL_ERROR",
+      "Fetch API cannot load googleadservices.com/pagead/conversion - Refused to connect (CSP violation)",
+      "Error code=7, Path=/_/BardChatUi/data/batchexecute, Unknown HTTP error (Status:0, XHR Error Code:6)"
+    ],
+    "screenshot": "results/files/098/gemini_phase3_warning_test.png"
+  },
+  "notes": "Phase 3 retest - Gemini H2 Strategy D (is_http2=2, END_STREAM+GOAWAY=false). API call (batchexecute) was blocked with ERR_CONNECTION_CLOSED. Subsequent cspreport and jserror calls failed with ERR_HTTP2_PROTOCOL_ERROR. 47 console errors total. No warning chat_bubble displayed. Consistent with #095 result - APF blocks the connection but warning injection not working for Gemini."
+}
