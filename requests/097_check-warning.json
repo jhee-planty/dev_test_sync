@@ -1,0 +1,15 @@
+{
+  "id": "097",
+  "command": "check-warning",
+  "params": {
+    "service": "grok",
+    "url": "https://grok.com",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "expected_format": "chat_bubble",
+    "capture_console": true
+  },
+  "notes": "Phase 3 retest — Grok H2 전략 변경: Strategy A(GOAWAY) → Strategy B(keep-alive, is_http2=2). OpenAI 호환 SSE 포맷은 ChatGPT와 동일하므로 GOAWAY 제거 시 경고 텍스트 표시 기대.",
+  "created": "2026-03-31T14:48:00+09:00",
+  "from": "dev"
+}

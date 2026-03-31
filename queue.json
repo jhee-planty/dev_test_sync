@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T10:45:00.000000",
+  "updated_at": "2026-03-31T14:48:00.000000",
   "tasks": [
     {
       "id": "084",
@@ -104,9 +104,17 @@
       "status": "done",
       "created": "2026-03-31T10:45:00+09:00",
       "summary": "Grok 재테스트 — PARTIAL: 차단O (RESPONSE_FAILED) 경고X"
+    },
+    {
+      "id": "097",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-03-31T14:48:00+09:00",
+      "summary": "Grok Phase 3 retest — H2 Strategy A→B 변경 (GOAWAY 제거, is_http2=2)"
     }
   ],
-  "last_updated": "2026-03-31T11:15:00.000000",
+  "last_updated": "2026-03-31T14:48:00.000000",
   "archived": [
     "058",
     "059",
