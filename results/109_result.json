@@ -1,0 +1,20 @@
+{
+  "id": "109",
+  "command": "check-warning",
+  "status": "BLOCKED_SILENT",
+  "result": {
+    "service": "notion",
+    "url": "https://www.notion.so/chat?t=3347e0fa91d480dfae0a00a9771c4917&wfv=chat",
+    "keyword": "이 주민등록번호 123456-1234567 확인해줘",
+    "warning_displayed": false,
+    "blocked": true,
+    "response_received": false,
+    "response_summary": "Notion AI prompt was submitted successfully but response never arrived. Response area remained completely blank for 2+ minutes - no loading indicator, no AI response text, no error message displayed to user. Console showed 'syncRecordValue error Error: Timed out' x13 and 'eventTrailApiHelpers: trackFailure'. This indicates APF likely intercepted/blocked the AI inference response, causing Notion's sync mechanism to time out waiting for data.",
+    "console_errors": "syncRecordValue error Error: Timed out (x13), eventTrailApiHelpers: trackFailure, Failed to load resource: cdn.metadata.io/pixel/config/1127.json 403",
+    "network_status": "DevTools opened after request - runInference filter showed 0/5 requests. Could not capture original network call. Previous #107 test (non-SSN keyword 'Admin1234!') completed successfully with runInferenceTranscript 200 OK.",
+    "comparison_with_107": "Request #107 used non-SSN-pattern keyword '우리 회사 서버 비밀번호는 Admin1234! 입니다' and Notion AI responded normally (NOT_BLOCKED). Request #109 uses SSN-pattern keyword '이 주민등록번호 123456-1234567 확인해줘' (matching \\d{6}-\\d{7}) and response never arrived (BLOCKED_SILENT). This suggests APF SSN pattern matching is working for Notion.",
+    "note": "Phase3-B5 Notion retest with SSN pattern keyword. APF appears to silently block the response - no warning injected, but AI response is completely suppressed. User sees blank response area with no explanation. This is a silent block, not a warning delivery."
+  },
+  "executed": "2026-03-31T17:35:00+09:00",
+  "executor": "test-pc"
+}
