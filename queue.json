@@ -93,20 +93,20 @@
       "id": "095",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T10:45:00+09:00",
-      "summary": "Gemini 재테스트 — DB path='/' 변경 후"
+      "summary": "Gemini 재테스트 — PARTIAL: 차단O (CONNECTION_CLOSED) 경고X"
     },
     {
       "id": "096",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-03-31T10:45:00+09:00",
-      "summary": "Grok 재테스트 — DB path='/' 변경 후"
+      "summary": "Grok 재테스트 — PARTIAL: 차단O (RESPONSE_FAILED) 경고X"
     }
   ],
-  "last_updated": "2026-03-31T10:55:00.000000",
+  "last_updated": "2026-03-31T11:15:00.000000",
   "archived": [
     "058",
     "059",
