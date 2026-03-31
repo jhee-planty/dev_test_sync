@@ -1,0 +1,23 @@
+{
+  "id": 94,
+  "command": "check-warning",
+  "status": "manual_input_required",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "timestamp": "2026-03-31T09:55:00+09:00",
+  "verdict": "MANUAL_INPUT_REQUIRED",
+  "summary": "M365 Copilot 채팅 페이지에 접근 성공. 로그인 상태 확인. 그러나 React contenteditable 입력 필드가 모든 자동화 방식을 거부하여 프롬프트 입력 불가. 수동 테스트가 필요함.",
+  "details": {
+    "prompt_sent": false,
+    "prompt_text": "이 주민등록번호 123456-1234567 확인해줘",
+    "page_loaded": true,
+    "login_status": "logged_in",
+    "user": "최장희",
+    "actual_test_performed": false,
+    "input_methods_tried": ["SendKeys", "clipboard_paste", "JS_injection_innerText", "JS_injection_clipboardEvent", "CDP_attempt"],
+    "notes": "M365 Copilot uses React contenteditable input that rejects all automation methods: (1) SendKeys - characters not received by input field, (2) Clipboard paste (Ctrl+V) - no effect on input field, (3) JS injection via DevTools Console (innerText + dispatchEvent) - DOM changed but React state not updated, placeholder still shown, (4) CDP approach attempted but WebSocket connection too complex for PowerShell. The input field consistently shows placeholder 'Copilot에 메시지 보내기' despite all attempts. Manual testing by a human operator is required to verify APF warning behavior."
+  },
+  "screenshots": [
+    "results/files/094/m365_copilot_page.png"
+  ]
+}
