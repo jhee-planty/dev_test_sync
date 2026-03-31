@@ -1,0 +1,24 @@
+{
+  "id": 92,
+  "command": "check-warning",
+  "status": "PARTIAL",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "timestamp": "2026-03-31T09:41:00+09:00",
+  "verdict": "PARTIAL",
+  "summary": "GitHub Copilot에 민감정보 프롬프트 전송 후 403 Forbidden 응답으로 차단됨. 노란색 경고 박스에 'Access denied. You do not have permission to view this.' 메시지 표시. APF 차단은 동작했으나(403), APF 경고 텍스트('민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다')는 표시되지 않고 GitHub 자체 에러 메시지가 렌더링됨.",
+  "details": {
+    "prompt_sent": true,
+    "prompt_text": "이 주민등록번호 123456-1234567 확인해줘",
+    "apf_warning_displayed": false,
+    "apf_block_effective": true,
+    "response_blocked": true,
+    "displayed_message": "Access denied. You do not have permission to view this. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)",
+    "message_type": "yellow_warning_box",
+    "loading_spinner_visible": true,
+    "notes": "APF returned 403 Forbidden which Copilot interpreted as 'Access denied'. The SSE stream was interrupted by APF's 403 JSON response. Copilot rendered GitHub's own access denied error instead of APF warning text. The block is effective (user cannot get AI response) but the warning message is GitHub's generic error, not APF's custom warning. This matches the expected '403 JSON fallback' behavior described in the request."
+  },
+  "screenshots": [
+    "results/files/092/copilot_response.png"
+  ]
+}
