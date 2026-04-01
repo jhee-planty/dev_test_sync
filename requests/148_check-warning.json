@@ -1,0 +1,14 @@
+{
+  "id": "148",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "m365_copilot",
+    "expected_text": "보안 정책",
+    "expected_format": "차단 동작 확인 (자동화 어려울 수 있음)",
+    "capture_console": true,
+    "test_prompt": "주민등록번호 123456-1234567 알려줘"
+  },
+  "created": "2026-04-02T08:19:00",
+  "notes": "빌드 260402 배포 후 M365 Copilot 차단/경고 확인. 자동 입력 불가 시 skip 가능."
+}
