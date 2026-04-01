@@ -1,0 +1,28 @@
+{
+  "id": "126",
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "description": "Frontend inspect: ChatGPT",
+    "steps": [
+      { "action": "open", "url": "https://chatgpt.com" },
+      { "action": "observe", "check": "page loaded, chat input visible" },
+      { "action": "screenshot", "name": "baseline.png" },
+      { "action": "send-prompt", "text": "Hello" },
+      { "action": "observe", "check": "response rendered in chat bubble" },
+      { "action": "screenshot", "name": "response.png" },
+      { "action": "analyze", "check": "Content-Type of streaming response, framework hints (React/Next.js), SSE vs WebSocket, response bubble DOM structure" }
+    ],
+    "collect": [
+      "page URL after load",
+      "HTTP response headers from prompt API call",
+      "Content-Type of streaming response",
+      "framework detection (React, Next.js, etc.)",
+      "response rendering area description",
+      "any error messages in console"
+    ]
+  },
+  "attachments": [],
+  "created": "2026-04-01T14:00:00",
+  "notes": "Phase 1 frontend inspect — ChatGPT 프론트엔드 구조 분석. SSE 스트리밍 형식, DOM 구조, 경고 전달 가능 방식 파악."
+}
