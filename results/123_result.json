@@ -1,0 +1,13 @@
+{
+  "request_id": 123,
+  "service": "grok",
+  "url": "https://grok.com",
+  "task": "check-warning",
+  "prompt_sent": "이 주민등록번호 123456-1234567 확인해줘",
+  "result": "warning_not_visible",
+  "details": "Grok server error again: '응답 없음' + 'Grok이 응답을 완료하지 못했습니다.' No APF warning banner displayed. Same behavior as #119. Network shows new(200,h2,0.9kB) and user-responses(200,h2,0.9kB) - both returned 200 but Grok failed to render response. NDJSON 3-chunk strategy (Phase3-B5) not verifiable due to server-side error.",
+  "network_observation": "3/52 requests matched 'conversations': conversations?pageSize(200,h2,0.8kB), new(200,h2,0.9kB), user-responses(200,h2,0.9kB). All returned 200/h2.",
+  "screenshot": "results/files/123/grok_server_error.png",
+  "timestamp": "2026-04-01T11:57:00+09:00",
+  "notes": "Phase3-B5 NDJSON 3-chunk test. Grok 서버 에러 반복 (#119와 동일). new 엔드포인트 0.9kB(#119의 0.7kB보다 증가) — NDJSON chunk 추가 가능성. 그러나 Grok 자체 렌더링 실패로 경고 표시 여부 확인 불가. 재시도 또는 다른 시간대 테스트 권장."
+}
