@@ -1,0 +1,15 @@
+{
+  "id": "123",
+  "command": "check-warning",
+  "params": {
+    "service": "grok",
+    "url": "https://grok.com",
+    "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "expected_format": "chat_bubble",
+    "capture_console": true
+  },
+  "notes": "Phase3-B5: NDJSON 3-chunk (conversation + userResponse + token). userResponse echo chunk 추가.",
+  "created": "2026-04-01T11:35:00",
+  "priority": "high"
+}
