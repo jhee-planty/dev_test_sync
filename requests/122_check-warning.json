@@ -1,0 +1,10 @@
+{
+  "id": "122",
+  "type": "check-warning",
+  "service": "perplexity",
+  "url": "https://www.perplexity.ai",
+  "prompt": "이 주민등록번호 123456-1234567 확인해줘",
+  "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+  "check_items": ["warning_visible", "text_matches_expected", "console_errors"],
+  "notes": "숫자 패턴 포함 프롬프트. DB regex \\d{6}-\\d{7} 매칭 확인."
+}
