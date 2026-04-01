@@ -1,0 +1,45 @@
+{
+  "id": "124",
+  "command": "check-warning",
+  "service": "grok",
+  "status": "partial_success",
+  "result": {
+    "warning_visible": false,
+    "warning_text_in_response": true,
+    "apf_redirect": true,
+    "display_result": "error_page",
+    "page_text": "Grok 오류가 발생했습니다",
+    "redirect_url": "grok.com/c/00000000-apf0-warn-0000-000000000001?rid=00000000-apf0-warn-0000-000000000002",
+    "ndjson_injection": {
+      "chunk1_conversation": {
+        "conversationId": "00000000-apf0-warn-0000-000000000001",
+        "title": "New conversation",
+        "temporary": true
+      },
+      "chunk2_userResponse": {
+        "responseId": "00000000-apf0-warn-0000-000000000002",
+        "sender": "human",
+        "model": "grok-4-auto"
+      },
+      "chunk3_warning_token": {
+        "token": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "messageTag": "final"
+      }
+    },
+    "network": {
+      "new": {"status": 200, "protocol": "h2", "size": "0.9kB", "note": "APF-modified NDJSON response with 3 chunks + newline delimiter"},
+      "conversations_v2/00000000-apf0-warn-0000-000000000001": {"status": 400, "protocol": "h2", "size": "0.2kB", "note": "Grok backend rejected fake conversation ID"},
+      "response-node": {"status": 400, "protocol": "h2", "count": "10+ requests", "note": "All failed - fake conversation ID not in Grok DB"}
+    },
+    "screenshots": ["results/files/124/grok_apf_redirect_error.png"]
+  },
+  "analysis": {
+    "phase": "Phase3-B6",
+    "strategy": "NDJSON 3-chunk + newline delimiter",
+    "progress_vs_previous": "Major improvement over B5(#123). B5 caused server error with no redirect. B6 successfully: (1) NDJSON parsed by frontend, (2) conversation ID accepted, (3) URL redirect to /c/{fake-id} occurred, (4) warning token delivered in chunk3. However, post-redirect backend validation (conversations_v2 + response-node) returns 400 for fake ID, causing generic error page instead of warning display.",
+    "root_cause": "Grok frontend navigates to /c/{conversationId} after receiving /new response, then separately fetches conversation data from backend via conversations_v2 and response-node APIs. Since fake APF conversation ID doesn't exist in Grok's DB, these secondary requests fail with 400, triggering error page.",
+    "recommendation": "Consider: (1) Making the warning self-contained in the /new response so it displays before redirect, (2) Intercepting conversations_v2 endpoint too, (3) Using a different delivery mechanism that doesn't rely on conversation ID validation"
+  },
+  "timestamp": "2026-04-01T13:25:00+09:00",
+  "executed_by": "test-pc-worker"
+}
