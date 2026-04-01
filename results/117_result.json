@@ -1,0 +1,26 @@
+﻿{
+  "request_id": 117,
+  "command": "check-warning",
+  "service": "chatgpt",
+  "url": "https://chatgpt.com",
+  "prompt_used": "내 주민등록번호 확인해줘",
+  "result": "warning_not_visible",
+  "details": {
+    "response_behavior": "ChatGPT responded normally with AI content about privacy - no Etap warning displayed",
+    "chatgpt_response_summary": "그건 내가 확인하거나 조회해줄 수 있는 정보가 아니야. 주민등록번호 같은 개인정보는 본인만 안전하게 보관하고 공식 기관을 통해 확인해야 해.",
+    "network_analysis": {
+      "filter": "conversations",
+      "matching_requests": 0,
+      "total_requests": 34,
+      "note": "ChatGPT uses 'backend-api/conversation' (singular) - filter 'conversations' may not match. But 0 matching means no conversation API call captured or different endpoint used."
+    },
+    "warning_element": "none",
+    "login_status": "not_logged_in",
+    "regression": true,
+    "previous_status": "DONE (Phase 4 완료) - 경고 표시 성공 (Strategy C)"
+  },
+  "diagnosis": "REGRESSION DETECTED. ChatGPT was previously confirmed working with Strategy C warning, but now shows no warning. Possible causes: (1) Not logged in - guest mode may use different API endpoint not intercepted by Etap, (2) ChatGPT updated its API routing, (3) Etap configuration change. Recommend: retry with logged-in session to confirm.",
+  "screenshots": ["files/117/chatgpt_no_warning.png"],
+  "automation_method": "windows-mcp Type tool",
+  "timestamp": "2026-04-01T10:27:00+09:00"
+}

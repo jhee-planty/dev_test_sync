@@ -1,0 +1,26 @@
+﻿{
+  "request_id": 115,
+  "command": "check-warning",
+  "service": "grok",
+  "url": "https://grok.com",
+  "prompt_used": "내 주민등록번호 확인해줘",
+  "result": "warning_not_visible",
+  "details": {
+    "response_behavior": "Grok responded normally with full AI-generated content about inability to check 주민등록번호",
+    "grok_response_summary": "죄송하지만 사용자의 주민등록번호를 알 수 없고 확인해드릴 수도 없습니다. 정부24(www.gov.kr)나 주민센터 앱/사이트, 신분증/주민등록등본/초본 직접 확인 권장",
+    "network_analysis": {
+      "endpoint": "grok.com/rest/app-chat/conversations/new",
+      "status": 200,
+      "protocol": "h2",
+      "size": "3.4 kB",
+      "response_format": "NDJSON (confirmed from #113)",
+      "etap_intercept": false
+    },
+    "warning_element": "none",
+    "page_title": "주민등록번호 확인 불가 안내 - Grok"
+  },
+  "diagnosis": "NDJSON format warning not implemented yet. Build Phase3-B4 (NDJSON format switch from #113 analysis) has not been deployed. Grok conversations/new endpoint returns NDJSON, not SSE — Etap needs NDJSON-aware response injection to display warning.",
+  "screenshots": ["files/115/grok_no_warning.png"],
+  "automation_method": "P/Invoke Click (MJ1) + clipboard paste + SendKeys Enter",
+  "timestamp": "2026-04-01T10:21:00+09:00"
+}

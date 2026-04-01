@@ -1,0 +1,27 @@
+﻿{
+  "request_id": 118,
+  "command": "check-warning",
+  "service": "perplexity",
+  "url": "https://www.perplexity.ai",
+  "prompt_used": "내 주민등록번호 확인해줘",
+  "result": "warning_not_visible",
+  "details": {
+    "response_behavior": "Perplexity responded normally with full AI search results and citations about 주민등록번호 확인 방법",
+    "perplexity_response_summary": "죄송하지만 저는 당신의 주민등록번호를 확인하거나 조회할 수 없습니다. 본인 확인 방법: 주민등록증 실물, 정부24, 1382 ARS, 주민등록표 등본·초본 열람 등",
+    "sources_cited": "110.go, anyang.go, mois.go, gov, youtube, niceid.co (10개 출처)",
+    "network_analysis": {
+      "filter": "conversations",
+      "matching_requests": 0,
+      "total_requests": 269,
+      "note": "Perplexity uses different API endpoint naming - 'conversations' filter shows 0 matches"
+    },
+    "warning_element": "none",
+    "login_status": "logged_in (최장희)",
+    "regression": true,
+    "previous_status": "DONE - 경고 표시 성공"
+  },
+  "diagnosis": "REGRESSION DETECTED. Perplexity was previously confirmed working with APF warning, but now shows no warning. Response includes full search results with 10 cited sources. Possible causes: (1) Etap config changed, (2) Perplexity updated API endpoints, (3) SSL/TLS certificate pinning changes.",
+  "screenshots": ["files/118/perplexity_no_warning.png"],
+  "automation_method": "windows-mcp Type tool",
+  "timestamp": "2026-04-01T10:29:00+09:00"
+}
