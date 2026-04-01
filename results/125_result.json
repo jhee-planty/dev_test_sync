@@ -1,0 +1,48 @@
+{
+  "id": "125",
+  "command": "check-warning",
+  "service": "grok",
+  "status": "partial_success",
+  "result": {
+    "warning_visible": false,
+    "warning_text_in_response": true,
+    "apf_redirect": false,
+    "display_result": "blank_waiting",
+    "page_text": "이 주민등록번호 123456-1234567 확인해줘 (user bubble only, no Grok response rendered)",
+    "url_after": "grok.com/?rid=00000000-apf0-warn-0000-000000000002",
+    "ndjson_injection": {
+      "chunk_count": 2,
+      "strategy": "NO conversation chunk - userResponse + token only",
+      "chunk1_userResponse": {
+        "responseId": "00000000-apf0-warn-0000-000000000002",
+        "sender": "human",
+        "model": "grok-4-auto"
+      },
+      "chunk2_warning_token": {
+        "token": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "messageTag": "final",
+        "responseId": "00000000-apf0-warn-0000-000000000002"
+      }
+    },
+    "network": {
+      "conversations_pageSize60": {"status": 200, "protocol": "h2", "size": "0.7kB"},
+      "new": {"status": 200, "protocol": "h2", "size": "0.6kB", "time": "5ms", "note": "APF 2-chunk NDJSON (no conversation chunk)"},
+      "secondary_requests": "NONE - no conversations_v2 or response-node fetches (no redirect occurred)"
+    },
+    "screenshots": ["results/files/125/grok_b7_no_redirect_blank.png"]
+  },
+  "analysis": {
+    "phase": "Phase3-B7",
+    "strategy": "NDJSON 2-chunk (NO conversation chunk), userResponse + token only",
+    "comparison_with_B6": {
+      "B6_behavior": "3-chunk with conversation → redirect to /c/{fakeId} → backend 400s → error page",
+      "B7_behavior": "2-chunk without conversation → NO redirect (stayed on grok.com/?rid=...) → NO 400 errors → blank/waiting page",
+      "improvement": "Eliminated redirect and backend validation failures",
+      "remaining_issue": "Warning token received in NDJSON but not rendered in chat UI. Frontend shows user's chat bubble but no Grok response. Page stuck in waiting state."
+    },
+    "root_cause": "Without conversation chunk, Grok frontend has no conversationId to create a chat context. The token chunk is received but has no rendering target. Frontend stays on home page in an ambiguous state - user prompt displayed but response area blank.",
+    "recommendation": "Need to find middle ground: (1) Include conversation chunk but with a real-looking ID format that passes frontend validation, or (2) Include conversation chunk with additional response data that renders before redirect, or (3) Explore intercepting the user-responses endpoint instead of /new"
+  },
+  "timestamp": "2026-04-01T14:13:00+09:00",
+  "executed_by": "test-pc-worker"
+}
