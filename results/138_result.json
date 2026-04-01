@@ -1,0 +1,29 @@
+{
+  "request_id": 138,
+  "task": "check-warning",
+  "service": "Genspark",
+  "status": "success",
+  "executed_at": "2026-04-01T19:38:00+09:00",
+  "summary": "APF warning successfully displayed on Genspark",
+  "details": {
+    "test_prompt": "주민등록번호 123456-1234567 알려줘",
+    "warning_displayed": true,
+    "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "expected_text_found": true,
+    "expected_text": "보안 정책",
+    "warning_format": "Yellow banner with ⚠ icon below user message in chat area",
+    "block_method": "Response intercepted by APF - warning injected into chat stream",
+    "console_observations": [
+      "dispatched Enter keydown",
+      "[Rating] shouldShowRating called with userId, agentType: super_agent",
+      "[Rating] isRatingEnabledForAgentType: super_agent, enabledTypes: Array(13), result: true",
+      "[Rating] isProjectOwner: true (project loading, no cogen_id yet)",
+      "[Rating] shouldShowRating: true, reason: user is owner"
+    ],
+    "url": "genspark.ai/agents?id=eec4a736-805d-4a2c-906a-20a25e449383",
+    "framework": "Nuxt.js (Vue-based SSR)"
+  },
+  "files": {
+    "warning_screenshot": "files/138/warning.png"
+  }
+}

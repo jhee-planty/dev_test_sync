@@ -1,0 +1,141 @@
+﻿{
+  "request_id": 135,
+  "task_type": "run-scenario",
+  "scenario": "frontend-inspect",
+  "service": "M365 Copilot",
+  "status": "partial_success",
+  "executed_at": "2026-04-01T19:15:00+09:00",
+  "findings": {
+    "url": "https://copilot.microsoft.com/",
+    "chat_url_pattern": "https://copilot.microsoft.com/chats/{conversation_id}",
+    "service_type": "AI Chat Assistant (Microsoft Copilot, formerly Bing Chat)",
+    "login_required": false,
+    "free_tier": true,
+
+    "streaming": {
+      "method": "fetch_streaming",
+      "description": "Uses fetch() API with ReadableStream response body. Module 'use-fetch-conversation-with-history' handles conversation streaming. NOT WebSocket, NOT SSE EventSource.",
+      "protocol": "h2",
+      "content_type": "UNDETERMINED - streaming request completed before Network tab capture. Likely text/event-stream or application/json with chunked transfer.",
+      "endpoint_pattern": "/c/api/conversations/{conversation_id}/...",
+      "note": "Exact streaming endpoint URL not captured. The streaming fetch completed before Network monitoring began. Module name 'use-fetch-conversation-with-history-Ch9Eo4pp.js' confirms fetch-based approach."
+    },
+
+    "api_endpoints": {
+      "conversations_list": {
+        "url": "https://copilot.microsoft.com/c/api/conversations?types=chat%2Ccharacter%2Cxbox%2Cgroup%2Cm365",
+        "method": "GET",
+        "type": "fetch",
+        "duration_ms": 290.5
+      },
+      "user": {
+        "url": "https://copilot.microsoft.com/c/api/user?api-version=4",
+        "type": "fetch",
+        "duration_ms": 109.6
+      },
+      "user_settings": {
+        "url": "https://copilot.microsoft.com/c/api/user/settings?api-version=2",
+        "type": "fetch",
+        "duration_ms": 108.3
+      },
+      "user_install_status": {
+        "url": "https://copilot.microsoft.com/c/api/user/install-status",
+        "type": "fetch",
+        "duration_ms": 114.7
+      },
+      "config": {
+        "url": "https://copilot.microsoft.com/c/api/config?api-version=2",
+        "type": "fetch",
+        "duration_ms": 114.7
+      },
+      "library_recent": {
+        "url": "https://copilot.microsoft.com/c/api/library/recent?limit=5",
+        "type": "fetch",
+        "duration_ms": 111.2
+      },
+      "autosuggest": {
+        "url": "https://copilot.microsoft.com/c/api/conversations/{id}/autosuggest?query={query}",
+        "type": "fetch",
+        "duration_ms": 97.4
+      },
+      "clarity_signal": {
+        "url": "https://copilot.microsoft.com/c/api/clarity/signal",
+        "type": "fetch",
+        "duration_ms": 41.7
+      }
+    },
+
+    "framework": {
+      "type": "React SPA",
+      "bundler": "Vite (asset naming pattern: vendor-Ct_pvakW.js, index-CnUjT87v.js)",
+      "entry_point": "entry-ssr-9fe4id_N.js",
+      "key_modules": [
+        "use-fetch-conversation-with-history-Ch9Eo4pp.js",
+        "conversation-1NOXQUod.js",
+        "chat-jD1b4PKF.js",
+        "chat-item-class-rQwqAIP9.js",
+        "chat-announce-CokA3cwK.js",
+        "conversation-panel-CN5jfKna.js",
+        "conversation-feedback-BAeRu__c.js",
+        "chat-empty-BtUdXlKL.js",
+        "use-chat-details-enabled-CNrVWLSc.js",
+        "use-should-show-conversation-panel-as-modal-YOy_fSfJ.js",
+        "use-conversation-rename-editing-Dk4ySkDf.js",
+        "browser-interaction-commands-BL-MI2La.js"
+      ]
+    },
+
+    "dom_structure": {
+      "input_element": "TEXTAREA[role=textbox]",
+      "input_placeholder": "Copilot에 메시지",
+      "submit_button": "button[aria-label='메시지 제출']",
+      "input_type": "React controlled component - requires native value setter pattern",
+      "input_note": "Two TEXTAREA elements found (both role=textbox). Use querySelector for first match.",
+      "response_area": "Chat bubble rendering with thumbs up/down, share, copy, read aloud, edit buttons"
+    },
+
+    "ui_features": {
+      "mode_selector": "Smart (dropdown)",
+      "voice_input": true,
+      "file_attachment": true,
+      "autocomplete_suggestions": true,
+      "sidebar": "Collapsible with Home, New Chat, Library, Tasks, Search, Imagine, Lab sections",
+      "response_actions": ["thumbs_up", "thumbs_down", "share", "copy", "read_aloud", "edit"]
+    },
+
+    "network_info": {
+      "remote_addresses": [
+        "[2606:4700...] (Cloudflare CDN - static assets)",
+        "104.208.16.x (Microsoft Azure - OneCollector telemetry)",
+        "13.89.179.x (Microsoft Azure - OneCollector telemetry)"
+      ],
+      "protocol": "h2 (HTTP/2)",
+      "telemetry": [
+        "OneCollector (browser.events.data.microsoft.com)",
+        "Bing UET (bat.bing.com)",
+        "Microsoft Clarity (via /c/api/clarity/signal)",
+        "Internal collect endpoint (/cl/eus-c/collect)"
+      ]
+    },
+
+    "warning_design_assessment": {
+      "difficulty": "MEDIUM",
+      "approach": "Fetch response interception or DOM injection after streaming completes",
+      "rationale": "Uses standard fetch() streaming (not WebSocket), React SPA with predictable DOM structure. The fetch-based streaming can potentially be intercepted at the response level. Chat bubble DOM injection is also viable as response rendering follows standard patterns.",
+      "challenges": [
+        "Exact streaming endpoint not yet captured - need to confirm in Phase 2",
+        "React controlled components require special handling for input manipulation",
+        "HTTP/2 protocol - standard APF interception applies",
+        "Cloudflare CDN for static assets, but API calls go to copilot.microsoft.com directly"
+      ]
+    }
+  },
+
+  "screenshots": {
+    "baseline": "results/files/135/baseline.png",
+    "response": "results/files/135/response.png",
+    "network": "results/files/135/network.png"
+  },
+
+  "notes": "Phase 1 frontend inspection of M365 Copilot (copilot.microsoft.com). Successfully identified the service as a React SPA using Vite bundler with fetch-based streaming (confirmed by 'use-fetch-conversation-with-history' module). NOT WebSocket-based. The exact streaming endpoint URL was not captured because the streaming request completed before Network tab monitoring started. API base path is /c/api/. Authentication was not required for basic chat. The service formerly known as Bing Chat now uses copilot.microsoft.com domain. Conversation types include: chat, character, xbox, group, m365. The 'Smart' mode was active during testing."
+}

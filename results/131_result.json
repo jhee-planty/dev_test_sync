@@ -1,0 +1,93 @@
+﻿{
+  "request_id": 131,
+  "task_type": "run-scenario",
+  "scenario": "frontend-inspect",
+  "service": "Gemini",
+  "status": "partial_success",
+  "timestamp": "2026-04-01T18:07:00+09:00",
+  "note": "Chat submission failed due to Etap proxy ERR_CONNECTION_CLOSED on batchexecute endpoints. However, extensive frontend architecture and network analysis was completed from page load, background requests, and console errors.",
+  "findings": {
+    "url": "https://gemini.google.com/app",
+    "streaming_format": {
+      "type": "Google Webchannel / batchexecute RPC",
+      "description": "NOT SSE, NOT NDJSON. Uses Google proprietary batchexecute pattern via XHR POST. Response is chunked proprietary format (length-prefixed JSON arrays). Signaler channel uses long-polling webchannel (VER=8 protocol).",
+      "content_type": "application/x-www-form-urlencoded (request), proprietary chunked format (response)",
+      "critical_difference": "Unique among tested services. Not a standard streaming protocol - uses Google internal RPC framework."
+    },
+    "main_api_endpoint": {
+      "url": "gemini.google.com/_/BardChatUi/data/batchexecute",
+      "method": "POST",
+      "protocol": "h2",
+      "remote_address": "[2404:6800:...]:443",
+      "query_params": {
+        "rpcids": "ESY5D",
+        "source-path": "/app",
+        "bl": "boq_assistant-bard-web-server_20260325.04_p1",
+        "f.sid": "-4326453488411022305",
+        "hl": "ko",
+        "_reqid": "incremental (e.g. 2663820, 27463820)",
+        "rt": "c"
+      },
+      "request_format": "application/x-www-form-urlencoded with f.req parameter containing nested JSON array"
+    },
+    "signaler_endpoint": {
+      "url": "signaler-pa.clients6.google.com/punctual/multi-watch/channel",
+      "protocol": "Google Webchannel VER=8",
+      "params": {
+        "VER": "8",
+        "gsessionid": "session token",
+        "key": "AIzaSyBWW50ghQ5qHpMg1gxHV7U9t0wHE0qIUk4",
+        "RID": "rpc",
+        "SID": "session ID",
+        "TYPE": "xmlhttp"
+      },
+      "description": "Long-polling channel for real-time notifications and streaming updates. This is the actual streaming delivery mechanism."
+    },
+    "other_endpoints": [
+      "gemini.google.com/_/BardChatUi/jserror - JS error reporting",
+      "play.google.com/log - Google Play logging",
+      "www.google-analytics.com/g/collect - Google Analytics (G-WC57KJ50ZZ)",
+      "signaler-pa.clients6.google.com/punctual/v1/refreshCreds - credential refresh"
+    ],
+    "framework": {
+      "name": "BardChatUi (boq-bard-web)",
+      "type": "Google custom framework (Angular-based)",
+      "js_bundle": "boq-bard-web.BardChatUi.ko.s367dQ9m0lo.2018.O",
+      "build_version": "boq_assistant-bard-web-server_20260325.04_p1",
+      "cdn": "www.gstatic.com/_/mss/boq-bard-web/",
+      "wasm_modules": ["libheifWasm", "loadC2PAExtractorWasm", "loadWasmSipCoca"]
+    },
+    "chat_input": {
+      "type": "contenteditable DIV",
+      "aria_label": "Gemini 프롬프트 입력",
+      "note": "Standard contenteditable div, not a textarea. Synthetic keyboard events do not trigger submission - Angular framework handles input internally."
+    },
+    "analytics": {
+      "google_analytics": "G-WC57KJ50ZZ",
+      "google_ads_conversion": "11160585753",
+      "google_play_log": true,
+      "sentry_monitoring": false
+    },
+    "csp_policy": {
+      "connect-src": "self, *.google.com, *.gstatic.com, *.google-analytics.com, csp.withgoogle.com, content-push.googleapis.com, *.googleusercontent.com, ogads-pa.googleapis.com, *.youtube.com, *.youtube-nocookie.com, *.googlevideo.com, static.corp.google.com, *.googleapis.com",
+      "note": "Strict CSP blocks many external domains. Warning injection via connect-src would be blocked."
+    },
+    "network_status": {
+      "batchexecute": "ERR_CONNECTION_CLOSED - connections being terminated (likely by Etap proxy)",
+      "signaler": "ERR_CONNECTION_CLOSED - webchannel connections also terminated",
+      "jserror_reports": "204 status - error reporting works (goes to gemini.google.com/_/BardChatUi/jserror)",
+      "analytics": "200/204 - Google Analytics and ad tracking work normally"
+    }
+  },
+  "warning_design_implications": {
+    "injection_method": "Cannot use SSE/NDJSON stream injection. Must intercept batchexecute POST response or webchannel response.",
+    "response_format": "Proprietary length-prefixed JSON arrays, NOT standard JSON or SSE. Requires custom parser.",
+    "dom_target": "Chat response area uses Angular components. DOM injection after response rendering may work.",
+    "alternative": "Block response page replacement - show warning page when batchexecute connection is terminated.",
+    "signaler_channel": "The webchannel (signaler-pa.clients6.google.com) delivers streaming updates. Intercepting this channel could disrupt real-time response delivery."
+  },
+  "screenshots": {
+    "baseline": "files/131/baseline.png",
+    "console_errors": "files/131/console_errors.png"
+  }
+}

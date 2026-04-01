@@ -1,0 +1,96 @@
+﻿{
+  "request_id": 132,
+  "task_type": "run-scenario",
+  "scenario": "frontend-inspect",
+  "service": "Notion AI",
+  "status": "success",
+  "timestamp": "2026-04-01T18:20:00+09:00",
+  "findings": {
+    "url": "notion.so/ai → notion.so/chat?t=<thread_id>&wfv=chat",
+    "framework": "React SPA (Next.js-based), custom Notion renderer",
+    "js_bundles": [
+      "app-d4e259eede5a1c42.js (main app)",
+      "75164-aa6a4e44b56153e3.js (API/fetch layer)",
+      "57108-361118ae48e8a9be.js (analytics/Statsig)",
+      "41403-e236974a57c21f81.js (image/assistant UI)",
+      "transport-support-e7d414a1cfeb3949.js (transport layer)",
+      "AgentsPage-6e6896d573070d67.js (AI agents page)",
+      "WorkflowSetupInstructions-649b29859c3535b1.js (workflow)"
+    ],
+    "streaming_format": "Notion proprietary syncRecordValues polling",
+    "streaming_details": {
+      "type": "Multiple sequential fetch POST requests (NOT SSE, NOT WebSocket, NOT NDJSON)",
+      "primary_endpoint": "https://www.notion.so/api/v3/syncRecordValuesSpaceInitial",
+      "method": "POST",
+      "content_type": "application/json (fetch)",
+      "protocol": "h2",
+      "behavior": "Client polls server via repeated syncRecordValuesSpaceInitial POST calls. Each response contains incremental record value updates including AI-generated content blocks. The AI response is assembled client-side from these incremental updates.",
+      "request_pattern": "~15-20 syncRecordValues calls during a single AI response generation, interspersed with etClient telemetry calls",
+      "response_sizes": "0.5kB to 30.8kB per response chunk"
+    },
+    "key_api_endpoints": {
+      "ai_chat": "notion.so/api/v3/syncRecordValuesSpaceInitial (streaming content)",
+      "models": "notion.so/api/v3/getAvailableModels",
+      "assets": "notion.so/api/v3/getAssetsJsonV2",
+      "telemetry": "notion.so/api/v3/etClient",
+      "user_signals": "notion.so/api/v3/getUserSignals",
+      "page_visits": "notion.so/api/v3/getRecentPageVisits",
+      "analytics": "exp.notion.so/v1/rgstr (Statsig analytics)",
+      "external_analytics": "consumer.cloud.gist.build/api/v4/users (Gist CRM)"
+    },
+    "chat_input": {
+      "type": "contenteditable div or textarea",
+      "placeholder": "AI로 무엇이든 시도해 보세요... (Try anything with AI...)",
+      "submission": "Enter key submits the prompt",
+      "features": ["voice recording", "file attachment (+)", "settings", "auto mode toggle"]
+    },
+    "response_display": {
+      "format": "Markdown rendered as Notion blocks",
+      "features": ["headings", "bullet lists", "nested lists", "code blocks"],
+      "actions": ["edit message", "copy text"],
+      "title_generation": "Auto-generates chat title (e.g., 'Capabilities overview')"
+    },
+    "network_characteristics": {
+      "protocol": "h2 (HTTP/2)",
+      "remote_addresses": [
+        "[2602:f79a:...]:443 (Notion main servers, IPv6)",
+        "208.103.16...:443 (CDN/static assets)",
+        "34.110.164...:443 (Gist CRM)",
+        "img.notionusercontent.com (image CDN)"
+      ],
+      "total_requests_per_chat": "~52 requests for single AI interaction",
+      "total_transfer": "~138 kB transferred, ~893 kB resources",
+      "service_worker": "sw.js actively caching static assets"
+    },
+    "console_observations": {
+      "errors": [
+        "Statsig Request encoding failed - InvalidCharacterError: Failed to execute btoa on Window (characters outside Latin1 range)",
+        "cdn.metadata.io/pixel/config/1127.json - 403 Forbidden",
+        "eventTrailApiHelpers: trackFailure"
+      ],
+      "warnings": [
+        "Amplitude Logger: Event not tracked, no destination plugins on the instance (multiple)"
+      ],
+      "info": [
+        "PageLoader: loserAborted",
+        "ai.completionActions: maybeUpdateAIUsageEligibilityStoreV2Refreshing"
+      ]
+    },
+    "csp_and_security": {
+      "service_worker": "sw.js serves cached assets, reduces network requests",
+      "authentication": "Cookie-based session (notion_browser_id, token_v2 expected)"
+    },
+    "warning_design_implications": {
+      "injection_method": "CANNOT use SSE/NDJSON stream injection. Must intercept syncRecordValuesSpaceInitial POST responses and modify JSON payload to include warning content as Notion block data, OR inject warning via HTTP response replacement on initial page load.",
+      "recommended_approach": "Intercept the initial page load or the syncRecordValuesSpaceInitial API responses. Since Notion uses its own block-based content model, warning must be formatted as Notion-compatible block JSON or injected as a DOM overlay.",
+      "alternative": "Block the entire notion.so/ai endpoint and return a custom error page with warning message.",
+      "difficulty": "HIGH - Notion's proprietary sync protocol and block model make inline warning injection complex. DOM overlay or full-page replacement is more practical.",
+      "no_websocket": "Confirmed: Notion AI does NOT use WebSocket despite initial expectations. Uses fetch-based polling instead."
+    }
+  },
+  "screenshots": [
+    "results/files/132/baseline.png",
+    "results/files/132/notion_ai_page.png",
+    "results/files/132/notion_ai_response.png"
+  ]
+}
