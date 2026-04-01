@@ -1,0 +1,14 @@
+{
+  "request_id": 121,
+  "service": "chatgpt",
+  "url": "https://chatgpt.com",
+  "task": "check-warning",
+  "prompt_sent": "이 주민등록번호 123456-1234567 확인해줘",
+  "result": "warning_visible",
+  "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "details": "APF warning successfully displayed at top of chat area. Yellow warning banner with ⚠ icon shown. Number pattern 123456-1234567 triggered DB regex detection. Guest mode (not logged in). Network: conversation endpoint returned 200, h2, 1.4kB. Strategy C confirmed working with number pattern prompt.",
+  "network_observation": "3/33 requests matched 'conversation' filter: prepare(200,h2,0.8kB), conversation(200,h2,1.4kB), prepare(200,h2,0.7kB)",
+  "screenshot": "results/files/121/chatgpt_warning_visible.png",
+  "timestamp": "2026-04-01T10:57:00+09:00",
+  "notes": "숫자 패턴 포함 프롬프트에서 경고 성공. #117(일반 프롬프트)에서는 warning_not_visible이었으나, 숫자 패턴이 포함되면 DB regex 매칭되어 차단 동작. 이전 regression 해소 — 숫자 패턴 필수 조건 확인."
+}
