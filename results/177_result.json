@@ -1,0 +1,18 @@
+{
+  "id": 177,
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "silent_reset": false,
+    "format": "text",
+    "screenshot": "files/177/gemini_streamgenerate_not_blocked.png",
+    "network_evidence": "프롬프트 전송 시 StreamGenerate 엔드포인트 사용 확인. 첫 번째 요청: StreamGenerate?bl=b... (status 200, 14.94s, 3.8kB). batchexecute 요청은 status 200으로 통과 (side operations용). 총 21 requests, 16.6kB transferred. HTTP status 0이나 XHR 에러 없음. ga-audiences만 (bloc)로 차단 (광고 트래커, APF 무관).",
+    "diagnosis": "핵심 발견: Gemini가 실제 프롬프트 전송에 batchexecute가 아닌 StreamGenerate 엔드포인트를 사용함. gemini3(path=/_/BardChatUi/data/batchexecute*) 와일드카드 규칙은 batchexecute 경로만 매칭하므로 StreamGenerate 요청을 잡지 못함. APF에서 Gemini 차단을 위해서는 StreamGenerate 경로도 등록하거나, gemini(path=/) 전체 경로 매칭을 다시 활성화해야 함."
+  },
+  "started": "2026-04-02T16:36:00+09:00",
+  "completed": "2026-04-02T16:38:00+09:00",
+  "notes": "DB 수정 후 재테스트 (와일드카드 추가). 차단 미발생. 핵심 원인: Gemini 프롬프트가 batchexecute가 아닌 StreamGenerate 엔드포인트로 전송됨. path-specific 매칭으로는 batchexecute만 잡히고 실제 프롬프트 경로를 놓침. dev 측에서 StreamGenerate 경로 추가 등록 또는 gemini(path=/) 재활성화 검토 필요."
+}
