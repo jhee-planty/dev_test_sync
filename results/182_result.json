@@ -1,0 +1,23 @@
+{
+  "id": 182,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/182/gemini_182_blocked.png",
+    "network_evidence": "POST batchexecute?rpcids=ESY5D to gemini.google.com/_/BardChatUi/data/batchexecute — net::ERR_CONNECTION_CLOSED. 프롬프트 전송 확인됨 (Network 검색에서 한글날 포함 요청 확인). Etap이 연결을 닫아 차단 성공.",
+    "console_errors": [
+      "POST https://gemini.google.com/_/BardChatUi/data/batchexecute?rpcids=ESY5D&source-path=%2Fapp&... net::ERR_CONNECTION_CLOSED",
+      "Refused to connect to googleadservices.com - Content Security Policy violation"
+    ],
+    "diagnosis": "is_http2=2 + server-side-only disconnect 빌드에서 차단 성공! #181(ERR_HTTP2_PROTOCOL_ERROR, blocked=false)과 달리 이번에는 ERR_CONNECTION_CLOSED로 프롬프트 POST 자체가 차단됨. 그러나 경고 텍스트 미표시 — Gemini 프론트엔드가 ERR_CONNECTION_CLOSED를 조용히 처리하여 초기 화면 유지. block response HTML이 전달되지 않고 연결만 끊어진 것으로 보임. warning 표시를 위해서는 block response body를 전송한 후 연결을 끊는 방식이 필요.",
+    "block_method": "ERR_CONNECTION_CLOSED (서버 연결 종료)",
+    "previous_result_comparison": "#181: ERR_HTTP2_PROTOCOL_ERROR on secondary requests only, main StreamGenerate passed → blocked=false. #182: ERR_CONNECTION_CLOSED on main batchexecute POST → blocked=true. 핵심 개선: 메인 프롬프트 요청 자체를 차단하는 데 성공."
+  },
+  "started": "2026-04-02T18:06:00+09:00",
+  "completed": "2026-04-02T18:17:00+09:00",
+  "notes": "차단 성공(blocked=true)하나 경고 미표시. DevTools Console에서 JS KeyboardEvent dispatch로 프롬프트 전송 성공 확인. clipboard paste(Ctrl+V) + Tab×4 + Enter는 전송 실패, JS Enter dispatch가 유일한 작동 방식. 다음 단계: block response body를 ERR_CONNECTION_CLOSED 전에 전달하여 경고 텍스트 표시 필요."
+}
