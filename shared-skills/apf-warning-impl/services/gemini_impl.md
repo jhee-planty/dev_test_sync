@@ -205,7 +205,53 @@
 2. **Phase3-B10**: server-only shutdown — ERR_CONNECTION_CLOSED (#182 확인)
 3. **Phase3-B11**: keep-alive 복원 — 서버가 응답 불가(body 미수신)이므로 안전
 
-#### Test #183: keep-alive 빌드
-- 요청 18:34 KST, 결과 대기 중
-- 예상: block response가 stream에 정상 전달, 다른 스트림 유지 → 경고 표시
+#### Test #183 결과: keep-alive FAIL
+- **blocked=true, warning_visible=false**
+- ERR_CONNECTION_CLOSED + ERR_HTTP2_PROTOCOL_ERROR (cspreport)
+- test PC 진단: "keep-alive 미작동" — 실제로는 keep-alive는 동작했으나 다른 원인
+- etap 로그: `vts_keepalive` 정상 출력, 562B 전송 성공
+
+#### 근본 원인 진단 (Phase3-B11 → B12)
+- **etap 로그 타임라인**:
+  1. 18:42:10.606 — block response 전송 (stream 3, END_STREAM)
+  2. 18:42:10.606 — `vts_keepalive` 확인
+  3. 18:42:10.953 — jserror 15건+ 도착 (347ms 후): `HTTP status = 0, XHR Error Code: 6`
+  4. 18:42:11.857 — session closed (1.25s 후)
+- **모든 batchexecute 요청이 동시 실패** (popup visibility checks 포함)
+- **원인**: `network_loop.cpp:1241`에서 `_ai_prompt_blocked = 0` 리셋
+  → 후속 패킷이 서버에 **정상 포워딩**
+  → 서버가 request body 수신 후 stream 3에 응답 전송
+  → **이미 END_STREAM으로 종료된 스트림에 서버 HEADERS 도착**
+  → H2 프로토콜 오류 → Chrome이 전체 H2 연결 리셋
+  → 모든 요청 HTTP status 0
+- Iteration 11의 가정 "서버가 body 없이 응답 불가" — **틀림**
+  - `_ai_prompt_blocked` 리셋 후 후속 패킷의 body DATA가 서버에 정상 포워딩됨
+  - 서버가 body를 수신하므로 정상 응답 가능
+
+### Iteration 12 (2026-04-02) — RST_STREAM fix (Phase3-B12)
+
+#### 수정: visible_tls_session.cpp — keep-alive + RST_STREAM
+- is_http2=2 분기에서 block response 전송 후:
+  1. block response HEADERS frame에서 stream_id 추출 (bytes 5-8)
+  2. 서버에 H2 RST_STREAM(CANCEL) frame 전송 (13 bytes)
+  3. `write_visible_data(&_vts._sproxy, rst, 13)` 사용
+- **효과**:
+  1. 서버가 해당 스트림 처리 중지 → 응답 미전송
+  2. 다른 스트림은 영향 없음 → 프론트엔드 정상 동작
+  3. block response만 클라이언트에 도착 → 경고 렌더링 가능
+- 로그: `vts_rst_stream: RST_STREAM(CANCEL) to server: stream=%u written=%d`
+- 코멘트 동기화: ai_prompt_filter.cpp is_http2 tri-state 설명 업데이트
+
+#### is_http2=2 동작 변경 이력 (업데이트)
+1. **Phase3-B6**: keep-alive → 서버 HEADERS 중복 → ERR_HTTP2_PROTOCOL_ERROR
+2. **Phase3-B10**: server-only shutdown → ERR_CONNECTION_CLOSED (#182)
+3. **Phase3-B11**: keep-alive 복원 → 서버 응답 도착 → HTTP status 0 (#183)
+4. **Phase3-B12**: keep-alive + RST_STREAM → 서버 취소 신호 ← **현재**
+
+#### 배포
+- 18:58 KST: 빌드 + 배포 + etapd 재시작 완료
+
+#### Test #184: RST_STREAM 빌드
+- 요청 19:00 KST, 결과 대기 중
+- 검증 포인트: (1) vts_rst_stream 로그 확인, (2) ERR_CONNECTION_CLOSED 미발생, (3) 경고 텍스트 표시
 - Status: **TESTING**
