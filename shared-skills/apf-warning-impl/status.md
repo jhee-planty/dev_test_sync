@@ -1,4 +1,4 @@
-# APF Warning Implementation — Service Status (2026-04-02 18:20 KST)
+# APF Warning Implementation — Service Status (2026-04-02 19:05 KST)
 
 ## Summary
 
@@ -9,7 +9,7 @@
 | Genspark | PASS | ✅ | ✅ | SSE 기반, 안정적 |
 | Grok | PASS | ✅ | ✅ | SSE 기반, 안정적 |
 | Gamma | PASS | ✅ | ✅ | SSE 기반, 안정적 |
-| Gemini | IN_PROGRESS | ✅ | ❓ | server-only shutdown 적용, block+서버차단 확인, 브라우저 결과 대기 |
+| Gemini | IN_PROGRESS | ✅ | ❓ | keep-alive + RST_STREAM (Phase3-B12) 배포, Test #184 대기 |
 | GitHub Copilot | PARTIAL_PASS | ✅ | ❌ | block 작동, generic error 표시 (custom warning 미표시) |
 | M365 Copilot | EXCLUDED | ❌ | ❌ | WebSocket 기반 — APF 인터셉션 불가 |
 | Notion AI | EXCLUDED | ❌ | ❌ | WebSocket 기반 — APF 인터셉션 불가 |
@@ -18,19 +18,15 @@
 
 ### Gemini (gemini3) — IN_PROGRESS
 - **DB**: domain=gemini.google.com, path=/, enabled=true
-- **Code**: is_http2=2 (server-only shutdown), generate_gemini_block_response (wrb.fr format)
-- **Iteration 10** (2026-04-02):
-  - Test #181: block 전송됐지만 서버 응답이 덮어씀 → 브라우저에 AI 응답 렌더링
-  - **근본 원인**: is_http2=2가 서버 연결 유지 → 서버 응답 통과 → block response 덮어쓰기
-  - **수정**: server-only shutdown (서버 연결만 종료, 클라이언트 유지)
-    - `_sub_sside_disconnected = 1` 선설정으로 cascade 방지
-    - `_sproxy.shut_down(false)` → 서버 연결 종료
-  - 배포 17:47 KST
-  - **etap log 확인** (Test #182): 3회 block 모두 정상
-    - `vts_sside_only: server-side shutdown, client kept alive` ✅
-    - block → session close: 6초 간격 (정상 패턴)
-  - **대기**: Test #182 브라우저 결과
-- **Risk**: H2 stream에서 서버 HEADERS가 block HEADERS보다 먼저 도달하면 중복 → 같은 ms 내 처리되어 가능성 낮음
+- **Code**: is_http2=2 (keep-alive + RST_STREAM), generate_gemini_block_response (wrb.fr format)
+- **Phase3 이력**:
+  - B10: server-only shutdown → ERR_CONNECTION_CLOSED (#182: blocked=true, warning_visible=false)
+  - B11: keep-alive → 서버 응답이 END_STREAM 후 도착 → H2 프로토콜 오류 (#183: HTTP status 0)
+  - **B12 (현재)**: keep-alive + RST_STREAM(CANCEL) to server
+    - 서버에 RST_STREAM 전송하여 차단된 스트림 취소
+    - 다른 스트림은 영향 없음
+    - 배포 18:58 KST
+    - Test #184 대기 중 (테스트 PC 비활성)
 
 ### GitHub Copilot — PARTIAL_PASS
 - block 작동, 403 Forbidden JSON 전달됨
@@ -52,10 +48,13 @@
 1. **CT caching bug**: H2 멀티플렉싱에서 Content-Type 캐싱 오염 수정
 2. **path_matcher regex bug**: `escape_regex()`가 `*`를 이스케이프하지 않아 와일드카드 패턴 실패 → `*` 추가로 수정
 3. **is_http2 code-build mismatch**: 소스 변경 후 빌드 미반영 → 재배포
-4. **Server response overwrite** (신규): is_http2=2가 서버 연결 유지 → 서버 응답이 block response 덮어씀 → server-only shutdown으로 수정
+4. **Server response overwrite**: is_http2=2 서버 연결 유지 → 서버 응답 덮어쓰기 → server-only shutdown
+5. **H2 protocol error on keep-alive** (신규): 후속 패킷이 서버에 포워딩 → 서버 응답이 END_STREAM 후 도착 → RST_STREAM으로 수정
 
 ## Deployment History (2026-04-02)
 - 16:39 — gemini3 path=/, is_http2=1 (코드 미반영)
 - 17:15 — gemini3 is_http2=2 정상 반영
 - 17:27 — path_matcher regex 버그 수정 추가 배포
-- 17:47 — **server-only shutdown** 적용 (visible_tls_session.cpp: is_http2=2 → 서버만 종료)
+- 17:47 — server-only shutdown 적용 (Phase3-B10)
+- 18:33 — keep-alive 복원 (Phase3-B11)
+- 18:58 — **keep-alive + RST_STREAM** 적용 (Phase3-B12)
