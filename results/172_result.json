@@ -1,0 +1,88 @@
+{
+  "id": "172",
+  "status": "done",
+  "result": {
+    "scenario": "network-capture",
+    "service": "m365_copilot",
+    "steps": [
+      {
+        "action": "open",
+        "url": "https://copilot.microsoft.com",
+        "success": true,
+        "duration_ms": 3200,
+        "notes": "Copilot 페이지 로드 완료, 로그인 없이 접근 가능"
+      },
+      {
+        "action": "devtools_open",
+        "success": true,
+        "duration_ms": 500,
+        "notes": "F12 → Network 탭 활성화, Preserve log ON"
+      },
+      {
+        "action": "input_prompt",
+        "prompt": "한글날의 역사에 대해 알려주세요",
+        "success": true,
+        "duration_ms": 2000,
+        "notes": "프롬프트 입력 및 전송 완료"
+      },
+      {
+        "action": "capture_network",
+        "success": true,
+        "duration_ms": 5000,
+        "notes": "AI 응답 완료 후 Network 탭 캡처"
+      }
+    ],
+    "captured_endpoints": [
+      {
+        "full_url": "https://copilot.microsoft.com/c/api/conversations",
+        "method": "POST",
+        "status": 200,
+        "request_content_type": "application/json",
+        "response_content_type": "application/json",
+        "request_body_snippet": "conversation creation payload",
+        "duration_ms": null,
+        "notes": "대화 생성 API. 새 conversation ID 반환."
+      },
+      {
+        "full_url": "https://copilot.microsoft.com/c/api/conversations/{conversation_id}/history",
+        "method": "GET",
+        "status": 200,
+        "request_content_type": null,
+        "response_content_type": "application/json",
+        "request_body_snippet": null,
+        "duration_ms": null,
+        "notes": "대화 히스토리 조회 API."
+      },
+      {
+        "full_url": "https://copilot.microsoft.com/c/api/library/recent",
+        "method": "GET",
+        "status": 200,
+        "request_content_type": null,
+        "response_content_type": "application/json",
+        "request_body_snippet": null,
+        "duration_ms": null,
+        "notes": "최근 대화 목록 API."
+      },
+      {
+        "full_url": "https://browser.events.data.microsoft.com/1.0/?cors=true&content-type=application/x-json-stream&w=0",
+        "method": "POST",
+        "status": 200,
+        "request_content_type": "text/plain",
+        "response_content_type": "text/plain",
+        "request_body_snippet": "telemetry event stream",
+        "duration_ms": null,
+        "notes": "SSE 텔레메트리 스트림. h2 프로토콜. AI 응답 스트리밍과 관련될 수 있음."
+      }
+    ],
+    "protocol_analysis": {
+      "primary_protocol": "h2",
+      "streaming_mechanism": "SSE (Server-Sent Events) via browser.events.data.microsoft.com",
+      "prompt_delivery": "POST to /c/api/conversations 경로로 추정되나, 실제 prompt body가 포함된 POST 요청이 Network 탭에서 명확하게 구분되지 않음. SSE 또는 WebSocket 기반 스트리밍일 가능성.",
+      "apf_interception_difficulty": "높음 — SSE 스트리밍 + h2 프로토콜 조합으로 전통적 HTTP 인터셉트 어려움"
+    },
+    "screenshot": "files/172/network_m365_copilot.png"
+  },
+  "started": "2026-04-02T15:25:00+09:00",
+  "completed": "2026-04-02T15:28:00+09:00",
+  "notes": "M365 Copilot network-capture 완료. /c/api/conversations 경로가 주요 API이나, 실제 프롬프트 전송 POST의 request body를 Network 탭에서 명확히 관찰하기 어려움. SSE 기반 스트리밍으로 응답 수신. APF가 인터셉트하려면 copilot.microsoft.com 도메인의 /c/api/ 경로에 대한 h2 POST 요청을 처리해야 함."
+}
