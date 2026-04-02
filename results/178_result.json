@@ -1,0 +1,18 @@
+{
+  "id": 178,
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "silent_reset": false,
+    "format": "text",
+    "screenshot": "files/178/gemini_178_not_blocked.png",
+    "network_evidence": "StreamGenerate?bl=b... 요청 status 200, 7.27s, 6.4kB. batchexecute 다수 200. 총 40 requests, 32.9kB transferred, 910kB resources. StreamGenerate가 정상 응답 반환 — APF 미차단.",
+    "diagnosis": "path=/_/BardChatUi/data/* + is_http2=2 + 새 빌드 배포 후에도 차단 미발생. StreamGenerate?bl=b... 가 status 200으로 정상 통과. 가능 원인: (1) StreamGenerate의 실제 경로가 /_/BardChatUi/data/ 하위가 아닐 수 있음 — 정확한 full path 확인 필요, (2) 새 빌드가 이 프록시에 아직 미적용, (3) is_http2=2 설정과 path 매칭 간 상호작용 이슈."
+  },
+  "started": "2026-04-02T16:40:00+09:00",
+  "completed": "2026-04-02T16:46:00+09:00",
+  "notes": "3가지 수정(path=/_/BardChatUi/data/*, is_http2=2, 새 빌드) 적용 후에도 Gemini 차단 미발생. StreamGenerate 엔드포인트가 여전히 200 반환. dev에서 StreamGenerate의 정확한 URL path를 확인하여 APF 규칙 path 매칭 재검토 필요."
+}
