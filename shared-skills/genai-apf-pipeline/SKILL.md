@@ -134,6 +134,10 @@ Sub agents output structured text (`=== ANALYSIS === / === SQL === / ...`) to **
 Cowork captures stdout, reviews each section, then calls the main agent to apply approved results.
 This is the normal flow described in the Pipeline Overview above and in `apf-add-service/SKILL.md`.
 
+**토론 에스컬레이션:** Quality Gate에서 판단이 불확실한 경우(프로토콜 모호, 코드 구조 이질, 경험 부재)
+`skill-discussion-review`로 다자간 토론을 진행하여 승인/거부를 결정한다.
+→ See `references/discussion-integration.md` for 트리거 조건 및 절차.
+
 **Fallback mode (Standalone — Claude Code without Cowork):**
 If Claude Code is invoked directly without Cowork orchestration, the sub agent
 cannot output to Cowork. Instead, it writes results to `services/{service_id}_pending.md`
@@ -174,6 +178,8 @@ Phase 2 (analysis+impl) → Phase 3 (build+deploy) → User tests → Reports to
   │   → Diagnosis report: pattern ID + root cause + recommended fix
   │   ├─ Known pattern → targeted code fix → retry Phase 3
   │   └─ Unknown pattern → full analysis (may re-enter Phase 2 with fail_har)
+  │      → TEST_FAIL 2연속 또는 Unknown pattern 시 skill-discussion-review 토론 활용 권장
+  │         See references/discussion-integration.md
   │
   └─ Success → services/status.md state → 🟢 DONE
 ```
@@ -293,6 +299,7 @@ Experience accumulation:
 | etap-build-deploy | `SKILLS_DIR/etap-build-deploy/SKILL.md` | Phase 3: source sync + build + test server deploy | Claude Code (main agent) |
 | apf-test-diagnosis | `SKILLS_DIR/apf-test-diagnosis/SKILL.md` | Test failure diagnosis (HAR/console analysis) | Cowork |
 | apf-test-diagnosis patterns | `SKILLS_DIR/apf-test-diagnosis/references/error_patterns.md` | Known error pattern dictionary | Cowork |
+| skill-discussion-review | `SKILLS_DIR/skill-discussion-review/SKILL.md` | Quality Gate 불확실 시 토론, 정기 점검 토론 | Cowork |
 
 **Read only the skills needed for the current phase.**
 - Phase 1 → `genai-har-capture/SKILL.md` only
