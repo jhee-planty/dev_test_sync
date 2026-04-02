@@ -92,3 +92,51 @@ mcp__cowork__present_files(files=[
 ])
 ```
 이것만으로 채팅에 "내 스킬에 복사" 버튼이 표시된다.
+
+---
+
+## 7. tar.gz로 .skill 생성 — Invalid zip file
+
+**증상:** `.skill` 파일을 `present_files`로 제공했으나 "Invalid zip file" 에러
+
+**원인:** `tar czf`로 패키지를 생성. `.skill`은 반드시 **zip 아카이브**여야 한다.
+Cowork의 present_files가 zip 헤더를 검사하여 "스킬 저장" 버튼을 표시하므로,
+tar.gz는 유효한 zip으로 인식되지 않는다.
+
+**해결:**
+```bash
+# ❌ 잘못된 방법
+tar czf "$SHARED/${skill}.skill" -C "$SKILLS_SRC" "$skill"
+
+# ✅ 올바른 방법
+cd "$SKILLS_SRC/$skill" && zip -r "$SHARED/${skill}.skill" . -x '*.DS_Store' '*.bak'
+```
+
+**검증:** 생성 후 반드시 확인
+```bash
+file "$SHARED/${skill}.skill" | grep -q "Zip archive" || echo "ERROR: not a zip!"
+```
+
+---
+
+## 8. SSH git push 실패 — Host key verification failed
+
+**증상:** `git push` 시 `Host key verification failed` 또는 타임아웃
+
+**원인:** 네트워크 환경에서 SSH 포트(22)가 차단되어 있거나,
+SSH 호스트 키가 변경되어 known_hosts와 불일치
+
+**해결:**
+```bash
+# 현재 remote URL 확인
+git remote get-url origin
+# git@github.com:user/repo.git ← SSH
+
+# HTTPS로 전환
+git remote set-url origin https://github.com/user/repo.git
+
+# push 재시도
+git push origin main
+```
+
+**예방:** Phase 3 배포 시 HTTPS URL 여부를 먼저 확인하는 습관.

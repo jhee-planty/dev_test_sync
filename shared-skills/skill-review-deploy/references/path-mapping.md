@@ -7,10 +7,17 @@
 | 용도 | 경로 | 읽기 | 쓰기 | 도구 |
 |------|------|------|------|------|
 | Host 스킬 원본 | `/Users/jhee/Documents/workspace/claude_cowork/skills/` | desktop-commander | desktop-commander | edit_block, start_process |
-| Cowork 마운트 | `/sessions/.../mnt/.claude/skills/` | Read (stale 주의) | ❌ EROFS | — |
+| Cowork 스킬 캐시 | `/sessions/.../mnt/.claude/skills/` | △ stale 가능 | ❌ EROFS | Read (참고용) |
+| Cowork 사용자 마운트 | `/sessions/.../mnt/Documents/` | ✅ 실시간 | ✅ 가능 | Read, Write, Bash |
 | shared-skills | `/Users/jhee/Documents/workspace/dev_test_sync/shared-skills/` | desktop-commander | desktop-commander | start_process (cp, zip) |
+| shared-skills (마운트) | `/sessions/.../mnt/Documents/workspace/dev_test_sync/shared-skills/` | ✅ 실시간 | △ git-tracked 삭제 불가 | Read, Write, Bash |
 | outputs | `/sessions/.../mnt/outputs/` | Read, Bash | Write, Bash | present_files |
 | copy_skill.py | `/Users/jhee/Documents/workspace/copy_skill.py` | — | — | start_process |
+
+**마운트 구분 (중요):**
+- `.claude/skills/` = 스킬 캐시. 세션 시작 시 스냅샷. stale할 수 있고 쓰기 불가.
+- `Documents/` = 사용자가 선택한 폴더. 실시간 동기화. 읽기/쓰기 가능.
+- 환경 감지: `Documents/` 마운트가 있으면 우선 사용. 없으면 desktop-commander 폴백.
 
 ## 핵심 규칙
 
