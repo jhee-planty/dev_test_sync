@@ -178,3 +178,34 @@
 - 신규 동작: 서버 연결 종료 (server-only shutdown)
 - **위험도: 낮음** — 차단 시 서버 응답은 불필요하며, cascade 방지로 클라이언트 영향 없음
 - **테스트 계획**: Gemini 브라우저 확인 후 기존 PASS 서비스 순차 재검증
+
+### Iteration 11 (2026-04-02) — Keep-alive 전환 (서버 shutdown 제거)
+
+#### Test #182 결과 분석
+- **blocked=true, warning_visible=false**
+- ERR_CONNECTION_CLOSED: 서버 shutdown이 H2 연결 전체에 영향
+- batchexecute 등 다른 스트림 실패 → Gemini 프론트엔드가 에러 조용히 처리 → 초기 화면 유지
+- 스크린샷: 입력란에 프롬프트 남아있음, 대화 페이지로 미이동
+
+#### 핵심 발견: request body는 서버에 전달되지 않음
+- `on_new_segment`에서 block 시 `break`로 forwarding 스킵
+- 서버는 HEADERS만 수신, DATA(프롬프트 본문) 미수신
+- 서버가 POST body 없이는 응답 불가 → 중복 HEADERS 위험 없음
+- **결론**: 서버를 종료할 필요 없음
+
+#### 코드 수정: visible_tls_session.cpp — keep-alive
+- is_http2=2에서 서버/클라이언트 모두 유지 (shutdown 제거)
+- block response만 클라이언트에 전달, 서버 연결 유지
+- 다른 H2 스트림(batchexecute, cspreport) 정상 동작 예상
+- 로그: `vts_keepalive: block response sent, server+client kept alive`
+- 빌드 + 배포 완료 (18:33 KST)
+
+#### is_http2=2 동작 변경 이력
+1. **원본**: keep-alive (no shutdown) — 서버 응답 덮어쓰기 가능성
+2. **Phase3-B10**: server-only shutdown — ERR_CONNECTION_CLOSED (#182 확인)
+3. **Phase3-B11**: keep-alive 복원 — 서버가 응답 불가(body 미수신)이므로 안전
+
+#### Test #183: keep-alive 빌드
+- 요청 18:34 KST, 결과 대기 중
+- 예상: block response가 stream에 정상 전달, 다른 스트림 유지 → 경고 표시
+- Status: **TESTING**
