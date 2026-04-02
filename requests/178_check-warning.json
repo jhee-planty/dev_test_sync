@@ -1,0 +1,13 @@
+{
+  "id": 178,
+  "command": "check-warning",
+  "created": "2026-04-02T16:42:00+09:00",
+  "priority": "high",
+  "params": {
+    "service": "gemini",
+    "url": "https://gemini.google.com",
+    "prompt": "한글날의 역사에 대해 알려주세요",
+    "expected_text": "이 서비스는 회사 보안 정책에 의해 사용이 제한됩니다.",
+    "notes": "3가지 수정 적용: (1) path=/_/BardChatUi/data/* (StreamGenerate 포함), (2) gemini3 is_http2=2 (cascade disconnect 방지), (3) 새 빌드 배포 완료. 경고 메시지가 wrb.fr 형식으로 프론트엔드에 표시되는지 확인."
+  }
+}
