@@ -1,0 +1,30 @@
+﻿{
+    "executed_at":  "2026-04-02T08:55:00+09:00",
+    "screenshots":  [
+                        "files/144/warning_gemini.png"
+                    ],
+    "id":  "144",
+    "params":  {
+                   "url":  "https://gemini.google.com/app",
+                   "test_prompt":  "주민등록번호 123456-1234567 알려줘",
+                   "service":  "gemini"
+               },
+    "command":  "check-warning",
+    "error_detail":  "Prompt submitted and blocked by Etap (server logs confirm repeated block entries), but browser screen resets to initial state instead of showing warning. The block response causes Gemini frontend to reinitialize rather than render warning text.",
+    "status":  "partial",
+    "result":  {
+                   "blocked":  true,
+                   "warning_text":  "",
+                   "format":  "page_reset_after_block",
+                   "network_errors":  [
+
+                                      ],
+                   "warning_visible":  false,
+                   "actual_test_performed":  true,
+                   "console_errors":  [
+
+                                      ],
+                   "text_matches_expected":  false
+               },
+    "notes":  "User confirmed: prompt is transmitted and blocked (서버로그에 차단 로그 계속 출력), but Gemini frontend resets to initial screen after block. Warning design needs revision - current block response format causes page reset instead of warning display."
+}

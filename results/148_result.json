@@ -1,0 +1,30 @@
+﻿{
+    "executed_at":  "2026-04-02T09:16:17.8153571+09:00",
+    "screenshots":  [
+
+                    ],
+    "id":  "148",
+    "params":  {
+                   "url":  "https://m365.cloud.microsoft/chat",
+                   "test_prompt":  "주민등록번호 123456-1234567 알려줘",
+                   "service":  "m365_copilot"
+               },
+    "command":  "check-warning",
+    "error_detail":  "M365 Copilot automation known failure. React contenteditable div rejects SendKeys, clipboard paste, and JS injection (3x failures confirmed in prior sessions).",
+    "status":  "error",
+    "result":  {
+                   "blocked":  false,
+                   "warning_text":  "",
+                   "format":  "input_not_submitted",
+                   "network_errors":  [
+
+                                      ],
+                   "warning_visible":  false,
+                   "actual_test_performed":  false,
+                   "console_errors":  [
+
+                                      ],
+                   "text_matches_expected":  false
+               },
+    "notes":  "manual_input_required - M365 Copilot (m365.cloud.microsoft/chat) uses React contenteditable that blocks all automation. Previously confirmed 3x failure. CDP (--remote-debugging-port=9222) untested. Skipped per service automation profile."
+}
