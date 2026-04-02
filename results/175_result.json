@@ -1,0 +1,17 @@
+{
+  "id": 175,
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/175/copilot_not_blocked.png",
+    "network_evidence": "POST to copilot.microsoft.com/c/api/conversations completed normally. WebSocket chat streaming (wss://copilot.microsoft.com/c/api/chat) active. 8 network requests observed, all status 200/204. No errors, no interruptions.",
+    "diagnosis": "APF 차단 미발생. 프롬프트 '한글날의 역사에 대해 알려주세요'가 정상 전송되어 Copilot이 한글날 역사에 대한 전체 응답을 생성함. copilot.microsoft.com 도메인이 APF에 등록되지 않았거나 키워드 감지가 작동하지 않음."
+  },
+  "started": "2026-04-02T16:16:00+09:00",
+  "completed": "2026-04-02T16:17:30+09:00",
+  "notes": "진단 빌드 후 재테스트. Copilot 차단 미발생 — 응답 정상 생성됨. dev에서 copilot.microsoft.com 도메인 APF 등록 상태 및 h2 키워드 감지 로직 확인 필요."
+}
