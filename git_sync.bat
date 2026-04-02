@@ -4,11 +4,12 @@ REM git_sync.bat — test PC 유일한 Git 동기화 방법
 REM Usage: git_sync.bat pull   (새 요청 수신)
 REM        git_sync.bat push   (결과 전달)
 REM
-REM 주의: 이 파일 외의 방식(PowerShell &, Start-Process, Git Bash SSH)은 금지.
-REM       컨텍스트가 유실되어도 이 파일을 호출하라.
+REM 이 파일은 반드시 dev_test_sync 저장소 루트에 위치해야 한다.
+REM 한글 경로 문제를 회피하기 위해 %%~dp0 (이 파일의 경로)을 사용한다.
 
 set GIT=C:\PROGRA~1\Git\bin\git.exe
-set REPO=C:\Users\최장희\Documents\dev_test_sync
+REM %~dp0 = 이 bat 파일이 위치한 디렉토리 (끝에 \ 포함)
+set REPO=%~dp0
 
 if "%~1"=="" (
     set ACTION=pull
@@ -16,40 +17,52 @@ if "%~1"=="" (
     set ACTION=%~1
 )
 
+REM 저장소 디렉토리로 이동 (한글 경로 -C 옵션 회피)
+pushd "%REPO%"
+if !ERRORLEVEL! neq 0 (
+    echo FAILED: pushd "%REPO%"
+    echo EXIT_CODE: 1
+    exit /b 1
+)
+
 if "!ACTION!"=="pull" (
     echo === PULL ===
-    %GIT% -C "%REPO%" pull origin main 2>&1
+    "%GIT%" pull origin main 2>&1
     set EC=!ERRORLEVEL!
     echo EXIT_CODE: !EC!
+    popd
     exit /b !EC!
 )
 
 if "!ACTION!"=="push" (
     echo === ADD ===
-    %GIT% -C "%REPO%" add results/ 2>&1
+    "%GIT%" add results/ 2>&1
 
     echo === CHECK CHANGES ===
-    %GIT% -C "%REPO%" diff --cached --quiet
+    "%GIT%" diff --cached --quiet
     if !ERRORLEVEL!==0 (
         echo Nothing to commit
         echo EXIT_CODE: 0
+        popd
         exit /b 0
     )
 
     echo === COMMIT ===
     for /f "tokens=1-3 delims=/ " %%a in ('date /t') do set DSTAMP=%%a%%b%%c
     for /f "tokens=1-2 delims=: " %%a in ('time /t') do set TSTAMP=%%a%%b
-    %GIT% -C "%REPO%" commit -m "Result: test-pc !DSTAMP!-!TSTAMP!" 2>&1
+    "%GIT%" commit -m "Result: test-pc !DSTAMP!-!TSTAMP!" 2>&1
 
-    echo === PULL (rebase) ===
-    %GIT% -C "%REPO%" pull --rebase origin main 2>&1
+    echo === PULL rebase ===
+    "%GIT%" pull --rebase origin main 2>&1
 
     echo === PUSH ===
-    %GIT% -C "%REPO%" push origin main 2>&1
+    "%GIT%" push origin main 2>&1
     set EC=!ERRORLEVEL!
     echo EXIT_CODE: !EC!
+    popd
     exit /b !EC!
 )
 
+popd
 echo Usage: git_sync.bat [pull^|push]
 exit /b 1
