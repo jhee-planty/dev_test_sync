@@ -108,3 +108,24 @@
 - **핵심 질문**: is_http2=2에서 wrb.fr block response가 브라우저에 도달하는가?
   - is_http2=2 → on_disconnected() 스킵 → cascade disconnect 없음
   - 단, 서버가 이미 HEADERS를 보냈으면 동일 스트림에 중복 HEADERS → ERR_HTTP2_PROTOCOL_ERROR 위험
+
+### Iteration 9 (2026-04-02) — path_matcher regex fix + 정리
+- **path_matcher regex 버그 수정**:
+  - `escape_regex()`의 `special_chars`에 `*` 추가
+  - 이제 `*` → `\*` 이스케이프 → `\*` → `.*` 치환 정상 동작
+  - `*/BardChatUi/data/*` → `^.*/BardChatUi/data/.*$` (올바른 regex)
+- 빌드 + 배포 완료 (17:27)
+- **Test #180 결과**: NOT_BLOCKED
+  - 브라우저 UI 자동화 실패 → HTTP API fallback
+  - HTTP/1.1 직접 호출로는 APF 차단 효과 검증 불가
+  - POST timeout은 APF 차단과 서버 문제 구분 불가
+- **Test #181**: 결과 대기 중 (test PC 비활성)
+- **etap 로그 분석**:
+  - 17:09:56 — gemini3 block (is_http2=1, 이전 빌드)
+  - 17:16:51 — gemini3 block (is_http2=2 ← vts_pre 확인, 새 빌드)
+    - StreamGenerate stream=9, keyword=한글날, blocked=1
+    - block 후 다른 스트림(batchexecute, cspreport) 계속 동작 → cascade 없음
+  - 17:30 — HTTP/1.1 직접 요청 (test PC fallback), blocked=0
+- **현재 DB**: gemini3, domain=gemini.google.com, path=/, is_http2=2, enabled=true
+- **현재 코드**: path_matcher regex 버그 수정 + is_http2=2
+- Status: **BLOCK_CONFIRMED** — APF block 발동 + is_http2=2 확인, 브라우저 경고 미검증
