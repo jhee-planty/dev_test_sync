@@ -59,5 +59,27 @@
   - _response_generators["gemini"] = _response_generators["gemini3"] = generate_gemini_block_response (동일 함수)
   - use_end_stream=true, use_goaway=false (gemini/gemini3 모두)
   - is_http2=1 → on_disconnected() 호출 → 서버 연결 종료
-- Test #176: gemini3 활성화 후 재테스트 전송
-- Status: 테스트 결과 대기 중
+- Test #176: NOT_BLOCKED — path_matcher prefix 모드에서 `?` 구분자 미지원
+  - batchexecute?rpcids=... 의 `?`가 `/`가 아니어서 prefix match 실패
+
+### Iteration 6 (2026-04-02) — Path matcher 분석 + 와일드카드 수정
+- **path_matcher 분석**:
+  - `*` 없는 패턴 → prefix match (다음 문자가 `/`일 때만 매칭)
+  - `*` 있는 패턴 → regex mode (`^패턴$`, `*` → `.*`)
+- **DB 수정 1**: path=`/_/BardChatUi/data/batchexecute*` (와일드카드 추가)
+- Test #177: NOT_BLOCKED — **Gemini 프롬프트가 batchexecute가 아닌 StreamGenerate 사용!**
+  - StreamGenerate?bl=b... (status 200, 14.94s) — 실제 프롬프트 엔드포인트
+  - batchexecute — 보조 작업용 (side operations)
+- **DB 수정 2**: path=`/_/BardChatUi/data/*` (StreamGenerate 포함)
+- **코드 수정**: gemini3를 is_http2=2로 전환 (cascade disconnect 방지)
+  - Phase3-B8: batchexecute POST는 서버 응답 전에 block 발동 → 중복 HEADERS 위험 낮음
+- 빌드 + 배포 완료
+- Test #178: NOT_BLOCKED — **StreamGenerate 경로에 `/u/0/` prefix 존재!**
+  - 실제 경로: `/u/0/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=...`
+  - 패턴 `/_/BardChatUi/data/*` → `^/_/BardChatUi/data/.*$` → `/u/0/` 때문에 불일치
+
+### Iteration 7 (2026-04-02) — /u/0/ prefix 대응
+- **DB 수정 3**: path=`*/BardChatUi/data/*`
+  - regex: `^.*BardChatUi/data/.*$` → 모든 prefix 대응
+- reload_services 완료
+- Test #179: 결과 대기 중
