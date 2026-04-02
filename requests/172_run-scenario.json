@@ -1,0 +1,28 @@
+{
+  "id": 172,
+  "command": "run-scenario",
+  "service": "m365_copilot",
+  "scenario": "network-capture",
+  "created": "2026-04-02T16:00:00+09:00",
+  "priority": "high",
+  "instructions": {
+    "goal": "M365 Copilot의 실제 chat streaming API 엔드포인트 캡처",
+    "steps": [
+      "1. Chrome 새 탭에서 DevTools Network 탭을 먼저 열기 (F12)",
+      "2. Network 탭에서 'Preserve log' 체크, 'Disable cache' 체크",
+      "3. https://copilot.microsoft.com 접속",
+      "4. 페이지 로드 완료 대기",
+      "5. Network 탭 필터를 'Fetch/XHR'로 설정",
+      "6. 프롬프트 입력: '한글날의 역사에 대해 알려주세요'",
+      "7. 응답 완료까지 대기 (최대 30초)",
+      "8. Network 탭에서 모든 Fetch/XHR 요청 목록 캡처 (스크린샷)",
+      "9. 특히 /c/api/ 경로의 POST 요청 찾기",
+      "10. 해당 요청의 URL, Method, Status, Content-Type, Request Headers 기록"
+    ],
+    "capture_details": {
+      "target_pattern": "/c/api/conversations",
+      "look_for": ["POST requests with prompt data", "streaming responses", "EventSource connections"],
+      "report_fields": ["full_url", "method", "status", "request_content_type", "response_content_type", "request_body_snippet", "duration_ms"]
+    }
+  }
+}
