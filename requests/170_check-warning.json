@@ -1,0 +1,15 @@
+{
+  "id": "170",
+  "command": "check-warning",
+  "service": "gemini",
+  "service_name": "Gemini",
+  "url": "https://gemini.google.com/app",
+  "prompt": "한글날의 역사에 대해 알려주세요",
+  "expected_warning": "이 서비스는 회사 보안 정책에 의해 사용이 제한됩니다.",
+  "check_points": [
+    "blocked",
+    "warning_visible",
+    "warning_text"
+  ],
+  "notes": "Build fix: CT caching bug in on_http2_request_data. Now refreshes Content-Type per H2 stream."
+}
