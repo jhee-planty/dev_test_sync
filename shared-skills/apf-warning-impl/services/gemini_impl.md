@@ -44,3 +44,20 @@
 - **수정 필요**: DB domain_patterns를 `gemini.google.com`으로 복원
 - **수정 필요**: path_patterns를 `/_/BardChatUi/data/batchexecute`로 설정
 - Status: SSH 접속 불가로 DB 수정 대기 중
+
+### Iteration 5 (2026-04-02) — DB fix + gemini3 활성화
+- Test #174 분석: APF 차단 성공(block_session 발동), 그러나 브라우저에 HTTP status 0
+  - block_session log: service=gemini, response_size=562, is_http2=1, keyword=한글날
+  - 브라우저: batchexecute XHR Error Code 6 (network error), HTTP status 0
+  - 원인 1: `gemini`(path=/) catch-all이 모든 요청 매칭 → jserror 등 불필요한 트래픽도 감지
+  - 원인 2: is_http2=1 → on_disconnected()가 서버 연결 종료 → 서버 HEADERS와 충돌 가능
+- **DB 수정** (16:20 KST):
+  - `gemini` (id=3, path=/): enabled=false
+  - `gemini3` (id=5, path=/_/BardChatUi/data/batchexecute): enabled=true
+  - reload_services 성공
+- **코드 확인**:
+  - _response_generators["gemini"] = _response_generators["gemini3"] = generate_gemini_block_response (동일 함수)
+  - use_end_stream=true, use_goaway=false (gemini/gemini3 모두)
+  - is_http2=1 → on_disconnected() 호출 → 서버 연결 종료
+- Test #176: gemini3 활성화 후 재테스트 전송
+- Status: 테스트 결과 대기 중

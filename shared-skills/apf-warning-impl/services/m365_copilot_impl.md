@@ -30,3 +30,14 @@
   - domain_patterns: `copilot.microsoft.com`
   - path_patterns: `/c/api/`
 - Status: SSH 접속 불가로 DB 수정 대기 중
+
+### Iteration 3 (2026-04-02) — WebSocket 발견 → EXCLUDED
+- Test #175: NOT_BLOCKED — 프롬프트 정상 전송, 전체 응답 생성됨
+- **핵심 발견**: 실제 채팅은 WebSocket(wss://copilot.microsoft.com/c/api/chat)으로 스트리밍
+  - POST /c/api/conversations → 대화 생성 (JSON)
+  - wss:// /c/api/chat → 실제 프롬프트 전송 + 응답 스트리밍 (WebSocket)
+  - APF는 HTTP request body만 검사 가능, WebSocket 프레임 검사 불가
+- **결론**: 현재 APF 아키텍처로는 M365 Copilot 차단 불가
+  - WebSocket 인터셉션 기능 추가 필요 (향후 과제)
+- Status: **EXCLUDED** (WebSocket-based chat, APF cannot intercept)
+- TODO: WebSocket 지원이 APF에 추가되면 재검토
