@@ -1,1 +1,1 @@
-git_sync_test 
+git_sync_test_ok 
