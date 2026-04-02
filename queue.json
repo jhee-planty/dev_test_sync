@@ -216,9 +216,99 @@
       "status": "done",
       "created": "2026-03-31T17:40:00+09:00",
       "summary": "Gemini Phase3-B6 CDP→mouse_event — BLOCKED_NO_WARNING: 전송 성공, 경고X (페이지 리셋) → BLOCKED_ONLY"
+    },
+    {
+      "id": "150",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "ChatGPT Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "151",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Claude Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "152",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Perplexity Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "153",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Gemini Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "154",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Grok Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "155",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Genspark Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "156",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Notion AI Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "157",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "GitHub Copilot Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "158",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "Gamma Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "159",
+      "command": "run-scenario",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-02T11:42:35.648561",
+      "updated": "2026-04-02T11:42:35.648561",
+      "summary": "M365 Copilot Phase 1 Frontend Inspect"
     }
   ],
-  "last_updated": "2026-03-31T17:55:00.000000",
+  "last_updated": "2026-04-02T11:42:35.648561",
   "archived": [
     "058",
     "059",
