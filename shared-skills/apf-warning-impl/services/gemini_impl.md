@@ -82,4 +82,29 @@
 - **DB 수정 3**: path=`*/BardChatUi/data/*`
   - regex: `^.*BardChatUi/data/.*$` → 모든 prefix 대응
 - reload_services 완료
-- Test #179: 결과 대기 중
+- Test #179: NOT_BLOCKED — **path_matcher regex 버그!**
+  - `*/BardChatUi/data/*` → `escape_regex()`가 `*`를 이스케이프하지 않음
+  - 치환 단계에서 `\*`(백슬래시-스타)를 찾지만 원본은 raw `*` → 치환 안 됨
+  - 결과: `^*/BardChatUi/data/.*$` → raw `*`가 invalid regex quantifier
+  - etap log: `Invalid path pattern regex` 에러 확인
+  - 근본 원인: `ai_prompt_filter_db_config_loader.cpp`의 `escape_regex()` 함수
+
+### Iteration 8 (2026-04-02) — Catch-all 우회 + is_http2 재배포
+- **DB 수정 4**: path=`/` (catch-all, prefix match — regex 버그 우회)
+  - prefix match 모드에서는 `*`를 사용하지 않으므로 regex 버그 영향 없음
+  - path=/ → gemini.google.com의 모든 경로 매칭 (StreamGenerate, batchexecute 등)
+- reload_services 성공
+- **Block 확인** (17:09:56 KST):
+  - etap log: `block triggered: service=gemini3 http2=1 stream_id=11`
+  - StreamGenerate 감지 + keyword=한글날 매칭 → blocked=1
+  - **문제**: `is_http2=1`로 기록됨 — 이전 배포의 빌드에 is_http2=2 코드가 미반영
+  - 원인: 소스는 컴파일 서버에 올렸지만 `ninja`가 이미 빌드 완료 판정 (타임스탬프 이슈)
+- **재빌드 + 재배포** (17:15 KST):
+  - 컴파일 서버: `ninja` → `no work to do` (소스 동일, 바이너리도 동일)
+  - 패키지 재전송: compile → local → test server
+  - `sudo tar xzf` + `systemctl restart etapd` → active (running)
+  - 배포 후 gemini3 detect 정상 확인
+- Test #181: gemini3(path=/, is_http2=2) check-warning 생성, 결과 대기 중
+- **핵심 질문**: is_http2=2에서 wrb.fr block response가 브라우저에 도달하는가?
+  - is_http2=2 → on_disconnected() 스킵 → cascade disconnect 없음
+  - 단, 서버가 이미 HEADERS를 보냈으면 동일 스트림에 중복 HEADERS → ERR_HTTP2_PROTOCOL_ERROR 위험
