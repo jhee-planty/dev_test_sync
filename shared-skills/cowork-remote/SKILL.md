@@ -197,11 +197,28 @@ git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull*
     {"service": "{service_id}", "priority": 2, "status": "pending_check", "task_id": null}
   ],
   "done_services": ["{service_id}", "{service_id}"],
+  "monitoring": {
+    "visual_needed": false,
+    "visual_trigger": "30min_no_result",
+    "last_visual_check": null,
+    "last_visual_result": null
+  },
+  "work_context": {
+    "strategy": "D_END_STREAM",
+    "last_build": "2026-04-01T14:30:00",
+    "last_iteration": 3,
+    "last_action": "modified generate_gemini_block_response",
+    "next_step": "build and deploy to test server"
+  },
   "notes": "free-form text"
 }
 ```
 **중요:** State를 갱신할 때 기존 필드(poll_stage, poll_stage_count, service_queue, done_services 등)를
 누락하지 않는다. 읽은 JSON을 기반으로 필요한 필드만 수정하고 전체를 다시 쓴다.
+
+**work_context (컨텍스트 유실 대비):**
+compact나 세션 재시작으로 대화 컨텍스트가 소실되어도, 이 필드에서 "마지막으로 뭘 했고
+다음에 뭘 해야 하는지" 복구할 수 있다. Phase 3 iteration 시작/완료 시 갱신한다.
 
 **service_queue status 값:**
 - `pending_check`: check-warning 테스트 대기 중 (자동 진행 가능)
@@ -231,6 +248,20 @@ osascript -e 'display notification "{message}" with title "APF Pipeline"'
 Scheduled Task는 결과를 감지하고 분석한 후 **다음 액션까지 실행**해야 한다.
 감지 → 보고에서 멈추면 사용자 개입이 필요해지므로 "전체 작업자" 목표에 어긋난다.
 구체적인 실패 분류, 자동 수정 액션, 3-Strike Rule 등은 Scheduled Task 프롬프트에 정의되어 있다.
+
+**L3 시각 진단 (30분 무응답 에스컬레이션):**
+git polling(L1) + SSH 로그(L2)로도 원인 파악이 안 되면, AnyDesk 스크린샷으로 test PC 화면을 직접 확인한다.
+이 진단은 메인 세션에서만 가능하다 (Scheduled Task에서 computer-use 미검증).
+```
+Scheduled Task 역할:
+  30분 무응답 감지 → monitoring.visual_needed=true 기록 → macOS 알림
+메인 세션 역할 (사용자가 알림 후 세션을 열거나, 직접 진단 요청 시):
+  1. pipeline_state.json → monitoring.visual_needed 확인
+  2. AnyDesk 앱에서 test PC 화면 스크린샷 촬영 (read-only, 입력 없음)
+  3. 스크린샷 분석 → 상태 분류 → last_visual_check/last_visual_result 기록
+  4. 분류 결과에 따라 액션 실행 (재요청, 사용자 알림 등)
+```
+→ See `references/visual-diagnosis.md` for 촬영 절차, 판독 기준, 제한사항.
 
 **Scheduled Task 생성/관리:**
 ```

@@ -94,6 +94,25 @@
 |-------|--------|
 | `format` | `"markdown"`, `"text"`, `"error"` |
 | `text_matches_expected` | expected_text와 일치 여부 |
+| `silent_reset` | `true` — 차단 후 브라우저가 무소음으로 초기화면 복귀 (Gemini 등) |
+| `network_evidence` | Network 탭에서 관찰한 POST 요청/응답 요약 (페이지 리셋 전 캡처) |
+| `automation_failed_http_fallback` | `true` — 입력 자동화 실패 → HTTP API 직접 호출로 확인 |
+
+**BLOCKED_SILENT_RESET 결과 예시:**
+```json
+{
+  "id": "010",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "silent_reset": true,
+    "network_evidence": "POST to signaler-pa.clients6.google.com observed, response interrupted",
+    "screenshot": "files/010/after_reset.png"
+  },
+  "notes": "차단 성공, 경고 미표시 — generator 응답 형식 수정 필요"
+}
+```
 
 ---
 

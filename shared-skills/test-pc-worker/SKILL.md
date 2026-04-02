@@ -175,6 +175,17 @@ foreach ($req in $requests | Sort-Object Name) {
 
 요청 JSON의 `command` 필드에 따라 desktop-commander + PowerShell로 작업을 수행한다.
 
+**[필수] 매 작업 시작 시 표준 화면 배열:**
+브라우저 작업 전에 반드시 Ensure-ChromeMaximized를 실행한다.
+"최초 1회"가 아니라 "매 작업마다" 실행해야 한다.
+탭 전환, AnyDesk 접속, 이전 세션 복원 등으로 창이 축소되는 문제를 방지한다.
+```
+매 작업 시작 시 (이 Step 진입 시점):
+  1. Ensure-ChromeMaximized 실행 (→ windows-commands.md § 공통 유틸리티)
+  2. Chrome이 실행되지 않았으면: Chrome 실행 + 최대화
+  3. F12로 DevTools 열기 (Chrome 내부 하단 도킹 유지)
+```
+
 → See `references/windows-commands.md` for per-command execution details.
 → See `references/browser-rules.md` for 브라우저 설정 및 DevTools 검증 규칙.
 
@@ -189,6 +200,16 @@ foreach ($req in $requests | Sort-Object Name) {
 - 화면 변화 없는 서비스(Gemini 등) → Console/Network으로 작업 완료 판단
 
 → See `references/browser-rules.md` § "DevTools 활용 — 동작 검증" for 전체 체크리스트.
+
+**스크린샷 표준 규칙 (dev 측 L3 시각 진단 보완):**
+dev PC는 결과 파일 도착 전에 AnyDesk로 이 PC 화면을 볼 수 있다.
+dev 측 판독 정확도를 높이기 위해, 작업 중 화면 상태를 예측 가능하게 유지한다.
+```
+  작업 시작 시: 브라우저를 전면에 배치 (최대화)
+  작업 완료 시: 결과 화면을 유지한 채 스크린샷 캡처 → results/files/{id}/에 저장
+  실패 시: 에러 상태 화면 + DevTools Console 스크린샷 모두 캡처
+```
+스크린샷은 result JSON의 `screenshots` 배열에 파일 경로를 기록한다.
 
 ### Step 3 — 결과 작성 + 상태 갱신
 
@@ -245,34 +266,32 @@ $metric | ConvertTo-Json -Compress | Add-Content $metricsFile -Encoding UTF8
 각 단계 시작 전에 `$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()`으로 측정하고,
 단계 종료 시 `$stopwatch.Elapsed.TotalSeconds`를 기록한다.
 
-### Step 4 — Git Push
+### Step 4 — Git Push (git_sync.sh 단일 호출)
 
-결과를 dev에 전달하기 위해 Git Bash 스크립트 방식으로 push한다.
-PowerShell `&` 연산자나 `Start-Process` 단독으로는 출력 캡처 불가, SSH 인증 실패 등
-문제가 발생하므로 사용하지 않는다.
-
-```bash
-# git_pull_push.sh (Git Bash 스크립트)
-export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no"
-cd "/c/Users/최장희/Documents/dev_test_sync"
-git add results/
-git commit -m "Result: #{id} {command}"
-git pull --rebase origin main 2>&1
-git push origin main 2>&1
-echo "EXIT_CODE: $?"
-```
+결과를 dev에 전달하기 위해 **반드시 `git_sync.sh push`를 사용한다.**
+다른 방식(PowerShell `&` 연산자, `Start-Process` 단독, git.exe 직접 호출)은 **금지**한다.
+컨텍스트가 유실되어도 이 규칙은 변하지 않는다.
 
 ```powershell
-# PowerShell에서 실행
-Start-Process -FilePath 'C:\Program Files\Git\bin\bash.exe' `
-  -ArgumentList @('C:\Users\최장희\Documents\git_pull_push.sh') `
+# 유일한 허용 방식 — git_sync.sh 호출
+$gitBash = 'C:\Program Files\Git\bin\bash.exe'
+$script  = 'C:\Users\최장희\Documents\git_sync.sh'
+$outFile = "$base\results\files\git_push_out.txt"
+$errFile = "$base\results\files\git_push_err.txt"
+
+Start-Process -FilePath $gitBash `
+  -ArgumentList @($script, 'push') `
   -NoNewWindow -Wait `
-  -RedirectStandardOutput $outFile -RedirectStandardError $errFile
+  -RedirectStandardOutput $outFile `
+  -RedirectStandardError $errFile
 ```
 
-**브랜치 주의:** 기본 브랜치는 `main`이다 (`master` 아님). push 전 확인 필수.
+**금지 패턴 (컨텍스트 유실 시에도 절대 사용하지 않는다):**
+- `& 'C:\Program Files\Git\cmd\git.exe' push ...` → 출력 캡처 불가
+- `Start-Process -FilePath $gitExe -ArgumentList @('push', ...)` → SSH 인증 실패
+- `$env:GIT_SSH_COMMAND`에 한글 경로 → 경로 깨짐
 
-→ See `references/git-push-guide.md` for 금지 패턴 상세 (& 연산자, Start-Process 단독, 한글 경로 문제).
+→ See `references/git-push-guide.md` for git_sync.sh 상세 및 금지 패턴 이유.
 
 ### Step 5 — 완료 보고
 

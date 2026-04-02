@@ -1,0 +1,479 @@
+---
+name: apf-warning-impl
+description: >
+  Use this skill when the user is in hands-on implementation mode for an APF warning — actively writing, fixing, or testing code for a specific service. Trigger on: C++ generator function work, warning rendering problems, HTTP/2 block response behavior, is_http2 field values, test log management, false positives, or blocked=1 diagnostics. The user's goal is making a warning actually work or verifying it works, not deciding on an approach.
+
+  Do NOT trigger for design documents, architecture/strategy comparisons, frontend DOM inspection, or HAR analysis — those belong to other skills.
+---
+
+# APF Warning Implementation Skill
+
+## Purpose
+
+Phase 2에서 설계한 경고 전달 방식을 구현하고, 테스트하여 사용자에게
+경고가 전달되는지 검증한다. 이 과정은 반복적이다 — 설계한 방식이
+실제로 동작하지 않으면 다른 전달 방식을 시도한다.
+방식보다 결과(사용자가 경고를 인지하는 것)가 중요하다.
+
+**Input:** Design document from Phase 2 (`apf-warning-design/services/{service_id}_design.md`)
+**Output:** Working C++ code + verified warning display + implementation journal
+
+→ **Follow `../guidelines.md` for all experience, naming, and log rules.**
+
+---
+
+## HTTP/2 Block Response Strategies
+
+서비스별 블록 응답 전략(A/B/C/D), 결정 트리, GOAWAY 구현, is_http2 필드 상세는
+references에 정리되어 있다. 새 서비스 구현 전 반드시 참조한다.
+
+→ See `references/http2-strategies.md` for 전략 정의, 결정 트리, GOAWAY 구현, is_http2 필드.
+
+**빠른 참조:**
+
+| Strategy | 핵심 특성 | is_http2 |
+|----------|----------|----------|
+| A | END_STREAM + GOAWAY | 1 |
+| B | keep-alive, network error 동반 | 2 |
+| C | HTTP/1.1, Content-Length | 0 |
+| D | END_STREAM + GOAWAY=false | 1 |
+
+---
+
+## DB 서비스 등록 시 주의사항
+
+→ See `references/db-and-generators.md` for 현재 등록된 generator 함수 목록 및 DB 등록 상세.
+
+### 프론트엔드 도메인 ≠ API 도메인
+
+DB에 프론트엔드 도메인만 등록하면 페이지 로드만 차단되고 프롬프트 API는 통과한다.
+
+```
+잘못된 예:
+  프론트엔드: frontend.example.com → DB에 등록
+  실제 API: api.example.com/endpoint → DB에 미등록
+  결과: etap 로그에 blocked=1이지만 실제 프롬프트는 차단되지 않음
+```
+
+### path_patterns='/' 사용 주의
+
+`/` 패턴은 모든 경로에 매칭되어 페이지 로드, 정적 리소스, 분서 요청까지 차단한다.
+etap 로그에 blocked=1이 찍혀도 실제 프롬프트 차단이 아닐 수 있다.
+
+### API 엔드포인트 파악 방법
+
+test PC에서 DevTools Network 캡처를 통해 실제 프롬프트 전송 도메인+경로를 확인한다.
+→ See `../genai-warning-pipeline/SKILL.md` § "API 엔드포인트 파악 방법"
+
+### generator 함수 목록
+
+→ See `references/db-and-generators.md` for 현재 등록된 generator 함수 전체 목록.
+새 함수 작성 시 기존 함수의 네이밍 패턴(`generate_{service_id}_{type}_block_response()`)을 따른다.
+
+---
+
+## Collaboration Pattern
+
+경고가 올바르게 렌더링되는지 확인하려면 실망 환경의 브라우저가 필요하다.
+dev PC는 실망에 연결되어 있지 않으므로, test PC에 cowork-remote를 통해
+검증을 요청한다.
+
+```
+┌─ dev Cowork ──────────────────────────────────────────────┐
+│  1. Read design doc → propose C++ code changes            │
+│  2. Show diff to user → get approval                      │
+│  3. Apply code + inject test logs                         │
+│  4. Build + deploy test build (via etap-build-deploy)     │
+│  5. Send check-warning request to test PC (cowork-remote) │
+│  6. Monitor etap logs via SSH + read test PC result        │
+│  7. Analyze: test PC result + log evidence + console logs │
+│  8. If fail → propose fix → back to step 2                │
+│     If pass → remove test logs → proceed to Phase 4       │
+└───────────────────────────────────────────────────────────┘
+         ↕ test PC executes check-warning via cowork-remote
+┌─ test PC Cowork ──────────────────────────────────────────┐
+│  5. desktop-commander로 AI 서비스 접속 → 민감 키워드 입력  │
+│     → 차단/경고 동작 확인 → 콘솔 로그 수집 → 스크린샷     │
+│     → 결과 보고                                           │
+└───────────────────────────────────────────────────────────┘
+         ↕ User reviews results at step 7
+```
+
+---
+
+## Implementation Flow
+
+### 작업 시작 전 스킬 로드 확인
+
+이 스킬이 Skill 도구로 로드된 상태에서 작업을 시작한다.
+기억에 의존하면 업데이트된 절차(서버 로그 필수, 3-Strike Rule 등)를 빠뜨린다.
+genai-warning-pipeline에서 Phase 3 진입 시 자동으로 로드되지만,
+context break 후 직접 이 스킬로 작업을 재개할 때는 수동 로드가 필요하다.
+
+### Step 1 — Read Design + Existing Code
+
+```
+Read: apf-warning-design/services/{service_id}_design.md
+Read: ETAP_ROOT/functions/ai_prompt_filter/ai_prompt_filter.cpp
+Read: ETAP_ROOT/functions/ai_prompt_filter/ai_prompt_filter.h
+Read: references/cpp-templates.md (for code conventions)
+```
+
+If the design doc specifies "Existing generator: generate_{service_id}_*",
+modify the existing function. Otherwise, create a new function following
+the naming convention: `generate_{service_id}_{type}_block_response()`.
+
+**HTTP/2 전략 결정:** Step 1에서 design doc의 프로토콜 정보와 위의
+"결정 트리"를 사용하여 어떤 Strategy(A/B/C/D)를 적용할지 결정한다.
+
+### Step 1.5 — 예측 분석 (Predictable Failure Prevention)
+
+코드 변경 제안 전에, 유사 서비스의 실패 기록을 확인한다.
+같은 통신 유형(SSE, WebSocket 등)의 서비스가 이미 실패한 패턴을
+반복하면 빌드를 낭비하게 된다.
+
+```
+확인 절차:
+  1. design doc의 comm_type 확인
+  2. archive-results/lessons/ 디렉토리 확인
+     → 디렉토리가 없거나 비어있으면 즉시 Step 2로 진행 (파일 I/O 최소화)
+  3. 동일 comm_type 서비스의 실패 기록 검색
+  4. 일치하는 실패 패턴 발견 시:
+     - 해당 패턴을 회피하는 방향으로 코드 제안 수정
+     - design doc Notes에 "lessons 참조: {서비스}_{패턴}" 기록
+  5. 일치 없으면 → Step 2 진행
+```
+
+Gamma에서 7빌드를 소모한 SSE fallback outline 패턴을 Genspark에서
+다시 시도하려 했던 사례가 있다. 사전에 lessons를 확인했다면 방지할 수 있었다.
+
+### Iteration 선행 기록 (Context 유실 대비)
+
+코드 수정을 시작하기 전에, impl journal에 "what I'm about to try"를 먼저 기록한다.
+iteration 중간에 context break가 발생하면 이 기록이 복구 시작점이 된다.
+```
+### Iteration {N} ({date}) — STARTED
+- Strategy: {A/B/C/D}
+- Plan: {무엇을 시도할 것인지 1줄 요약}
+- Files to modify: {예상 수정 파일}
+```
+iteration이 완료되면 Result, Test log 등을 추가하여 STARTED를 COMPLETED로 갱신한다.
+STARTED 상태로 남아있는 기록은 "이 시도 중에 중단됨"을 의미한다.
+
+### Step 2 — Propose Code Changes
+
+Show the user what will change:
+
+```
+AskUserQuestion("Here are the proposed code changes for {service_name} warning:
+
+[code diff summary]
+[HTTP/2 strategy: A/B/C/D — 근거]
+
+Shall I apply these changes?",
+  options=["Apply", "Modify first", "Show full diff"])
+```
+
+The user might want to adjust the warning text, add fields, or change the
+approach. Iterate on the proposal until the user approves.
+
+### Step 3 — Apply Code + Inject Test Logs
+
+After user approval, apply the code changes AND inject test log statements
+at the log points specified in the design document.
+
+→ See `references/test-log-templates.md` for the exact C++ log templates.
+
+**서버 로그 필수 (첫 빌드부터):**
+- [ ] `[APF_WARNING_TEST]` 로그가 visible_tls_session.cpp의 block response write 전후에 포함되어 있는지 확인
+- [ ] 로그에 write 크기, is_http2 값, 서비스명이 출력되는지 확인
+- 서버 로그 없이 2빌드 이상 실패하면 반드시 로그부터 추가할 것
+
+서버 로그가 없으면 "브라우저에 안 보인다"는 증상만으로 원인을 추측해야 한다.
+Build #2~#6에서 5빌드(약 3시간) 동안 서버 write 성공 여부를 몰랐지만,
+Build #8에서 로그 추가 후 1빌드 만에 double-write 버그를 발견한 사례가 있다.
+
+**Test log injection points (standard 3-point pattern):**
+
+| Point | Location | What it logs |
+|-------|----------|-------------|
+| 1 | After service detection | service_id, path, method |
+| 2 | Before response write | content_type, body_size, is_http2 value |
+| 3 | After response flush | bytes_written, flush_result |
+
+The design doc may specify additional service-specific log points.
+
+### Step 4 — Test Build + Deploy
+
+This is a TEST build (with diagnostic logs in the code).
+
+```
+Call etap-build-deploy steps:
+  Step 1: scp modified files to compile server
+  Step 2: Build + install (sudo ninja && sudo ninja install)
+  Step 3: Deploy package to test server
+  Step 4: Install + restart etapd
+```
+
+→ See `../etap-build-deploy/SKILL.md` for detailed commands.
+→ 원격 작업은 하나의 터미널에서 순차 실행 (etap-build-deploy § "터미널 사용 규칙")
+
+### Step 5 — Send Test Request to test PC
+
+빌드/배포 완료 후, `cowork-remote`를 통해 test PC에 검증을 요청한다.
+
+```json
+{
+  "command": "check-warning",
+  "params": {
+    "service": "{service_id}",
+    "expected_text": "{design doc의 경고 텍스트}",
+    "expected_format": "{design doc의 표시 형태}",
+    "capture_console": true
+  },
+  "notes": "Phase 3 test build — {date}"
+}
+```
+
+`capture_console: true`를 포함하면 test PC가 브라우저 콘솔 에러도 수집한다.
+(test-pc-worker는 check-warning/check-block을 기본적으로 수집하므로,
+이 파라미터는 명시적 의도 표현 + 다른 command에서도 수집을 요청할 때 사용)
+`ERR_HTTP2_PROTOCOL_ERROR` 같은 에러가 Strategy 결정에 핵심적인 진단 정보가 된다.
+
+→ See `../genai-warning-pipeline/references/remote-test-integration.md` → Phase 3 section.
+
+test PC는 브라우저 조작 후 DevTools로 동작 검증을 수행한다.
+(→ See `../test-pc-worker/references/browser-rules.md` § "DevTools 활용 — 동작 검증")
+test PC에서 이상 반복이 감지되면 /compact 후 재시작한다.
+(→ See `../test-pc-worker/references/browser-rules.md` § "이상 감지 시 /compact 후 재시작")
+
+### Step 6 — Monitor Etap Logs + Read test PC Result
+
+test PC가 작업을 수행하는 동안 (또는 직후) etap 로그를 확인한다.
+test PC 결과가 도착하면 로그 증거와 결합하여 분석한다.
+
+→ See `references/test-log-templates.md` → Monitoring Commands for SSH commands.
+
+### Step 7 — Analyze Results
+
+test PC의 결과(warning_visible, warning_text, screenshot, **console_errors**)와
+etap 로그를 결합:
+
+| test PC result | Console log | Etap log | Diagnosis |
+|---------------|-------------|----------|-----------|
+| warning_visible=true, text 일치 | 에러 없음 | All 3 log points present | ✅ Success |
+| warning_visible=true, text 일치 | ERR_HTTP2_PROTOCOL_ERROR | All 3 log points present | ⚠️ 경고 표시되지만 protocol error → Strategy 재가토 |
+| warning_visible=true | "network error" 표시 | All 3 log points present | ⚠️ Strategy B 특성 — 허용 가능 여부 판단 |
+| warning_visible=false | — | Point 1 absent | Service not detected → check DB patterns |
+| warning_visible=false | — | Point 1 OK, Point 2 body_size=0 | Generator function bug → fix code |
+| error 표시됨 | — | All points OK, bytes sent | Frontend rejects format → revisit design |
+
+### Step 8 — Iterate or Proceed
+
+**If test fails:** Diagnose using Step 7 table → propose fix → back to Step 2.
+Record the iteration in `services/{service_id}_impl.md` (test PC 결과 포함).
+
+**성공 판정 기준: 어떤 방식이든 사용자가 경고 문구를 인지할 수 있으면 목표 달성.**
+채팅 버블, 에러 페이지, alert 등 방식은 무관하다. 경고가 보이면 PASS이다.
+부수적 이슈(network error artifact 등)가 남아도 경고가 인지 가능하면 PASS이다.
+부수적 이슈는 impl journal에 "추가 작업 메모"로 간단히 기록하고 마무리한다.
+
+### 방식별 시도 횟수 제한 및 에스컬레이션
+
+경고가 표시되지 않을 때 무한 반복하지 않는다. 실패 유형을 분류하고
+방식을 전환하며, 서비스당 전체 상한(7회)을 지킨다.
+
+→ See `references/escalation-protocol.md` for 에스컬레이션 순서 상세, 실패 유형 분류, 구조적 한계.
+
+**서비스당 전체 상한: 7회 빌드-테스트 사이클. (하드 게이트)**
+7회 소진 시 어떤 방식이 남아있더라도 BLOCKED_ONLY로 처리한다.
+
+**강제 승인 게이트:** 5회 빌드 소진 시점에서 반드시 사용자에게 현황을 보고하고
+추가 빌드 승인을 받는다. "현재 {서비스} 5/7빌드 소진. 시도한 방식: {목록}.
+남은 2빌드로 계속하시겠습니까, BLOCKED_ONLY로 판정하시겠습니까?"
+사용자가 "계속"이라 해도 7회 도달 시 추가 승인 없이 BLOCKED_ONLY로 확정한다.
+이 게이트는 사용자가 "모든 방법을 시도해"라고 지시했더라도 적용된다.
+
+> **왜 이 게이트가 필요한가:** 2026-03-27 Gamma 사례에서 7빌드 상한이 스킬에
+> 명시되어 있었으나 13빌드를 수행하여 ~3시간을 낭비했다. 규칙이 있어도 강제
+> 중단점이 없으면 무시된다.
+
+**BLOCKED_ONLY 처리 시 impl journal 기록:**
+```
+### BLOCKED_ONLY 판정 ({date})
+- 시도한 방식: {①②③ 각각 몇 회, 어떤 결과}
+- 차단 동작: {정상 / 비정상}
+- 커스텀 경고 불가 원인: {프론트엔드 fallback 등}
+- 향후 재시도 조건: {새로운 전달 방식 확보 시}
+```
+
+### 연속 실패 시 전략 전환 (3-Strike Rule)
+
+동일 서비스에서 **3회 연속 실패** 시 아래 순서를 강제한다:
+
+1. **서버 로그 확인**: etap.log에서 `[APF_WARNING_TEST]` 로그를 grep하여 write 성공 여부, 크기, is_http2 값 확인
+2. **HAR 재캡처**: test PC에 run-scenario 요청으로 실제 서비스 응답 구조를 다시 확인 (서비스가 업데이트되었을 수 있음)
+3. **접근법 재검토**: 현재 접근법(SSE format, is_http2 값, Content-Type 등)을 근본적으로 변경하는 방안 검토
+
+이 단계를 밟지 않고 4번째 같은 접근법의 미세 조정 빌드를 하지 않는다.
+
+과거 특정 서비스에서 8회 연속 실패한 사례가 있다. is_http2 값과 SSE format의
+미세 조정만 반복하면서 3시간을 소비했지만, 서버 로그 확인과 접근법 재검토를
+먼저 했다면 절반 이하로 줄일 수 있었다.
+→ See `services/` 디렉토리의 해당 서비스 impl journal for 상세 사례.
+
+### 1회성 성공 오판 방지
+
+테스트가 1회 성공한 후 바로 다음 빌드에서 실패하면, 포맷 변경을 계속하지 않고
+먼저 재현성을 확인한다:
+
+1. **동일 코드로 재테스트** — 코드 변경 없이 같은 테스트를 다시 실행
+2. **재현 실패 시** → "전송 계층 문제"로 분류하고 포맷 변경 시도를 중단
+3. impl journal에 "1회성 성공 — 재현 불가" 플래그를 기록
+
+성공 → 실패 패턴이 나타났을 때 "포맷이 거의 맞았으니 미세 조정하면 된다"는
+가장 흔한 오판이다. 2026-03-27 Gamma Build #26→#27에서 이 오판으로 7빌드를
+추가 소모했다.
+
+**If test passes (경고 문구 표시됨):**
+1. Remove ALL test log lines from the code
+2. Verify removal: `grep -rn "APF_WARNING_TEST" functions/ai_prompt_filter/`
+3. Expected: zero matches
+4. Update `services/{service_id}_impl.md` with success entry
+5. 부수적 이슈가 있으면 "추가 작업 메모" 항목 추가
+6. Update `genai-warning-pipeline/services/status.md` → VERIFIED
+7. Proceed to Phase 4 (release build via `etap-build-deploy`)
+
+---
+
+## Test Log Removal (Hard Gate)
+
+Before Phase 4 can proceed:
+
+```bash
+# In EtapV3 project root
+grep -rn "APF_WARNING_TEST" functions/ai_prompt_filter/
+```
+
+**If any matches remain → STOP.** Remove each line using the Edit tool,
+then re-run grep to confirm zero matches.
+
+테스트 로그가 프로덕션에 남으면 etap.log에 진단 노이즈가 쌓이고
+실제 차단 이벤트를 식별하기 어렵게 만든다. 성능에도 영향을 줄 수 있다.
+
+---
+
+## Regression Testing (신규 서비스 추가 시)
+
+새 서비스의 경고 구현이 완료되면, 기존에 성공한 모든 서비스에 대해
+리그레션 테스트를 수행한다. 코드 변경이 기존 서비스에 영향을 줄 수 있기 때문이다.
+
+**리그레션 테스트 절차:**
+1. `../genai-warning-pipeline/SKILL.md`의 Service Status 테이블에서 VERIFIED/DONE 상태인 서비스 목록 확인
+   (Service Status 테이블이 정본이며, `services/status.md`와 동기화되어야 한다)
+2. 각 서비스에 대해 test PC로 `check-warning` 요청 전송
+3. 결과를 `services/{service_id}_impl.md`에 regression test entry로 기록
+
+```
+### Regression Test ({date}) — triggered by {new_service} addition
+- All VERIFIED/DONE services tested: {list}
+- Results: {service_a: PASS, service_b: PASS, ...}
+- Failures: {none / details}
+```
+
+**한 서비스라도 실패하면** 리그레션을 중단하고 원인을 분석한다.
+
+---
+
+## 빌드 배치 전략
+
+- **독립적 변경**: 별개 빌드로 분리 (원인 격리를 위해)
+- **인과 관계 변경**: 같은 빌드에 포함 (예: guard + flush처럼 guard가 flush의 전제 조건인 경우)
+- **판단 기준**: "변경 A 없이 변경 B의 효과를 확인할 수 없다" → 같은 빌드
+
+Build #9(double-write guard)와 #10(PING flush)을 별개로 분리했지만,
+guard가 없으면 flush 효과를 확인할 수 없었다. 한 빌드로 합쳤으면 20분 절약.
+
+---
+
+## 순차 서비스 실행 (Single-Service Focus)
+
+**한 번에 한 서비스만 작업한다.**
+
+여러 서비스를 동시에 진행하면 실패 원인 격리가 어렵고 디버깅 시간이 급증한다.
+3/25 회고에서 3개 서비스를 동시에 7빌드 진행했지만 성공 0건이었다.
+한 서비스에 집중하면 빌드-테스트 사이클이 짧아지고 원인 분석이 정확해진다.
+
+```
+순차 실행 흐름:
+  1. genai-warning-pipeline의 우선순위 테이블에서 다음 서비스 선택
+  2. 해당 서비스만 코드 수정 → 빌드 → 테스트
+  3. 성공 → regression test → Phase 4 → 다음 서비스로
+  4. 3회 연속 실패 → 3-Strike Rule 적용 (위 섹션 참조)
+  5. 진전 없으면 보류, 다음 서비스로 이동
+```
+
+**서비스 선택 기준:** 쉽게 경고 문구를 보여줄 수 있는 서비스부터.
+DB+코드 완료 상태에서 check-warning만 남은 서비스가 최우선이다.
+→ See `../genai-warning-pipeline/SKILL.md` → "서비스 우선순위" 테이블
+
+→ See `../guidelines.md` → Section 7: Parallel Execution Rules (regression test 등 참조)
+
+---
+
+## Output: services/{service_id}_impl.md
+
+```markdown
+## {Service Name} — Implementation Journal
+
+### Iteration 1 ({date}) — STARTED → COMPLETED
+- Design pattern: {pattern used}
+- HTTP/2 strategy: {A/B/C/D — 근거}
+- Plan: {시도할 내용 1줄 요약 — iteration 시작 시 기록}
+- Code change: {function modified or created}
+- Files modified: {list}
+- Test log result:
+  - Point 1: {present/absent} — {details}
+  - Point 2: {present/absent} — body_size={value}
+  - Point 3: {present/absent} — bytes_written={value}
+- Console log: {에러 유무, 주요 에러 내용}
+- User observation: {what user reported}
+- Result: {PASS / FAIL — reason}
+
+### Iteration 2 ({date}) — if needed
+- Issue: {what went wrong}
+- Root cause: {서버 로그/HAR/콘솔에서 확인한 근본 원인}
+- Fix: {what was changed}
+- Test log result: {summary}
+- Console log: {summary}
+- User observation: {result}
+- Result: {PASS / FAIL}
+
+### 추가 작업 메모 ({date}) — 목표 달성 후 부수적 이슈
+- 이슈: {예: network error artifact}
+- 시도: {무엇을 해봤는지}
+- 상태: {미해결 / 향후 재시도}
+```
+
+---
+
+## Experience Management
+
+- Per-service implementation journals: `services/{service_id}_impl.md`
+- Test log templates: `references/test-log-templates.md`
+- Append only. Never delete existing entries.
+- Cross-service implementation patterns: note in journal,
+  promote to `apf-warning-design/references/design-patterns.md` when confirmed in 2+ services.
+
+→ See `../guidelines.md` → Section 4: Experience Management
+
+---
+
+## Related Skills
+
+- **`genai-warning-pipeline`**: Master orchestrator — triggers this skill for Phase 3.
+- **`apf-warning-design`**: Phase 2 — produces the input for this skill.
+- **`etap-build-deploy`**: Phase 4 — handles build/deploy commands.
+- **`cowork-remote`** (dev PC): test PC에 check-warning 요청 전송.
+- **`test-pc-worker`** (test PC): desktop-commander로 경고 표시를 확인하고 결과 보고.
+- Prior test diagnosis: `_backup_20260317/apf-test-diagnosis/SKILL.md`

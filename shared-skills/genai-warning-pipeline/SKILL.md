@@ -233,10 +233,26 @@ Phase 3에서 test PC에 check-warning 요청을 보낸 후, **Scheduled Task가
      git pull → results/ 새 파일 확인 →
      결과 있으면: 읽기 → 성공/실패 판단 →
        성공: pipeline_state + dashboard 갱신, macOS 알림
-       실패: SSH로 etap 로그 확인, 분석 결과 기록, macOS 알림
-     결과 없으면: dashboard만 갱신 ("대기 중")
+       실패: SSH로 etap 로그 확인(L2), 분석 결과 기록, macOS 알림
+     결과 없으면 + 경과시간 확인:
+       30분 미만 → dashboard만 갱신 ("대기 중")
+       30분 이상 → L3 시각 진단 에스컬레이션:
+         Scheduled Task: pipeline_state.monitoring.visual_needed=true 기록
+                         macOS 알림 "30분 무응답 — L3 시각 진단 권장"
+         메인 세션 재개 시: visual_needed 확인 → AnyDesk 스크린샷 촬영 → 판독
   4. 사용자는 pipeline_dashboard.md로 진척도 확인 가능
 ```
+
+**모니터링 계층 (L1→L2→L3 에스컬레이션):**
+
+| 계층 | 수단 | 확인 대상 | 사용 시점 |
+|------|------|----------|----------|
+| L1 | git polling (results/) | test PC 작업 완료 여부 | 항상 (기본) |
+| L2 | SSH etap 로그 | 서버 측 차단 동작 | 결과 도착 시 + 5분 무응답 시 |
+| L3 | AnyDesk 스크린샷 (read-only) | test PC 화면 상태 | 30분 무응답 시 (메인 세션만) |
+
+L3는 메인 세션에서만 실행 가능하다 (Scheduled Task에서 computer-use 미검증).
+→ See `../cowork-remote/references/visual-diagnosis.md` for 스크린샷 촬영 절차 및 판독 기준.
 
 **사용자 진척도 확인:**
 `local_archive/pipeline_dashboard.md` — Scheduled Task가 매 실행마다 갱신.
@@ -361,6 +377,31 @@ DB명: etap
 **Read only the skill needed for the current phase.**
 
 → See `references/remote-test-integration.md` for Phase 1, 3 test PC integration details.
+
+---
+
+## Context Recovery (세션 재개 시)
+
+compact 또는 세션 재시작으로 이전 맥락이 유실되었을 때, 파일 기반으로 복구한다.
+대화 컨텍스트는 소실되지만 아래 파일들은 남아있으므로 이것이 ground truth이다.
+
+```
+context break 재개 흐름:
+  1. services/status.md 읽기 → 현재 서비스 + Phase 상태 파악
+  2. pipeline_state.json 읽기 → 폴링 상태 + work_context
+  3. Phase에 따라 분기:
+     CAPTURED    → Phase 2: apf-warning-design 로드
+     DESIGNED    → Phase 3: apf-warning-impl 로드
+     TESTING     → Phase 3: apf-warning-impl 로드 + impl journal 읽기
+     TEST_FAIL   → Phase 3: apf-warning-impl 로드 + impl journal에서 마지막 시도 확인
+     VERIFIED    → Phase 4: etap-build-deploy 로드
+  4. WAITING_RESULT이면 → cowork-remote 로드 + 폴링 재개 (첫 동작)
+  5. work_context의 last_action/next_step으로 직전 작업 맥락 복원
+  6. 해당사항 없으면 → 사용자 지시 대기
+```
+
+**왜 파일 기반인가:** compact summary는 디테일이 소실된다 (전략명, 빌드 시각, 반복 횟수 등).
+status.md + pipeline_state.json + impl journal 3개가 복구의 안전장치이다.
 
 ---
 

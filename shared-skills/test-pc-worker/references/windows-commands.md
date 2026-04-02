@@ -70,6 +70,25 @@ function Take-Screenshot($savePath) {
 
 **실행 방법:** `start_process`로 위 함수를 포함한 PowerShell 스크립트를 실행한다.
 
+### Chrome 최대화 + 전면 배치 (PowerShell)
+
+**매 작업 시작 시 호출 필수.** 창이 축소된 상태에서 작업하면 스크린샷에 정보가 잘린다.
+
+```powershell
+function Ensure-ChromeMaximized {
+    Add-Type -Name NativeMethods -Namespace Win32 -MemberDefinition '
+      [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+      [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+    '
+    $chrome = Get-Process chrome -ErrorAction SilentlyContinue |
+              Where-Object { $_.MainWindowTitle -ne "" } | Select-Object -First 1
+    if ($chrome) {
+        [Win32.NativeMethods]::ShowWindow($chrome.MainWindowHandle, 3)  # SW_MAXIMIZE
+        [Win32.NativeMethods]::SetForegroundWindow($chrome.MainWindowHandle)
+    }
+}
+```
+
 ### 브라우저 키보드 입력 (PowerShell)
 
 Chrome에 텍스트를 입력하고 전송하는 함수:
@@ -170,10 +189,24 @@ try {
    $clipText = Get-Clipboard
    ```
 
-**판단 기준:**
-- 스크린샷에서 경고 텍스트가 보이면 → `warning_visible: true`
-- 클립보드 텍스트에 `expected_text`가 포함되면 → `text_matches_expected: true`
-- 마크다운 렌더링 여부는 시각적으로 판단: `format: "markdown"` | `"text"` | `"error"`
+**판정 순서 (Network 최우선 — browser-rules.md § "프롬프트 전송 후 판정" 참조):**
+```
+1. Network에서 프롬프트 포함 POST 요청 확인
+   → 요청 없음 → blocked: false, 입력 미전송 (입력 방식 재시도)
+   → 요청 있음 → 2로
+2. 화면 상태:
+   → 경고 보임 → warning_visible: true, SUCCESS
+   → 에러 보임 → warning_visible: false, BLOCKED_WITH_ERROR
+   → 초기 화면 복귀 → silent_reset: true, BLOCKED_SILENT_RESET
+   → 변화 없음 → Console 확인 → BLOCKED_NO_RENDER 또는 추가 대기
+3. 텍스트 매칭: expected_text 포함 여부
+4. 포맷 판단: "markdown" | "text" | "error"
+```
+
+**입력 자동화 실패 시 HTTP fallback:**
+모든 입력 전략(6순위)이 실패한 경우, 서비스 API에 직접 HTTP 요청을 보내
+차단 여부만 확인한다 → result에 `automation_failed_http_fallback: true` 기록.
+→ See `browser-rules.md` § "입력 자동화 실패 시 대응 전략"
 
 **시각적 판단의 이유:**
 Chrome MCP 없이는 DOM에 직접 접근할 수 없다.
