@@ -1,0 +1,36 @@
+﻿{
+    "executed_at":  "2026-04-02T11:43:39.6399713+09:00",
+    "screenshots":  [
+
+                    ],
+    "id":  "149",
+    "params":  {
+                   "description":  "git_sync.bat 검증 — HTTPS+cmd 방식 전환 테스트"
+               },
+    "command":  "verify-git-sync",
+    "error_detail":  "",
+    "status":  "success",
+    "result":  {
+                   "test_a":  {
+                                  "output":  "EXIT_CODE: 0, Fast-forward pull (a57eb0a..65bc6d7)",
+                                  "status":  "PASS",
+                                  "description":  "git_sync.bat pull"
+                              },
+                   "test_c":  {
+                                  "output":  "push 시 인증 프롬프트 없이 완료. .git-credentials 정상 작동",
+                                  "status":  "PASS",
+                                  "description":  "HTTPS credential 자동 사용"
+                              },
+                   "test_d":  {
+                                  "output":  "error: src refspec nonexistent-branch does not match any → EXIT_CODE: non-zero",
+                                  "status":  "PASS",
+                                  "description":  "잘못된 remote push 시 non-zero exit"
+                              },
+                   "test_b":  {
+                                  "output":  "EXIT_CODE: 0, commit 217ba85, rebase + push 성공 (006dfe3..41bfeb3)",
+                                  "status":  "PASS",
+                                  "description":  "git_sync.bat push (더미 파일)"
+                              }
+               },
+    "notes":  "4개 테스트 모두 PASS. git_sync.bat HTTPS 방식 정상 작동 확인. SSH 방식 완전 대체 가능."
+}
