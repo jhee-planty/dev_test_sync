@@ -129,3 +129,36 @@
 - **현재 DB**: gemini3, domain=gemini.google.com, path=/, is_http2=2, enabled=true
 - **현재 코드**: path_matcher regex 버그 수정 + is_http2=2
 - Status: **BLOCK_CONFIRMED** — APF block 발동 + is_http2=2 확인, 브라우저 경고 미검증
+
+### Iteration 10 (2026-04-02) — Server response overwrite 발견 + server-only shutdown
+
+#### Test #181 결과 분석
+- **결과: NOT_BLOCKED** — block response 전송했지만 브라우저에 전체 AI 응답 렌더링
+- etap log (17:16:51): block triggered, 562 bytes written, is_http2=2 확인
+- 브라우저: 한글날 역사에 대한 완전한 응답 정상 표시
+- Console 에러: ERR_HTTP2_PROTOCOL_ERROR (cspreport), ERR_CONNECTION_CLOSED (batchexecute)
+  - 부차적 요청만 영향 받음, 핵심 StreamGenerate 응답은 통과
+- **근본 원인**: is_http2=2가 서버 연결을 유지 → 서버의 실제 응답이 프록시를 통과
+  → block response를 덮어씀 → 브라우저는 서버 응답을 렌더링
+
+#### 코드 수정: visible_tls_session.cpp — server-only shutdown
+- **문제**: is_http2=2 (이전 구현) = on_disconnected 스킵 → 서버 연결 유지 → 서버 응답 통과
+- **해결**: is_http2=2 → block response 전송 후 서버 연결만 닫기
+  - `_vts._sub_sside_disconnected = 1` 선설정 → cascade 방지
+  - `_vts._sproxy.shut_down(false)` → 서버 연결만 종료
+  - 클라이언트 연결 유지 → block response가 브라우저에 도달할 시간 확보
+- **is_http2 tri-state 최종 정의**:
+  - 0: HTTP/1.1 → on_disconnected (양방향)
+  - 1: HTTP/2 + cascade shutdown (양방향)
+  - 2: HTTP/2 server-only shutdown → 서버 응답 차단 + 클라이언트 유지
+- 빌드 + 배포 완료 (17:47 KST)
+
+#### Test #182 서버측 확인 (etap log)
+- 18:00:47 — block triggered: gemini3, keyword=한글날
+  - `vts_pre: len=562 is_http2=2` ✅
+  - `vts_post: written=562 expected=562` ✅
+  - `vts_sside_only: server-side shutdown, client kept alive` ✅ (신규 로그)
+- 18:02:02 — 2차 block (재시도), 동일 패턴 ✅
+- 18:02:56 — 3차 block (재시도), 동일 패턴 ✅
+- 모든 block에서 server-only shutdown 정상 동작 확인
+- Status: **SERVER_CONFIRMED** — 브라우저 결과 대기 중
