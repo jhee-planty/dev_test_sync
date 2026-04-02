@@ -1,0 +1,31 @@
+{
+  "id": 149,
+  "command": "verify-git-sync",
+  "to": "test",
+  "priority": "urgent",
+  "created_at": "2026-04-02T11:00:00+09:00",
+  "params": {
+    "description": "git_sync.bat 검증 — HTTPS+cmd 방식 전환 테스트",
+    "steps": [
+      "1. git pull로 이 요청 + git_sync.bat 수신 (기존 cmd 방식 사용)",
+      "2. git_sync.bat 파일 존재 확인: dir C:\\Users\\최장희\\Documents\\dev_test_sync\\git_sync.bat",
+      "3. TEST-A: git_sync.bat pull 실행 → EXIT_CODE: 0 확인",
+      "4. TEST-B: results/에 더미 파일 생성 → git_sync.bat push 실행 → EXIT_CODE: 0 확인",
+      "5. TEST-C: HTTPS credential 작동 확인 (push 시 인증 프롬프트 없이 완료)",
+      "6. TEST-D: ERRORLEVEL 정상 반환 확인 (존재하지 않는 remote로 push 시 non-zero)"
+    ],
+    "verification_commands": {
+      "test_a": "C:\\Users\\최장희\\Documents\\dev_test_sync\\git_sync.bat pull",
+      "test_b_prep": "echo test > C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\files\\git_sync_test.txt",
+      "test_b": "C:\\Users\\최장희\\Documents\\dev_test_sync\\git_sync.bat push",
+      "test_d": "C:\\PROGRA~1\\Git\\bin\\git.exe -C C:\\Users\\최장희\\Documents\\dev_test_sync push origin nonexistent-branch 2>&1"
+    },
+    "expected_results": {
+      "test_a": "EXIT_CODE: 0, Already up to date 또는 정상 pull",
+      "test_b": "EXIT_CODE: 0, push 성공",
+      "test_c": "push 중 인증 프롬프트 없음 (credential 자동 사용)",
+      "test_d": "non-zero exit code"
+    }
+  },
+  "notes": "이 요청은 git_sync.bat 검증용. 결과를 149_result.json에 기록하고, 기존 cmd 방식으로 push해도 됨."
+}
