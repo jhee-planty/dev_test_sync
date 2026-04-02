@@ -306,6 +306,55 @@
       "created": "2026-04-02T11:42:35.648561",
       "updated": "2026-04-02T11:42:35.648561",
       "summary": "M365 Copilot Phase 1 Frontend Inspect"
+    },
+    {
+      "id": "160",
+      "command": "check-warning",
+      "service": "chatgpt",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "161",
+      "command": "check-warning",
+      "service": "claude",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "162",
+      "command": "check-warning",
+      "service": "genspark",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "163",
+      "command": "check-warning",
+      "service": "notion",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "164",
+      "command": "check-warning",
+      "service": "github_copilot",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "165",
+      "command": "check-warning",
+      "service": "gemini",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "166",
+      "command": "check-warning",
+      "service": "m365_copilot",
+      "status": "pending",
+      "created": "2026-04-02T15:00:00+09:00"
     }
   ],
   "last_updated": "2026-04-02T11:42:35.648561",
