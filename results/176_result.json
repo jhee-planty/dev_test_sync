@@ -1,0 +1,18 @@
+{
+  "id": 176,
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "silent_reset": false,
+    "format": "text",
+    "screenshot": "files/176/gemini_not_blocked.png",
+    "network_evidence": "batchexecute POST requests to /_/BardChatUi/data/batchexecute completed with HTTP status 200. Multiple batchexecute calls observed (rpcids including page-load and prompt-submission), all returned 200. 36 total requests, 20.2 kB transferred. No HTTP status 0 or XHR errors observed. ga-audiences request blocked (ad tracker, unrelated to APF).",
+    "diagnosis": "APF 차단 미발생. gemini3(path=/_/BardChatUi/data/batchexecute) 규칙이 프롬프트 전송 batchexecute를 매칭하지 못함. 응답이 정상적으로 렌더링됨 — 한글날 역사 내용이 화면에 표시. gemini(path=/) 비활성화 상태에서 batchexecute 경로만으로는 차단이 작동하지 않음. path 매칭 로직 또는 gemini3 규칙의 URL 패턴 확인 필요."
+  },
+  "started": "2026-04-02T16:30:00+09:00",
+  "completed": "2026-04-02T16:31:30+09:00",
+  "notes": "DB 수정 후 재테스트. gemini(path=/) 비활성화 + gemini3(path=/_/BardChatUi/data/batchexecute) 활성화 상태에서 차단 미발생. batchexecute path-specific 매칭이 동작하지 않음. dev 측 path 매칭 로직 점검 필요."
+}
