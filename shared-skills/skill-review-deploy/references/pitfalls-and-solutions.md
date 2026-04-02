@@ -140,3 +140,24 @@ git push origin main
 ```
 
 **예방:** Phase 3 배포 시 HTTPS URL 여부를 먼저 확인하는 습관.
+
+---
+
+## 9. present_files 경로 제한 — PATH_NOT_ALLOWED
+
+**증상:** `/tmp/`나 host 경로에 `.skill`을 생성 후 `present_files` 호출 → `PATH_NOT_ALLOWED` 에러
+
+**원인:** `present_files`는 Cowork outputs 폴더(`/sessions/.../mnt/outputs/`) 또는
+사용자가 마운트한 폴더(`/sessions/.../mnt/Documents/`) 내부의 파일만 접근 가능하다.
+sandbox 외부 경로나 `/tmp/`는 접근이 차단된다.
+
+**해결:**
+```bash
+# ❌ 잘못된 경로
+present_files → /tmp/skill.skill
+present_files → /Users/jhee/.../skill.skill
+
+# ✅ 올바른 경로 (Cowork에서 접근 가능한 곳에 생성)
+cp /tmp/skill.skill /sessions/.../mnt/Documents/skill.skill
+present_files → /sessions/.../mnt/Documents/skill.skill
+```
