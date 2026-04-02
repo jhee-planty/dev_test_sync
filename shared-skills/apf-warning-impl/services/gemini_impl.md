@@ -162,3 +162,19 @@
 - 18:02:56 — 3차 block (재시도), 동일 패턴 ✅
 - 모든 block에서 server-only shutdown 정상 동작 확인
 - Status: **SERVER_CONFIRMED** — 브라우저 결과 대기 중
+
+#### 세부 타이밍 분석 (18:00:18.023)
+- 모든 이벤트가 동일 밀리초에 처리됨:
+  1. H2_DATA stream=9 (StreamGenerate, 1419B) 수신 → keyword 감지
+  2. block response 생성 (562B) → 클라이언트에 write
+  3. server-side shutdown → 서버 연결 종료
+- Block → session close: 6초 간격 (정상 — 클라이언트가 block response 수신 후 자연 종료)
+- 서버 응답이 도착하기 전에 shutdown 완료 (Google 서버 RTT > 1ms)
+
+#### 회귀 테스트 필요 (is_http2=2 동작 변경)
+- server-only shutdown이 **모든** is_http2=2 서비스에 적용됨
+- 이전 PASS 서비스: genspark, perplexity, gamma, grok, github_copilot
+- 이전 동작: 서버 연결 유지 (keep-alive)
+- 신규 동작: 서버 연결 종료 (server-only shutdown)
+- **위험도: 낮음** — 차단 시 서버 응답은 불필요하며, cascade 방지로 클라이언트 영향 없음
+- **테스트 계획**: Gemini 브라우저 확인 후 기존 PASS 서비스 순차 재검증
