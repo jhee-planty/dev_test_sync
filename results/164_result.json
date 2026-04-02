@@ -1,0 +1,18 @@
+{
+  "id": "164",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": true,
+    "warning_text": "Access denied. You do not have permission to view this. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)",
+    "text_matches_expected": false,
+    "expected_text": "이 서비스는 회사 보안 정책에 의해 사용이 제한됩니다.",
+    "format": "error",
+    "screenshot": "files/164/check_warning_github_copilot.png",
+    "console_errors": [],
+    "network_evidence": "POST request sent, 403 Access Denied response returned in chat bubble"
+  },
+  "started": "2026-04-02T13:44:30+09:00",
+  "completed": "2026-04-02T13:45:40+09:00",
+  "notes": "차단 성공, 그러나 APF 경고 텍스트 대신 GitHub API 403 에러가 표시됨. JSON_SINGLE_WARNING 패턴 확인 (design doc 일치). 경고 문구가 GitHub 자체 에러 형식으로 렌더링됨. C++ generator에서 403 응답 본문에 경고 텍스트 삽입 방식 검토 필요."
+}

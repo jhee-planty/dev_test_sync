@@ -1,0 +1,18 @@
+{
+  "id": "162",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": true,
+    "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "text_matches_expected": false,
+    "expected_text": "이 서비스는 회사 보안 정책에 의해 사용이 제한됩니다.",
+    "format": "text",
+    "screenshot": "files/162/check_warning_genspark.png",
+    "console_errors": [],
+    "network_evidence": "POST request sent, warning response returned as chat bubble"
+  },
+  "started": "2026-04-02T13:40:00+09:00",
+  "completed": "2026-04-02T13:41:10+09:00",
+  "notes": "경고 표시 성공. URL: genspark.ai/agents?type=super_agent&action=init-agent. 슈퍼 에이전트 모드."
+}
