@@ -1,0 +1,22 @@
+{
+  "id": 186,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "page_load_success": true,
+    "http_status": 0,
+    "network_evidence": "batchexecute POST 3회 시도 모두 FAILED (red X). Status=(failed), no HTTP status code. jserror 보고: Error code=7, Path=/_/BardChatUi/data/batchexecute, Message='There was an error during the transport or processing of this request.', HTTP status=0, XHR Error Code=6. 3x batchexecute?rpcids=ESY5D(2회)+MaZiqc(1회) 모두 실패.",
+    "console_errors": [
+      "net::ERR_HTTP2_PROTOCOL_ERROR (GET pagead/1p-conversion)",
+      "net::ERR_CONNECTION_CLOSED (POST jserror)",
+      "net::ERR_CONNECTION_RESET (POST jserror)"
+    ],
+    "diagnosis": "Phase3-B13 HOTFIX(POST-only hold) 부분 성공: GET 요청 즉시 포워딩으로 페이지 정상 로딩 확인(#185 CRITICAL BUG 수정됨). 그러나 batchexecute POST 차단 시 연결이 완전 종료(HTTP status=0)되어 클라이언트에 응답 전달 실패. #184(RST_STREAM)에서는 200 OK + 잘못된 body였으나, 이번에는 응답 자체가 없음. 페이지는 BLOCKED_SILENT_RESET + PROMPT_RETAINED 패턴(초기 화면 복귀, 프롬프트 입력란에 텍스트 유지).",
+    "block_method": "POST-only hold + block response (Phase3-B13 HOTFIX)",
+    "comparison_with_184": "Phase3-B12(RST_STREAM): 200 OK 전달 but 잘못된 body → Phase3-B13 HOTFIX: 응답 전달 자체 실패(HTTP 0). 둘 다 경고 미표시, 둘 다 BLOCKED_SILENT_RESET."
+  },
+  "completed": "2026-04-03T14:10:00+09:00"
+}
