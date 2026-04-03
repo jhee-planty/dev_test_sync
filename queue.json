@@ -355,9 +355,18 @@
       "service": "m365_copilot",
       "status": "pending",
       "created": "2026-04-02T15:00:00+09:00"
+    },
+    {
+      "id": "189",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-03T15:55:06.318809",
+      "updated": "2026-04-03T15:55:06.318819",
+      "summary": "Phase3-B15: gemini3 check-warning — write_visible_data direct SSL_write path"
     }
   ],
-  "last_updated": "2026-04-02T11:42:35.648561",
+  "last_updated": "2026-04-03T15:55:06.318821",
   "archived": [
     "058",
     "059",
