@@ -1,0 +1,26 @@
+{
+  "id": 192,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "page_load_success": true,
+    "http_status": 0,
+    "network_evidence": "페이지 새로고침 후 깨끗한 Network 로그에서 확인: 159 requests, 336KB. batchexecute POST 요청들이 ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_HTTP2_PROTOCOL_ERROR 세 가지 에러로 실패. 일부 요청(play.google.com/log 등 비-batchexecute)은 200 성공. L5adhe rpcid 재시도가 4회 이상 반복됨. jserror 보고 다수 발생: Error code=7, Path=/_/BardChatUi/data/batchexecute, HTTP status=0, XHR Error Code=6.",
+    "console_errors": [
+      "batchexecute rpcids=ESY5D: ERR_CONNECTION_CLOSED (초기 요청)",
+      "batchexecute rpcids=L5adhe: ERR_CONNECTION_CLOSED → ERR_CONNECTION_RESET (재시도 4+회)",
+      "ERR_HTTP2_PROTOCOL_ERROR (일부 POST)",
+      "Error code=7, Path=/_/BardChatUi/data/batchexecute, HTTP status=0, XHR Error Code=6 (jserror 다수)",
+      "80 errors, 5 warnings total in Console"
+    ],
+    "diagnosis": "Phase3-B17 (is_http2=2→1, Strategy D, GOAWAY=false, on_disconnected) 테스트. B16에서 is_http2=2 keep-alive로 H2 연결 상태 부패가 발생하여 비민감 요청까지 전면 차단된 문제를 해결하기 위해 on_disconnected로 깨끗한 연결 종료 방식으로 전환. 결과: 여전히 모든 batchexecute POST 요청이 차단됨. B16과 동일하게 페이지 초기화 실패, 전송 버튼 미활성화, Gemini 정상 사용 불가. 에러 패턴은 B16(CSP violation 위주)에서 B17(연결 레벨 에러 혼재)로 변경됨 — 이는 퇴보(regression). on_disconnected가 연결을 종료하면서 ERR_CONNECTION_CLOSED/RESET이 다시 발생하는 것으로 추정.",
+    "block_method": "write_visible_data direct SSL_write + is_http2=1 on_disconnected (Phase3-B17)",
+    "comparison_with_previous": "B14(VTS-level hold): ERR_HTTP2_PROTOCOL_ERROR. B15(direct SSL_write): ERR_CONNECTION_CLOSED. B16(RST_STREAM 제거, is_http2=2): CSP violation(긍정적 진전). B17(is_http2=1, on_disconnected): ERR_CONNECTION_CLOSED + ERR_CONNECTION_RESET + ERR_HTTP2_PROTOCOL_ERROR 혼재(B16 대비 퇴보). B17의 on_disconnected가 매 batchexecute마다 연결을 끊어 브라우저가 연결 에러를 받는 것으로 보임. B16의 is_http2=2 keep-alive 방식이 연결 유지 면에서는 더 나았으나 상태 부패 문제가 있었음.",
+    "key_finding": "B17의 is_http2=1(on_disconnected)은 B16의 상태 부패 문제를 해결하려 했으나, 매 요청마다 연결이 끊기면서 B15와 유사한 연결 에러가 재발. 근본 원인: APF가 batchexecute URL 패턴에 대해 민감/비민감 구분 없이 모든 POST를 차단하고 있음. URL 패턴 기반 필터링이 아닌 요청 본문(payload) 기반 필터링이 필요하거나, batchexecute에 대한 화이트리스트/선별적 차단 로직이 필요.",
+    "test_method": "Preserve log 해제 → F5 새로고침 → 6초 대기 → Network/Console 상태 확인. DevTools Console에서 execCommand('insertText')로 프롬프트 주입 성공 (value 확인). 전송 버튼 미출현 — batchexecute 전면 차단으로 React 상태 초기화 실패."
+  },
+  "completed": "2026-04-03T16:57:00+09:00"
+}
