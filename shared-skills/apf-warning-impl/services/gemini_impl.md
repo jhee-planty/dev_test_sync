@@ -294,9 +294,23 @@
 - Strategy: is_http2=2 + request buffering
 - Plan: APF 서비스 감지 시 client→server 포워딩 보류, body 검사 후 판정
 - Files to modify:
-  - `tuple.h`: `_apf_hold_for_inspection` 비트 필드 추가
+  - `tuple.h`: `_apf_hold_for_inspection`, `_apf_release_held` 비트 필드 추가
   - `etap_packet.h`: `_apf_hold_client_write`, `_apf_release_held` 필드 추가
-  - `ai_prompt_filter.cpp`: on_http2_request에서 hold 설정, on_http2_request_data에서 release
+  - `ai_prompt_filter.cpp`: on_http2_request에서 hold 설정 (POST only), on_http2_request_data에서 release
   - `network_loop.cpp`: session→packet 플래그 전파
   - `visible_tls_session.h`: `_apf_held_buffer` 추가
-  - `visible_tls_session.cpp`: hold/release 로직 구현
+  - `visible_tls_session.cpp`: hold/release/discard 로직 + 64KB 안전 한도
+- **Hotfix (13:55 KST)**: GET 요청도 hold됨 → 페이지 로드 차단 버그
+  - 원인: method 체크 없이 모든 is_http2=2 서비스 요청을 hold
+  - 수정: POST 요청만 hold (GET은 body 없으므로 hold 불필요)
+  - 13:49 etap 로그에서 gemini3 GET /app이 hold되어 릴리스 안 되는 것 확인
+- 배포: 13:46 KST (초기) → 13:55 KST (POST-only hotfix)
+- **Test #185 결과** (13:55 KST):
+  - **CRITICAL BUG 확인**: page_load_failed=true, >60s 무한 로딩
+  - 페이지 GET 요청(gemini.google.com/app)이 hold됨 → body/DATA 없으므로 release 안 됨
+  - 빈 흰색 화면, 탭 제목 "로드 중..." 지속
+  - batchexecute POST 테스트 불가 (페이지 자체 미로딩)
+  - 이 결과는 13:49에 etap 로그에서 발견한 버그와 정확히 일치 (GET hold → 무한 대기)
+  - **이미 13:55에 POST-only hotfix 배포 완료** → Test #186 생성
+- Test #186: Phase3-B13 POST-only hold 검증 — 결과 대기 중
+  - 검증 포인트: (1) 페이지 정상 로드, (2) POST hold/release 또는 block 동작, (3) 경고 텍스트 표시
