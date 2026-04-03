@@ -1,0 +1,27 @@
+{
+  "id": 191,
+  "status": "done",
+  "result": {
+    "scenario_completed": false,
+    "stream_generate_captured": false,
+    "response_headers": null,
+    "response_body_first_500_bytes": null,
+    "request_headers": null,
+    "status_code": null,
+    "blocking_issue": "B16 빌드가 비민감 프롬프트(일반 요청)의 batchexecute까지 차단하여 Gemini 정상 사용 자체가 불가능. StreamGenerate 응답 캡처 불가.",
+    "network_evidence": "페이지 로드 직후부터 batchexecute 요청들이 ERR_CONNECTION_CLOSED/ERR_CONNECTION_RESET로 실패. jserror 보고가 다수 발생: 'Error code=7, Path=/_/BardChatUi/data/batchexecute, HTTP status=0, XHR Error Code=6'. 페이지 초기화 단계의 L5adhe, aPya6c, cYRIkd rpcid 요청들이 모두 차단됨.",
+    "console_errors": [
+      "batchexecute rpcids=L5adhe: HTTP status=0, XHR Error Code=6 (다수)",
+      "batchexecute rpcids=aPya6c: HTTP status=0, XHR Error Code=6",
+      "batchexecute rpcids=cYRIkd: HTTP status=0, XHR Error Code=6",
+      "batchexecute rpcids=ESY5D: HTTP status=0, XHR Error Code=6",
+      "net::ERR_CONNECTION_CLOSED (POST batchexecute)",
+      "net::ERR_CONNECTION_RESET (POST batchexecute)",
+      "net::ERR_HTTP2_PROTOCOL_ERROR (GET generate_204)"
+    ],
+    "diagnosis": "B16(RST_STREAM 제거) 빌드가 gemini.google.com의 모든 batchexecute POST 요청을 차단하고 있음. 민감 키워드가 포함되지 않은 페이지 초기화 요청(세션 설정, 사용자 프로필 로드 등)까지 APF가 차단. 이로 인해: (1) Gemini 페이지 정상 로드 불가 — 좌측 사이드바에 'Gems 및 최근 대화 로드 중' 무한 로딩 (2) 전송 버튼이 활성화되지 않음 (3) StreamGenerate 요청 자체를 보낼 수 없음. 원인 추정: APF가 gemini.google.com 도메인의 모든 POST 요청을 URL 패턴으로 매칭하여 차단하고 있을 가능성. 또는 B16의 RST_STREAM 제거가 HTTP/2 멀티플렉싱에서 다른 스트림에 영향을 주어 연결 전체가 불안정해진 가능성.",
+    "recommendation": "StreamGenerate 실제 응답 캡처를 위해서는 APF를 비활성화(bypass)하거나 다른 네트워크 경로(Etap 프록시 우회)에서 캡처해야 함. 또는 APF 규칙에서 gemini.google.com의 batchexecute를 화이트리스트에 추가하여 비민감 요청은 통과시키는 방식 필요.",
+    "test_method": "페이지 새로고침 후 Network/Console 클리어. execCommand('insertText')로 '오늘 날씨 알려줘' 입력. 전송 버튼 미활성화(마이크만 표시) — B16의 batchexecute 전면 차단으로 React 상태 초기화 실패."
+  },
+  "completed": "2026-04-03T16:38:00+09:00"
+}
