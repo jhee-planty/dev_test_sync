@@ -1,0 +1,22 @@
+{
+  "id": 185,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "text",
+    "screenshot": "files/185/gemini_185_page_stuck.png",
+    "page_load_failed": true,
+    "page_load_duration": ">60s (무한 로딩)",
+    "network_evidence": "gemini.google.com/app 초기 페이지 GET 요청이 1분 이상 로딩 중 — 완전 차단. 탭 제목 '로드 중...' 상태 지속, 빈 흰색 화면. batchexecute POST 테스트 불가 (페이지 자체 미로딩).",
+    "console_errors": [],
+    "diagnosis": "Phase3-B13 Request Buffering CRITICAL BUG: APF가 서비스 감지(HEADERS) 시 client→server 포워딩을 모든 요청에 대해 보류. GET 요청(초기 페이지 로드)에는 body/DATA 프레임이 없으므로, body 검사 단계에 도달하지 못해 보류가 영원히 해제되지 않음. 결과: gemini.google.com 전체 서비스 접근 불가 (complete denial of service). 원인 추정: hold 로직이 POST/body 있는 요청만 보류해야 하는데, GET 요청도 보류하고 있음. 수정 필요: (1) GET 요청은 hold하지 않고 즉시 포워딩, 또는 (2) body가 없는 요청(END_STREAM on HEADERS)은 hold를 즉시 해제.",
+    "block_method": "Request Buffering — 모든 요청 보류로 인한 페이지 로딩 차단 (Phase3-B13)",
+    "previous_result_comparison": "#184 (Phase3-B12 RST_STREAM): 페이지 정상 로딩, batchexecute 200 OK, 경고 미표시. #185 (Phase3-B13 Request Buffering): 페이지 자체 로딩 불가 (>60s 무한 로딩). Request Buffering이 GET 요청까지 보류하여 서비스 전체 차단."
+  },
+  "started": "2026-04-03T13:51:00+09:00",
+  "completed": "2026-04-03T13:55:00+09:00",
+  "notes": "CRITICAL: Phase3-B13 Request Buffering이 GET 요청도 보류하여 페이지 자체가 로딩되지 않음. GET/body 없는 요청은 hold를 즉시 해제하도록 수정 필요. batchexecute POST 테스트 불가."
+}
