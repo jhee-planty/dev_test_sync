@@ -9,6 +9,17 @@ Thumbs.db
 *.har
 *.log
 
+# Compressed archives (local only)
+*.tar.gz
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Skill backups (Git handles versioning)
+_backup_*/
+*.bak
+
 # Editor
 *.swp
 *.swo
