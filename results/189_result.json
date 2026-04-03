@@ -1,0 +1,26 @@
+{
+  "id": 189,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "page_load_success": true,
+    "http_status": 0,
+    "network_evidence": "프롬프트 전송 후 Network 2→35 requests 급증. 다수의 POST m=_b?wli=BardChatUi 요청이 ERR_CONNECTION_CLOSED로 실패. 1건 ERR_HTTP2_PROTOCOL_ERROR. CSP violation 발생 + 'The action has been blocked' 메시지. batchexecute POST 시도되었으나 APF에 의해 연결 종료.",
+    "console_errors": [
+      "POST m=_b?wli=BardChatUi... net::ERR_CONNECTION_CLOSED (다수)",
+      "POST m=_b?wli=BardChatUi... net::ERR_HTTP2_PROTOCOL_ERROR",
+      "POST cspreport net::ERR_HTTP2_PROTOCOL_ERROR",
+      "Connecting to app:1 - Content Security Policy violation",
+      "The action has been blocked"
+    ],
+    "diagnosis": "Phase3-B15 write_visible_data direct SSL_write path 테스트. 이전 B14의 _sub_it._cside->write() → visible pipe interleaving 방식에서 write_visible_data(&_cproxy) direct SSL_write bypass visible pipe로 변경. 결과: POST 요청은 APF가 정상 차단하나, ERR_CONNECTION_CLOSED가 주된 에러 패턴으로 변경됨 (B14는 ERR_HTTP2_PROTOCOL_ERROR가 주). direct SSL_write가 연결을 좀 더 깨끗하게 종료하는 것으로 보이나, 여전히 클라이언트에 경고 응답을 전달하지 못함. 페이지 BLOCKED_SILENT_RESET + PROMPT_RETAINED.",
+    "block_method": "write_visible_data direct SSL_write (Phase3-B15)",
+    "comparison_with_previous": "B14(VTS-level hold): ERR_HTTP2_PROTOCOL_ERROR 주 패턴. B15(direct SSL_write): ERR_CONNECTION_CLOSED 주 패턴으로 변경. 두 경우 모두 HTTP status=0, 경고 미표시, BLOCKED_SILENT_RESET 동일. direct SSL_write가 visible pipe interleaving을 우회하여 HTTP/2 프로토콜 레벨 에러 대신 연결 레벨 종료가 발생하는 것으로 추정.",
+    "key_finding": "write_visible_data direct SSL_write path는 visible pipe를 우회하여 ERR_HTTP2_PROTOCOL_ERROR → ERR_CONNECTION_CLOSED로 에러 패턴 변경. 그러나 핵심 문제는 동일: 차단 후 경고 응답(HTML)이 클라이언트 브라우저에 도달하지 못함. HTTP/2 스트림에서 APF가 생성한 응답 데이터가 브라우저의 XHR/fetch 핸들러에 정상적으로 전달되지 않아 경고 렌더링 불가.",
+    "test_method": "페이지 새로고침 후 DevTools Console에서 execCommand('insertText') + input event dispatch로 React 상태 업데이트 → 전송 버튼(메시지 보내기) 활성화 → windows-mcp Click label로 전송. DevTools 좌측 도킹."
+  },
+  "completed": "2026-04-03T16:10:00+09:00"
+}
