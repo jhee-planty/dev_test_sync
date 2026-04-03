@@ -251,7 +251,52 @@
 #### 배포
 - 18:58 KST: 빌드 + 배포 + etapd 재시작 완료
 
-#### Test #184: RST_STREAM 빌드
-- 요청 19:00 KST, 결과 대기 중
-- 검증 포인트: (1) vts_rst_stream 로그 확인, (2) ERR_CONNECTION_CLOSED 미발생, (3) 경고 텍스트 표시
-- Status: **TESTING**
+#### Test #184 결과: RST_STREAM 부분 성공 — 서버 응답 선착 문제
+
+**결과: PARTIAL_SUCCESS — blocked=true, warning_visible=false**
+
+**성공 항목 (큰 진전):**
+- ✅ ERR_CONNECTION_CLOSED 미발생 — B10/B11 대비 연결 안정성 확보
+- ✅ ERR_HTTP2_PROTOCOL_ERROR 미발생 — H2 cascade disconnect 해결
+- ✅ batchexecute POST에 200 OK 응답 전달 성공
+- ✅ vts_rst_stream 로그: RST_STREAM(CANCEL) 정상 전송
+
+**실패 항목:**
+- ❌ 응답 본문이 Etap wrb.fr 경고가 아닌 `[-1,null,...]` Gemini 내부 에러 포맷
+- ❌ 서버가 block 전에 응답 완료 (61ms race)
+
+**타임라인 분석 (etap log):**
+1. 19:11:38.878 — HEADERS 감지: gemini3 StreamGenerate stream=N
+   → HEADERS가 서버에 즉시 포워딩됨 (on_new_segment → write_visible_data(sproxy))
+2. 19:11:38.939 — DATA 프레임 도착: keyword 감지 → block triggered (61ms 후)
+   → block response(562B) 클라이언트에 전송
+   → RST_STREAM(CANCEL) 서버에 전송
+3. **문제**: 서버가 HEADERS 수신 후 61ms 이내에 이미 응답 전송
+   → 서버 응답이 프록시를 통해 클라이언트에 먼저 도착
+   → Chrome이 서버 응답을 먼저 처리하여 스트림 완료
+   → 이후 도착한 block response는 완료된 스트림에 무시됨
+
+**근본 원인: Request HEADERS 선제 포워딩**
+- 프록시 아키텍처: on_new_segment에서 HEADERS 수신 즉시 서버에 포워딩
+- APF는 body DATA에서만 키워드 검사 (HEADERS 시점에는 검사 불가)
+- HEADERS와 DATA 사이 61ms 갭 동안 서버가 응답 가능
+- RST_STREAM은 block 시점에 전송되므로 서버 응답보다 늦음
+
+**해결 방향: Request Buffering (Phase3-B13)**
+- APF가 서비스 감지(HEADERS 시점)하면 `_apf_hold_for_inspection` 플래그 설정
+- on_new_segment에서 client→server 포워딩을 보류 (버퍼에 저장)
+- APF가 body DATA를 검사하여 판정:
+  - 차단: block response 전송, 버퍼 폐기 (서버는 HEADERS조차 받지 못함)
+  - 통과: 버퍼 릴리스 (HEADERS+DATA를 서버에 정상 포워딩)
+- 서버가 HEADERS를 받지 못하므로 응답 불가 → race condition 원천 차단
+
+### Iteration 13 (2026-04-03) — Request Buffering (Phase3-B13) — STARTED
+- Strategy: is_http2=2 + request buffering
+- Plan: APF 서비스 감지 시 client→server 포워딩 보류, body 검사 후 판정
+- Files to modify:
+  - `tuple.h`: `_apf_hold_for_inspection` 비트 필드 추가
+  - `etap_packet.h`: `_apf_hold_client_write`, `_apf_release_held` 필드 추가
+  - `ai_prompt_filter.cpp`: on_http2_request에서 hold 설정, on_http2_request_data에서 release
+  - `network_loop.cpp`: session→packet 플래그 전파
+  - `visible_tls_session.h`: `_apf_held_buffer` 추가
+  - `visible_tls_session.cpp`: hold/release 로직 구현

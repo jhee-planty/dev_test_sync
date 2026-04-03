@@ -1,4 +1,4 @@
-# APF Warning Implementation — Service Status (2026-04-02 19:05 KST)
+# APF Warning Implementation — Service Status (2026-04-03 KST)
 
 ## Summary
 
@@ -9,7 +9,7 @@
 | Genspark | PASS | ✅ | ✅ | SSE 기반, 안정적 |
 | Grok | PASS | ✅ | ✅ | SSE 기반, 안정적 |
 | Gamma | PASS | ✅ | ✅ | SSE 기반, 안정적 |
-| Gemini | IN_PROGRESS | ✅ | ❓ | keep-alive + RST_STREAM (Phase3-B12) 배포, Test #184 대기 |
+| Gemini | IN_PROGRESS | ✅ | ❓ | Phase3-B13 request buffering 구현 완료, 빌드 대기 |
 | GitHub Copilot | PARTIAL_PASS | ✅ | ❌ | block 작동, generic error 표시 (custom warning 미표시) |
 | M365 Copilot | EXCLUDED | ❌ | ❌ | WebSocket 기반 — APF 인터셉션 불가 |
 | Notion AI | EXCLUDED | ❌ | ❌ | WebSocket 기반 — APF 인터셉션 불가 |
@@ -18,15 +18,16 @@
 
 ### Gemini (gemini3) — IN_PROGRESS
 - **DB**: domain=gemini.google.com, path=/, enabled=true
-- **Code**: is_http2=2 (keep-alive + RST_STREAM), generate_gemini_block_response (wrb.fr format)
+- **Code**: is_http2=2 (request buffering + keep-alive + RST_STREAM), generate_gemini_block_response (wrb.fr format)
 - **Phase3 이력**:
-  - B10: server-only shutdown → ERR_CONNECTION_CLOSED (#182: blocked=true, warning_visible=false)
-  - B11: keep-alive → 서버 응답이 END_STREAM 후 도착 → H2 프로토콜 오류 (#183: HTTP status 0)
-  - **B12 (현재)**: keep-alive + RST_STREAM(CANCEL) to server
-    - 서버에 RST_STREAM 전송하여 차단된 스트림 취소
-    - 다른 스트림은 영향 없음
-    - 배포 18:58 KST
-    - Test #184 대기 중 (테스트 PC 비활성)
+  - B10: server-only shutdown → ERR_CONNECTION_CLOSED (#182)
+  - B11: keep-alive → 서버 응답 중복 → H2 프로토콜 오류 (#183)
+  - B12: keep-alive + RST_STREAM → 서버 응답 선착 (61ms race, #184)
+  - **B13 (현재)**: request buffering + keep-alive + RST_STREAM
+    - APF 서비스 감지 시 client→server 포워딩 보류
+    - body 검사 후 차단: 버퍼 폐기 + block response (서버 HEADERS 미수신 → race 불가)
+    - body 검사 후 통과: 버퍼 릴리스 (정상 포워딩)
+    - 빌드 대기 중
 
 ### GitHub Copilot — PARTIAL_PASS
 - block 작동, 403 Forbidden JSON 전달됨
