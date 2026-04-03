@@ -1,0 +1,20 @@
+{
+  "id": "131",
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "description": "Frontend inspect: Gemini",
+    "steps": [
+      { "action": "open", "url": "https://gemini.google.com" },
+      { "action": "observe", "check": "page loaded" },
+      { "action": "screenshot", "name": "baseline.png" },
+      { "action": "send-prompt", "text": "Hello" },
+      { "action": "observe", "check": "response rendered" },
+      { "action": "screenshot", "name": "response.png" },
+      { "action": "analyze", "check": "Content-Type, Google webchannel protocol, framework, response DOM" }
+    ],
+    "collect": ["page URL", "HTTP headers", "Content-Type", "framework", "response area", "console errors"]
+  },
+  "created": "2026-04-01T14:05:00",
+  "notes": "Phase 1 frontend inspect — Gemini. Google webchannel protocol expected (not standard SSE)."
+}

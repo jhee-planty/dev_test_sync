@@ -1,0 +1,12 @@
+{
+  "id": "164",
+  "command": "check-warning",
+  "params": {
+    "service": "github_copilot",
+    "service_name": "GitHub Copilot",
+    "expected_text": "이 서비스는 회사 보안 정책에 의해 사용이 제한됩니다.",
+    "expected_format": "chat bubble or visible text",
+    "capture_console": true
+  },
+  "notes": "Phase 3 warning test - GitHub Copilot (2026-04-02)"
+}

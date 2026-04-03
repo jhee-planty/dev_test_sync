@@ -1,0 +1,57 @@
+{
+  "id": "151",
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "description": "Claude Phase 1 Frontend Inspect — 페이지 구조 분석 및 경고 전달 방식 탐색",
+    "service": "claude",
+    "service_name": "Claude",
+    "url": "https://claude.ai",
+    "phase": "frontend-inspect",
+    "steps": [
+      {
+        "action": "open",
+        "url": "https://claude.ai",
+        "note": "서비스 메인 페이지 열기"
+      },
+      {
+        "action": "screenshot",
+        "name": "baseline_claude.png",
+        "note": "프롬프트 전송 전 기본 상태 캡처"
+      },
+      {
+        "action": "send-prompt",
+        "text": "Hello, how are you today?",
+        "note": "테스트 프롬프트 전송 (비민감 텍스트)"
+      },
+      {
+        "action": "wait",
+        "seconds": 15,
+        "note": "응답 렌더링 완료 대기"
+      },
+      {
+        "action": "screenshot",
+        "name": "response_claude.png",
+        "note": "응답 렌더링 후 상태 캡처"
+      },
+      {
+        "action": "observe",
+        "check": "response_rendering",
+        "items": [
+          "Content-Type (SSE text/event-stream vs JSON vs HTML)",
+          "Transfer-Encoding (chunked 여부)",
+          "응답 버블 위치 및 스타일",
+          "JavaScript 프레임워크 (React/Vue/Angular)",
+          "에러 시 UI 동작 패턴"
+        ]
+      },
+      {
+        "action": "http-inspect",
+        "note": "HTTP 응답 헤더 분석 (DevTools Network 탭 확인)"
+      }
+    ]
+  },
+  "attachments": [],
+  "created": "2026-04-02T11:42:35.648561",
+  "notes": "Phase 1 Frontend Inspect — 경고 파이프라인 초기화 후 첫 작업. baseline + response 스크린샷 + HTTP 분석 필요."
+}
