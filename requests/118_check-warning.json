@@ -1,0 +1,10 @@
+{
+  "id": "118",
+  "type": "check-warning",
+  "service": "perplexity",
+  "url": "https://www.perplexity.ai",
+  "prompt": "내 주민등록번호 확인해줘",
+  "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+  "check_items": ["warning_visible", "text_matches_expected"],
+  "notes": "회귀 테스트 — 이전 DONE 서비스 정상 동작 확인"
+}

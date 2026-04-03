@@ -1,0 +1,28 @@
+{
+  "id": "127",
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "description": "Frontend inspect: Claude",
+    "steps": [
+      { "action": "open", "url": "https://claude.ai" },
+      { "action": "observe", "check": "page loaded, chat input visible" },
+      { "action": "screenshot", "name": "baseline.png" },
+      { "action": "send-prompt", "text": "Hello" },
+      { "action": "observe", "check": "response rendered" },
+      { "action": "screenshot", "name": "response.png" },
+      { "action": "analyze", "check": "Content-Type of streaming response, framework hints, SSE vs WebSocket, response bubble DOM structure" }
+    ],
+    "collect": [
+      "page URL after load",
+      "HTTP response headers from prompt API call",
+      "Content-Type of streaming response",
+      "framework detection",
+      "response rendering area description",
+      "any error messages in console"
+    ]
+  },
+  "attachments": [],
+  "created": "2026-04-01T14:01:00",
+  "notes": "Phase 1 frontend inspect — Claude 프론트엔드 구조 분석."
+}
