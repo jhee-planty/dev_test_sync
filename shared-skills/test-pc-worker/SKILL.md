@@ -90,8 +90,15 @@ $base (dev_test_sync)/
 **세션 상태 파일:** `local_archive/state.json`
 세션이 끊겨도 마지막 처리 ID를 기억하여 이전 요청을 다시 읽지 않는다.
 ```json
-{ "last_processed_id": 15, "updated_at": "2026-03-24T14:30:00" }
+{
+  "last_processed_id": 15,
+  "last_delivered_id": 14,
+  "updated_at": "2026-03-24T14:30:00"
+}
 ```
+- `last_processed_id`: 로컬에서 result 파일을 작성한 최신 ID
+- `last_delivered_id`: git push가 확인된 최신 ID
+- 두 값의 차이가 있으면 push되지 않은 결과가 존재한다는 의미
 이 파일은 gitignored(local_archive/)라 Git 충돌이 없다.
 
 ---
@@ -143,30 +150,92 @@ Stage 3: 1시간 간격
 
 ## Execution Flow
 
-### Step 1 — 세션 상태 로드 + 새 요청 스캔
+### Step 0 — Session Start Recovery (매 세션 필수)
+
+**git pull 결과와 무관하게** 매 세션 시작 시 반드시 실행한다.
+이전 세션이 중단되어 pull했지만 처리하지 못한 요청, 또는 result를 작성했지만
+push하지 못한 결과를 자동으로 복구한다.
 
 ```powershell
-# 1) 마지막 처리 ID 로드 (세션 재시작 시 핵심)
+# 0-1) state.json 로드
 $stateFile = "$base\local_archive\state.json"
-$lastId = 0
+$lastDeliveredId = 0
+$lastProcessedId = 0
 if (Test-Path $stateFile) {
     $state = Get-Content $stateFile | ConvertFrom-Json
-    $lastId = $state.last_processed_id
-    Write-Output "Resuming from last_processed_id: $lastId"
+    $lastProcessedId = if ($state.last_processed_id) { $state.last_processed_id } else { 0 }
+    $lastDeliveredId = if ($state.last_delivered_id) { $state.last_delivered_id } else { $lastProcessedId }
 }
 
-# 2) lastId보다 큰 요청만 스캔 (이전 요청 재읽기 방지)
+# 0-2) 미push 결과 확인 및 재전송
+#   last_delivered_id < last_processed_id 이면 push 안 된 결과가 있음
+#   git log로 확인: unpushed commits이 있으면 push 시도
+$unpushed = & cmd /c "cd $base && git log origin/main..HEAD --name-only --oneline 2>&1"
+if ($unpushed -and $unpushed -notmatch "^$") {
+    Write-Output "Recovery: found unpushed commits. Pushing..."
+    & cmd /c "cd $base && git_sync.bat push"
+    # push 성공 검증
+    $verify = & cmd /c "cd $base && git log origin/main..HEAD --oneline 2>&1"
+    if (-not $verify -or $verify -match "^$") {
+        $lastDeliveredId = $lastProcessedId
+        Write-Output "Recovery: push verified. last_delivered_id updated to $lastDeliveredId"
+    }
+}
+
+# 0-3) 미처리 요청 복구 스캔 (filesystem이 권위 있는 소스)
+#   last_delivered_id 기준으로 스캔 범위 설정 (성능 최적화: -10 여유)
+$scanFrom = [Math]::Max(0, $lastDeliveredId - 10)
+$requests = Get-ChildItem "$base\requests\*_*.json" -ErrorAction SilentlyContinue
+$recoveryRequests = @()
+foreach ($req in $requests | Sort-Object Name) {
+    $reqId = [int]($req.Name.Split('_')[0])
+    if ($reqId -gt $scanFrom) {
+        $resultExists = Test-Path "$base\results\${reqId}_result.json"
+        if (-not $resultExists) {
+            $recoveryRequests += Get-Content $req.FullName | ConvertFrom-Json
+        }
+    }
+}
+
+if ($recoveryRequests.Count -gt 0) {
+    Write-Output "Recovery scan: $($recoveryRequests.Count) unprocessed requests found (from prior session)"
+} else {
+    Write-Output "Recovery scan: all requests up to date"
+}
+```
+
+**Recovery scan 결과 메트릭 로깅:**
+복구 모드 진입 시 `results/metrics/` 에 기록하여 workflow-retrospective가 분석할 수 있게 한다.
+
+Recovery로 발견된 요청이 있으면 Step 2로 진행하여 처리한다.
+없으면 Step 1(정상 폴링)으로 진행한다.
+
+### Step 1 — Git Pull + 새 요청 스캔
+
+**git pull은 전송 수단일 뿐이다.** pull 결과("Already up to date" 등)와 무관하게
+항상 filesystem 스캔을 실행한다.
+
+```powershell
+# 1-1) git pull (전송 — 실패해도 스캔은 계속)
+& cmd /c "cd $base && git_sync.bat pull"
+
+# 1-2) filesystem 스캔 (권위 있는 소스)
 $requests = Get-ChildItem "$base\requests\*_*.json" -ErrorAction SilentlyContinue
 $newRequests = @()
 foreach ($req in $requests | Sort-Object Name) {
     $reqId = [int]($req.Name.Split('_')[0])
-    if ($reqId -gt $lastId) {
-        # result가 이미 있는지도 확인 (중복 처리 방지)
+    if ($reqId -gt $lastDeliveredId) {
         $resultExists = Test-Path "$base\results\${reqId}_result.json"
         if (-not $resultExists) {
             $newRequests += Get-Content $req.FullName | ConvertFrom-Json
         }
     }
+}
+
+# 1-3) 메시지 구분
+if ($newRequests.Count -gt 0) {
+    # Step 0에서 이미 발견된 것과 git pull로 새로 온 것 구분
+    Write-Output "New requests: $($newRequests.Count) to process"
 }
 ```
 
@@ -219,13 +288,19 @@ dev 측 판독 정확도를 높이기 위해, 작업 중 화면 상태를 예측
 
 **결과 저장 후 즉시 state.json을 갱신한다:**
 ```powershell
-# state.json 갱신 (세션이 끊겨도 여기까지 처리했음을 기록)
+# state.json 갱신 — last_processed_id만 업데이트 (push 전이므로 delivered는 아직)
 $stateFile = "$base\local_archive\state.json"
-$newState = @{ last_processed_id = $reqId; updated_at = (Get-Date -Format o) }
-$newState | ConvertTo-Json | Set-Content $stateFile -Encoding UTF8
+$state = @{}
+if (Test-Path $stateFile) {
+    $state = Get-Content $stateFile | ConvertFrom-Json -AsHashtable
+}
+$state.last_processed_id = $reqId
+$state.updated_at = (Get-Date -Format o)
+$state | ConvertTo-Json | Set-Content $stateFile -Encoding UTF8
 ```
 result 작성과 state 갱신은 git push 전에 수행한다.
-세션이 push 중 끊겨도 state가 이미 갱신되어 있으므로 재시작 시 중복 처리를 방지한다.
+`last_processed_id`는 로컬 작성 완료를 기록하고,
+`last_delivered_id`는 Step 4에서 push 성공 확인 후 갱신한다.
 
 → See `references/result-templates.md` for JSON templates.
 
@@ -267,7 +342,7 @@ $metric | ConvertTo-Json -Compress | Add-Content $metricsFile -Encoding UTF8
 각 단계 시작 전에 `$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()`으로 측정하고,
 단계 종료 시 `$stopwatch.Elapsed.TotalSeconds`를 기록한다.
 
-### Step 4 — Git Push (git_sync.bat 단일 호출)
+### Step 4 — Git Push + Delivery 확인 (git_sync.bat 단일 호출)
 
 결과를 dev에 전달하기 위해 **반드시 `git_sync.bat push`를 사용한다.**
 다른 방식은 **모두 금지**한다. 컨텍스트가 유실되어도 이 규칙은 변하지 않는다.
@@ -278,6 +353,24 @@ git_sync.bat push
 
 Desktop Commander의 cmd 셸(`shell: cmd`)에서 실행한다.
 저장소 디렉토리 안에서 실행하면 된다 (bat 파일이 `%~dp0`으로 자동 위치 판별).
+
+**Push 성공 검증 + last_delivered_id 갱신:**
+exit code 대신 `git log`로 push 성공을 확인한다.
+```powershell
+# push 후 검증: unpushed commits이 없으면 성공
+$verify = & cmd /c "cd $base && git log origin/main..HEAD --oneline 2>&1"
+if (-not $verify -or $verify -match "^$") {
+    # push 성공 — last_delivered_id 갱신
+    $state = Get-Content $stateFile | ConvertFrom-Json -AsHashtable
+    $state.last_delivered_id = $state.last_processed_id
+    $state.updated_at = (Get-Date -Format o)
+    $state | ConvertTo-Json | Set-Content $stateFile -Encoding UTF8
+    Write-Output "Delivery confirmed: last_delivered_id = $($state.last_delivered_id)"
+} else {
+    Write-Output "WARNING: push may have failed. Unpushed: $verify"
+    # last_delivered_id는 갱신하지 않음 → 다음 세션 Step 0에서 재시도
+}
+```
 
 **금지 패턴 (컨텍스트 유실 시에도 절대 사용하지 않는다):**
 - ❌ `& 'C:\Program Files\Git\cmd\git.exe' push ...` → PowerShell 출력 캡처 불가

@@ -165,18 +165,22 @@ git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull*
 **Scheduled Task 실행 흐름 (dev PC 기준):**
 ```
 매 실행 시 (cron):
-  1. pipeline_state.json 읽기 (이전 상태 복원)
-  2. git pull로 최신 상태 동기화
-  3. results/에 새 결과 파일 확인
-  4-a. 새 결과 없음 → dashboard 갱신("대기 중") → 종료
-  4-b. 새 결과 있음 →
+  0. Recovery scan (매 실행 필수):
+     - pipeline_state.json 읽기 (이전 상태 복원)
+     - git pull 전에 unpushed commits 확인 → 있으면 push 먼저
+     - requests/에 미응답 요청이 있는지 filesystem 스캔
+  1. git pull로 최신 상태 동기화 (전송 수단)
+  2. results/에 새 결과 파일 확인 (filesystem이 권위 있는 소스)
+     ※ git pull 결과("Already up to date")와 무관하게 항상 스캔
+  3-a. 새 결과 없음 → dashboard 갱신("대기 중") → 종료
+  3-b. 새 결과 있음 →
        결과 읽기 → 성공/실패 판단 →
        성공: status 업데이트 + 다음 서비스 자동 진행 + git push
             (다음 서비스: service_queue에서 status=="pending_check"인 최상위 우선순위)
        실패: 원인 분석 → 자동 수정 가능 여부 판단 → 액션 실행
-  5. pipeline_state.json 갱신
-  6. pipeline_dashboard.md 갱신
-  7. macOS 알림 전송 (핵심 이벤트만)
+  4. pipeline_state.json 갱신 (last_delivered_id 포함)
+  5. pipeline_dashboard.md 갱신
+  6. macOS 알림 전송 (핵심 이벤트만)
 ```
 
 **State 파일 (실행 간 연속성):**
@@ -187,6 +191,7 @@ git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull*
   "current_phase": "waiting_result",
   "last_request_id": 17,
   "last_checked_result_id": 16,
+  "last_delivered_id": 16,
   "last_poll_at": "2026-03-26T14:30:00",
   "consecutive_empty_polls": 3,
   "poll_stage": 1,
@@ -318,8 +323,10 @@ gitignored(local_archive/)라 Git 충돌이 없고, PC별로 독립 유지된다
 // dev PC
 { "last_request_id": 15, "last_checked_result_id": 14, "updated_at": "..." }
 // test PC
-{ "last_processed_id": 15, "updated_at": "..." }
+{ "last_processed_id": 15, "last_delivered_id": 14, "updated_at": "..." }
 ```
+- `last_processed_id`: 로컬에서 result 파일을 작성한 최신 ID
+- `last_delivered_id`: git push가 확인된 최신 ID (push 검증: `git log origin/main..HEAD`)
 
 **갱신 타이밍:**
 - dev: 요청 생성 후 `last_request_id` 갱신, 결과 확인 후 `last_checked_result_id` 갱신
