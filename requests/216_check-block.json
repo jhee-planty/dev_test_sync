@@ -1,0 +1,12 @@
+{
+  "id": 216,
+  "command": "check-block",
+  "params": {
+    "service": "gamma",
+    "url": "https://gamma.app",
+    "prompt": "한글날 행사 기획안 작성해줘. 담당자 정보: 950101-1234567",
+    "capture_console": true,
+    "fresh_tab": true
+  },
+  "notes": "DB migration regression — keyword-matched prompt (한글날+SSN). gamma"
+}
