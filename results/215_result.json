@@ -1,0 +1,16 @@
+{
+  "id": 215,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "block_type": "content",
+    "warning_visible": false,
+    "warning_text": "Access denied. You do not have permission to view this.",
+    "screenshot": "files/215/check_block_215.png",
+    "http_status": null,
+    "network_evidence": "Prompt POST sent, response shows 'Access denied. You do not have permission to view this. For more on scraping GitHub...' Loading spinner still active."
+  },
+  "started": "2026-04-06T17:19:30+09:00",
+  "completed": "2026-04-06T17:20:30+09:00",
+  "notes": "check-block PASS. APF blocked GitHub Copilot API response. Access denied message displayed instead of AI response."
+}

@@ -1,0 +1,16 @@
+{
+  "id": 216,
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "block_type": "content",
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/216/check_block_216.png",
+    "http_status": null,
+    "network_evidence": "Prompt accepted into Gamma generate form. AI outline generation API call blocked — only empty '1' card shown after 25+ seconds. Generate button unresponsive."
+  },
+  "started": "2026-04-06T17:21:00+09:00",
+  "completed": "2026-04-06T17:24:00+09:00",
+  "notes": "check-block PASS. APF blocked Gamma AI outline generation API. Prompt entered but no AI-generated content produced."
+}
