@@ -90,6 +90,14 @@ Test server:
 
 ---
 
+## 작업 시작 전 스킬 로드 확인
+
+이 스킬이 Skill 도구로 로드된 상태에서 빌드·배포를 시작한다.
+서버 주소, 경로 매핑, 패키지 파일명 규칙 등을 기억에 의존하면
+오래된 정보로 작업하게 된다. 특히 context break 후 재개 시 주의.
+
+---
+
 ## Pre-flight Checklist
 
 Verify before starting the build:
@@ -108,6 +116,12 @@ ssh -p 12222 solution@61.79.198.110 \
 
 # 4. Check changed files
 cd ~/Documents/workspace/Officeguard/EtapV3 && git diff --name-only
+
+# 5. Verify system symlinks on BOTH servers
+ssh -p 12222 solution@218.232.120.58 \
+  "[ -L /bin ] && [ -L /lib ] && echo 'Test server OK' || echo 'Test server BROKEN'"
+ssh -p 12222 solution@61.79.198.110 \
+  "[ -L /bin ] && [ -L /lib ] && echo 'Compile server OK' || echo 'Compile server BROKEN'"
 ```
 
 ---
@@ -207,6 +221,35 @@ scp -P 12222 \
 
 ---
 
+## Step 3.5 — Deploy Safety Check (MANDATORY)
+
+패키지 추출 전, tarball이 시스템 디렉토리를 파괴하지 않는지 검증한다.
+**이 단계를 건너뛰지 않는다.**
+
+```bash
+# 3.5-1. Tarball 내부 경로 검사
+ssh -p 12222 solution@218.232.120.58 \
+  "tar tzf /home/solution/etap-root-{YYMMDD}.sv.debug.x86_64.el.tgz | head -30"
+
+# STOP 조건: 아래 패턴이 보이면 추출하지 않는다
+#   bin/       → /bin 심볼릭 링크를 파괴
+#   lib/       → /lib 심볼릭 링크를 파괴
+#   sbin/      → /sbin 심볼릭 링크를 파괴
+#   etc/       → 시스템 설정 덮어쓰기
+# SAFE 패턴: usr/local/bin/, usr/local/lib/ 등 전체 경로
+
+# 3.5-2. 서버 심볼릭 링크 사전 확인
+ssh -p 12222 solution@218.232.120.58 \
+  "[ -L /bin ] && [ -L /lib ] && echo 'System symlinks OK' || echo 'CRITICAL: System symlinks already broken — run recovery before deploy'"
+```
+
+**위험한 tarball이 발견되면:**
+1. 추출 중단
+2. 사용자에게 보고: "tarball에 bin/ 또는 lib/ 최상위 엔트리가 있어 시스템 심볼릭 링크를 파괴할 수 있습니다"
+3. 컴파일 서버의 CMakeLists.txt 또는 패키징 스크립트의 install 경로를 확인/수정 필요
+
+---
+
 ## Step 4 — Install & Restart (Test Server)
 
 Extract the package and restart the service on the test server.
@@ -216,11 +259,15 @@ Extract the package and restart the service on the test server.
 ssh -p 12222 solution@218.232.120.58 \
   "sudo tar xzf /home/solution/etap-root-{YYMMDD}.sv.debug.x86_64.el.tgz -C /usr/local"
 
-# 4-2. Restart etapd service
+# 4-2. Post-deploy 심볼릭 링크 검증 (서비스 재시작 전 필수)
+ssh -p 12222 solution@218.232.120.58 \
+  "[ -L /bin ] && [ -L /lib ] && echo 'System symlinks OK' || echo 'CRITICAL: System symlinks destroyed — DO NOT restart, run recovery first'"
+
+# 4-3. Restart etapd service (심볼릭 링크 OK 확인 후에만)
 ssh -p 12222 solution@218.232.120.58 \
   "sudo systemctl restart etapd.service"
 
-# 4-3. Verify service is running
+# 4-4. Verify service is running
 ssh -p 12222 solution@218.232.120.58 \
   "systemctl status etapd.service | head -5"
 ```
@@ -242,9 +289,32 @@ ssh -p 12222 solution@218.232.120.58 \
 
 ---
 
+## Post-Deploy: 배포 검증 게이트
+
+테스트 요청 전에 배포가 실제로 반영되었는지 확인한다.
+미확인 상태에서 테스트를 실행하면 이전 바이너리로 테스트하게 되어 빌드를 낭비한다.
+
+**필수 검증 (자동):**
+```bash
+# etapd 재시작 확인
+ssh -p 12222 solution@218.232.120.58 \
+  "systemctl status etapd.service | grep 'Active:'"
+# → "Active: active (running)" + 최근 시작 시각이 배포 후여야 함
+
+# 바이너리 타임스탬프 확인
+ssh -p 12222 solution@218.232.120.58 \
+  "ls -la /usr/local/bin/etapd | awk '{print \$6, \$7, \$8}'"
+# → 오늘 날짜 + 배포 시각 이후여야 함
+```
+
+검증 실패 시 테스트를 진행하지 않고 배포를 재시도한다.
+
+> **왜 이 게이트가 필요한가:** 2026-03-27 Build #21에서 바이너리 미배포 상태로
+> 2건 테스트를 실행하여 낭비. 재배포 후 재테스트가 필요했다.
+
 ## Post-Deploy: User Testing
 
-배포 완료 후 test PC에서 차단/경고 동작을 검증한다.
+배포 검증 통과 후 test PC에서 차단/경고 동작을 검증한다.
 → See `genai-warning-pipeline/SKILL.md` § Test-Fix Cycle
 → See `apf-warning-impl/SKILL.md` § Step 5 (test PC에 check-warning 요청)
 
@@ -303,6 +373,39 @@ scp: /home/solution/source_for_test/EtapV3/...: No such file or directory
 Fix source → Step 1 (sync) → Step 2 (build) repeat.
 Extract filename and line number from build error messages to locate the source to fix.
 
+### System Symlink Recovery (심볼릭 링크 복구 런북)
+
+`tar xzf` 배포로 `/bin`, `/lib` 심볼릭 링크가 일반 디렉토리로 교체된 경우의 복구 절차.
+**2026-04-06 실제 사고에서 검증된 절차.**
+
+```bash
+# 대상 서버에 SSH 접속 후 실행 (test 서버 또는 compile 서버)
+
+# 1. 파괴된 디렉토리 백업
+sudo mv /bin /bin.bak.$(date +%Y%m%d)
+sudo mv /lib /lib.bak.$(date +%Y%m%d)
+
+# 2. 심볼릭 링크 재생성
+sudo ln -s usr/bin /bin
+sudo ln -s usr/lib /lib
+
+# 3. 시스템 명령 동작 확인
+ps aux | head -3
+basename /usr/local/bin/etap
+ls /usr/local/bin/etap
+
+# 4. 백업 디렉토리 확인 및 정리
+# /bin.bak에는 etap, etapcomm, etaprpc 등 etap 바이너리만 있음
+# 이들은 /usr/local/bin/에 이미 설치되어 있으므로 확인 후 삭제 가능
+ls /bin.bak.*/
+ls /lib.bak.*/
+# sudo rm -rf /bin.bak.* /lib.bak.*  # 확인 후 실행
+```
+
+**원인:** etap 패키지의 tarball 내부 경로가 `bin/etap` (상대경로)으로 되어 있어
+`tar xzf -C /usr/local` 시 `/bin` 심볼릭 링크(→ usr/bin)가 일반 디렉토리로 교체됨.
+**근본 수정:** CMakeLists.txt의 install 경로를 `usr/local/bin/`으로 수정 필요 (별도 작업).
+
 ---
 
 ## 검증 된 명령어 참조
@@ -326,7 +429,7 @@ ssh -p 12222 solution@218.232.120.58 \
 ssh -p 12222 solution@218.232.120.58 'etapcomm ai_prompt_filter.reload_services'
 ```
 
-DB 패턴 변경후 반드시 실행. 리로드 없이 테스트하메 이전 패턴으로 동작한다.
+DB 패턴 변경후 반드시 실행. 리로드 없이 테스트하면 이전 패턴으로 동작한다.
 
 ### detect 확인 (2026-03-20 검증)
 

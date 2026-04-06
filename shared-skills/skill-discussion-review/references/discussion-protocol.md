@@ -1,145 +1,279 @@
-# Discussion Protocol — 라운드 진행 상세 규칙
+# Discussion Protocol — Round Rules & DF Guidelines
 
-## DF (Discussion Facilitator) 행동 지침
+All discussion rounds are conducted in **English** to optimize token efficiency
+and reasoning quality. Domain-specific artifacts (Korean regulations, UI text, etc.)
+may be quoted in the original language, but all reasoning and arguments remain in English.
 
-### Round 0 — 배경 공유
+---
 
-토론 시작 전, DF가 문제 도메인 배경을 정리하여 전 참여자에게 공유한다.
+## Phase 0 — Intelligence Gathering (Optional)
 
+DF decides research depth based on topic complexity:
+
+**Simple** (skip): Topic is well-defined, all materials already available.
+Proceed directly to Phase 1.
+
+**Medium** (materials review): Read all relevant documents, summarize key points,
+identify gaps. No external research needed.
+
+**Complex** (full research): Web search for comparable approaches, industry best
+practices, known pitfalls. Build shared terminology glossary. Produce structured
+briefing document.
+
+### Briefing Output Format
 ```
-포함 사항:
-- 대상 스킬이 해결하려는 핵심 문제
-- 관련 기술 맥락 (프로토콜, 아키텍처, 환경 제약)
-- 최근 이슈/실패 사례 (있다면)
-- 이번 토론의 범위와 초점
-```
-
-이 단계는 특히 EC(외부 컨설턴트)가 도메인 맥락을 이해하고
-이후 라운드에서 실질적 반론을 제기할 수 있게 하는 데 핵심적이다.
-
-### 토론 시작
-
-1. Round 0 배경 공유 완료 확인
-2. 참여자 소개 — 각 참여자의 역할과 관점을 1줄로 소개
-3. 논점 목록 제시 — 번호 매겨서 순서대로 진행할 것을 선언
-4. 사용자가 특정 문제를 제기했으면 해당 논점부터 시작
-5. **논점 순서 배치:** 핵심 논점이 마지막에 오지 않도록 중요도순으로 배치
-
-### 라운드 진행
-
-**라운드 시작:**
-```
-### Round N — [논점 제목]
-
-DF: [논점 배경 설명. 왜 이것이 중요한지. 각 참여자에게 구체적 질문 할당.]
+## Pre-Discussion Briefing
+### Topic & Scope: [1-2 sentences]
+### Materials Reviewed: [list with key excerpts]
+### External Research Findings: [if complex]
+### Known Constraints & Context: [environment, dependencies, limitations]
+### Terminology: [domain terms that need shared understanding]
+### Preliminary Issues: [potential discussion topics identified]
+### Open Questions: [unresolved items for discussion]
 ```
 
-**참여자 발언 순서:**
-- 해당 논점에 가장 관련 깊은 참여자부터 시작
-- EC(외부 컨설턴트)는 2~3번째에 발언 (먼저 내부 관점을 듣고 반론)
-- 나머지 참여자는 자유 순서
+### User Confirmation Gate
+After producing the briefing, present it to the user:
+"Here's what I found. Shall we proceed, or should I gather more information?"
+Only proceed to Phase 1 after user confirmation.
 
-**코드 라인 참조 의무:**
-- 코드 관련 주장 시 반드시 파일명 + 라인 번호 또는 섹션명을 명시
-- 예: "SKILL.md §Step 4 (라인 83-86)", "git-push-guide.md §Fallback 섹션"
-- 근거 없는 코드 관련 주장은 DF가 "어느 파일, 어느 부분인지 명시해주세요" 요청
+---
 
-**DF 중간 개입 기준:**
-- 한 참여자가 3문단 이상 연속 발언 → "정리해서 핵심만" 요청
-- 참여자 간 대화가 2인 토론으로 축소 → 다른 참여자 의견 요청
-- 논점에서 벗어남 → "이 논점에 집중합시다" 리다이렉트
-- 전원 동의만 반복 → "반대 의견이나 우려는 없나요?" 명시적 요청
+## DF Structured Facilitator Guidelines
 
-**합의 판단 기준:**
-DF가 합의를 선언하려면 아래 3개 조건을 모두 충족해야 한다:
-1. 최소 3명 이상이 동일한 방향에 실질적 의견을 제시
-2. EC가 반론을 제기했고, 그 반론에 대한 대응이 이루어짐
-3. 해당 라운드에서 최소 2회 이상의 발언 교환이 있었음
+### Core Identity
+DF is a **structured facilitator with post-round quality audit**.
+Default mode is procedural — intervenes only when quality check fails.
 
-조건 미충족 시 → 추가 라운드 진행.
+### Default Mode (every round):
+- **Presents**: States the issue, assigns questions to participants
+- **Manages**: Controls speaker order, enforces brevity
+- **Summarizes**: Provides interim findings after exchanges
+- **Declares**: Announces consensus when criteria are met
 
-**합의 선언 형식:**
-```
-DF: [합의 사항 요약]. 반대 의견이 없으면 이 방향으로 확정하겠습니다.
-    [만약 반대 의견이 있었다면: [이름]의 우려 ([내용])는 [대응 방안]으로 해소되었습니다.]
-```
+### Post-Round Quality Check (silent — output only on failure):
+After each round, DF checks 3 items:
+□ Each participant contributed uniquely from their role perspective?
+□ EC challenged at least once?
+□ Position refinement or genuine disagreement occurred?
 
-### 마지막 라운드 규칙
+If all pass → proceed silently to next round.
+If any fail → apply specific remedy from DF Intervention Toolkit (see SKILL.md).
 
-마지막 라운드에서도 다음을 강제한다:
-- 최소 3명 이상 실질적 발언
-- EC 반론 1회 이상
-- "마무리니까 간단히"는 금지
+### What DF Does NOT Do
+- Does not proactively probe reasoning (that's EC's role now)
+- Does not push their own technical solution
+- Does not take sides in substantive debates
+- Does not rush to consensus to save tokens
+- Does not intervene when discussion is flowing well
 
-마지막 논점이 중요도가 높으면, 논점 순서를 재배치하여 핵심 논점이 끝에 오지 않게 한다.
-중요도 낮은 논점(오타 수정, 형식 통일 등)을 마지막에 배치한다.
+---
 
-### 라운드 종료
+## Steel Man + Challenge Protocol
 
-합의된 사항을 1~2줄로 명확히 기록하고 다음 논점으로.
+**Every critical engagement must follow this pattern:**
 
 ```
-**Round N 합의:** [합의 내용 1줄 요약]
+Step 1 — Steel Man: Articulate the strongest version of the other's argument
+  "I understand you're arguing X because Y, and the strongest form of that is Z."
+
+Step 2 — Challenge: Present your counterpoint with evidence
+  "However, my concern is [specific issue] because [evidence/precedent]."
+```
+
+**Why Steel Man matters:**
+Without it, criticism becomes dismissive ("that won't work") rather than
+constructive ("I see the merit in X, but Y is a risk"). Steel Man ensures
+the critic genuinely understands before opposing, which produces better outcomes.
+
+**Violation handling:**
+If a participant criticizes without Steel Man, DF intervenes:
+```
+DF: "Before we proceed with that criticism, can you first state
+     the strongest version of [name]'s argument?"
 ```
 
 ---
 
-## EC (External Consultant) 행동 지침
+## Structured Speech Format
 
-EC의 핵심 역할은 **내부자 시각의 맹점을 찾는 것**이다.
+Every participant speech follows this 3-part structure (3-5 sentences each part):
 
-### 반론/질문 패턴
+```
+[Response to previous speaker]:
+  I [agree/partially agree/disagree] with [name]'s point that [X]
+  because [specific reason with evidence].
 
-1. **전제 질문** — "이 접근의 전제는 ~인데, 그 전제가 틀리면 어떻게 되나요?"
-2. **확장 질문** — "지금은 A 서비스에서만 문제인데, B/C 서비스에도 적용할 수 있나요?"
-3. **비용 질문** — "이 수정의 유지보수 비용은 어떻게 되나요?"
-4. **역효과 질문** — "이걸 바꾸면 기존에 잘 되던 ~가 깨질 수 있지 않나요?"
-5. **대안 제시** — "완전히 다른 접근으로, ~는 어떨까요?"
+[My position]:
+  [Claim from my role's unique perspective + domain-specific evidence or precedent]
 
-### 반론 의무
+[Challenge/Question]:
+  [Directed at a specific participant — not rhetorical]
+```
 
-매 라운드에서 최소 1회 반론 또는 의문을 제기한다.
-모든 참여자가 동의하는 "명백한" 사안에서도, "실행 가능성"이나
-"예상치 못한 부작용"에 대해 질문한다.
-
----
-
-## 토론 품질 기준
-
-### 좋은 토론의 징후
-
-- 참여자 간 실질적 의견 교환이 있다 (단순 "동의" 아님)
-- EC의 반론이 실제로 결론을 변경하거나 보완한 적이 있다
-- 최초 제안에서 최종 합의까지 내용이 발전했다
-- 구체적 수정 사항이 근거와 함께 도출되었다
-
-### 나쁜 토론의 징후
-
-- 모든 참여자가 첫 발언부터 같은 결론 → 논점이 너무 쉬운 것, 더 깊은 이슈를 찾아야
-- DF가 한 라운드에서 바로 합의 선언 → 충분한 논의 없이 성급한 결론
-- 한 참여자가 대부분의 발언을 독점 → 다른 관점이 반영되지 않음
-- 반론 없이 진행 → EC 역할이 제대로 수행되지 않음
-
-### 토론 길이 가이드
-
-| 논점 유형 | 최소 라운드 | 예시 |
-|----------|-----------|------|
-| 명백한 버그 수정 | 1 | 오타, 경로 오류 |
-| 설계 선택 | 2~3 | SSH vs HTTPS, 스크립트 vs 인라인 |
-| 아키텍처 변경 | 3~4 | 새 모니터링 레이어 도입, 판정 로직 전면 변경 |
-| 방향성 결정 | 4+ | 전체 파이프라인 재설계, 새 접근 방식 도입 |
+**Brevity constraint:** 3-5 sentences per speech except when presenting
+complex evidence that requires more detail. DF enforces:
+```
+DF: "[Name], can you condense that to the key point? We need to hear
+     from other participants."
+```
 
 ---
 
-## 토론 결과 산출물
+## Round Progression
 
-### 필수 산출물
+### Round 0 — Background Briefing
+DF presents domain context. This is where the **language transition** occurs:
 
-1. **합의 사항 목록** — 각 합의의 내용, 근거, 반대 의견(있었다면)
-2. **수정 사항 표** — 파일, 수정 내용, 근거 라운드를 포함한 실행 목록
-3. **미합의 사항** (있다면) — 대립 관점과 권장 후속 조치
+```
+DF: "From this point forward, all discussion is conducted in English."
 
-### 선택 산출물
+## Round 0 — Background Briefing
 
-4. **검증 계획** — 수정 전 실환경 검증이 필요한 경우
-5. **Phase B 항목** — 중기적으로 진행할 사안 (이번에는 미적용)
+DF: [Problem domain that this discussion addresses]
+    [Technical/business context: protocols, architecture, constraints]
+    [Recent issues or failures, if any]
+    [Scope and focus of this discussion]
+    [Key assumptions from Phase 1 — these will be challenged]
+
+    Participants for this discussion:
+    - [Role 1 (Abbr)]: [1-line intro + mandatory contribution]
+    - [Role 2 (Abbr)]: [1-line intro + mandatory contribution]
+    ...
+```
+
+### Discussion Start
+1. Complete Round 0 background sharing
+2. Introduce participants — each role's perspective and mandatory burden in 1 line
+3. Present issue list — numbered, in priority order (critical issues first)
+4. If user raised specific problems, start with those
+5. **Issue ordering:** never place critical issues last
+
+### Round Progression Rules
+
+**Starting a round:**
+```
+### Round N — [Issue Title]
+
+DF: [Issue background. Why it matters. Specific questions assigned to participants.]
+```
+
+**Speaker order:**
+- Most relevant participant speaks first
+- EC speaks 2nd or 3rd (listens to internal views first, then challenges)
+- Remaining participants in free order
+
+**Evidence requirements:**
+- Code-related claims must cite file name + line number or section
+  Example: "SKILL.md §Step 4 (line 83-86)"
+- Claims without evidence get DF pushback:
+  "Which file, which section? Please be specific."
+
+**DF mid-round interventions (triggers):**
+- One participant speaks 3+ paragraphs → "Please summarize the key point."
+- Discussion narrows to 2-person exchange → "Let's hear from [other participants]."
+- Topic drift → "Let's stay focused on this issue."
+- All-agreement echo chamber → "Any concerns or objections? [Name]?"
+- Participant contribution overlaps → Participation Intervention (see SKILL.md §DF Toolkit)
+
+**Consensus criteria — ALL 3 must be met:**
+1. At least 3 participants gave substantive opinions in the same direction
+2. EC raised a challenge AND that challenge was addressed
+3. At least 2 exchanges occurred in this round
+
+If not all met → continue the round.
+
+**Consensus declaration format:**
+```
+DF: [Consensus summary]. Any objections before we finalize?
+    [If dissent existed: [Name]'s concern ([content]) was addressed by [resolution].]
+```
+
+**Round close:**
+```
+**Round N Consensus:** [1-2 line summary of what was agreed]
+```
+
+### Last Round Rules
+Even the final round enforces:
+- At least 3 substantive speeches
+- EC challenge at least once
+- No "let's just wrap up" shortcuts
+
+If the last issue is low-priority, reorder so critical issues don't end up last.
+Place low-priority items (typos, formatting) at the end.
+
+---
+
+## EC (External Consultant) Challenge Patterns
+
+1. **Premise challenge** — "The premise here is X — what if X is wrong?"
+2. **Scope expansion** — "This works for A, but does it scale to B and C?"
+3. **Cost challenge** — "What's the maintenance cost of this change?"
+4. **Side-effect challenge** — "If we change this, won't it break existing...?"
+5. **Alternative proposal** — "Entirely different approach: what about...?"
+
+EC must challenge every round. Even on "obvious" items, question execution risk.
+
+---
+
+## Discussion Quality Standards
+
+### Signs of Good Discussion
+- Genuine opinion exchange (not just "I agree")
+- EC's challenges actually changed or refined at least 1 conclusion
+- Proposals evolved from initial version to final consensus
+- Concrete action items emerged with evidence-based justification
+- At least 1 participant changed their position during the discussion
+
+### Signs of Bad Discussion (DF must intervene)
+- All participants agree from first speech → issue is too easy or groupthink
+- DF declares consensus in 1 round → insufficient deliberation
+- One participant dominates → other perspectives missing
+- No challenges → EC role failed
+- **Phantom participant:** a role exists but adds nothing unique → trigger Participation Intervention
+
+### Discussion Length Guide
+
+| Issue Type | Min Rounds | Examples |
+|-----------|-----------|---------|
+| Obvious fix | 1 | Typo, wrong path |
+| Design choice | 2-3 | SSH vs HTTPS, script vs inline |
+| Architecture change | 3-4 | New monitoring layer, logic redesign |
+| Direction decision | 4+ | Full pipeline redesign, new approach |
+
+---
+
+## Quality Gate (Phase 2 → Phase 3 Transition)
+
+Before proceeding to Phase 3, DF checks:
+
+```
+□ At least 2 genuine disagreements occurred and were resolved
+□ EC's challenges changed at least 1 proposal detail
+□ Every participant made a unique contribution (no pure rubber stamps)
+□ At least 1 position change occurred during discussion
+```
+
+**If fewer than 3 checks pass → "Insufficient deliberation":**
+Do NOT restart the entire discussion. Instead, use targeted provocations:
+- "[Name], you agreed with everything. What would you do differently?"
+- "EC, your challenges were too easily accepted. What's your strongest remaining objection?"
+- DF may assign a contrarian position to the least-engaged participant
+
+---
+
+## Discussion Outputs
+
+### Required Outputs (English)
+1. **Consensus list** — each item with content, evidence, dissenting views
+2. **Action/modification table** — target, change description, source round
+3. **Unresolved items** (if any) — opposing views, recommended follow-up
+4. **Participation summary table** — per participant: rounds active, key unique contributions, position changes
+
+### Required Output (Korean)
+5. **한국어 요약** — above consensus translated to Korean for user action
+
+### Optional Outputs
+6. **Verification plan** — if pre-implementation testing is needed
+7. **Phase B items** — medium-term items not applied now

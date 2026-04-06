@@ -314,3 +314,35 @@
   - **이미 13:55에 POST-only hotfix 배포 완료** → Test #186 생성
 - Test #186: Phase3-B13 POST-only hold 검증 — 결과 대기 중
   - 검증 포인트: (1) 페이지 정상 로드, (2) POST hold/release 또는 block 동작, (3) 경고 텍스트 표시
+
+### Iteration 4 — B15 (2026-04-02)
+- 변경: write_visible_data(&_cproxy) 직접 SSL_write 도입
+- 이전: _sub_it._cside->write() → visible pipe → 인터리빙 문제
+- 결과: written=562 expected=562 (성공), but RST_STREAM → ERR_CONNECTION_CLOSED
+- HTTP/2 strategy: D (END_STREAM=true, GOAWAY=false, is_http2=2)
+- Test: #189 — FAIL (ERR_CONNECTION_CLOSED)
+
+### Iteration 5 — B16 (2026-04-03)
+- 변경: RST_STREAM 제거 (held request는 서버가 모르므로 RST 불필요)
+- 결과: CSP violation으로 에러 패턴 전환 (긍정적 진전)
+- Test: #190 — blocked=true, warning_visible=false
+  - 에러: CSP connect-src violation (APF 응답 데이터가 브라우저에 도달)
+- Test: #191 (HAR capture) — FAIL: is_http2=2가 H2 연결 상태 부패
+  - 모든 batchexecute 실패, 페이지 정상 로드 불가
+
+### Iteration 6 — B17 (2026-04-03)
+- 변경: gemini3를 is_http2=2→1로 전환 (on_disconnected)
+- 근거: is_http2=2 keep-alive에서 write_visible_data 직접 호출 시 H2 상태 부패
+- 서버 확인: h2_size=562, end_stream=1, goaway=0 (H2 프레임 정상)
+- Test: #192 — blocked=true, warning_visible=false
+  - 에러: ERR_CONNECTION_CLOSED + ERR_CONNECTION_RESET 혼재
+  - 근본 원인: **hold mechanism이 모든 POST를 지연 → 페이지 초기화 실패**
+  - hold는 B13에서 is_http2=2용으로 추가되었으나, is_http2=1에서는 불필요
+  - 전송 버튼 미활성화 → 프롬프트 전송 불가 → 차단 테스트 불가
+
+### Iteration 7 — B18 (2026-04-03)
+- 변경: gemini3를 hold 목록에서 제거 (is_http2=1은 hold 불필요)
+- 서버 확인: B18 이후 gemini3 POST → hold_set 없음, blocked=0으로 즉시 통과
+  - batchexecute rpcids (ESY5D, L5adhe, aPya6c) 모두 정상 처리
+- Test: #194 (check-warning) — **test PC 오프라인, 결과 대기 중**
+- 기대: 페이지 초기화 정상 → 민감 프롬프트 전송 가능 → 차단 + 경고 표시

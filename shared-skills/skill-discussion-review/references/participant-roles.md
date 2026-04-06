@@ -1,124 +1,170 @@
-# Participant Roles — 역할 풀 및 선정 기준
+# Participant Roles — Universal Role Pool & Selection
 
-## 고정 참여자
+## Fixed Participants
 
-### Discussion Facilitator (DF) — 토론 전문가
+### Discussion Facilitator (DF)
 
-**페르소나:** 하버드 토론학 교수. 구조적 논증과 합의 도출 전문.
+**Persona:** Harvard debate professor. Expert in structured argumentation and consensus building.
+**Structured Facilitator + Post-Round Quality Auditor.**
+기본 모드는 절차적 진행이며, 문제 감지 시에만 개입한다.
 
-**행동 원칙:**
-- 논점을 명확히 구조화하고, 라운드를 진행한다
-- 성급한 결론을 방지한다 — 반론 기회를 반드시 제공
-- 참여자 간 발언 균형을 유지한다
-- 합의를 선언하기 전에 반드시 반대 의견 확인
-- 자신의 기술적 의견은 최소화 (진행 역할에 집중)
+**Default Behaviors (every round):**
+- Structure issues clearly and manage round progression
+- Present issues, manage speaker turns, summarize interim findings
+- Declare consensus when criteria are met
+- Prevent premature conclusions — always provide opportunity for rebuttal
 
-**발화 스타일:**
+**Post-Round Quality Check (silent — output only on failure):**
+After each round, DF silently checks:
+□ Did each participant contribute something unique from their role?
+□ Did EC challenge at least once?
+□ Was there any position refinement or genuine disagreement?
+
+**On Check Failure Only — use DF Intervention Toolkit (see SKILL.md):**
+- Missing unique contribution → redirect participant
+- EC didn't challenge → prompt EC for objection
+- No position movement → assign contrarian position to least-engaged participant
+
+**Speech Examples (default facilitation):**
 ```
-"좋은 반론입니다. [이름], 이 반론에 어떻게 응답하시겠습니까?"
-"합의가 형성되고 있습니다만, 반대 의견이 없는지 확인하겠습니다."
-"이 논점은 [N]라운드 더 필요해 보입니다. [이름]의 우려가 해소되지 않았습니다."
+"Good rebuttal. [Name], how do you respond to this challenge?"
+"Consensus appears to be forming, but let me check for dissent first."
+"This topic needs [N] more rounds. [Name]'s concern hasn't been resolved."
 ```
 
-### External Consultant (EC) — 외부 컨설턴트
-
-**페르소나:** 도메인 외부에서 온 기술 컨설턴트. 내부자 시각의 맹점을 찾는 역할.
-
-**행동 원칙:**
-- 매 라운드에서 최소 1회 반론 또는 의문을 제기
-- "왜?"를 근본적으로 질문 — 당연시되는 전제를 의심
-- 실행 가능성, 유지보수 비용, 부작용을 점검
-- 완전히 다른 접근 방식을 제안할 수 있음
-
-**발화 스타일:**
+**Speech Examples (on quality check failure only):**
 ```
-"잠깐요, 이 접근의 전제는 ~인데, 그게 바뀌면 어떻게 됩니까?"
-"모든 분이 동의하시는데, 한 가지 우려가 있습니다..."
-"완전히 다른 방법으로, ~는 고려해보셨습니까?"
+"[Name], your point overlaps with [other]. As [role], what's YOUR unique angle?"
+"[Name], for this round, argue AGAINST the current direction."
+"EC, what's your strongest remaining objection here?"
+```
+
+### External Consultant (EC)
+
+**Persona:** Outside technical consultant. Finds blind spots in insider thinking.
+
+**Mandatory Behaviors:**
+- At least 1 counterargument or fundamental question per round
+- **Probe weak reasoning:** ask "why?" when claims lack evidence (transferred from DF)
+- Question assumptions at the root level — challenge what others take for granted
+- Check feasibility, maintenance cost, and side effects
+- Propose entirely different approaches when appropriate
+- **Never accept consensus passively** — even on "obvious" items, question execution risks
+
+**Speech Examples:**
+```
+"Hold on. The premise here is X — what happens if that premise is wrong?"
+"Everyone agrees, but I have a concern about..."
+"Entirely different approach: have you considered...?"
+"This seems too easy. What are we missing?"
+"What's the maintenance cost of this change 3 months from now?"
 ```
 
 ---
 
-## 자동 구성 역할 풀
+## Universal Role Pool (범용 역할 풀)
 
-대상 스킬의 성격에 따라 아래 풀에서 3~4명을 선정한다.
+Topics from any domain select 3-4 participants from this pool.
+Each role has a **mandatory contribution burden** — a hard constraint, not a suggestion.
 
-### 기술 역할
+### Technical Roles
 
-| 역할 | 약칭 | 관점 | 적합한 스킬 유형 |
-|------|------|------|----------------|
-| Pipeline Architect | PA | 전체 워크플로우, 단계 간 연동, 데이터 흐름 | 파이프라인, 오케스트레이터 스킬 |
-| Test Automation Engineer | TA | 실행 안정성, 에러 핸들링, 자동화 실현성 | 테스트/자동화 관련 스킬 |
-| Skill Author | SA | 문서 품질, 일관성, 가독성, 트리거 정확도 | 모든 스킬 (항상 포함 권장) |
-| Infra/Security Specialist | IS | 네트워크, 인증, 보안, 환경 제약 | 인프라/배포/네트워크 관련 스킬 |
-| Frontend Engineer | FE | DOM 구조, 렌더링, 브라우저 동작 | 프론트엔드 분석/경고 표시 스킬 |
-| Backend Engineer | BE | API, 프로토콜, 서버 로직, DB | 서버/API/DB 관련 스킬 |
-| DevOps Engineer | DO | 빌드, 배포, CI/CD, 서버 관리 | 빌드/배포 스킬 |
-| UX Researcher | UX | 사용자 경험, 접근성, 에러 메시지 품질 | 사용자 대면 기능 스킬 |
-| QA Engineer | QA | 테스트 커버리지, 엣지 케이스, 회귀 방지 | 품질 관련 스킬 |
-| Data Analyst | DA | 메트릭, 로그 분석, 성능 측정 | 분석/메트릭 관련 스킬 |
+| Role | Abbr | Perspective | Mandatory Contribution | Best For |
+|------|------|-------------|----------------------|----------|
+| Pipeline Architect | PA | Workflow, stage integration, data flow | Must evaluate end-to-end flow impact | Pipeline, orchestrator topics |
+| Test/Automation Engineer | TA | Execution stability, error handling, automation feasibility | Must identify at least 1 failure scenario per round | Test/automation topics |
+| Infra/Security Specialist | IS | Network, auth, security, environment constraints | Must flag security/infra risks others miss | Infra/deploy/network topics |
+| Frontend Engineer | FE | DOM, rendering, browser behavior | Must provide browser-specific technical evidence | Frontend analysis topics |
+| Backend Engineer | BE | API, protocol, server logic, DB | Must reference specific protocol/API behaviors | Server/API/DB topics |
+| DevOps Engineer | DO | Build, deploy, CI/CD, server management | Must evaluate operational feasibility | Build/deploy topics |
 
-### 선정 알고리즘
+### Cross-Functional Roles
 
-```
-1. 대상 스킬의 SKILL.md 읽기
-2. 핵심 키워드 추출: 도메인, 기술 스택, 연동 시스템
-3. 매칭:
-   - "browser", "Chrome", "DOM", "screenshot" → FE
-   - "build", "deploy", "scp", "server" → DO
-   - "SSH", "HTTPS", "credential", "firewall" → IS
-   - "pipeline", "orchestrat", "phase" → PA
-   - "test", "automat", "polling", "desktop-commander" → TA
-   - "API", "HTTP", "SSE", "protocol" → BE
-   - "metric", "log", "analysis" → DA
-   - 항상 포함 → SA (문서 품질은 모든 스킬에 해당)
-4. 매칭된 역할 중 관점 충돌이 최대가 되도록 3~4명 선정
-5. 사용자에게 구성 결과 제시 후 확인
-```
-
-### 관점 충돌 매트릭스 (선정 시 참고)
-
-높은 충돌 = 생산적 토론 가능성 높음
-
-| | PA | TA | IS | FE | DO | UX |
-|---|---|---|---|---|---|---|
-| **PA** | - | 중 | 중 | 저 | 중 | 저 |
-| **TA** | 중 | - | 높 | 중 | 중 | 중 |
-| **IS** | 중 | 높 | - | 저 | 높 | 저 |
-| **FE** | 저 | 중 | 저 | - | 저 | 높 |
-| **DO** | 중 | 중 | 높 | 저 | - | 저 |
-| **UX** | 저 | 중 | 저 | 높 | 저 | - |
-
-예: TA(자동화 실현성) vs IS(보안 제약) = 높은 충돌 → 생산적 토론
-예: FE(렌더링) vs UX(경험) = 높은 충돌 → 프론트엔드 스킬에 적합
+| Role | Abbr | Perspective | Mandatory Contribution | Best For |
+|------|------|-------------|----------------------|----------|
+| Skill/Document Author | SA | Document quality, consistency, readability, trigger accuracy | Must identify ambiguity or instruction-following risks | Any skill/doc topic |
+| UX Researcher | UX | User experience, accessibility, error message quality | Must present end-user impact scenario | User-facing topics |
+| QA Engineer | QA | Test coverage, edge cases, regression prevention | Must identify at least 1 untested edge case | Quality topics |
+| Data Analyst | DA | Metrics, log analysis, performance measurement | Must provide data-driven evidence or propose measurable criteria | Analytics/metrics topics |
+| Risk Analyst | RA | Threat modeling, failure modes, mitigation strategies | Must present at least 1 risk scenario with likelihood assessment | Risk/strategy topics |
+| Process Designer | PD | Workflow optimization, bottleneck identification, adoption friction | Must evaluate second-order effects of proposed changes | Process improvement topics |
 
 ---
 
-## 역할별 관점 가이드
+## Selection Algorithm
 
-### 각 역할이 점검해야 할 핵심 질문
+```
+1. Analyze the discussion topic
+2. Extract key aspects: domain, technology stack, stakeholders, constraints
+3. Check domain-profiles/ for pre-configured participant sets
+   → If found: load profile, confirm with user
+   → If not found: proceed to auto-selection
+4. Auto-selection matching:
+   - "browser", "Chrome", "DOM", "screenshot", "CSS" → FE
+   - "build", "deploy", "scp", "server", "CI/CD" → DO
+   - "SSH", "HTTPS", "credential", "firewall", "auth" → IS
+   - "pipeline", "orchestrat", "phase", "workflow" → PA
+   - "test", "automat", "polling", "execution" → TA
+   - "API", "HTTP", "SSE", "protocol", "endpoint" → BE
+   - "metric", "log", "analysis", "dashboard" → DA
+   - "risk", "threat", "failure mode", "mitigation" → RA
+   - "process", "bottleneck", "optimization" → PD
+   - "user", "experience", "accessibility", "UI" → UX
+   - "document", "skill", "instruction", "readability" → SA
+5. Select 3-4 roles maximizing perspective conflict
+6. Present configuration + mandatory burdens to user for confirmation
+```
 
-**PA (Pipeline Architect):**
-- 이 스킬이 전체 파이프라인에서 어떤 위치에 있는가?
-- 이전/이후 단계와의 인터페이스가 명확한가?
-- 컨텍스트 유실 시 복구 경로가 있는가?
+## Perspective Conflict Matrix
 
-**TA (Test Automation Engineer):**
-- 실제 환경에서 실행 시 어떤 문제가 발생할 수 있는가?
-- 에러 핸들링이 모든 실패 경로를 커버하는가?
-- 자동 폴링/실행 시 안정성은 충분한가?
+High conflict = productive debate potential
 
-**SA (Skill Author):**
-- SKILL.md가 처음 읽는 사람도 따라할 수 있는가?
-- references 파일과의 참조가 명확한가?
-- 모호한 지시가 없는가? ("적절히" 같은 표현)
+|     | PA  | TA  | IS  | FE  | DO  | UX  | RA  | PD  |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| PA  | -   | Med | Med | Low | Med | Low | Med | High|
+| TA  | Med | -   | High| Med | Med | Med | Med | Low |
+| IS  | Med | High| -   | Low | High| Low | High| Low |
+| FE  | Low | Med | Low | -   | Low | High| Low | Med |
+| DO  | Med | Med | High| Low | -   | Low | Med | Med |
+| UX  | Low | Med | Low | High| Low | -   | Med | High|
+| RA  | Med | Med | High| Low | Med | Med | -   | Med |
+| PD  | High| Low | Low | Med | Med | High| Med | -   |
 
-**IS (Infra/Security Specialist):**
-- 인증/네트워크 제약이 고려되었는가?
-- 보안 민감 정보(키, 토큰)가 노출되지 않는가?
-- 환경 변경(방화벽 정책 등) 시 영향은?
+---
 
-**EC (External Consultant):**
-- 이 접근 방식의 근본적 전제는 무엇인가?
-- 완전히 다른 방법은 없는가?
-- 3개월 후에도 이 방식이 유효한가?
+## Topic-Category Configuration Examples
+
+**Skill Review/Improvement:**
+→ SA(document quality) + PA or TA(execution) + IS or DO(infra) + EC(external)
+
+**Technical Architecture Decision:**
+→ PA(workflow) + BE or FE(implementation) + IS(security) + RA(risk)
+
+**Process Improvement:**
+→ PD(process design) + TA(automation feasibility) + UX(user impact) + DA(metrics)
+
+**Risk Assessment:**
+→ RA(risk modeling) + IS(security) + DO(operational) + PD(process impact)
+
+**Strategy/Direction:**
+→ RA(risk) + PD(process) + UX(user perspective) + DA(data-driven)
+
+---
+
+## Domain Profiles (Optional)
+
+Pre-configured participant sets for frequently discussed domains.
+Store in `references/domain-profiles/` as markdown files.
+
+**Profile format:**
+```markdown
+# Domain Profile: [Name]
+## Participants
+- [Role 1 (Abbr)]: [Why this role for this domain]
+- [Role 2 (Abbr)]: [Why this role for this domain]
+- [Role 3 (Abbr)]: [Why this role for this domain]
+## Domain-Specific Context
+[Background knowledge participants need]
+## Common Discussion Topics
+[Typical issues that arise in this domain]
+```
