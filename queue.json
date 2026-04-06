@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-31T17:55:00.000000",
+  "updated_at": "2026-04-06T15:55:00+09:00",
   "tasks": [
     {
       "id": "084",
@@ -364,9 +364,81 @@
       "created": "2026-04-03T15:55:06.318809",
       "updated": "2026-04-03T15:55:06.318819",
       "summary": "Phase3-B15: gemini3 check-warning — write_visible_data direct SSL_write path"
+    },
+    {
+      "id": "200",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — ChatGPT (DONE)"
+    },
+    {
+      "id": "201",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Claude (DONE)"
+    },
+    {
+      "id": "202",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Perplexity (DONE)"
+    },
+    {
+      "id": "203",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Genspark (WARNING_SHOWN)"
+    },
+    {
+      "id": "204",
+      "command": "check-block",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Grok (BLOCKED_ONLY)"
+    },
+    {
+      "id": "205",
+      "command": "check-block",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Notion (BLOCKED_ONLY)"
+    },
+    {
+      "id": "206",
+      "command": "check-block",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — GitHub Copilot (BLOCKED_ONLY)"
+    },
+    {
+      "id": "207",
+      "command": "check-block",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Gamma (BLOCKED_ONLY)"
+    },
+    {
+      "id": "208",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-06T15:55:00+09:00",
+      "summary": "DB migration regression — Gemini (NEEDS_MANUAL_ACTION)"
     }
   ],
-  "last_updated": "2026-04-03T15:55:06.318821",
+  "last_updated": "2026-04-06T15:55:00+09:00",
   "archived": [
     "058",
     "059",
