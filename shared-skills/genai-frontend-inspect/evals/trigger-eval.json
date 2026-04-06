@@ -1,0 +1,95 @@
+{
+  "skill_name": "genai-frontend-inspect",
+  "evals": [
+    {
+      "id": 1,
+      "query": "AI 서비스 frontend inspect 진행해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 2,
+      "query": "frontend inspect — DOM 구조 확인해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 3,
+      "query": "warning용 frontend profile 만들어줘",
+      "should_trigger": true
+    },
+    {
+      "id": 4,
+      "query": "frontend inspect — SSE 쓰는지 webchannel인지 확인해봐",
+      "should_trigger": true
+    },
+    {
+      "id": 5,
+      "query": "frontend inspect 대상 API 엔드포인트 DevTools로 캡처해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 6,
+      "query": "frontend profile용으로 응답 스트리밍 방식 확인해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 7,
+      "query": "frontend inspect — HTTP 버전이랑 Content-Type 확인해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 8,
+      "query": "경고 표시 Phase 1 frontend inspect 시작하자",
+      "should_trigger": true
+    },
+    {
+      "id": 9,
+      "query": "frontend inspect — 프론트엔드 framework 뭐 쓰는지 확인해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 10,
+      "query": "check-warning 실행해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 11,
+      "query": "APF warning design doc 만들어줘",
+      "should_trigger": false
+    },
+    {
+      "id": 12,
+      "query": "warning generator 함수 C++ 수정해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 13,
+      "query": "EtapV3 빌드해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 14,
+      "query": "warning etap 로그 봐줘",
+      "should_trigger": false
+    },
+    {
+      "id": 15,
+      "query": "warning pipeline 상태 보여줘",
+      "should_trigger": false
+    },
+    {
+      "id": 16,
+      "query": "HAR 파일 분석해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 17,
+      "query": "테스트 PC에서 차단 확인해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 18,
+      "query": "block response를 Strategy A로 구현하자",
+      "should_trigger": false
+    }
+  ]
+}

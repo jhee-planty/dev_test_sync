@@ -1,7 +1,7 @@
 # Retrospective Report Template
 
 회고 리포트를 아래 구조로 생성한다.
-`$GIT_SYNC_REPO/artifacts/retrospective/retrospective_{YYYY-MM-DD}.md` 에 저장.
+`workflow-retrospective/metrics/retrospective_{YYYY-MM-DD}.md` 에 저장.
 
 ---
 

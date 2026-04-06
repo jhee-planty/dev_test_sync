@@ -1,0 +1,75 @@
+{
+  "skill_name": "etap-testbed",
+  "evals": [
+    {
+      "id": 1,
+      "query": "Dell 테스트 망에서 APF 차단 테스트해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 2,
+      "query": "테스트베드에서 모듈 상태 확인해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 3,
+      "query": "HTTPS 차단 테스트 진행해줘",
+      "should_trigger": true
+    },
+    {
+      "id": 4,
+      "query": "etapd 재시작하고 기능 테스트",
+      "should_trigger": true
+    },
+    {
+      "id": 5,
+      "query": "VT MITM 경유 테스트",
+      "should_trigger": true
+    },
+    {
+      "id": 6,
+      "query": "배포 후 통합 테스트 진행",
+      "should_trigger": true
+    },
+    {
+      "id": 7,
+      "query": "etapcomm으로 APF 상태 확인",
+      "should_trigger": true
+    },
+    {
+      "id": 8,
+      "query": "cipher suite 포워딩 테스트",
+      "should_trigger": true
+    },
+    {
+      "id": 9,
+      "query": "JA3 지문 다양화 확인",
+      "should_trigger": true
+    },
+    {
+      "id": 10,
+      "query": "HAR 파일 분석해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 11,
+      "query": "APF에 새 서비스 추가해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 12,
+      "query": "EtapV3 빌드만 해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 13,
+      "query": "ai_prompt_filter.cpp 코드 수정해줘",
+      "should_trigger": false
+    },
+    {
+      "id": 14,
+      "query": "DB 스키마 설계해줘",
+      "should_trigger": false
+    }
+  ]
+}

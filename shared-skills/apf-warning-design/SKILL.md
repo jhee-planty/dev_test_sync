@@ -22,62 +22,23 @@ alert/dialog, HTTP body HTML 등 가능한 전달 방식 중 가장 효과적인
 
 ---
 
-## Warning Delivery Strategy Classification
+## Warning Delivery Strategy & Protocol Reference
 
-서비스별 HTTP/2 블록 응답 전략은 4가지(A/B/C/D)로 분류된다.
+서비스별 전략 선택, SSE 구분자, 비-SSE 프로토콜 등 설계 판단에 필요한 지식은
+**체크리스트에 통합**되었다.
 
-→ **상세 정의:** `apf-warning-impl/SKILL.md` § "HTTP/2 Block Response Strategies"
-→ **결정 트리:** `apf-warning-impl/SKILL.md` § "새 서비스 추가 시 결정 트리"
+→ **권위 출처 (판정용):** `references/warning-delivery-checklist.md` — Section 3 매트릭스
+→ **항목별 근거 (개선 시에만):** `references/checklist-criteria-sources.md`
+→ **상세 정의 (구현용):** `apf-warning-impl/SKILL.md` § "HTTP/2 Block Response Strategies"
+→ **패턴 카탈로그:** `references/design-patterns.md`
+→ **에스컬레이션 구조 한계:** `apf-warning-impl/references/escalation-architecture-limits.md` (외부 스킬)
 
-| 패턴 | 핵심 특성 | 대표 서비스 |
-|------|----------|------------|
-| A | END_STREAM + GOAWAY, 깔끔한 종료 | Claude |
-| B | keep-alive, network error artifact 동반 | Genspark |
-| C | HTTP/1.1, Content-Length 기반 | ChatGPT |
-| D | END_STREAM=true + GOAWAY=false, 멀티플렉싱 보호 | Gemini |
+> **Strategy 요약 (fallback):** A=END_STREAM+GOAWAY, B=keep-alive(최후 수단),
+> C=Content-Length 기반(가장 안정), D=END_STREAM only(다중화 보호). 우선순위 D→C→A→B.
+> 체크리스트 접근 불가 시에만 이 요약을 참고한다.
 
-Strategy D는 GOAWAY가 cascade failure를 일으키는 멀티플렉싱 서비스에 사용한다.
-해당 스트림만 END_STREAM으로 종료하고 HTTP/2 연결은 유지한다.
-
-Phase 2에서의 역할은 프론트엔드 프로파일을 분석하여 어떤 전략이 적합한지
-**추천**하는 것이다. 최종은 Phase 3 테스트를 통해 이루어진다.
-
-**design doc에 반드시 명시할 사항:**
-- 추천 전략 (A/B/C/D)과 그 근거
-- 패턴 B 추천 시 "network error" artifact 동반 가능성
-- 프론트엔드의 응답 처리 방식 (fetch API, ReadableStream, EventSource 등)
-
----
-
-## SSE 구분자 주의사항
-
-SSE 블록 응답을 설계할 때 줄바꿈 구분자 선택이 중요하다.
-
-- `\r\n\r\n` 사용 시: 일부 클라이언트(Genspark 등)의 naive `\n`-split 파서가
-  JSON.parse에 실패할 수 있다.
-- **안전한 기본값: `\n\n` (LF+LF)**
-- HAR 분석 시 실제 서버가 사용하는 구분자를 반드시 확인하고,
-  블록 응답에서도 동일한 구분자를 사용한다.
-
-이 차이가 경고 표시 실패의 원인이 되는 경우가 실제로 있었다.
-(Genspark 구현 시 확인됨)
-
----
-
-## 비-SSE 서비스 패턴
-
-모든 AI 서비스가 SSE를 사용하는 것은 아니다. 대표적인 대안 패턴:
-
-### Google webchannel (Gemini)
-
-- SSE가 아닌 protobuf-over-JSON over long-polling XHR
-- batchexecute(프롬프트 전송)와 StreamGenerate(응답 스트리밍) 분리
-- `)]}'` 보안 헤더 + 길이/데이터 쌍 형식
-- 403 응답 → 프론트엔드가 무시 (silent failure)
-- GOAWAY → cascade failure → Strategy D(GOAWAY=false) 필수
-
-design doc 작성 시 SSE가 아닌 서비스는 실제 프로토콜을 명시하고,
-응답 형식을 해당 프로토콜에 맞춰 설계해야 한다.
+Phase 2에서의 역할은 체크리스트를 채워 전략을 **추천**하는 것이다.
+최종 확정은 Phase 3 테스트를 통해 이루어진다.
 
 ---
 
@@ -101,6 +62,8 @@ design proposals for Cowork to review.
 **Before invoking**, resolve path variables using `guidelines.md` → Section 8: Required Paths.
 Replace `SKILLS_DIR` and `ETAP_ROOT` with their actual values for the current environment.
 
+> **Cowork 실행:** guidelines.md §Claude Code 실행 규칙 참조
+
 ```bash
 claude -p "Read the frontend profile and existing block response code.
 Design a warning delivery strategy for {service_id}.
@@ -108,15 +71,20 @@ Design a warning delivery strategy for {service_id}.
 Frontend profile: SKILLS_DIR/genai-frontend-inspect/services/{service_id}_frontend.md
 Existing code: ETAP_ROOT/functions/ai_prompt_filter/ai_prompt_filter.cpp
 Design patterns: SKILLS_DIR/apf-warning-design/references/design-patterns.md
-Prior experience: SKILLS_DIR/_backup_20260317/apf-add-service/services/{service_id}.md (if exists)
+Warning delivery checklist: SKILLS_DIR/apf-warning-design/references/warning-delivery-checklist.md
+Existing design doc: SKILLS_DIR/apf-warning-design/services/{service_id}_design.md (if exists)
 Guidelines: SKILLS_DIR/guidelines.md
 
-Determine the HTTP/2 strategy (A/B/C/D) based on the frontend profile.
-Refer to the strategy classification in apf-warning-design/SKILL.md.
+IMPORTANT: Fill out the warning delivery checklist (Section 1 and 2) BEFORE choosing a strategy.
+Use the checklist Section 3 matrix to select the HTTP/2 strategy and warning pattern.
+If any early determination condition in Section 3.3 is met, skip Steps 3-5 and use the BLOCKED_ONLY output format with justification.
+When filling Section 2 items, you may additionally read design docs of services with the same comm_type (in services/ directory) for reference.
+If the frontend profile data contradicts basic assumptions (e.g., comm_type changed from SSE to WebSocket, API endpoint domain changed), add === FRONTEND_STALE === section at the top of output with specific discrepancies found.
 
 Output sections:
+=== FRONTEND_STALE === (only if frontend profile appears outdated)
 === FRONTEND SUMMARY ===
-=== RENDERING CONSTRAINTS ===
+=== CHECKLIST RESULTS ===
 === HTTP/2 STRATEGY RECOMMENDATION ===
 === WARNING STRATEGY ===
 === RESPONSE SPECIFICATION ===
@@ -141,29 +109,35 @@ ETAP_ROOT  = ~/Documents/workspace/Officeguard/EtapV3/
 1. Frontend profile (`{service_id}_frontend.md`)
 2. Existing generator code in `ai_prompt_filter.cpp` (search for `generate_{service_id}`)
 3. Design patterns reference (`references/design-patterns.md`)
-4. Prior network-level experience from backup (if exists)
+4. **Warning delivery checklist** (`references/warning-delivery-checklist.md`)
+5. Existing design doc (`services/{service_id}_design.md`, if exists — 이전 설계 참조용)
 
-### Step 2 — Identify Rendering Constraints
+### Step 2 — Checklist 기반 판별
 
-From the frontend profile, determine:
+**`references/warning-delivery-checklist.md`를 순서대로 채운다.**
 
-| Question | Why it matters |
-|----------|---------------|
-| What Content-Type does the frontend expect? | Wrong type → fetch error, not warning |
-| Does the frontend parse JSON keys? Which ones? | Missing required keys → "Something went wrong" |
-| Does the frontend use a markdown renderer? | Warning text formatting options |
-| Are there required init events (SSE)? | Missing init → stream error before warning shows |
-| What triggers the error UI? | Must avoid these conditions |
-| 프론트엔드 에러 핸들러 구조는? (try-catch, error boundary, fallback UI) | 모든 에러를 catch하면 커스텀 경고 전달 자체가 불가능 |
-| EventSource/fetch/XHR 에러 시 사용자에게 보이는 실제 UI는? | generic error면 경고 문구 전달 불가 → BLOCKED_ONLY 조기 판정 가능 |
-| What's the minimum response for a message bubble? | Below this → no visible output |
-| HTTP/1.1 or HTTP/2? | Determines Strategy A/B/C/D selection |
-| SSE 구분자는 `\n\n`인가 `\r\n\r\n`인가? | 잘못된 구분자 → JSON.parse 실패 |
+체크리스트 Section 1(프론트엔드 특성)과 Section 2(전달 가능성)의 각 항목에 대해
+frontend profile과 HAR 데이터를 근거로 YES / NO / N/A / 불명을 기록한다.
+(N/A = 통신 유형에 해당 없음, 불명 = 데이터 부족 → 리스크 기록)
+
+> **조기 판정:** Section 3.3의 조기 판정 조건에 해당하면
+> Phase 3 진입 전에 BLOCKED_ONLY를 판정하고, design doc에 근거를 명시한다.
+> → **Step 3~5를 건너뛰고 'Output Format (BLOCKED_ONLY)' 템플릿으로 직행한다.**
+> 이는 불필요한 빌드 반복을 방지한다.
+
+아래는 체크리스트의 핵심 질문 요약 (전체 항목은 체크리스트 문서 참조):
+
+| 영역 | 핵심 질문 | 판정 영향 |
+|------|----------|----------|
+| 통신 | 통신 유형, 프로토콜, 다중화, SSE 구분자, WS 사용 여부 | 사용 가능한 패턴과 Strategy 제한 |
+| 렌더링 | Content-Type, 필수 키, init 이벤트, 마크다운, 비채팅 소비 | 경고 텍스트 표시 가능 여부 |
+| 에러 처리 | 에러 핸들러 범위, 에러 UI 유형, 에러 역할 대체 가능성, silent failure | BLOCKED_ONLY 조기 판정 |
+| 전달 가능성 | payload 검증, 단일 write 종료, 필드 수정 부작용, 대안 존재 | 최종 전달 방식 선택 |
 
 ### Step 3 — Choose Warning Strategy
 
-Select or propose a delivery strategy from `references/design-patterns.md`.
-Also determine HTTP/2 strategy (A/B/C/D) based on the strategy classification above.
+체크리스트 Section 3 매트릭스에서 결과 조합에 해당하는 전략을 선택한다.
+추가로 `references/design-patterns.md`에서 해당 패턴의 상세 사양을 확인한다.
 
 The design patterns reference is a living catalog — not an exhaustive list.
 When a service requires a novel approach that doesn't fit existing patterns:
@@ -192,32 +166,39 @@ Define the exact HTTP response that Phase 3 will implement:
 - Log points: where to inject `bo_mlog_info` statements for diagnostic verification
 
 → See `references/DESIGN_SUMMARY.md` for 전체 서비스 설계 요약.
-→ See `apf-warning-impl/references/test-log-templates.md` for log point conventions.
+→ See `SKILLS_DIR/apf-warning-impl/references/test-log-templates.md` (외부 스킬) for log point conventions.
 
 ---
 
 ## Cowork Review (Quality Gate)
 
-After receiving sub agent output, Cowork reviews:
+After receiving sub agent output, Cowork reviews in two stages:
+
+**Stage 1 — 체크리스트 완성도 (체크리스트가 다루는 영역)**
 
 | Check | How to verify |
 |-------|---------------|
-| Content-Type matches frontend expectation | Compare with frontend profile |
-| Required JSON keys present (if JSON) | Compare with frontend profile's rendering analysis |
-| SSE init events included (if SSE) | Cross-check with frontend profile + prior experience |
-| SSE 구분자가 올바른지 | HAR의 실제 구분자와 일치하는지 확인 |
-| Warning text is readable | Not raw JSON/SSE, uses markdown if renderer supports it |
-| Response doesn't trigger error UI | Avoids conditions listed in frontend profile's error handling |
-| HTTP/2 strategy is specified | A/B/C/D 중 하나가 명시되어 있는지 |
-| Test criteria are specific and verifiable | Each criterion has a clear pass/fail condition |
+| FRONTEND_STALE 플래그 확인 | output에 `=== FRONTEND_STALE ===` 섹션이 있으면 → Phase 1 재수행 후 sub agent 재실행. 설계를 진행하지 않는다 |
+| 전 항목이 채워졌는가 | Full Checklist Record에서 N/A 외 빈 항목 없는지 확인 |
+| 불명 항목이 리스크로 기록되었는가 | 불명 항목마다 "Phase 3 우선 확인" 또는 "Phase 1 재조사" 지시가 있는지 |
+| 조기 판정 조건(3.3)을 확인했는가 | 해당 시 BLOCKED_ONLY 판정과 근거가 명시되었는지 |
+| Strategy가 매트릭스(3.1, 3.2) 결과와 일치하는가 | Checklist Results의 조건 조합이 선택된 Strategy와 매칭되는지 |
+
+> **Stage 1 미통과 시 즉시 반려한다.** 체크리스트가 불완전한 상태에서 Stage 2를 진행하지 않는다.
+> 반려 사유와 보완 지시를 명시하여 sub agent를 재실행한다.
+
+**Stage 2 — 비체크리스트 영역 (체크리스트가 다루지 않는 항목)**
+
+| Check | How to verify |
+|-------|---------------|
+| Warning text is readable | raw JSON/SSE가 아닌 사용자 가독 텍스트인지. 마크다운 렌더러 지원 시 서식 활용 권장 (미활용 자체는 reject 사유 아님) |
+| Response Specification이 구체적인가 | HTTP status, headers, body format, 필수 필드가 빠짐없이 명시 |
+| Test criteria are specific and verifiable | 각 기준에 명확한 pass/fail 조건이 있는지 |
+| Test log points are defined | Phase 3 진단을 위한 로그 포인트가 최소 1개 이상 |
 
 **Review result:**
 - ✅ Approved → save as `services/{service_id}_design.md` → advance to Phase 3
 - ❌ Rejected → specify issues → re-run sub agent with feedback
-
-**Context 유실 시:** Quality Gate 검토 중 compact/세션 재시작이 발생하면,
-design doc 파일 존재 여부로 판단한다. 파일 있으면 → 이미 승인된 것 (Phase 3 진행).
-파일 없으면 → sub agent를 재실행한다 (비용 발생하지만 유일한 복구 경로).
 
 ---
 
@@ -226,10 +207,21 @@ design doc 파일 존재 여부로 판단한다. 파일 있으면 → 이미 승
 ```markdown
 ## {Service Name} — Warning Design
 
+### Checklist Results
+체크리스트 판별 결과 요약. 전체 항목 결과는 design doc 하단 Notes 아래에
+접힌 섹션(`<details>`)으로 포함한다. 여기에는 핵심 판정 근거만 명시한다.
+- 통신 유형: {1-1 결과}
+- 프로토콜: {1-2 결과}
+- 다중화: {1-3 결과}
+- 에러 핸들러: {3-1 결과}
+- 에러 UI: {3-2 결과}
+- payload 검증: {4-1 결과}
+- 조기 판정 해당 여부: {YES/NO — 해당 시 Section 3.3 조건 번호 명시}
+
 ### Strategy
 - Pattern: {pattern name from design-patterns.md, or "CUSTOM: {description}"}
 - HTTP/2 strategy: {A / B / C / D — 근거}
-- Based on: {frontend profile findings}
+- Based on: {checklist results + frontend profile findings}
 
 ### Response Specification
 - HTTP Status: {status code}
@@ -268,6 +260,59 @@ design doc 파일 존재 여부로 판단한다. 파일 있으면 → 이미 승
 
 ### Notes
 - {Any additional observations or risks}
+
+### Full Checklist Record
+<details>
+<summary>전체 체크리스트 판별 결과 (클릭하여 펼치기)</summary>
+
+| # | 항목 | 결과 | 근거 |
+|---|------|------|------|
+| 1-1 | 통신 유형 | {결과} | {근거} |
+| 1-2 | 프로토콜 | {결과} | {근거} |
+| ... | ... | ... | ... |
+| 4-6 | 대안 전달 방식 | {결과} | {근거} |
+
+</details>
+```
+
+---
+
+## Output Format (BLOCKED_ONLY): services/{service_id}_design.md
+
+조기 판정(Section 3.3)으로 BLOCKED_ONLY가 확정된 서비스용 단축 템플릿.
+Response Specification, Frontend Rendering Prediction, Test Log Points는 생략한다.
+
+```markdown
+## {Service Name} — Warning Design (BLOCKED_ONLY)
+
+### Checklist Results
+- 통신 유형: {1-1 결과}
+- 프로토콜: {1-2 결과}
+- 다중화: {1-3 결과}
+- 에러 핸들러: {3-1 결과}
+- 에러 UI: {3-2 결과}
+- payload 검증: {4-1 결과}
+- **조기 판정: YES — Section 3.3 조건 #{번호} 해당**
+
+### Strategy
+- Pattern: BLOCKED_ONLY (차단O, 경고X)
+- 근거: {조기 판정 조건과 구체적 근거}
+
+### Notes
+- {추후 경고 전달이 가능해지는 조건 (있다면)}
+- {Etap 아키텍처 변경, 프론트엔드 변경 등으로 재검토 가능한 시점}
+
+### Full Checklist Record
+<details>
+<summary>전체 체크리스트 판별 결과 (클릭하여 펼치기)</summary>
+
+| # | 항목 | 결과 | 근거 |
+|---|------|------|------|
+| 1-1 | 통신 유형 | {결과} | {근거} |
+| ... | ... | ... | ... |
+| 4-6 | 대안 전달 방식 | {결과} | {근거} |
+
+</details>
 ```
 
 ---
@@ -280,6 +325,18 @@ design doc 파일 존재 여부로 판단한다. 파일 있으면 → 이미 승
 
 → See `guidelines.md` → Section 4: Experience Management
 
+### 기존 Design Doc 전환 방침 (2026-03-31 이전 작성분)
+
+체크리스트 도입 전에 작성된 10개 design doc은 다음 규칙을 따른다:
+
+1. **기존 doc은 동결한다.** 현재 형식 그대로 유지하며 체크리스트 형식으로 재작성하지 않는다.
+2. **Phase 3 재개 시 소급 적용한다.** MITM 이슈 해결 후 해당 서비스의 Phase 3을 시작할 때,
+   체크리스트를 채워 기존 design doc 하단에 `Checklist Results`와 `Full Checklist Record`를 **추가**한다.
+   프론트엔드 변경으로 design doc을 갱신하는 경우(재검증 트리거 해당)에도 동일하게 소급 적용한다.
+3. **기존 내용과 체크리스트 결과가 충돌하면 체크리스트 결과를 우선한다.**
+   기존 Strategy 추천이 체크리스트 매트릭스 결과와 다르면 Strategy를 갱신하고
+   변경 사유를 Notes에 기록한다.
+
 ---
 
 ## Related Skills
@@ -287,4 +344,3 @@ design doc 파일 존재 여부로 판단한다. 파일 있으면 → 이미 승
 - **`genai-warning-pipeline`**: Master orchestrator — triggers this skill for Phase 2.
 - **`genai-frontend-inspect`**: Phase 1 — produces the input for this skill.
 - **`apf-warning-impl`**: Phase 3 — consumes this skill's output.
-- Prior analysis: `_backup_20260317/apf-add-service/SKILL.md`

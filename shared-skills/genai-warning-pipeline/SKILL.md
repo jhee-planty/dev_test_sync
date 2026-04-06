@@ -52,6 +52,8 @@ test PC는 실망에 있지만 코드를 수정할 수 없다. sub agent는 대�
 | **Claude Code (sub agent)** | Phase 2: deep frontend analysis + warning design generation (stdout only, no file edits). |
 | **Claude Code (main agent)** | Phase 3: apply approved code changes. Phase 4: build + deploy via etap-build-deploy. |
 
+> **Cowork 실행:** guidelines.md §Claude Code 실행 규칙 참조
+
 ---
 
 ## Pipeline Overview

@@ -45,3 +45,15 @@
 - Option A: WebSocket 프레임 인터셉션 기능 추가 (대규모 개발)
 - Option B: PARTIAL 상태로 유지 (차단만, 경고 없음)
 - Option C: 도메인 레벨 차단으로 전환 (사이드이펙트 있음)
+
+### BLOCKED_ONLY 공식 판정 (2026-04-01)
+
+**구조적 한계 요약:**
+1. AI 통신이 WebSocket 전용 — HTTP 응답 주입 불가
+2. NDJSON 시도 (#100-103): fake UUID → syncRecordValue 타임아웃
+3. WebSocket 프레임 인터셉션은 APF 아키텍처 범위 밖
+
+**VERDICT: BLOCKED_ONLY** — Escalation ① 한계 도달
+- 도메인 레벨 차단으로 AI 요청 자체는 방지 가능 (blocked=1)
+- 경고 텍스트 전달은 WebSocket 아키텍처 제약으로 불가
+- Escalation ②③ 또는 WebSocket 프레임 인터셉션 필요

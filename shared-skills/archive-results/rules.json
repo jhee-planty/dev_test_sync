@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "updated_at": "2026-03-27",
+  "judgment_rules": {
+    "check-warning": {
+      "success": "blocked == true AND warning_visible == true",
+      "partial": "blocked == true AND warning_visible == false",
+      "fail": "blocked == false"
+    },
+    "run-scenario": {
+      "success": "all_passed == true",
+      "fail": "all_passed == false OR all_passed missing"
+    },
+    "multi-test": {
+      "success": "all items in results have pass == true",
+      "fail": "any item in results has pass == false"
+    }
+  },
+  "namespaces": {
+    "old-requests": "old",
+    "old-results": "old",
+    "old-screenshots": "old",
+    "2026-03-25": "0325",
+    "2026-03-27/requests": "0327",
+    "2026-03-27/results": "0327",
+    "gemini-history": "gemini",
+    "gemini-screenshots": "gemini"
+  },
+  "known_service_dirs": {
+    "gemini-history": "gemini",
+    "gemini-screenshots": "gemini"
+  },
+  "exclude_from_success_archive": [
+    "*.png", "*.jpg", "*.gif", "*.bmp"
+  ],
+  "repeat_threshold_for_known_issue": 3
+}

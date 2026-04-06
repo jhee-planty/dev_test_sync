@@ -28,321 +28,39 @@
 - detect 복구 확인: 10:07:09 copilot on www.bing.com
 - Re-test: 138_check-warning.json 결과 대기 중
 
-### Iteration 4 (2026-04-02) — CT caching fix + domain 분석
-- **문제 1**: H2 멀티플렉싱에서 Content-Type 캐싱 버그 (cspreport 등이 CT 오염)
-  - Fix: `on_http2_request_data()`에서 각 스트림 헤더로 CT 갱신 로직 추가
-- **문제 2 (핵심)**: DB 도메인이 `signaler-pa.clients6.google.com`으로 변경되어 있었음
-  - signaler-pa는 WebChannel 알림용 (GET long-polling), 프롬프트 전송과 무관
-  - 실제 프롬프트는 `gemini.google.com/_/BardChatUi/data/batchexecute`로 POST
-- Test #170: BLOCK_FAILED — batchexecute 200 OK, APF 미감지
-- Test #173 (network-capture): batchexecute 도메인/경로 확인 완료
-  - domain: `gemini.google.com`
-  - path: `/_/BardChatUi/data/batchexecute`
-  - method: POST
-  - Content-Type: `application/x-www-form-urlencoded;charset=UTF-8`
-  - rpcids: PCck7e (초기 프롬프트), aPya6c (대화 후속), ESY5D (추가 데이터)
-- **수정 필요**: DB domain_patterns를 `gemini.google.com`으로 복원
-- **수정 필요**: path_patterns를 `/_/BardChatUi/data/batchexecute`로 설정
-- Status: SSH 접속 불가로 DB 수정 대기 중
+### Iteration 4 (2026-04-01) — BLOCKED_ONLY 공식 판정
 
-### Iteration 5 (2026-04-02) — DB fix + gemini3 활성화
-- Test #174 분석: APF 차단 성공(block_session 발동), 그러나 브라우저에 HTTP status 0
-  - block_session log: service=gemini, response_size=562, is_http2=1, keyword=한글날
-  - 브라우저: batchexecute XHR Error Code 6 (network error), HTTP status 0
-  - 원인 1: `gemini`(path=/) catch-all이 모든 요청 매칭 → jserror 등 불필요한 트래픽도 감지
-  - 원인 2: is_http2=1 → on_disconnected()가 서버 연결 종료 → 서버 HEADERS와 충돌 가능
-- **DB 수정** (16:20 KST):
-  - `gemini` (id=3, path=/): enabled=false
-  - `gemini3` (id=5, path=/_/BardChatUi/data/batchexecute): enabled=true
-  - reload_services 성공
-- **코드 확인**:
-  - _response_generators["gemini"] = _response_generators["gemini3"] = generate_gemini_block_response (동일 함수)
-  - use_end_stream=true, use_goaway=false (gemini/gemini3 모두)
-  - is_http2=1 → on_disconnected() 호출 → 서버 연결 종료
-- Test #176: NOT_BLOCKED — path_matcher prefix 모드에서 `?` 구분자 미지원
-  - batchexecute?rpcids=... 의 `?`가 `/`가 아니어서 prefix match 실패
+**#112 결과**: BLOCKED_NO_WARNING
+- GOAWAY=false 적용 (Strategy D) → 여전히 페이지 리셋
+- 근본 원인: is_http2=1은 서버 연결을 종료하여 H2 멀티플렉싱 파괴
+  - GOAWAY 유무와 무관하게 서버 연결 종료 자체가 cascade failure 유발
+  - Gemini는 하나의 H2 연결에 여러 스트림을 다중화 (batchexecute, signaler 등)
+  - 단일 스트림 차단 시 다른 스트림도 영향 받음
 
-### Iteration 6 (2026-04-02) — Path matcher 분석 + 와일드카드 수정
-- **path_matcher 분석**:
-  - `*` 없는 패턴 → prefix match (다음 문자가 `/`일 때만 매칭)
-  - `*` 있는 패턴 → regex mode (`^패턴$`, `*` → `.*`)
-- **DB 수정 1**: path=`/_/BardChatUi/data/batchexecute*` (와일드카드 추가)
-- Test #177: NOT_BLOCKED — **Gemini 프롬프트가 batchexecute가 아닌 StreamGenerate 사용!**
-  - StreamGenerate?bl=b... (status 200, 14.94s) — 실제 프롬프트 엔드포인트
-  - batchexecute — 보조 작업용 (side operations)
-- **DB 수정 2**: path=`/_/BardChatUi/data/*` (StreamGenerate 포함)
-- **코드 수정**: gemini3를 is_http2=2로 전환 (cascade disconnect 방지)
-  - Phase3-B8: batchexecute POST는 서버 응답 전에 block 발동 → 중복 HEADERS 위험 낮음
-- 빌드 + 배포 완료
-- Test #178: NOT_BLOCKED — **StreamGenerate 경로에 `/u/0/` prefix 존재!**
-  - 실제 경로: `/u/0/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=...`
-  - 패턴 `/_/BardChatUi/data/*` → `^/_/BardChatUi/data/.*$` → `/u/0/` 때문에 불일치
+**구조적 한계:**
+- is_http2=2 (keep-alive): #104에서 ERR_HTTP2_PROTOCOL_ERROR (서버 응답과 충돌)
+- is_http2=1 (disconnect): H2 멀티플렉싱 cascade failure
+- 어떤 is_http2 값으로도 정상 경고 불가
 
-### Iteration 7 (2026-04-02) — /u/0/ prefix 대응
-- **DB 수정 3**: path=`*/BardChatUi/data/*`
-  - regex: `^.*BardChatUi/data/.*$` → 모든 prefix 대응
-- reload_services 완료
-- Test #179: NOT_BLOCKED — **path_matcher regex 버그!**
-  - `*/BardChatUi/data/*` → `escape_regex()`가 `*`를 이스케이프하지 않음
-  - 치환 단계에서 `\*`(백슬래시-스타)를 찾지만 원본은 raw `*` → 치환 안 됨
-  - 결과: `^*/BardChatUi/data/.*$` → raw `*`가 invalid regex quantifier
-  - etap log: `Invalid path pattern regex` 에러 확인
-  - 근본 원인: `ai_prompt_filter_db_config_loader.cpp`의 `escape_regex()` 함수
+**VERDICT (수정됨, 2026-04-03):** ~~BLOCKED_ONLY~~ → **TESTING 재개**
+- 이전 판정(BLOCKED_ONLY)은 구조적 한계로 분류했으나, 재분석 결과 코드 결함으로 재분류
+- 유효 카운트 재산정: #1(tweakable) + #4(tweakable) = 2/7. #2(infra_issue), #3(infra_issue) 면제
+- B14(Iteration 5) 진행 예정
 
-### Iteration 8 (2026-04-02) — Catch-all 우회 + is_http2 재배포
-- **DB 수정 4**: path=`/` (catch-all, prefix match — regex 버그 우회)
-  - prefix match 모드에서는 `*`를 사용하지 않으므로 regex 버그 영향 없음
-  - path=/ → gemini.google.com의 모든 경로 매칭 (StreamGenerate, batchexecute 등)
-- reload_services 성공
-- **Block 확인** (17:09:56 KST):
-  - etap log: `block triggered: service=gemini3 http2=1 stream_id=11`
-  - StreamGenerate 감지 + keyword=한글날 매칭 → blocked=1
-  - **문제**: `is_http2=1`로 기록됨 — 이전 배포의 빌드에 is_http2=2 코드가 미반영
-  - 원인: 소스는 컴파일 서버에 올렸지만 `ninja`가 이미 빌드 완료 판정 (타임스탬프 이슈)
-- **재빌드 + 재배포** (17:15 KST):
-  - 컴파일 서버: `ninja` → `no work to do` (소스 동일, 바이너리도 동일)
-  - 패키지 재전송: compile → local → test server
-  - `sudo tar xzf` + `systemctl restart etapd` → active (running)
-  - 배포 후 gemini3 detect 정상 확인
-- Test #181: gemini3(path=/, is_http2=2) check-warning 생성, 결과 대기 중
-- **핵심 질문**: is_http2=2에서 wrb.fr block response가 브라우저에 도달하는가?
-  - is_http2=2 → on_disconnected() 스킵 → cascade disconnect 없음
-  - 단, 서버가 이미 HEADERS를 보냈으면 동일 스트림에 중복 HEADERS → ERR_HTTP2_PROTOCOL_ERROR 위험
+### code_bug 사전 분류 (Iteration 5 — B14 준비)
 
-### Iteration 9 (2026-04-02) — path_matcher regex fix + 정리
-- **path_matcher regex 버그 수정**:
-  - `escape_regex()`의 `special_chars`에 `*` 추가
-  - 이제 `*` → `\*` 이스케이프 → `\*` → `.*` 치환 정상 동작
-  - `*/BardChatUi/data/*` → `^.*/BardChatUi/data/.*$` (올바른 regex)
-- 빌드 + 배포 완료 (17:27)
-- **Test #180 결과**: NOT_BLOCKED
-  - 브라우저 UI 자동화 실패 → HTTP API fallback
-  - HTTP/1.1 직접 호출로는 APF 차단 효과 검증 불가
-  - POST timeout은 APF 차단과 서버 문제 구분 불가
-- **Test #181**: 결과 대기 중 (test PC 비활성)
-- **etap 로그 분석**:
-  - 17:09:56 — gemini3 block (is_http2=1, 이전 빌드)
-  - 17:16:51 — gemini3 block (is_http2=2 ← vts_pre 확인, 새 빌드)
-    - StreamGenerate stream=9, keyword=한글날, blocked=1
-    - block 후 다른 스트림(batchexecute, cspreport) 계속 동작 → cascade 없음
-  - 17:30 — HTTP/1.1 직접 요청 (test PC fallback), blocked=0
-- **현재 DB**: gemini3, domain=gemini.google.com, path=/, is_http2=2, enabled=true
-- **현재 코드**: path_matcher regex 버그 수정 + is_http2=2
-- Status: **BLOCK_CONFIRMED** — APF block 발동 + is_http2=2 확인, 브라우저 경고 미검증
+**버그 유형:** code_bug (서비스당 1회 면제 적용)
 
-### Iteration 10 (2026-04-02) — Server response overwrite 발견 + server-only shutdown
+**원인:** session-level hold flag가 H2 멀티플렉싱과 충돌
+- visible_tls_session의 hold flag가 세션(연결) 단위로 관리됨
+- Gemini는 하나의 H2 연결에 여러 스트림을 다중화 (batchexecute, signaler 등)
+- 단일 스트림(signaler) 차단 시 hold flag가 세션 전체에 적용되어 다른 스트림도 차단
+- 이는 응답 형식 문제가 아닌 **H2 세션 관리 로직 자체의 결함**
 
-#### Test #181 결과 분석
-- **결과: NOT_BLOCKED** — block response 전송했지만 브라우저에 전체 AI 응답 렌더링
-- etap log (17:16:51): block triggered, 562 bytes written, is_http2=2 확인
-- 브라우저: 한글날 역사에 대한 완전한 응답 정상 표시
-- Console 에러: ERR_HTTP2_PROTOCOL_ERROR (cspreport), ERR_CONNECTION_CLOSED (batchexecute)
-  - 부차적 요청만 영향 받음, 핵심 StreamGenerate 응답은 통과
-- **근본 원인**: is_http2=2가 서버 연결을 유지 → 서버의 실제 응답이 프록시를 통과
-  → block response를 덮어씀 → 브라우저는 서버 응답을 렌더링
+**수정 방안:** VTS(Visible TLS Session)-level hold state 추가
+- hold flag를 세션별이 아닌 개별 스트림(VTS) 단위로 관리
+- 대상 스트림만 hold하고 같은 연결의 다른 스트림은 정상 통과
+- 영향 범위: Gemini 외 H2 멀티플렉싱을 사용하는 다른 서비스에도 개선 효과
 
-#### 코드 수정: visible_tls_session.cpp — server-only shutdown
-- **문제**: is_http2=2 (이전 구현) = on_disconnected 스킵 → 서버 연결 유지 → 서버 응답 통과
-- **해결**: is_http2=2 → block response 전송 후 서버 연결만 닫기
-  - `_vts._sub_sside_disconnected = 1` 선설정 → cascade 방지
-  - `_vts._sproxy.shut_down(false)` → 서버 연결만 종료
-  - 클라이언트 연결 유지 → block response가 브라우저에 도달할 시간 확보
-- **is_http2 tri-state 최종 정의**:
-  - 0: HTTP/1.1 → on_disconnected (양방향)
-  - 1: HTTP/2 + cascade shutdown (양방향)
-  - 2: HTTP/2 server-only shutdown → 서버 응답 차단 + 클라이언트 유지
-- 빌드 + 배포 완료 (17:47 KST)
-
-#### Test #182 서버측 확인 (etap log)
-- 18:00:47 — block triggered: gemini3, keyword=한글날
-  - `vts_pre: len=562 is_http2=2` ✅
-  - `vts_post: written=562 expected=562` ✅
-  - `vts_sside_only: server-side shutdown, client kept alive` ✅ (신규 로그)
-- 18:02:02 — 2차 block (재시도), 동일 패턴 ✅
-- 18:02:56 — 3차 block (재시도), 동일 패턴 ✅
-- 모든 block에서 server-only shutdown 정상 동작 확인
-- Status: **SERVER_CONFIRMED** — 브라우저 결과 대기 중
-
-#### 세부 타이밍 분석 (18:00:18.023)
-- 모든 이벤트가 동일 밀리초에 처리됨:
-  1. H2_DATA stream=9 (StreamGenerate, 1419B) 수신 → keyword 감지
-  2. block response 생성 (562B) → 클라이언트에 write
-  3. server-side shutdown → 서버 연결 종료
-- Block → session close: 6초 간격 (정상 — 클라이언트가 block response 수신 후 자연 종료)
-- 서버 응답이 도착하기 전에 shutdown 완료 (Google 서버 RTT > 1ms)
-
-#### 회귀 테스트 필요 (is_http2=2 동작 변경)
-- server-only shutdown이 **모든** is_http2=2 서비스에 적용됨
-- 이전 PASS 서비스: genspark, perplexity, gamma, grok, github_copilot
-- 이전 동작: 서버 연결 유지 (keep-alive)
-- 신규 동작: 서버 연결 종료 (server-only shutdown)
-- **위험도: 낮음** — 차단 시 서버 응답은 불필요하며, cascade 방지로 클라이언트 영향 없음
-- **테스트 계획**: Gemini 브라우저 확인 후 기존 PASS 서비스 순차 재검증
-
-### Iteration 11 (2026-04-02) — Keep-alive 전환 (서버 shutdown 제거)
-
-#### Test #182 결과 분석
-- **blocked=true, warning_visible=false**
-- ERR_CONNECTION_CLOSED: 서버 shutdown이 H2 연결 전체에 영향
-- batchexecute 등 다른 스트림 실패 → Gemini 프론트엔드가 에러 조용히 처리 → 초기 화면 유지
-- 스크린샷: 입력란에 프롬프트 남아있음, 대화 페이지로 미이동
-
-#### 핵심 발견: request body는 서버에 전달되지 않음
-- `on_new_segment`에서 block 시 `break`로 forwarding 스킵
-- 서버는 HEADERS만 수신, DATA(프롬프트 본문) 미수신
-- 서버가 POST body 없이는 응답 불가 → 중복 HEADERS 위험 없음
-- **결론**: 서버를 종료할 필요 없음
-
-#### 코드 수정: visible_tls_session.cpp — keep-alive
-- is_http2=2에서 서버/클라이언트 모두 유지 (shutdown 제거)
-- block response만 클라이언트에 전달, 서버 연결 유지
-- 다른 H2 스트림(batchexecute, cspreport) 정상 동작 예상
-- 로그: `vts_keepalive: block response sent, server+client kept alive`
-- 빌드 + 배포 완료 (18:33 KST)
-
-#### is_http2=2 동작 변경 이력
-1. **원본**: keep-alive (no shutdown) — 서버 응답 덮어쓰기 가능성
-2. **Phase3-B10**: server-only shutdown — ERR_CONNECTION_CLOSED (#182 확인)
-3. **Phase3-B11**: keep-alive 복원 — 서버가 응답 불가(body 미수신)이므로 안전
-
-#### Test #183 결과: keep-alive FAIL
-- **blocked=true, warning_visible=false**
-- ERR_CONNECTION_CLOSED + ERR_HTTP2_PROTOCOL_ERROR (cspreport)
-- test PC 진단: "keep-alive 미작동" — 실제로는 keep-alive는 동작했으나 다른 원인
-- etap 로그: `vts_keepalive` 정상 출력, 562B 전송 성공
-
-#### 근본 원인 진단 (Phase3-B11 → B12)
-- **etap 로그 타임라인**:
-  1. 18:42:10.606 — block response 전송 (stream 3, END_STREAM)
-  2. 18:42:10.606 — `vts_keepalive` 확인
-  3. 18:42:10.953 — jserror 15건+ 도착 (347ms 후): `HTTP status = 0, XHR Error Code: 6`
-  4. 18:42:11.857 — session closed (1.25s 후)
-- **모든 batchexecute 요청이 동시 실패** (popup visibility checks 포함)
-- **원인**: `network_loop.cpp:1241`에서 `_ai_prompt_blocked = 0` 리셋
-  → 후속 패킷이 서버에 **정상 포워딩**
-  → 서버가 request body 수신 후 stream 3에 응답 전송
-  → **이미 END_STREAM으로 종료된 스트림에 서버 HEADERS 도착**
-  → H2 프로토콜 오류 → Chrome이 전체 H2 연결 리셋
-  → 모든 요청 HTTP status 0
-- Iteration 11의 가정 "서버가 body 없이 응답 불가" — **틀림**
-  - `_ai_prompt_blocked` 리셋 후 후속 패킷의 body DATA가 서버에 정상 포워딩됨
-  - 서버가 body를 수신하므로 정상 응답 가능
-
-### Iteration 12 (2026-04-02) — RST_STREAM fix (Phase3-B12)
-
-#### 수정: visible_tls_session.cpp — keep-alive + RST_STREAM
-- is_http2=2 분기에서 block response 전송 후:
-  1. block response HEADERS frame에서 stream_id 추출 (bytes 5-8)
-  2. 서버에 H2 RST_STREAM(CANCEL) frame 전송 (13 bytes)
-  3. `write_visible_data(&_vts._sproxy, rst, 13)` 사용
-- **효과**:
-  1. 서버가 해당 스트림 처리 중지 → 응답 미전송
-  2. 다른 스트림은 영향 없음 → 프론트엔드 정상 동작
-  3. block response만 클라이언트에 도착 → 경고 렌더링 가능
-- 로그: `vts_rst_stream: RST_STREAM(CANCEL) to server: stream=%u written=%d`
-- 코멘트 동기화: ai_prompt_filter.cpp is_http2 tri-state 설명 업데이트
-
-#### is_http2=2 동작 변경 이력 (업데이트)
-1. **Phase3-B6**: keep-alive → 서버 HEADERS 중복 → ERR_HTTP2_PROTOCOL_ERROR
-2. **Phase3-B10**: server-only shutdown → ERR_CONNECTION_CLOSED (#182)
-3. **Phase3-B11**: keep-alive 복원 → 서버 응답 도착 → HTTP status 0 (#183)
-4. **Phase3-B12**: keep-alive + RST_STREAM → 서버 취소 신호 ← **현재**
-
-#### 배포
-- 18:58 KST: 빌드 + 배포 + etapd 재시작 완료
-
-#### Test #184 결과: RST_STREAM 부분 성공 — 서버 응답 선착 문제
-
-**결과: PARTIAL_SUCCESS — blocked=true, warning_visible=false**
-
-**성공 항목 (큰 진전):**
-- ✅ ERR_CONNECTION_CLOSED 미발생 — B10/B11 대비 연결 안정성 확보
-- ✅ ERR_HTTP2_PROTOCOL_ERROR 미발생 — H2 cascade disconnect 해결
-- ✅ batchexecute POST에 200 OK 응답 전달 성공
-- ✅ vts_rst_stream 로그: RST_STREAM(CANCEL) 정상 전송
-
-**실패 항목:**
-- ❌ 응답 본문이 Etap wrb.fr 경고가 아닌 `[-1,null,...]` Gemini 내부 에러 포맷
-- ❌ 서버가 block 전에 응답 완료 (61ms race)
-
-**타임라인 분석 (etap log):**
-1. 19:11:38.878 — HEADERS 감지: gemini3 StreamGenerate stream=N
-   → HEADERS가 서버에 즉시 포워딩됨 (on_new_segment → write_visible_data(sproxy))
-2. 19:11:38.939 — DATA 프레임 도착: keyword 감지 → block triggered (61ms 후)
-   → block response(562B) 클라이언트에 전송
-   → RST_STREAM(CANCEL) 서버에 전송
-3. **문제**: 서버가 HEADERS 수신 후 61ms 이내에 이미 응답 전송
-   → 서버 응답이 프록시를 통해 클라이언트에 먼저 도착
-   → Chrome이 서버 응답을 먼저 처리하여 스트림 완료
-   → 이후 도착한 block response는 완료된 스트림에 무시됨
-
-**근본 원인: Request HEADERS 선제 포워딩**
-- 프록시 아키텍처: on_new_segment에서 HEADERS 수신 즉시 서버에 포워딩
-- APF는 body DATA에서만 키워드 검사 (HEADERS 시점에는 검사 불가)
-- HEADERS와 DATA 사이 61ms 갭 동안 서버가 응답 가능
-- RST_STREAM은 block 시점에 전송되므로 서버 응답보다 늦음
-
-**해결 방향: Request Buffering (Phase3-B13)**
-- APF가 서비스 감지(HEADERS 시점)하면 `_apf_hold_for_inspection` 플래그 설정
-- on_new_segment에서 client→server 포워딩을 보류 (버퍼에 저장)
-- APF가 body DATA를 검사하여 판정:
-  - 차단: block response 전송, 버퍼 폐기 (서버는 HEADERS조차 받지 못함)
-  - 통과: 버퍼 릴리스 (HEADERS+DATA를 서버에 정상 포워딩)
-- 서버가 HEADERS를 받지 못하므로 응답 불가 → race condition 원천 차단
-
-### Iteration 13 (2026-04-03) — Request Buffering (Phase3-B13) — STARTED
-- Strategy: is_http2=2 + request buffering
-- Plan: APF 서비스 감지 시 client→server 포워딩 보류, body 검사 후 판정
-- Files to modify:
-  - `tuple.h`: `_apf_hold_for_inspection`, `_apf_release_held` 비트 필드 추가
-  - `etap_packet.h`: `_apf_hold_client_write`, `_apf_release_held` 필드 추가
-  - `ai_prompt_filter.cpp`: on_http2_request에서 hold 설정 (POST only), on_http2_request_data에서 release
-  - `network_loop.cpp`: session→packet 플래그 전파
-  - `visible_tls_session.h`: `_apf_held_buffer` 추가
-  - `visible_tls_session.cpp`: hold/release/discard 로직 + 64KB 안전 한도
-- **Hotfix (13:55 KST)**: GET 요청도 hold됨 → 페이지 로드 차단 버그
-  - 원인: method 체크 없이 모든 is_http2=2 서비스 요청을 hold
-  - 수정: POST 요청만 hold (GET은 body 없으므로 hold 불필요)
-  - 13:49 etap 로그에서 gemini3 GET /app이 hold되어 릴리스 안 되는 것 확인
-- 배포: 13:46 KST (초기) → 13:55 KST (POST-only hotfix)
-- **Test #185 결과** (13:55 KST):
-  - **CRITICAL BUG 확인**: page_load_failed=true, >60s 무한 로딩
-  - 페이지 GET 요청(gemini.google.com/app)이 hold됨 → body/DATA 없으므로 release 안 됨
-  - 빈 흰색 화면, 탭 제목 "로드 중..." 지속
-  - batchexecute POST 테스트 불가 (페이지 자체 미로딩)
-  - 이 결과는 13:49에 etap 로그에서 발견한 버그와 정확히 일치 (GET hold → 무한 대기)
-  - **이미 13:55에 POST-only hotfix 배포 완료** → Test #186 생성
-- Test #186: Phase3-B13 POST-only hold 검증 — 결과 대기 중
-  - 검증 포인트: (1) 페이지 정상 로드, (2) POST hold/release 또는 block 동작, (3) 경고 텍스트 표시
-
-### Iteration 4 — B15 (2026-04-02)
-- 변경: write_visible_data(&_cproxy) 직접 SSL_write 도입
-- 이전: _sub_it._cside->write() → visible pipe → 인터리빙 문제
-- 결과: written=562 expected=562 (성공), but RST_STREAM → ERR_CONNECTION_CLOSED
-- HTTP/2 strategy: D (END_STREAM=true, GOAWAY=false, is_http2=2)
-- Test: #189 — FAIL (ERR_CONNECTION_CLOSED)
-
-### Iteration 5 — B16 (2026-04-03)
-- 변경: RST_STREAM 제거 (held request는 서버가 모르므로 RST 불필요)
-- 결과: CSP violation으로 에러 패턴 전환 (긍정적 진전)
-- Test: #190 — blocked=true, warning_visible=false
-  - 에러: CSP connect-src violation (APF 응답 데이터가 브라우저에 도달)
-- Test: #191 (HAR capture) — FAIL: is_http2=2가 H2 연결 상태 부패
-  - 모든 batchexecute 실패, 페이지 정상 로드 불가
-
-### Iteration 6 — B17 (2026-04-03)
-- 변경: gemini3를 is_http2=2→1로 전환 (on_disconnected)
-- 근거: is_http2=2 keep-alive에서 write_visible_data 직접 호출 시 H2 상태 부패
-- 서버 확인: h2_size=562, end_stream=1, goaway=0 (H2 프레임 정상)
-- Test: #192 — blocked=true, warning_visible=false
-  - 에러: ERR_CONNECTION_CLOSED + ERR_CONNECTION_RESET 혼재
-  - 근본 원인: **hold mechanism이 모든 POST를 지연 → 페이지 초기화 실패**
-  - hold는 B13에서 is_http2=2용으로 추가되었으나, is_http2=1에서는 불필요
-  - 전송 버튼 미활성화 → 프롬프트 전송 불가 → 차단 테스트 불가
-
-### Iteration 7 — B18 (2026-04-03)
-- 변경: gemini3를 hold 목록에서 제거 (is_http2=1은 hold 불필요)
-- 서버 확인: B18 이후 gemini3 POST → hold_set 없음, blocked=0으로 즉시 통과
-  - batchexecute rpcids (ESY5D, L5adhe, aPya6c) 모두 정상 처리
-- Test: #194 (check-warning) — **test PC 오프라인, 결과 대기 중**
-- 기대: 페이지 초기화 정상 → 민감 프롬프트 전송 가능 → 차단 + 경고 표시
+**면제 근거:** (1) 원인이 visible_tls_session.cpp의 hold flag 스코프로 특정됨,
+(2) VTS-level hold state 추가라는 구체적 수정안 존재, (3) 시스템 수준 결함으로 다른 서비스에도 영향

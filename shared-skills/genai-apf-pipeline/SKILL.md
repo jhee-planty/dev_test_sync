@@ -104,6 +104,7 @@ Phase 1 — HAR Capture [User + Cowork collaboration]
   Script: CAPTURE_DIR/capture_v2.py
 
 Phase 2 — HAR Analysis + APF Registration [Cowork → Claude Code sub agent (Opus), automatic]
+  > **Cowork 실행:** guidelines.md §Claude Code 실행 규칙 참조
   Auto-triggers on successful capture (condition: metadata.json total_requests > 0)
   2a. Cowork calls per-service sub agents in parallel
       (claude -p --model claude-opus-4-6, Read only)
@@ -255,6 +256,7 @@ Phase 1 — HAR Capture [User + Cowork collaboration]
       → ⚠️ Known bug: --copy-to-etap fails for non-SSE (SSE=0). Manual copy required.
          See genai-har-capture/SKILL_debug.md → Known Bugs
   [ ] Capture success → auto-enter Phase 2
+  [ ] Capture success → 동일 서비스의 구버전 캡처 디렉토리가 있으면 정리 제안
   [ ] Capture failure → set status to 🔘 CAPTURE_FAIL → investigate with user → retry or mark ❌ NOT_FEASIBLE
 
 Phase 2 — HAR Analysis + APF Registration [Cowork → Claude Code sub agent (Opus), automatic]
@@ -280,11 +282,42 @@ Test — Verify Blocking [User]
   [ ] Cowork: Fix code → retry Phase 3 (failed services only)
   [ ] If needed: collect fail_har (User + Cowork collaboration) → re-enter Phase 2
 
+File cleanup:
+  [ ] 서비스 DONE 전환 시 구버전 캡처 정리 + capture.har gzip 압축
+  [ ] 테스트 잔여물(*_test*.har, console_test*.txt) 삭제
+  → See references/file-cleanup-policy.md
+
 Experience accumulation:
   [ ] Capture experience → genai-har-capture/SKILL_debug.md Known Service Notes
   [ ] Analysis/implementation experience → apf-add-service/services/{service}.md
   [ ] Common patterns (2+ services) → apf-add-service/SKILL.md Common Pitfalls
 ```
+
+---
+
+## File Cleanup
+
+파이프라인 작업 중 임시 파일이 축적된다. 주기적으로 정리하지 않으면
+디스크 사용량이 급증하고 Git 동기화가 느려진다.
+
+### 파일 생명주기 (디렉토리별)
+
+| 디렉토리 | 생성 시점 | 정리 시점 | 보존 대상 |
+|----------|----------|----------|----------|
+| `ETAP_HAR_DIR/{service}_*` | Phase 1 캡처 | 서비스 DONE + 주기적 테스트 통과 (또는 30일) | 최신 캡처 1개, `capture.har.gz`, 파싱 JSON |
+| `ETAP_HAR_DIR/{service}_*/raw/` | Phase 1 캡처 | DONE 서비스: 주기적 테스트 통과 후. TESTING/TEST_FAIL: 보존 | — |
+| `dev_test_sync/old-*` | archive-results 실행 | archive 후 즉시 삭제 가능 | lessons/ 만 영구 보존 |
+| `SKILLS_DIR/_backup_*` | 수동 백업 | 즉시 삭제 (Git이 버전 관리) | — |
+| `*/__pycache__/`, `.DS_Store` | 자동 생성 | 수시 삭제 | — |
+| `*_test*.har`, `console_test*.txt` | 디버깅 | 즉시 삭제 | — |
+
+### 정리 트리거
+
+- **서비스 DONE 전환 시**: Cowork이 해당 서비스의 구버전 캡처 정리를 제안
+- **archive-results 실행 후**: old-* 디렉토리 삭제
+- **수동 실행**: `cleanup_pipeline.sh --dry-run` → 확인 후 `cleanup_pipeline.sh`
+
+→ See `references/file-cleanup-policy.md` for 디렉토리별 정리 규칙 상세, retention.json 스펙.
 
 ---
 

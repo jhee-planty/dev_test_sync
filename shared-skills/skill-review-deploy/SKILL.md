@@ -86,6 +86,14 @@ Host 경로: /Users/jhee/Documents/workspace/claude_cowork/skills/{skill_name}/S
 
 ### Phase 2 — Fix (보완)
 
+**수정 전 Git 커밋 확인 (필수):**
+대규모 수정 시작 전에 현재 상태가 Git에 커밋되었는지 확인한다.
+`_backup_*` 디렉토리를 만드는 대신 Git이 버전 관리를 한다.
+```bash
+cd "$SKILLS_SRC" && git status  # 미커밋 변경 확인
+git add -A && git commit -m "Pre-edit snapshot: {skill_name}"  # 필요 시 커밋
+```
+
 **편집 도구:** host 파일은 `mcp__desktop-commander__edit_block`으로 수정한다.
 Cowork 마운트에 직접 쓰면 EROFS 에러가 발생한다.
 

@@ -102,3 +102,15 @@ Build #20: 2-frame DATA + GOAWAY → 0건, 에러 없음 (6ms, 깨끗한 차단)
 - is_http2=2, END_STREAM=true (2-frame DATA), GOAWAY=true
 - Generator: JSON error 422 + `{"error":{"message":"...","type":"policy_violation","code":"content_filter"}}`
 - 결과: 차단 성공 + generic error 표시 (PARTIAL_PASS)
+### BLOCKED_ONLY 공식 판정 (2026-04-01)
+
+**구조적 한계 요약:**
+1. SSE: END_STREAM=false만 이벤트 수신 가능하지만 항상 ERR_HTTP2_PROTOCOL_ERROR 동반
+2. SSE: END_STREAM=true는 에러 없지만 이벤트 미수신 (Chrome이 파싱 전 스트림 종료)
+3. JSON error (422/403): 프론트엔드가 catch하여 generic error 표시 ("Please try again")
+4. 근본 원인: Etap 단일 write() + SPA fetch error handler
+
+**VERDICT: BLOCKED_ONLY** — Escalation ① 한계 도달
+- 차단 정상 동작 (blocked=1 + generic error UI)
+- 커스텀 경고 텍스트 표시 불가
+- Escalation ②③ (JS injection) 또는 Etap H2 비동기 분할 write 필요

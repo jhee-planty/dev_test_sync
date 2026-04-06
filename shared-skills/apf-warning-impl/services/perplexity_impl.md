@@ -38,3 +38,12 @@
 - 2026-03-17: Prior pipeline에서 마이그레이션. SSE 경고 구현 완료 보고.
 - 2026-03-26: 실망 테스트에서 v5 PARTIAL 확인 (차단O, 경고X). v5-v11 반복 테스트.
 - 2026-03-27: v5 확정판으로 리버트. PARTIAL 상태 확정.
+
+### BLOCKED_ONLY 판정 (2026-04-01)
+- 시도한 방식: ① SSE body 조작 v5-v11 (7회)
+- 차단 동작: 정상 (SSE 5105B, keyword=\d{6}-\d{7}, blocked=1)
+- 커스텀 경고 불가 원인: Perplexity 프론트엔드가 SSE payload를 해시/체크섬으로 검증.
+  non-null answer 설정 시 스레드 깨짐. 차단 시 thread slug "blocked-*"로 생성 후
+  /rest/thread/blocked-* 로드 → 실패 → 홈 리디렉트.
+- #122 확인: etap log에서 block 확인 (5105B, 6 events), 프론트엔드는 /search/blocked-* → 홈 리디렉트
+- 향후 재시도 조건: generator 함수 시그니처 변경하여 api_path 전달 → perfle가 HTML 경고 페이지 반환 (에러 페이지 교체 방식)

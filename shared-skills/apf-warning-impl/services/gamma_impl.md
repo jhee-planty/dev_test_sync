@@ -236,3 +236,10 @@ Build #30: SSE single-key JSON + 2-frame (ES=false, GA=false) → PENDING
 - 단일 chunk만 작동 (multi-chunk 불가)
 - Build #26에서 JSON object의 각 문자가 수직 렌더링 → outline parser가 JSON을 char-by-char 순회
 - Build #30 (단일 key JSON)이 마지막 시도 — 성공 시 PARTIAL_PASS, 실패 시 BLOCKED_ONLY 판정
+### BLOCKED_ONLY 공식 판정 확인 (2026-04-01)
+
+이미 2026-03-27에 BLOCKED_ONLY 판정이 기록되어 있음. 추가 시도 없이 현 상태 유지.
+- Build #26~#33까지 13+빌드 투자
+- 차단: 정상 (빈 outline → 발표 생성 실패)
+- 경고: 불가 (H2 DATA frame 전달 안됨 + 프론트엔드 fallback)
+- 재시도 조건: Etap H2 응답 주입 개선 또는 Gamma 프론트엔드 변경 시
