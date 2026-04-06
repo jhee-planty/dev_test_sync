@@ -1,0 +1,17 @@
+{
+  "id": 202,
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": null,
+    "screenshot": "files/202/check_warning_202.png",
+    "console_errors": [],
+    "network_evidence": "Prompt POST sent, Perplexity responded with full financial analysis including profit ratios (영업이익률 16.0%, 순이익률 9.0%)."
+  },
+  "started": "2026-04-06T16:04:00+09:00",
+  "completed": "2026-04-06T16:05:10+09:00",
+  "notes": "DB migration regression test FAIL — Perplexity responded normally without warning."
+}

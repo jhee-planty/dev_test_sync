@@ -1,0 +1,15 @@
+{
+  "id": 206,
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "block_type": "none",
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/206/check_block_206.png",
+    "http_status": null
+  },
+  "started": "2026-04-06T16:13:00+09:00",
+  "completed": "2026-04-06T16:14:10+09:00",
+  "notes": "DB migration regression test FAIL — GitHub Copilot (BLOCKED_ONLY) NOT blocked. Copilot responded saying it's for software development, not financial analysis, but the response itself was delivered normally (no Etap block)."
+}
