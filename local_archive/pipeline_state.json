@@ -1,0 +1,69 @@
+{
+  "current_service": "regression_batch_v2",
+  "current_phase": "regression_complete",
+  "last_request_id": 217,
+  "last_checked_result_id": 217,
+  "updated_at": "2026-04-07T00:05:00+09:00",
+  "service_queue": [
+    {
+      "service": "chatgpt",
+      "priority": 1,
+      "status": "regression_done",
+      "task_id": 209
+    },
+    {
+      "service": "claude",
+      "priority": 2,
+      "status": "regression_done",
+      "task_id": 210
+    },
+    {
+      "service": "perplexity",
+      "priority": 3,
+      "status": "regression_done",
+      "task_id": 211
+    },
+    {
+      "service": "genspark",
+      "priority": 4,
+      "status": "regression_done",
+      "task_id": 212
+    },
+    {
+      "service": "grok",
+      "priority": 5,
+      "status": "regression_done",
+      "task_id": 213
+    },
+    {
+      "service": "notion",
+      "priority": 6,
+      "status": "regression_done",
+      "task_id": 214
+    },
+    {
+      "service": "github_copilot",
+      "priority": 7,
+      "status": "regression_done",
+      "task_id": 215
+    },
+    {
+      "service": "gamma",
+      "priority": 8,
+      "status": "regression_done",
+      "task_id": 216
+    },
+    {
+      "service": "gemini",
+      "priority": 9,
+      "status": "regression_done",
+      "task_id": 217
+    }
+  ],
+  "work_context": {
+    "strategy": "DB_migration_regression_v2",
+    "last_build": "2026-04-06T15:42:00+09:00",
+    "last_action": "DB migration regression 209-217 complete. 9/9 blocked. Claude+Genspark warning PASS. ChatGPT/Perplexity warning needs investigation.",
+    "next_step": "Investigate ChatGPT(209) login issue and Perplexity(211) generic error. Update status.md via desktop-commander."
+  }
+}
