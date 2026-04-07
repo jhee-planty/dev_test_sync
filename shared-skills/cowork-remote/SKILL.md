@@ -162,6 +162,14 @@ state 파일로 이전 실행을 이어받아 연속성을 유지한다.
 따라서 Scheduled Task에서는 **git CLI를 desktop-commander로 실행**한다.
 git fetch로는 로컬 파일이 변경되지 않으므로 **반드시 git pull**을 사용한다.
 
+**요청 전송 스크립트 (git CLI 환경에서 권장):**
+Scheduled Task이나 Cowork에서 git CLI로 요청을 push할 때는 `send-request.sh`를 사용한다.
+JSON 검증 → requests/ 복사 → git commit → git push (충돌 시 1회 rebase 재시도) → push 검증까지 자동 수행.
+```
+dev_test_sync/scripts/mac/send-request.sh <요청_json_파일>
+```
+→ See `../etap-build-deploy/SKILL.md` § 스크립트 사용법 for JSONL 출력 규격 공통 참조.
+
 **Scheduled Task 실행 흐름 (dev PC 기준):**
 ```
 매 실행 시 (cron):

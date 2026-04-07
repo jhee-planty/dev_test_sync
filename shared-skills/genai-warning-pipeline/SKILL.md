@@ -87,7 +87,9 @@ Phase 3 — Implement & Test [dev Cowork + test PC via cowork-remote]
   → On success: regression test all previously verified services
   코드 수정은 로컬(dev Mac)에서 하고, 컴파일 서버로 scp 전송 후 빌드한다.
   빌드된 패키지를 테스트 서버에 배포하고, test PC에서 경고 동작을 확인한다.
-  Skill: apf-warning-impl/SKILL.md (코드 수정·테스트), etap-build-deploy/SKILL.md (빌드·배포 상세)
+  빌드-배포: etap-build-deploy.sh (스크립트 권장) 또는 개별 명령어 (fallback)
+  요청 전송: send-request.sh (git CLI 환경) 또는 GitHub MCP push_files (메인 세션)
+  Skill: apf-warning-impl/SKILL.md (코드 수정·테스트), etap-build-deploy/SKILL.md (빌드·배포 + 스크립트 상세)
 
 Phase 4 — Release [Claude Code]
   ⚠️ 시작 전: Skill 도구로 etap-build-deploy 로드
