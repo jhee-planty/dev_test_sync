@@ -1,9 +1,0 @@
-{
-  "id": 220,
-  "command": "script-validation-test",
-  "params": {
-    "purpose": "send-request.sh Phase B validation round 3 FINAL",
-    "is_test": true
-  },
-  "notes": "Script validation — remove after test"
-}
