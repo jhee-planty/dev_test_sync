@@ -1,0 +1,15 @@
+{
+  "id": "255",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/255/check_warning_255.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "POST /_/BardChatUi/data/batchexecute → net::ERR_CONNECTION_RESET (multiple), net::ERR_CONNECTION_CLOSED",
+    "console_error": "49 errors, 4 warnings, 9 issues. Repeated ERR_CONNECTION_RESET on batchexecute and jserror POST requests. Error code=7, HTTP status=0, XHR Error Code=6. CSP violations on cspreport and pagead endpoints."
+  },
+  "notes": "Gemini B14 retest (h2_mode=2, h2_hold_request=1): Message entered via JS console execCommand('insertText'). Send button clicked via JS querySelector. APF blocked ALL API requests with ERR_CONNECTION_RESET/ERR_CONNECTION_CLOSED. Text remained in input field (BLOCKED_SILENT_RESET pattern). Welcome screen still visible - chat never started. No APF warning displayed. Compared to #248: same silent reset behavior but error type changed from unclickable send button to ERR_CONNECTION_RESET on batchexecute API. The h2_mode=2 config is effectively killing the HTTP/2 connection for Gemini's API calls."
+}

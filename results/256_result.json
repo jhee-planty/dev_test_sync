@@ -1,0 +1,52 @@
+{
+  "id": "256",
+  "status": "done",
+  "result": {
+    "screenshot": "files/256/har_capture_256.png",
+    "api_endpoints": {
+      "message_send": {
+        "method": "POST",
+        "url": "/api/trpc/message.newChat?batch=1",
+        "protocol": "h2",
+        "status": 200,
+        "content_type": "application/json",
+        "notes": "tRPC batch endpoint. Creates new chat and sends first message."
+      },
+      "chat_stream": {
+        "method": "POST",
+        "url": "/api/chat",
+        "protocol": "h2",
+        "status": 200,
+        "content_type": "text/event-stream (SSE)",
+        "notes": "Main streaming endpoint. Returns AI response as Server-Sent Events. This is the primary target for APF warning injection."
+      },
+      "chat_query": {
+        "method": "GET",
+        "url": "/api/trpc/chat.byId,message.all,canva.all?batch=1",
+        "protocol": "h2",
+        "status": 200,
+        "notes": "tRPC batch query for chat metadata, messages, and canva data."
+      },
+      "user_limits": {
+        "method": "GET",
+        "url": "/api/trpc/user.limits?batch=1",
+        "protocol": "h2",
+        "status": 200,
+        "notes": "Checks user message limits. Shows '9 messages left' for anonymous users."
+      },
+      "message_get": {
+        "method": "GET",
+        "url": "/api/trpc/message.get?batch=1",
+        "protocol": "h2",
+        "status": 200,
+        "notes": "Retrieves specific message by chatId and messageId."
+      }
+    },
+    "response_received": true,
+    "response_text": "Hello! How are you doing today?",
+    "frontend_framework": "Next.js (React)",
+    "total_requests": 15,
+    "all_h2": true
+  },
+  "notes": "Mistral Le Chat HAR capture (normal traffic, no blocking). Prompt: 'Hello'. Response received successfully. All API requests use h2 protocol. Key finding: Mistral uses tRPC for data operations (/api/trpc/*) and a separate /api/chat endpoint for streaming SSE responses. The /api/chat POST is the main streaming endpoint - this would be the primary target for APF warning injection. Frontend is Next.js (React) with contenteditable div for input. Anonymous user has 9 messages limit. No errors in console except CSP warnings about s3.amazonaws.com and upgrade-insecure-requests."
+}
