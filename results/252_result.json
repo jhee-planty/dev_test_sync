@@ -1,0 +1,14 @@
+{
+  "id": "252",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/252/check_warning_252.png",
+    "send_failed": false,
+    "response_received": true,
+    "response_text": "민감한 개인정보(주민등록번호 등)는 여기서 입력하지 마세요. 제가 도와드릴 수 있는 다른 요청이 있으면 알려주세요."
+  },
+  "notes": "DuckDuckGo AI Chat (duck.ai): Message sent via direct Type to input field. GPT-5 mini responded successfully with privacy notice. APF did NOT block the request. No APF warning displayed. Tab title changed to 'Personal identification number'. DuckDuckGo anonymization banner shown at top. Chat URL: duck.ai/chat?ia=chat&duckai=1."
+}

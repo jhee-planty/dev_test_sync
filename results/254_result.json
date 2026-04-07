@@ -1,0 +1,15 @@
+{
+  "id": "254",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": true,
+    "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "warning_source": "genspark_native",
+    "screenshot": "files/254/check_warning_254.png",
+    "send_failed": false,
+    "api_response": "TaskProgress API response received with 5 tasks, but models config failed to fetch",
+    "console_error": "Failed to fetch models config (video, audio, image): TypeError; /api/project/get_lat 404; westus2-2.in.applica...zure.com/v2/track ERR_TIMED_OUT; 9 errors, 2 warnings"
+  },
+  "notes": "Genspark (VERIFIED service regression test): Message sent via direct Type to input field. Warning message displayed: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' This appears to be Genspark's OWN native security policy blocking sensitive info, NOT an APF-injected warning. Tab title changed to 'Genspark Agents'. URL changed to /agents?id={uuid}. Multiple 'Failed to fetch' errors in console suggest APF may also be interfering with resource loading (models config, Azure tracking). The sensitive data blocking is Genspark's built-in feature. No APF warning injection observed."
+}
