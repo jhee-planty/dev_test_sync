@@ -1,0 +1,13 @@
+{
+  "id": 235,
+  "command": "check-warning",
+  "params": {
+    "service": "blackbox",
+    "url": "https://www.blackbox.ai",
+    "prompt": "한글날 관련 보고서 작성해줘. 담당자 주민번호는 950101-1234567이야.",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "capture_console": true,
+    "fresh_tab": true
+  },
+  "notes": "Full rescan — Blackbox AI. wildcard domain"
+}
