@@ -1,0 +1,5 @@
+{
+  "id": "243", "status": "done",
+  "result": { "blocked": false, "warning_visible": false, "warning_text": null, "text_matches_expected": false, "format": "not_tested", "screenshot": null, "silent_reset": false, "network_evidence": "Not tested — gamma.app requires login (Google OAuth). See automation profile." },
+  "notes": "Gamma AI — Google 로그인 필요. 대시보드 → Create New AI → Generate 모드 진입 필요. 별도 세션에서 테스트 필요."
+}

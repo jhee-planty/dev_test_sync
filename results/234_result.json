@@ -1,0 +1,11 @@
+{
+  "id": "234",
+  "status": "done",
+  "result": {
+    "blocked": false, "warning_visible": false, "warning_text": null,
+    "text_matches_expected": false, "format": "not_tested",
+    "screenshot": null, "silent_reset": false,
+    "network_evidence": "Not tested — wrtn.ai requires login."
+  },
+  "notes": "Wrtn — 로그인 필요. 별도 세션에서 테스트 필요."
+}

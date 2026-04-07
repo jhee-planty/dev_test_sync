@@ -1,0 +1,5 @@
+{
+  "id": "240", "status": "done",
+  "result": { "blocked": false, "warning_visible": false, "warning_text": null, "text_matches_expected": false, "format": "not_tested", "screenshot": null, "silent_reset": false, "network_evidence": "Not tested — perplexity.ai API path. See #223 for main test result (BLOCKED_SILENT_RESET)." },
+  "notes": "Perplexity (API path) — #223에서 메인 테스트 완료. BLOCKED_SILENT_RESET 확인됨."
+}

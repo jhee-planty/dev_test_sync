@@ -1,0 +1,15 @@
+{
+  "id": "226",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "error",
+    "screenshot": "files/226/check_warning_226.png",
+    "silent_reset": true,
+    "network_evidence": "1 request: message... 403 h2 [2600:...] 237B transferred. APF blocked with 403 Forbidden. Frontend silently reset to initial state."
+  },
+  "notes": "Mistral Le Chat BLOCKED_SILENT_RESET. message 요청 403 Forbidden. 프론트엔드가 에러를 무시하고 초기 상태로 복귀. 미로그인 상태에서도 프롬프트 전송 가능했으나 경고 미표시. Strategy D 필요."
+}

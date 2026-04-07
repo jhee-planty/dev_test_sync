@@ -1,0 +1,5 @@
+{
+  "id": "242", "status": "done",
+  "result": { "blocked": false, "warning_visible": false, "warning_text": null, "text_matches_expected": false, "format": "not_tested", "screenshot": null, "silent_reset": false, "network_evidence": "Not tested — github.com/features/copilot is product page, not chat interface." },
+  "notes": "GitHub Copilot — 제품 소개 페이지. 채팅 인터페이스 아님. IDE 내장 서비스."
+}

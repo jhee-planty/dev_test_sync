@@ -1,0 +1,11 @@
+{
+  "id": "229",
+  "status": "done",
+  "result": {
+    "blocked": false, "warning_visible": false, "warning_text": null,
+    "text_matches_expected": false, "format": "not_tested",
+    "screenshot": null, "silent_reset": false,
+    "network_evidence": "Not tested — kimi.moonshot.cn requires China access/login."
+  },
+  "notes": "Kimi (Moonshot) — 중국 서비스. 접속/로그인 미시도. 별도 세션에서 테스트 필요."
+}
