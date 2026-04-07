@@ -150,96 +150,19 @@ Stage 3: 1시간 간격
 
 ## Execution Flow
 
-### Step 0 — Session Start Recovery (매 세션 필수)
+### Step 0 — Session Start Recovery + Step 1 — Git Pull + Scan
 
-**git pull 결과와 무관하게** 매 세션 시작 시 반드시 실행한다.
-이전 세션이 중단되어 pull했지만 처리하지 못한 요청, 또는 result를 작성했지만
-push하지 못한 결과를 자동으로 복구한다.
-
-```powershell
-# 0-1) state.json 로드
-$stateFile = "$base\local_archive\state.json"
-$lastDeliveredId = 0
-$lastProcessedId = 0
-if (Test-Path $stateFile) {
-    $state = Get-Content $stateFile | ConvertFrom-Json
-    $lastProcessedId = if ($state.last_processed_id) { $state.last_processed_id } else { 0 }
-    $lastDeliveredId = if ($state.last_delivered_id) { $state.last_delivered_id } else { $lastProcessedId }
-}
-
-# 0-2) 미push 결과 확인 및 재전송
-#   last_delivered_id < last_processed_id 이면 push 안 된 결과가 있음
-#   git log로 확인: unpushed commits이 있으면 push 시도
-$unpushed = & cmd /c "cd $base && git log origin/main..HEAD --name-only --oneline 2>&1"
-if ($unpushed -and $unpushed -notmatch "^$") {
-    Write-Output "Recovery: found unpushed commits. Pushing..."
-    & cmd /c "cd $base && git_sync.bat push"
-    # push 성공 검증
-    $verify = & cmd /c "cd $base && git log origin/main..HEAD --oneline 2>&1"
-    if (-not $verify -or $verify -match "^$") {
-        $lastDeliveredId = $lastProcessedId
-        Write-Output "Recovery: push verified. last_delivered_id updated to $lastDeliveredId"
-    }
-}
-
-# 0-3) 미처리 요청 복구 스캔 (filesystem이 권위 있는 소스)
-#   last_delivered_id 기준으로 스캔 범위 설정 (성능 최적화: -10 여유)
-$scanFrom = [Math]::Max(0, $lastDeliveredId - 10)
-$requests = Get-ChildItem "$base\requests\*_*.json" -ErrorAction SilentlyContinue
-$recoveryRequests = @()
-foreach ($req in $requests | Sort-Object Name) {
-    $reqId = [int]($req.Name.Split('_')[0])
-    if ($reqId -gt $scanFrom) {
-        $resultExists = Test-Path "$base\results\${reqId}_result.json"
-        if (-not $resultExists) {
-            $recoveryRequests += Get-Content $req.FullName | ConvertFrom-Json
-        }
-    }
-}
-
-if ($recoveryRequests.Count -gt 0) {
-    Write-Output "Recovery scan: $($recoveryRequests.Count) unprocessed requests found (from prior session)"
-} else {
-    Write-Output "Recovery scan: all requests up to date"
-}
-```
-
-**Recovery scan 결과 메트릭 로깅:**
-복구 모드 진입 시 `results/metrics/` 에 기록하여 workflow-retrospective가 분석할 수 있게 한다.
-
-Recovery로 발견된 요청이 있으면 Step 2로 진행하여 처리한다.
-없으면 Step 1(정상 폴링)으로 진행한다.
-
-### Step 1 — Git Pull + 새 요청 스캔
-
-**git pull은 전송 수단일 뿐이다.** pull 결과("Already up to date" 등)와 무관하게
-항상 filesystem 스캔을 실행한다.
+매 세션 시작 시 `scripts/windows/session-recovery.ps1`을 실행한다.
+state.json 로드 → 미push 결과 재전송 → 미처리 요청 복구 → git pull → 새 요청 스캔을 자동 수행한다.
 
 ```powershell
-# 1-1) git pull (전송 — 실패해도 스캔은 계속)
-& cmd /c "cd $base && git_sync.bat pull"
-
-# 1-2) filesystem 스캔 (권위 있는 소스)
-$requests = Get-ChildItem "$base\requests\*_*.json" -ErrorAction SilentlyContinue
-$newRequests = @()
-foreach ($req in $requests | Sort-Object Name) {
-    $reqId = [int]($req.Name.Split('_')[0])
-    if ($reqId -gt $lastDeliveredId) {
-        $resultExists = Test-Path "$base\results\${reqId}_result.json"
-        if (-not $resultExists) {
-            $newRequests += Get-Content $req.FullName | ConvertFrom-Json
-        }
-    }
-}
-
-# 1-3) 메시지 구분
-if ($newRequests.Count -gt 0) {
-    # Step 0에서 이미 발견된 것과 git pull로 새로 온 것 구분
-    Write-Output "New requests: $($newRequests.Count) to process"
-}
+. "$base\scripts\windows\session-recovery.ps1" -base $base
 ```
 
+Recovery로 발견된 요청이 있으면 Step 2로, 없으면 폴링 대기.
 새 요청이 여러 건이면 `priority: "urgent"`를 먼저 처리한다.
+
+→ See `scripts/windows/session-recovery.ps1` for 전체 로직 (state 로드, unpushed 검증, filesystem 스캔).
 
 ### Step 2 — 요청 읽기 + 명령 실행
 
@@ -283,106 +206,37 @@ dev 측 판독 정확도를 높이기 위해, 작업 중 화면 상태를 예측
 
 ### Step 3 — 결과 작성 + 상태 갱신
 
-`results/{id}_result.json`에 결과를 저장한다.
+`scripts/windows/write-result.ps1`로 result JSON 저장 + state.json 갱신을 수행한다.
 스크린샷 등 첨부파일은 `results/files/{id}/`에 저장한다.
 
-**결과 저장 후 즉시 state.json을 갱신한다:**
 ```powershell
-# state.json 갱신 — last_processed_id만 업데이트 (push 전이므로 delivered는 아직)
-$stateFile = "$base\local_archive\state.json"
-$state = @{}
-if (Test-Path $stateFile) {
-    $state = Get-Content $stateFile | ConvertFrom-Json -AsHashtable
-}
-$state.last_processed_id = $reqId
-$state.updated_at = (Get-Date -Format o)
-$state | ConvertTo-Json | Set-Content $stateFile -Encoding UTF8
+. "$base\scripts\windows\write-result.ps1" -base $base -reqId $reqId -result $result
 ```
-result 작성과 state 갱신은 git push 전에 수행한다.
-`last_processed_id`는 로컬 작성 완료를 기록하고,
-`last_delivered_id`는 Step 4에서 push 성공 확인 후 갱신한다.
+
+`last_processed_id`는 로컬 작성 완료, `last_delivered_id`는 Step 4 push 성공 후 갱신.
 
 → See `references/result-templates.md` for JSON templates.
 
 ### Step 3.5 — 메트릭 수집
 
-작업 완료 후 result 작성과 함께 `results/metrics/metrics_{date}.jsonl`에 메트릭을 기록한다.
-메트릭 파일이 없으면 새로 생성하고, 있으면 append한다.
-
-```powershell
-$metricsFile = "$base\results\metrics\metrics_$(Get-Date -Format 'yyyy-MM-dd').jsonl"
-$metric = @{
-    id = $reqId
-    command = $command
-    service = $params.service
-    timestamp = (Get-Date -Format o)
-    duration_seconds = $stopwatch.Elapsed.TotalSeconds
-    success = ($result.status -eq "success")
-    phase_timings = @{
-        browser_focus = $timing.browser_focus
-        prompt_input = $timing.prompt_input
-        wait_response = $timing.wait_response
-        screenshot = $timing.screenshot
-        analysis = $timing.analysis
-    }
-}
-$metric | ConvertTo-Json -Compress | Add-Content $metricsFile -Encoding UTF8
-```
-
+작업 완료 후 `results/metrics/metrics_{date}.jsonl`에 메트릭을 기록한다.
 **필수 필드:** id, command, service, timestamp, duration_seconds, success, phase_timings
-**phase_timings 최소 단계:** browser_focus, prompt_input, wait_response, screenshot, analysis
+**phase_timings:** browser_focus, prompt_input, wait_response, screenshot, analysis
 
-→ See `references/metrics-collection.md` for 메트릭 수집 상세 및 분석 연동.
+각 단계는 `[System.Diagnostics.Stopwatch]::StartNew()`로 측정한다.
+
+→ See `references/metrics-collection.md` for PowerShell 코드, 수집 상세, 분석 연동.
 → See `references/phase-definitions.md` for command별 측정 단계 정의.
 
-오늘(3/25) 29건 check-warning에 대한 메트릭이 누락되어 정밀 분석이 불가능했다.
-"어디가 느린지"를 수치로 파악하려면 단계별 시간 데이터가 필수이다.
+### Step 4 — Git Push + Delivery 확인
 
-**타이밍 수집 방법:**
-각 단계 시작 전에 `$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()`으로 측정하고,
-단계 종료 시 `$stopwatch.Elapsed.TotalSeconds`를 기록한다.
+**반드시 `git_sync.bat push`만 사용한다.** 다른 방식은 모두 금지.
+cmd 셸에서 실행: `cd $base && git_sync.bat push`
 
-### Step 4 — Git Push + Delivery 확인 (git_sync.bat 단일 호출)
+Push 후 `git log origin/main..HEAD`로 검증 → unpushed 없으면 `last_delivered_id` 갱신.
+실패 시 `last_delivered_id`를 갱신하지 않아 다음 세션 Step 0에서 자동 재시도.
 
-결과를 dev에 전달하기 위해 **반드시 `git_sync.bat push`를 사용한다.**
-다른 방식은 **모두 금지**한다. 컨텍스트가 유실되어도 이 규칙은 변하지 않는다.
-
-```
-git_sync.bat push
-```
-
-Desktop Commander의 cmd 셸(`shell: cmd`)에서 실행한다.
-저장소 디렉토리 안에서 실행하면 된다 (bat 파일이 `%~dp0`으로 자동 위치 판별).
-
-**Push 성공 검증 + last_delivered_id 갱신:**
-exit code 대신 `git log`로 push 성공을 확인한다.
-```powershell
-# push 후 검증: unpushed commits이 없으면 성공
-$verify = & cmd /c "cd $base && git log origin/main..HEAD --oneline 2>&1"
-if (-not $verify -or $verify -match "^$") {
-    # push 성공 — last_delivered_id 갱신
-    $state = Get-Content $stateFile | ConvertFrom-Json -AsHashtable
-    $state.last_delivered_id = $state.last_processed_id
-    $state.updated_at = (Get-Date -Format o)
-    $state | ConvertTo-Json | Set-Content $stateFile -Encoding UTF8
-    Write-Output "Delivery confirmed: last_delivered_id = $($state.last_delivered_id)"
-} else {
-    Write-Output "WARNING: push may have failed. Unpushed: $verify"
-    # last_delivered_id는 갱신하지 않음 → 다음 세션 Step 0에서 재시도
-}
-```
-
-**금지 패턴 (컨텍스트 유실 시에도 절대 사용하지 않는다):**
-- ❌ `& 'C:\Program Files\Git\cmd\git.exe' push ...` → PowerShell 출력 캡처 불가
-- ❌ `Start-Process -FilePath $gitExe` 단독 → SSH 인증 실패
-- ❌ SSH URL (`git@github.com:`) → 사내망 포트 22 차단
-- ❌ Git Bash (`bash.exe`) 경유 → cmd 방식이 유일한 안정적 방법
-- ❌ `-C "한글경로"` 옵션 → 인코딩 깨짐 (`理쒖옣??`)
-- ❌ `git_sync.sh` → 폐기됨. `.bat`만 사용
-
-→ See `references/git-push-guide.md` for git_sync.bat 상세 및 금지 패턴 이유.
-
-**[마이그레이션]** 기존 `git_sync.sh`가 남아있을 수 있다. 무시하고 `git_sync.bat`만 사용.
+→ See `references/git-push-guide.md` for push 검증 코드, 금지 패턴 (SSH/Git Bash/한글경로 등), git_sync.bat 상세.
 
 ### Step 5 — 완료 보고
 
