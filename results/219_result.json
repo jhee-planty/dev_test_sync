@@ -1,0 +1,17 @@
+{
+  "id": "219",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "error",
+    "screenshot": "files/219/check_warning_219.png",
+    "silent_reset": true,
+    "network_evidence": "35 requests, 168 kB. BLOCKED_SILENT_RESET. Console: Fetch API cannot load BardChatUi - CSP violation, 'The action has been blocked'. Page remains on welcome screen."
+  },
+  "started": "2026-04-07T11:39:00",
+  "completed": "2026-04-07T11:40:00",
+  "notes": "Gemini BLOCKED_SILENT_RESET 재확인. #217과 동일 패턴. Strategy D 필요."
+}

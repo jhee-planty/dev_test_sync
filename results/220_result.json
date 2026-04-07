@@ -1,0 +1,15 @@
+{
+  "id": "220",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "text_matches_expected": false,
+    "format": "login_required",
+    "screenshot": "files/220/check_warning_220.png",
+    "silent_reset": false,
+    "network_evidence": "2 requests, 985 B. Page redirected to sign_in. Login required to reach chat interface."
+  },
+  "notes": "DeepSeek requires login (email/password or Google/Apple OAuth). Cannot test warning without authentication. Network tab shows only 2 requests (collect-rangers). Login page rendered normally."
+}
