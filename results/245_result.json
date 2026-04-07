@@ -1,0 +1,15 @@
+{
+  "id": "245",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": true,
+    "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "text_matches_expected": true,
+    "format": "warning_banner",
+    "screenshot": "files/245/check_warning_245.png",
+    "silent_reset": false,
+    "network_evidence": "42 requests, 66.9 kB transferred. Preserve log enabled."
+  },
+  "notes": "ChatGPT 경고 정상 표시. 미로그인 상태. 프롬프트 전송 후 warning_banner 즉시 표시. expected_text 정확히 일치. Regression PASS."
+}
