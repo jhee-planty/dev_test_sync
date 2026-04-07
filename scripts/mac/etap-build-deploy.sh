@@ -159,9 +159,9 @@ if [ "$POST_SYM" != "OK" ]; then
   json_step_fail "install_restart" 1 "CRITICAL: symlinks destroyed after extract — DO NOT restart"
   json_summary; exit 1
 fi
-# Restart
+# Restart (daemon-reload first in case unit file changed)
 ssh_cmd "$TEST_SERVER" \
-  "sudo systemctl restart etapd.service" >> "$LOG_FILE" 2>&1 || {
+  "sudo systemctl daemon-reload && sudo systemctl restart etapd.service" >> "$LOG_FILE" 2>&1 || {
   json_step_fail "install_restart" $? "systemctl restart failed"
   json_summary; exit 1
 }

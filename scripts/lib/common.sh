@@ -14,8 +14,8 @@ SSH_PORT="12222"
 
 # ── Paths ──
 LOCAL_ETAP="$HOME/Documents/workspace/Officeguard/EtapV3"
-REMOTE_SRC="/home/solution/source_for_test/EtapV3"
-REMOTE_BUILD="/home/solution/source_for_test/EtapV3/build/sv_x86_64_debug"
+REMOTE_SRC="/home/solution/source/EtapV3"
+REMOTE_BUILD="/home/solution/source/EtapV3/build/sv_x86_64_debug"
 DEPLOY_PATH="/home/solution"
 
 # ── Step tracking ──

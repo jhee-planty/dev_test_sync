@@ -77,8 +77,8 @@ Local source:
   LOCAL_ETAP = ~/Documents/workspace/Officeguard/EtapV3/
 
 Compile server:
-  REMOTE_SRC   = /home/solution/source_for_test/EtapV3/
-  REMOTE_BUILD = /home/solution/source_for_test/EtapV3/build/sv_x86_64_debug/
+  REMOTE_SRC   = /home/solution/source/EtapV3/
+  REMOTE_BUILD = /home/solution/source/EtapV3/build/sv_x86_64_debug/
   REMOTE_PKG   = /tmp/etap-root-{YYMMDD}.sv.debug.x86_64.el.tgz
 
 Local temp:
@@ -98,7 +98,62 @@ Test server:
 
 ---
 
-## Pre-flight Checklist
+## 스크립트 사용법 (권장)
+
+Pre-flight부터 배포·검증까지 전체 사이클을 스크립트 1회 실행으로 완료한다.
+스크립트는 JSONL을 stdout에 출력하므로 AI agent가 결과를 자동 파싱할 수 있다.
+
+스크립트 위치: `dev_test_sync/scripts/mac/`
+공유 함수: `dev_test_sync/scripts/lib/common.sh`
+출력 규격: `dev_test_sync/scripts/lib/output-format.md`
+
+### Cowork에서 실행 (desktop-commander 경유)
+
+```bash
+SCRIPTS="/Users/jhee/Documents/workspace/dev_test_sync/scripts/mac"
+
+# 사전 검증만 (SSH 연결 + 로컬 repo 확인)
+mcp__desktop-commander__start_process:
+  command: $SCRIPTS/etap-preflight.sh --check
+  timeout_ms: 30000
+
+# 사전 검증 full (branch 일치, symlink, changed files)
+mcp__desktop-commander__start_process:
+  command: $SCRIPTS/etap-preflight.sh
+  timeout_ms: 60000
+
+# 빌드-배포 전체 (git diff로 자동 감지)
+mcp__desktop-commander__start_process:
+  command: $SCRIPTS/etap-build-deploy.sh
+  timeout_ms: 300000
+
+# 특정 파일만 빌드-배포
+mcp__desktop-commander__start_process:
+  command: $SCRIPTS/etap-build-deploy.sh functions/ai_prompt_filter/ai_prompt_filter.cpp
+  timeout_ms: 300000
+```
+
+### 스크립트가 하는 일 (8 steps)
+
+1. **source_sync** — 변경 파일 scp 전송 (local → compile server)
+2. **ninja_build** — `sudo ninja`
+3. **ninja_install** — `sudo ninja install` + 패키지 생성 확인
+4. **pkg_download** — 패키지 다운로드 (compile → local)
+5. **pkg_upload** — 패키지 업로드 (local → test server)
+6. **deploy_safety** — tarball 경로 검사 + symlink 확인
+7. **install_restart** — 추출 + daemon-reload + 서비스 재시작
+8. **post_verify** — 서비스 상태 + 바이너리 타임스탬프 확인
+
+실패 시 해당 step에서 멈추고 JSONL summary에 log 파일 경로를 출력한다.
+
+### 개별 명령어로 fallback하는 경우
+
+스크립트 자체에 문제가 있거나, 특정 step만 재실행이 필요하면
+아래 Pre-flight Checklist / Step 1~4의 개별 명령어를 사용한다.
+
+---
+
+## Pre-flight Checklist (개별 명령어 — fallback)
 
 Verify before starting the build:
 
