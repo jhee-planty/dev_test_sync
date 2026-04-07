@@ -1,5 +1,0 @@
-{
-  "id": "244", "status": "done",
-  "result": { "blocked": false, "warning_visible": false, "warning_text": null, "text_matches_expected": false, "format": "input_method_failed", "screenshot": null, "silent_reset": false, "network_evidence": "Not tested — copilot.microsoft.com React contenteditable. See #222 result and m365-copilot automation profile." },
-  "notes": "M365 Copilot — #222에서 Copilot 테스트 완료(input_method_failed). React contenteditable div. SendKeys/clipboard 실패. CDP 미검증."
-}

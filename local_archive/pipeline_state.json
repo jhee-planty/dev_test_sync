@@ -1,69 +1,36 @@
 {
-  "current_service": "regression_batch_v2",
-  "current_phase": "regression_complete",
-  "last_request_id": 217,
-  "last_checked_result_id": 217,
-  "updated_at": "2026-04-07T00:05:00+09:00",
-  "service_queue": [
-    {
-      "service": "chatgpt",
-      "priority": 1,
-      "status": "regression_done",
-      "task_id": 209
-    },
-    {
-      "service": "claude",
-      "priority": 2,
-      "status": "regression_done",
-      "task_id": 210
-    },
-    {
-      "service": "perplexity",
-      "priority": 3,
-      "status": "regression_done",
-      "task_id": 211
-    },
-    {
-      "service": "genspark",
-      "priority": 4,
-      "status": "regression_done",
-      "task_id": 212
-    },
-    {
-      "service": "grok",
-      "priority": 5,
-      "status": "regression_done",
-      "task_id": 213
-    },
-    {
-      "service": "notion",
-      "priority": 6,
-      "status": "regression_done",
-      "task_id": 214
-    },
-    {
-      "service": "github_copilot",
-      "priority": 7,
-      "status": "regression_done",
-      "task_id": 215
-    },
-    {
-      "service": "gamma",
-      "priority": 8,
-      "status": "regression_done",
-      "task_id": 216
-    },
-    {
-      "service": "gemini",
-      "priority": 9,
-      "status": "regression_done",
-      "task_id": 217
-    }
-  ],
+  "current_service": "full_rescan_batch",
+  "current_phase": "rescan_complete",
+  "last_request_id": 244,
+  "last_checked_result_id": 244,
+  "updated_at": "2026-04-07T13:30:00+09:00",
+  "batch_info": {
+    "total_requests": 27,
+    "range": "218-244",
+    "results_received": 27,
+    "results_pending": 0
+  },
+  "results_summary": {
+    "PASS": ["218_chatgpt", "221_claude"],
+    "BLOCKED_SILENT_RESET": ["219_gemini3", "223_perfle", "226_mistral"],
+    "BLOCKED_REDIRECT_FAIL": ["224_grok"],
+    "LOGIN_REQUIRED": ["220_deepseek"],
+    "INPUT_FAILED": ["222_copilot", "227_qwen3", "228_baidu", "244_m365_copilot"],
+    "NOT_BLOCKED": ["225_you", "229_kimi", "230_chatglm", "231_dola", "232_qianwen", "233_clova", "234_wrtn", "235_blackbox", "236_duckduckgo", "237_consensus", "238_v0", "239_clova_x", "240_perplexity", "241_genspark", "242_github_copilot", "243_gamma"]
+  },
+  "statistics": {
+    "PASS": 2,
+    "BLOCKED_SILENT_RESET": 3,
+    "BLOCKED_REDIRECT_FAIL": 1,
+    "LOGIN_REQUIRED": 1,
+    "INPUT_FAILED": 4,
+    "NOT_BLOCKED": 16,
+    "TOTAL": 27
+  },
   "work_context": {
-    "strategy": "DB_migration_regression_v2",
-    "last_build": "2026-04-06T15:42:00+09:00",
-    "last_action": "DB migration regression 209-217 complete. 9/9 blocked. Claude+Genspark warning PASS. ChatGPT/Perplexity warning needs investigation.",
-    "next_step": "Investigate ChatGPT(209) login issue and Perplexity(211) generic error. Update status.md via desktop-commander."
+    "strategy": "full_rescan_after_AI_prompt_branch_alignment",
+    "last_build": "2026-04-07T11:30:00+09:00",
+    "last_action": "Full rescan 218-244 complete. 27/27 results received and analyzed.",
+    "next_step": "1) NOT_BLOCKED services: most are untested (login required, service changed, or test PC skipped). 2) BLOCKED_SILENT_RESET: Gemini/Perplexity/Mistral need Strategy D. 3) PASS services confirmed: ChatGPT, Claude."
   }
 }

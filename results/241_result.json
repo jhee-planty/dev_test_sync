@@ -1,5 +1,0 @@
-{
-  "id": "241", "status": "done",
-  "result": { "blocked": false, "warning_visible": false, "warning_text": null, "text_matches_expected": false, "format": "not_tested", "screenshot": null, "silent_reset": false, "network_evidence": "Not tested — genspark.ai requires login." },
-  "notes": "Genspark — 로그인 필요 예상. 별도 세션에서 테스트 필요."
-}
