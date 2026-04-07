@@ -1,0 +1,15 @@
+<module_config>
+	<!-- Config C: tcpip + visible_tls — TLS MITM -->
+	<module
+		path="/usr/local/lib/etap/libetap_http.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_tls.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_tcpip.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_visible_tls.so"
+	/>
+</module_config>

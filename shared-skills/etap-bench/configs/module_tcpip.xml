@@ -1,0 +1,12 @@
+<module_config>
+	<!-- Config B: tcpip만 — TCP 인터셉션 + 세션 추적 -->
+	<module
+		path="/usr/local/lib/etap/libetap_http.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_tls.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_tcpip.so"
+	/>
+</module_config>

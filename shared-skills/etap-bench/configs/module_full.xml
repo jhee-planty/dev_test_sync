@@ -1,0 +1,18 @@
+<module_config>
+	<!-- Config D: Full — tcpip + visible_tls + ai_prompt_filter -->
+	<module
+		path="/usr/local/lib/etap/libetap_http.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_tls.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_tcpip.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_visible_tls.so"
+	/>
+	<module
+		path="/usr/local/lib/etap/libetap_ai_prompt_filter.so"
+	/>
+</module_config>

@@ -330,15 +330,14 @@ Experience accumulation:
 | apf-add-service | `SKILLS_DIR/apf-add-service/SKILL.md` | Phase 2: HAR analysis + SQL + C++ + registration | Claude Code sub agent (Opus): analyze, main agent: apply |
 | apf-add-service services | `SKILLS_DIR/apf-add-service/services/{service}.md` | Per-service analysis/implementation experience | Claude Code (sub agent) |
 | etap-build-deploy | `SKILLS_DIR/etap-build-deploy/SKILL.md` | Phase 3: source sync + build + test server deploy | Claude Code (main agent) |
-| apf-test-diagnosis | `SKILLS_DIR/apf-test-diagnosis/SKILL.md` | Test failure diagnosis (HAR/console analysis) | Cowork |
-| apf-test-diagnosis patterns | `SKILLS_DIR/apf-test-diagnosis/references/error_patterns.md` | Known error pattern dictionary | Cowork |
+| ~~apf-test-diagnosis~~ | *(미생성 — 진단 기능은 apf-add-service/services/{service}.md의 Diagnosis History에 통합)* | | |
 | skill-discussion-review | `SKILLS_DIR/skill-discussion-review/SKILL.md` | Quality Gate 불확실 시 토론, 정기 점검 토론 | Cowork |
 
 **Read only the skills needed for the current phase.**
 - Phase 1 → `genai-har-capture/SKILL.md` only
 - Phase 2 → `apf-add-service/SKILL.md` + relevant `services/{service}.md`
 - Phase 3 → `etap-build-deploy/SKILL.md` only
-- Test failure → `apf-test-diagnosis/SKILL.md` + relevant `services/{service}.md`
+- Test failure → `apf-add-service/services/{service}.md` → Diagnosis History section
 - Capture error → `SKILL_debug.md` only
 
 ---
@@ -351,7 +350,7 @@ Experience accumulation:
 | Per-service analysis/impl/debugging | `apf-add-service/services/{service}.md` | "Genspark: SSE separator \n\n only" / "ServiceX: JSON, body.message" |
 | Common patterns (2+ services confirmed) | `apf-add-service/SKILL.md` Common Pitfalls | "Some services only accept \n\n separator" |
 | Test failure diagnosis results | `apf-add-service/services/{service}.md` → Diagnosis History | "P001: WRITE_THEN_DISCONNECT, body_size=0" |
-| Test-time error patterns (HAR signatures) | `apf-test-diagnosis/references/error_patterns.md` | "P001: status=200, body=0, receive<100ms" |
+| Test-time error patterns (HAR signatures) | `apf-add-service/services/{service}.md` → Diagnosis History | "P001: status=200, body=0, receive<100ms" |
 
 **Rules:**
 - Per-service files: concrete facts about that service.

@@ -1,0 +1,3 @@
+<module_config>
+	<!-- Baseline: 모듈 없음 — 순수 DPDK 브릿지 포워딩 -->
+</module_config>
