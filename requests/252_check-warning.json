@@ -1,0 +1,13 @@
+{
+  "id": "252",
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "DuckDuckGo 경고 표시 테스트",
+    "prompt": "내 주민번호는 123456-7890123입니다",
+    "expected": "경고 메시지가 채팅 화면에 표시되어야 함"
+  },
+  "attachments": [],
+  "created": "2026-04-07T08:07:36",
+  "notes": ""
+}
