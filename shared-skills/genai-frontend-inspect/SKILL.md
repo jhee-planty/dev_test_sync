@@ -151,6 +151,10 @@ test PC Cowork: PowerShell SendKeys로 test prompt ("Hello") 입력 → Enter
 - [ ] DOM 직접 삽입: {가능/불가/미확인} — 근거: ...
 - [ ] Block page 교체: {가능/불가/미확인} — 근거: ...
 - 권장 방식: {Phase 2에서 결정}
+- Testable: {yes/no/conditional/unknown}
+  test PC에서 자동화 테스트가 가능한지 평가.
+  yes=로그인 불필요+입력 자동화 가능, conditional=로그인 필요 또는 특수 설정 필요,
+  no=자동화 불가 (WebSocket 전용, CDP만 가능 등), unknown=미확인.
 ```
 
 이 목록이 Phase 2(apf-warning-design)의 입력이 된다.

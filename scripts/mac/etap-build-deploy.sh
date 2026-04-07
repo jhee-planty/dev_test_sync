@@ -38,7 +38,7 @@ fi
 
 # ── Resolve file list ──
 if [ ${#FILES[@]} -eq 0 ]; then
-  mapfile -t FILES < <(cd "$LOCAL_ETAP" && git diff --name-only 2>/dev/null)
+  while IFS= read -r line; do FILES+=("$line"); done < <(cd "$LOCAL_ETAP" && git diff --name-only 2>/dev/null)
 fi
 
 if [ ${#FILES[@]} -eq 0 ]; then
