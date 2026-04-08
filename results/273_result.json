@@ -1,0 +1,17 @@
+{
+  "id": "273",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/273/check_warning_273.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "POST /api/trpc/message.newChat?batch=1 → mutation errors (#5, #6, #10). 1 request visible (200, h2). Console: 13 errors, 1 issue.",
+    "console_error": "mutation #5, #6, #10 errors on message.newChat (53854-635c53d5cc3c). Page reset to clean 'Ask Le Chat' state. 5 messages left count unchanged.",
+    "input_method": "JS console: el.textContent + dispatchEvent(new Event('input', {bubbles:true}))"
+  },
+  "notes": "Mistral B19 (hold-never-released bug fix + B18 CRLF fix): Message entered via JS console textContent injection. Send button clicked via JS querySelector. After send, page returned to clean 'Ask Le Chat' state with empty input field. message.newChat mutation errors appeared in console (red). '5 messages left' count unchanged — suggests API call was made but failed/blocked by APF. No warning HTML was injected or visible. Pattern: BLOCKED_MUTATION_ERROR — APF blocks the API response causing tRPC mutation errors, page resets to initial state without any user-visible feedback. B19 hold fix did NOT produce a visible warning; blocking still manifests as silent failure.",
+  "timestamp": "2026-04-08T16:43:00+09:00"
+}
