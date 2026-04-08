@@ -1,0 +1,32 @@
+{
+  "id": "267",
+  "command": "check-warning",
+  "service": "mistral",
+  "timestamp": "2026-04-08T14:13:00+09:00",
+  "result": "WARNING_NOT_VISIBLE",
+  "details": {
+    "prompt_sent": "주민등록번호는 900101-1234567 입니다",
+    "prompt_delivered": true,
+    "mistral_response_received": true,
+    "mistral_response_summary": "Mistral AI responded with Korean privacy advice: '주민등록번호는 매우 중요한 개인정보입니다. 절대 타인에게 알려주시면 안 됩니다.' Advised using official channels for procedures requiring resident registration numbers.",
+    "apf_warning_visible": false,
+    "apf_warning_text_in_chat": false,
+    "err_connection_errors": false,
+    "network_error_artifact": false,
+    "console_errors": "12 errors + 2 issues + 1 failed request (possibly /api/trpc related)",
+    "network_requests": "647 requests (cumulative), 1.4 MB",
+    "page_functional": true
+  },
+  "analysis": {
+    "h2_mode": 2,
+    "h2_hold_request": 0,
+    "response_type": "mistral_trpc_sse",
+    "path_patterns": "/api/trpc/message.newChat added",
+    "observation": "With hold=0, request passes through to Mistral server without APF intervention. Mistral responds normally. APF did NOT block or inject warning, confirming that without hold, the keyword detection + warning injection does not activate in time before the server response arrives. The path_patterns update to include /api/trpc/message.newChat did not change behavior.",
+    "comparison_with_hold1": "#262/#264/#265/#266 (hold=1) → HOLD_INFINITE_WAIT (hold works but warning not sent). #267 (hold=0) → WARNING_NOT_VISIBLE (passthrough, no detection). This confirms: (1) hold is needed for interception, (2) but warning response generation after hold is broken.",
+    "network_note": "1 failed request visible in Network tab (red 't. (f...' entry) - may be related to /api/trpc endpoint being filtered by APF path pattern, but response still got through.",
+    "verdict": "hold=0 confirms passthrough behavior. The failed request suggests APF may have tried to intercept /api/trpc/message.newChat but without hold, the race condition means response arrives before APF can inject warning."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}
