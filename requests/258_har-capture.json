@@ -1,0 +1,12 @@
+{
+  "id": "258",
+  "command": "har-capture",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "Hello",
+  "capture_options": {
+    "save_response_body": true,
+    "filter_endpoint": "/api/chat"
+  },
+  "notes": "Need raw SSE response body from POST /api/chat endpoint. Must capture the text/event-stream response content to determine SSE event format. Key question: is it OpenAI-compatible (data: {choices:[{delta:{content:...}}]}) or custom Mistral format? Also check if POST /api/chat body contains the prompt text or only /api/trpc/message.newChat does. This capture must be done WITHOUT APF blocking — use a non-sensitive prompt."
+}
