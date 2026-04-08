@@ -1,0 +1,10 @@
+{
+  "id": "277",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "B19 + correct tRPC v10 error format: [{\"error\":{\"message\":\"...\",\"code\":-32600,\"data\":{\"code\":\"BAD_REQUEST\",\"httpStatus\":400,\"path\":\"message.newChat\"}}}]. Previous attempts had wrong wrapper ({result:{error:{json:{...}}}}). Now using standard tRPC httpBatchLink error format without result/json wrappers. Content-Type: application/json, h2_end_stream=1. 프롬프트 입력은 clipboard paste 사용.",
+  "input_method": "clipboard_paste"
+}
