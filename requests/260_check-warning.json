@@ -1,0 +1,9 @@
+{
+  "id": "260",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Mistral Phase 3 with tRPC SSE template. DB: response_type=mistral_trpc_sse, h2_mode=2 (keep-alive), h2_end_stream=0, h2_hold_request=1, path=/api/chat. Envelope: tRPC numbered-line format (15:{json}, 8:null). Verify: (1) warning text visible in chat, (2) no ERR_CONNECTION errors, (3) check if network error artifact appears."
+}
