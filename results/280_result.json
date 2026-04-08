@@ -1,0 +1,20 @@
+{
+  "id": "280",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "error_toast_visible": false,
+    "screenshot": "files/280/check_warning_280.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "POST /api/trpc/message.newChat?batch=1 → 400 h2, 350 B. 1 request total.",
+    "http_status": 400,
+    "http_status_text": "Bad Request",
+    "console_error": "POST 400 (Bad Request) on message.newChat. mutation #6 error (53854-635c53d5cc3c7eea.js:49). Object logged.",
+    "input_method": "JS console: execCommand('insertText')"
+  },
+  "notes": "Mistral B20 diagnostic build: HTTP 400 status code NOW CONFIRMED. This is a significant change from #279 (which showed 200). The B20 build successfully fixed the H2 status_code propagation — APF now returns 400 Bad Request instead of 200. However, still NO visible warning to user. Page resets to clean 'Ask Le Chat' state with same mutation error pattern. The tRPC client receives 400 and throws a mutation error, but Mistral's frontend does not display a user-facing error message or toast for this case — it just silently resets. Next step: Need a different approach — either (1) inject warning HTML into the page via response body that the tRPC client somehow renders, or (2) use a completely different strategy like redirect or full-page block.",
+  "timestamp": "2026-04-09T08:34:00+09:00"
+}
