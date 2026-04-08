@@ -1,0 +1,9 @@
+{
+  "id": "265",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "B15 diag v2: added H2_DATA info log (check_completed, blocked, end_of_body), SKIP info log, LARGE_CHUNK path diag. Need to see: (1) is check_completed=true? (2) which chunk path? (3) what's in the decoded buffer?"
+}
