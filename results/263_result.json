@@ -1,0 +1,31 @@
+{
+  "id": "263",
+  "command": "check-warning",
+  "service": "gemini",
+  "timestamp": "2026-04-08T13:45:00+09:00",
+  "result": "BLOCKED_PAGE_UNAVAILABLE",
+  "details": {
+    "prompt_sent": false,
+    "prompt_delivered": false,
+    "gemini_response_received": false,
+    "apf_warning_visible": false,
+    "err_connection_errors": true,
+    "error_types": ["ERR_CONNECTION_CLOSED", "ERR_HTTP2_PROTOCOL_ERROR"],
+    "error_count": 54,
+    "network_requests": "228 requests, 1.0 MB transferred",
+    "page_functional": false,
+    "page_state": "Redirected to gemini.google.com/unavailable - 'Gemini를 일시적으로 사용할 수 없습니다' (Gemini is temporarily unavailable)",
+    "tab_title": "Gemini를 사용할 수 없음"
+  },
+  "analysis": {
+    "h2_mode": 2,
+    "h2_hold_request": 1,
+    "h2_end_stream": 0,
+    "response_type": "gemini_wrb_fr",
+    "observation": "h2_mode=2 (keep-alive) did NOT prevent Gemini cascade failure. The page itself fails to load because batchexecute and other critical Google endpoints are being blocked/reset by APF. The Gemini unavailable page appears before any prompt can be entered. The POST requests to m=_b?wli=BardChatUI all fail with ERR_CONNECTION_CLOSED. Even background polling requests (gstatic, maps.google) fail with ERR_HTTP2_PROTOCOL_ERROR.",
+    "comparison_with_259": "#259 (h2_mode=1) → same cascade failure, 72+ errors. #263 (h2_mode=2) → similar cascade failure, 54+ errors, page unavailable. h2_mode=2 does not help because the blocking pattern is too broad - it catches all batchexecute traffic, not just prompt-containing requests.",
+    "verdict": "Gemini cannot be warned with current approach. The batchexecute endpoint serves BOTH page initialization AND chat messages. APF blocks all batchexecute traffic, causing page load failure before any prompt is sent. Solution: APF needs content-aware filtering to only block batchexecute requests that contain sensitive keywords, not all batchexecute traffic."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}

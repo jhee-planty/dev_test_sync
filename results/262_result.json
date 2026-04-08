@@ -1,0 +1,32 @@
+{
+  "id": "262",
+  "command": "check-warning",
+  "service": "mistral",
+  "timestamp": "2026-04-08T13:44:00+09:00",
+  "result": "HOLD_INFINITE_WAIT",
+  "details": {
+    "prompt_sent": "주민등록번호는 900101-1234567 입니다",
+    "prompt_delivered": true,
+    "mistral_response_received": false,
+    "apf_warning_visible": false,
+    "apf_warning_text_in_chat": false,
+    "err_connection_errors": false,
+    "network_error_artifact": false,
+    "console_errors": "12 errors + 2 issues (pre-existing, not APF related)",
+    "network_requests": "120 requests, 111 KB transferred, all 200/h2 except 101 WebSocket",
+    "page_functional": "partially - UI responsive but chat stuck in loading state",
+    "wait_time_seconds": ">70 seconds with no response"
+  },
+  "analysis": {
+    "h2_mode": 2,
+    "h2_hold_request": 1,
+    "h2_end_stream": 0,
+    "response_type": "mistral_trpc_sse",
+    "observation": "APF hold is NOW WORKING - request is being held (no response from Mistral server, confirming hold prevents upstream delivery). However, APF fails to send the warning response back to the client. The hold_release bug fix successfully prevents premature release, but the warning response generation/injection step is broken. The chat shows Mistral avatar with loading spinner indefinitely.",
+    "comparison_with_260": "#260 (same settings but old hold code) → hold released prematurely, Mistral responded normally. #262 (hold_release fix) → hold works, request blocked, but no warning sent back. Progress: hold mechanism confirmed working.",
+    "comparison_with_261": "#261 (h2_mode=1, no hold) → passthrough, no warning. #262 (h2_mode=2, hold fixed) → request held but warning not delivered.",
+    "verdict": "HOLD WORKS but WARNING RESPONSE NOT SENT. The C++ hold_release bug fix successfully holds the request (confirmed by infinite wait). Next step: debug why the tRPC SSE warning response is not being generated and sent back to the client after hold."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}
