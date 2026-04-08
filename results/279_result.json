@@ -1,0 +1,18 @@
+{
+  "id": "279",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "error_toast_visible": false,
+    "screenshot": "files/279/check_warning_279.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "POST /api/trpc/message.newChat?batch=1 → 200 h2, 730 B. 1 request total. NOTE: Status is 200, NOT 400.",
+    "console_error": "mutation #5 error on message.newChat (53854-635c53d5cc3c7eea.js:49). Object logged.",
+    "input_method": "JS console: execCommand('insertText')"
+  },
+  "notes": "Mistral B19 + HTTP 400 error strategy test: FAILED. The APF response status is still HTTP 200, not the intended 400. The HTTP 400 strategy was supposed to trigger TRPCClientError with error.message displayed as toast/alert, but the APF build appears to still be returning 200 status. Same BLOCKED_MUTATION_ERROR pattern as #273-277 (6th consecutive failure). The tRPC client receives 200 + malformed superjson body → deserialization fails → silent mutation error → page resets. No toast, no alert, no visible error message. 4 messages left unchanged. Either: (1) the B19 build was not updated with HTTP 400 logic, or (2) Etap's HTTP/2 proxy layer forces 200 status regardless of upstream configuration.",
+  "timestamp": "2026-04-09T08:21:00+09:00"
+}
