@@ -1,0 +1,32 @@
+{
+  "request_id": 270,
+  "test_type": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai/chat",
+  "timestamp": "2026-04-08T14:29:00+09:00",
+  "result": "WARNING_NOT_VISIBLE",
+  "details": {
+    "prompt_sent": true,
+    "input_method": "clipboard_paste",
+    "prompt_text": "주민등록번호는 900101-1234567 입니다",
+    "service_responded": true,
+    "service_response_summary": "Mistral responded normally about 주민등록번호 being important personal information, warned not to share online, suggested contacting 신용정보 관리기관",
+    "warning_displayed": false,
+    "connection_error": false,
+    "network_requests": 969,
+    "network_errors": 12,
+    "console_warnings": 2,
+    "apf_config": {
+      "h2_mode": 2,
+      "h2_hold_request": 0,
+      "path_patterns": "/",
+      "build": "B16",
+      "template": "tRPC SSE"
+    }
+  },
+  "analysis": "WARNING_NOT_VISIBLE — Same passthrough pattern as #267/#268/#269. With hold=0, APF cannot intercept fast enough to inject warning. Mistral responded normally. Clipboard paste method used successfully for Korean text input. The prompt characters appear with spacing in the bubble but Mistral understood the content correctly. B16 build with broad path_patterns=/ and hold=0 still results in passthrough. Dev PC should check RAW_FRAME diagnostic logs on Etap server for request body format analysis.",
+  "comparison": {
+    "vs_269": "Identical result (WARNING_NOT_VISIBLE) — clipboard paste method vs previous method makes no difference to APF interception with hold=0",
+    "pattern_summary": "hold=1 → HOLD_INFINITE_WAIT (#262,#264,#265,#266), hold=0 → WARNING_NOT_VISIBLE (#260,#261,#267,#268,#269,#270)"
+  }
+}
