@@ -1,0 +1,17 @@
+{
+  "id": "275",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/275/check_warning_275.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "POST /api/trpc/message.newChat?batch=1 → 200 h2. 2 requests total, 1.5 kB.",
+    "console_error": "mutation #5 error on message.newChat (53854-635c53d5cc3c). Page reset to clean 'Ask Le Chat' state. 5 messages left unchanged. 1 error, 2 issues.",
+    "input_method": "JS console: execCommand('insertText')"
+  },
+  "notes": "Mistral B19 + tRPC error format (JSON application/json with [{\"result\":{\"error\":{\"json\":{\"message\":\"...\"}}}}]): Same BLOCKED_MUTATION_ERROR pattern as #273 and #274. mutation #5 error on message.newChat. Page resets to clean state. 5 messages left unchanged. The tRPC error envelope format also fails to produce a visible warning. The tRPC httpBatchLink error response is received (200 h2) but the client-side error handling does not display the error message to the user — it just triggers a mutation error and resets. Three consecutive format attempts (SSE, tRPC index 0, tRPC error envelope) all produce the same silent failure pattern.",
+  "timestamp": "2026-04-08T17:01:00+09:00"
+}
