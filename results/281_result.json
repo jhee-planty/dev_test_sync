@@ -1,0 +1,30 @@
+{
+  "id": "281",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "response_received": true,
+    "screenshot": "files/281/capture_response_281.png",
+    "captured_file": "281_captured_sse.txt",
+    "request_url": "/api/chat",
+    "request_method": "POST",
+    "request_body": "{\"chatId\":\"25431c9f-0927-4c04-ba55-8cf3481ec5bc\",\"mode\":\"start\",\"disabledFeatures\":[\"memory-inference\"],\"clientPromptData\":{\"currentDate\":\"2026-04-09\",\"userTimezone\":\"T+09:00 (Asia/Seoul)\"},\"stableAnonymousIdentifier\":\"63deh3\",\"shouldAwaitStreamBackgroundTasks\":true,\"shouldUseMessagePatch\":true,\"shouldUsePersistentStream\":true}",
+    "response_content_type": "text/event-stream",
+    "response_status": 200,
+    "response_protocol": "h2",
+    "response_body_length": 10892,
+    "response_body_first_500_chars": "16:{\"json\":{\"disclaimers\":[]}}\n15:{\"json\":{\"type\":\"message\",\"messageId\":\"d9b9e211-19dc-4142-9fa8-4ec49349a438\",\"messageVersion\":0,\"patches\":[{\"op\":\"replace\",\"path\":\"/\",\"value\":{\"role\":\"assistant\",\"content\":\"\",\"contentChunks\":null,\"turn\":0,\"createdAt\":\"2026-04-08T23:42:21.014Z\",\"agentId\":null,\"agentsApiAgentId\":null,\"chatId\":\"25431c9f-0927-4c04-ba55-8cf3481ec5bc\",\"createdById\":null,\"files\":[],\"id\":\"d9b9e211-19dc-4142-9fa8-4ec49349a438\",\"isAcceleratedAnswer\":false,\"moderationCategory\":null,\"reacti",
+    "response_format": "NOT standard SSE (data:/event:). Uses LENGTH-PREFIXED NDJSON: each line is 'N:{json}' where N is the byte length of the JSON payload. This is a custom streaming format, not standard text/event-stream.",
+    "response_headers_key": {
+      "content-type": "text/event-stream",
+      "content-encoding": "zstd",
+      "server": "cloudflare",
+      "cache-control": "no-cache",
+      "x-envoy-upstream-service-time": "45"
+    },
+    "chat_response": "Hello! Let's break down 2 + 2 step by step: 1. Understand the Numbers 2. Addition Concept 3. Counting 4. Result: 4. So, 2 + 2 = 4.",
+    "network_summary": "15 requests total, 14.0 kB transferred"
+  },
+  "notes": "CRITICAL FINDING: Mistral /api/chat SSE stream uses LENGTH-PREFIXED NDJSON format, NOT standard SSE (data:/event:). Format is 'N:{json_payload}\\n' where N = byte length of the JSON string. First line '16:{\"json\":{\"disclaimers\":[]}}' means 16 bytes of JSON. Second line contains message metadata with patches array (JSON Patch RFC 6902 format with op:replace). The stream delivers content incrementally via patches. Content-Type is text/event-stream but actual format is custom. Request body includes chatId, mode:start, shouldUseMessagePatch:true, shouldUsePersistentStream:true. This format is key for building an APF warning that can inject into the stream.",
+  "timestamp": "2026-04-09T08:43:00+09:00"
+}
