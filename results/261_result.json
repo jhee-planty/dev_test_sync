@@ -1,0 +1,32 @@
+{
+  "id": "261",
+  "command": "check-warning",
+  "service": "mistral",
+  "timestamp": "2026-04-08T13:34:00+09:00",
+  "result": "WARNING_NOT_VISIBLE",
+  "details": {
+    "prompt_sent": "주민등록번호는 900101-1234567 입니다",
+    "prompt_delivered": true,
+    "mistral_response_received": true,
+    "mistral_response_summary": "Mistral responded with privacy warning in Korean: '주민등록번호는 매우 중요한 개인정보입니다. 절대로 타인과 공유하거나 온라인에서 노출해서는 안 됩니다.' Advised visiting official agency websites for procedures requiring resident registration numbers.",
+    "apf_warning_visible": false,
+    "apf_warning_text_in_chat": false,
+    "err_connection_errors": false,
+    "network_error_artifact": false,
+    "console_errors": "10 (pre-existing, not APF related) + 1 Issue (Intercom)",
+    "network_requests": "18 requests, all HTTP 200, h2 protocol, 17.7 KB transferred",
+    "page_functional": true
+  },
+  "analysis": {
+    "h2_mode": 1,
+    "h2_hold_request": 0,
+    "h2_end_stream": 0,
+    "response_type": "mistral_trpc_sse",
+    "observation": "h2_mode=1 (Strategy D) with tRPC SSE template did NOT produce ERR_CONNECTION_CLOSED (unlike #257 which had h2_mode=1 without tRPC SSE template). The tRPC SSE response_type appears to have changed behavior - instead of connection close, the original Mistral response passed through unmodified. However, APF warning was NOT injected into the SSE stream. This suggests: (1) the tRPC SSE template may be causing APF to skip the connection-close step but not successfully injecting warning content, or (2) the keyword detection is not triggering with the current DB configuration, or (3) the template generation code has a bug that produces empty/invalid warning payload.",
+    "comparison_with_257": "#257 (h2_mode=1, no tRPC SSE template) → ERR_CONNECTION_CLOSED + 'Oops, Something Fishy' Error 6002. #261 (h2_mode=1, WITH tRPC SSE template) → No connection error, Mistral response intact, but no warning injected. The tRPC SSE template prevented the connection close but did not inject warning.",
+    "comparison_with_260": "#260 (h2_mode=2, tRPC SSE template, h2_hold_request=1) → Same result: no warning, no errors. Both h2_mode=1 and h2_mode=2 with tRPC SSE template show same behavior: passthrough without warning injection.",
+    "verdict": "tRPC SSE template prevents connection close but fails to inject warning. Root cause likely in APF C++ code: template may not be generating valid tRPC SSE warning payload, or keyword detection may not be triggering for /api/chat path."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}
