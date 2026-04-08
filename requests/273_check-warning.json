@@ -1,0 +1,10 @@
+{
+  "id": "273",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "B19: Fixed hold-never-released bug. When check_completed=1 (connection already decided), subsequent POST requests no longer set hold — preventing PING/WINDOW_UPDATE starvation that caused ERR_CONNECTION_CLOSED. Also includes B18 CRLF fix. 프롬프트 입력은 clipboard paste 사용.",
+  "input_method": "clipboard_paste"
+}
