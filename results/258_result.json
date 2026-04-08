@@ -1,0 +1,55 @@
+{
+  "id": "258",
+  "command": "har-capture",
+  "service": "mistral",
+  "timestamp": "2026-04-08T11:42:00+09:00",
+  "status": "completed",
+  "result": {
+    "capture_success": true,
+    "endpoint": "/api/chat",
+    "method": "POST",
+    "content_type": "text/event-stream (tRPC-style SSE)",
+    "response_length": 2409,
+    "sse_format": "NOT OpenAI-compatible. Uses tRPC numbered-line SSE with JSON Patch operations.",
+    "request_body_schema": {
+      "chatId": "string (required, UUID)",
+      "mode": "string (required, one of: start|append|edit|rewrite|retry|toolCallConfirmation)",
+      "messageInput": "array (required, [{type:'text', text:'...'}])",
+      "messageFiles": "array",
+      "messageId": "string (UUID)",
+      "features": "array (e.g. ['beta-websearch'])",
+      "shouldUsePersistentStream": "boolean",
+      "shouldUseMessagePatch": "boolean",
+      "clientPromptData": "object ({currentDate, userTimezone})"
+    },
+    "sse_event_structure": {
+      "line_format": "{number}:{json_payload}",
+      "event_16": "disclaimers (initial)",
+      "event_15_types": [
+        "message init: op=replace, path=/, value={full message object with role, content, chatId, id, generationStatus...}",
+        "content start: op=replace, path=/contentChunks, value=[{type:text, text:first_chunk}]",
+        "content append: op=append, path=/contentChunks/0/text, value=next_text_chunk",
+        "moderation: op=replace, path=/moderationCategory, value=safe",
+        "completion: op=replace, path=/generationStatus, value=success"
+      ],
+      "event_8": "null (stream end signal)"
+    },
+    "key_findings": [
+      "Mistral uses tRPC numbered-line SSE, NOT standard SSE (data: ...)",
+      "Content delivered via JSON Patch: op=append on /contentChunks/0/text",
+      "chatId is required for all requests (generated on first message or via separate API)",
+      "mode=start for new chat, mode=append for follow-up messages",
+      "Stream ends with '8:null' line"
+    ],
+    "warning_implications": [
+      "Cannot use standard SSE envelope template (data: format)",
+      "APF block response must mimic tRPC numbered-line format: 15:{json:{type:message,patches:[...]}}",
+      "Must include initial event 16:{json:{disclaimers:[]}} and final 8:null",
+      "ERR_CONNECTION_CLOSED (from #257) confirms current block kills connection before any response is sent"
+    ]
+  },
+  "files": [
+    "files/258/api_chat_response.txt",
+    "files/258/sse_capture.json"
+  ]
+}
