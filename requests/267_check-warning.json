@@ -1,0 +1,9 @@
+{
+  "id": "267",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Diagnostic: h2_hold_request=0, path_patterns updated to include /api/trpc/message.newChat. Goal: verify keyword detection in message.newChat body WITHOUT hold deadlock."
+}
