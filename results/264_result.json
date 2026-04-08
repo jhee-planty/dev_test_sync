@@ -1,0 +1,32 @@
+{
+  "id": "264",
+  "command": "check-warning",
+  "service": "mistral",
+  "timestamp": "2026-04-08T13:55:00+09:00",
+  "result": "HOLD_INFINITE_WAIT",
+  "details": {
+    "prompt_sent": "주민등록번호는 900101-1234567 입니다",
+    "prompt_delivered": true,
+    "mistral_response_received": false,
+    "apf_warning_visible": false,
+    "apf_warning_text_in_chat": false,
+    "err_connection_errors": false,
+    "network_error_artifact": false,
+    "console_errors": "12 errors + 2 issues (pre-existing)",
+    "network_requests": "338 requests (cumulative with Preserve log), 1.1 MB",
+    "page_functional": "partially - UI responsive but chat stuck in loading state",
+    "wait_time_seconds": ">45 seconds with no response",
+    "stop_button_visible": true
+  },
+  "analysis": {
+    "h2_mode": 2,
+    "h2_hold_request": 1,
+    "h2_end_stream": 0,
+    "response_type": "mistral_trpc_sse",
+    "observation": "Same as #262: APF hold works (request held, no Mistral response). Warning response still not sent back. Diagnostic build adds info-level logging on server side (DECODE_OK, DECODED_SAMPLE, KEYWORD_CHECK) but client behavior is identical. Dev should check Etap logs for these diagnostic messages to understand: (1) if request body was decoded correctly, (2) what the decoded content sample looks like, (3) if keyword check is being executed and what result it produces.",
+    "comparison_with_262": "Identical behavior. Hold works, warning not sent. Diagnostic logging only visible in Etap server logs, not in browser.",
+    "next_step": "Dev should SSH to Etap and check /var/log/etapd or syslog for DECODE_OK/DECODED_SAMPLE/KEYWORD_CHECK messages while this hold is active."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}
