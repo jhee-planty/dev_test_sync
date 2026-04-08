@@ -1,0 +1,32 @@
+{
+  "id": "260",
+  "command": "check-warning",
+  "service": "mistral",
+  "timestamp": "2026-04-08T12:05:00+09:00",
+  "result": "WARNING_NOT_VISIBLE",
+  "details": {
+    "prompt_sent": "주민등록번호는 900101-1234567 입니다",
+    "prompt_delivered": true,
+    "mistral_response_received": true,
+    "mistral_response_summary": "Mistral AI responded with privacy protection advice in Korean - warning user not to share personal information like resident registration numbers, suggesting contacting official agencies instead.",
+    "apf_warning_visible": false,
+    "apf_warning_text_in_chat": false,
+    "err_connection_errors": false,
+    "network_error_artifact": false,
+    "console_errors": 1,
+    "console_error_details": "Only 1 Intercom-related issue (pre-existing, not APF related)",
+    "network_requests": "18 requests, all HTTP 200, h2 protocol, 16.6 KB transferred",
+    "page_functional": true
+  },
+  "analysis": {
+    "h2_mode": 2,
+    "h2_hold_request": 1,
+    "h2_end_stream": 0,
+    "response_type": "mistral_trpc_sse",
+    "observation": "APF did NOT intercept or modify the Mistral /api/chat SSE stream. The original Mistral response was delivered intact without any APF warning injection. Possible causes: (1) APF pattern matching did not trigger on this request - keyword '주민등록번호' may not be in the filter DB, (2) h2_hold_request=1 mode may not be correctly holding the upstream response to inject the warning, (3) the tRPC SSE template may not be correctly matching the /api/chat path or content-type, (4) APF module may not be active for this service on the Etap bridge.",
+    "comparison_with_257": "Request #257 (earlier Mistral check-warning) resulted in ERR_CONNECTION_CLOSED with 'Oops, Something Fishy' error. This time with h2_mode=2 (keep-alive) the connection stayed open but APF warning was not injected at all - the original AI response passed through unmodified.",
+    "verdict": "tRPC SSE warning template is NOT working. APF either failed to detect the sensitive keyword or failed to inject the warning into the SSE stream."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}
