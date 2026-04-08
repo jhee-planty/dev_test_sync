@@ -1,0 +1,17 @@
+{
+  "id": "276",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/276/check_warning_276.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "POST /api/trpc/message.newChat?batch=1 → 200 h2, 730 B. 1 request total.",
+    "console_error": "mutation #9 error on message.newChat (53854-635c53d5cc3c). Page reset to clean 'Ask Le Chat' state. 5 messages left unchanged. 1 error, 2 issues.",
+    "input_method": "JS console: execCommand('insertText')"
+  },
+  "notes": "Mistral B19 + tRPC error format + h2_end_stream=1 (2-frame DATA strategy): Same BLOCKED_MUTATION_ERROR pattern as #273-275. mutation #9 error on message.newChat. Page resets to clean state. END_STREAM flag addition did NOT resolve the issue. The 200 response with 730B body is received and the fetch completes, but the tRPC client still rejects the response content. 4 consecutive format/protocol attempts all produce identical silent failure: the tRPC client-side deserialization or validation fails, triggering a mutation error without displaying any error message to the user. Root cause is likely tRPC superjson transformer mismatch — the response body must pass superjson deserialization before the error message can be extracted.",
+  "timestamp": "2026-04-08T17:07:00+09:00"
+}
