@@ -1,0 +1,10 @@
+{
+  "id": "272",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "B18 deployed: CRLF fix in convert_to_http2_response — header-body separator AND individual header parsing now accept both LF and CRLF. Previous B17 failed with 'malformed HTTP/1.1 response' because DB template uses LF-only. 프롬프트 입력은 clipboard paste(Ctrl+V)를 사용해주세요.",
+  "input_method": "clipboard_paste"
+}
