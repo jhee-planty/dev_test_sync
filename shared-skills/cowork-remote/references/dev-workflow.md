@@ -204,6 +204,11 @@ etap 로그 진단 등 최근 추가된 절차를 빠뜨린다.
 
 ### 폴링 루프
 
+**핵심 원칙: sync ≠ detect (전송과 탐지 분리)**
+- git pull은 **전송 수단**이다. 출력("Already up to date" 등)은 탐지 판단에 사용하지 않는다.
+- 결과 존재 여부는 **filesystem 스캔**이 권위 있는 소스이다.
+- `scripts/mac/scan_results.sh`가 이 분리를 구현한다.
+
 ```
 시작 시: "자동 폴링 모드를 시작합니다."
 
@@ -219,14 +224,23 @@ Stage 3: 1시간 간격
 새 요청/결과가 도착하면 즉시 Stage 1로 복귀한다.
 
 반복:
-  1. results/ 스캔 → 큐에서 pending인 작업의 결과 파일 존재 확인
-  2. 새 결과 있으면:
+  1. git pull (전송 — 출력 무시, 성공/실패만 확인)
+  2. scan_results.sh 실행 (탐지 — filesystem이 authority)
+     ```bash
+     bash "$GIT_SYNC_REPO/scripts/mac/scan_results.sh" --list
+     ```
+  3. 새 결과 있으면 (exit 0):
      a. 결과 읽기 → queue.json 업데이트
      b. 사용자에게 결과 보고
      c. Stage 1로 복귀
-  3. 새 결과 없으면: 무음 (불필요한 보고 생략)
-  4. 현재 Stage에 따른 간격 대기 후 다음 사이클
+  4. 새 결과 없으면 (exit 1): 무음 (불필요한 보고 생략)
+  5. 현재 Stage에 따른 간격 대기 후 다음 사이클
 ```
+
+**⚠ "Already up to date" ≠ 결과 없음:**
+git pull이 "Already up to date"을 반환해도, results/ 디렉토리에
+이전 pull에서 이미 받아놓은 미처리 결과가 있을 수 있다.
+반드시 scan_results.sh로 filesystem을 확인해야 한다.
 
 ### Result 미수신 시 Etap 로그 진단
 

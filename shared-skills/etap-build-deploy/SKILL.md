@@ -77,8 +77,8 @@ Local source:
   LOCAL_ETAP = ~/Documents/workspace/Officeguard/EtapV3/
 
 Compile server:
-  REMOTE_SRC   = /home/solution/source/EtapV3/
-  REMOTE_BUILD = /home/solution/source/EtapV3/build/sv_x86_64_debug/
+  REMOTE_SRC   = /home/solution/source_for_test/EtapV3/
+  REMOTE_BUILD = /home/solution/source_for_test/EtapV3/build/sv_x86_64_debug/
   REMOTE_PKG   = /tmp/etap-root-{YYMMDD}.sv.debug.x86_64.el.tgz
 
 Local temp:
@@ -163,11 +163,11 @@ cd ~/Documents/workspace/Officeguard/EtapV3 && git branch --show-current
 
 # 2. Check compile server branch (must match local)
 ssh -p 12222 solution@61.79.198.110 \
-  "cd /home/solution/source/EtapV3 && git branch --show-current"
+  "cd /home/solution/source_for_test/EtapV3 && git branch --show-current"
 
 # 3. If branches differ, checkout on compile server
 ssh -p 12222 solution@61.79.198.110 \
-  "cd /home/solution/source/EtapV3 && git checkout {branch_name}"
+  "cd /home/solution/source_for_test/EtapV3 && git checkout {branch_name}"
 
 # 4. Check changed files
 cd ~/Documents/workspace/Officeguard/EtapV3 && git diff --name-only
@@ -194,7 +194,7 @@ CHANGED=$(git diff --name-only)
 # Example: functions/ai_prompt_filter/ai_prompt_filter.cpp
 scp -P 12222 \
   functions/ai_prompt_filter/ai_prompt_filter.cpp \
-  solution@61.79.198.110:/home/solution/source/EtapV3/functions/ai_prompt_filter/ai_prompt_filter.cpp
+  solution@61.79.198.110:/home/solution/source_for_test/EtapV3/functions/ai_prompt_filter/ai_prompt_filter.cpp
 ```
 
 **Path mapping rule:**
@@ -217,7 +217,7 @@ ssh -p 12222 solution@61.79.198.110 \
 
 ```bash
 ssh -p 12222 solution@61.79.198.110 << 'EOF'
-cd /home/solution/source/EtapV3/build/sv_x86_64_debug
+cd /home/solution/source_for_test/EtapV3/build/sv_x86_64_debug
 sudo ninja && sudo ninja install
 EOF
 ```
@@ -423,7 +423,7 @@ ssh: connect to host ... port 12222: Connection refused
 scp: /home/solution/source_for_test/EtapV3/...: No such file or directory
 ```
 → Verify compile server directory structure. Check path mapping.
-→ Note: REMOTE_SRC was changed to /home/solution/source/EtapV3 (2026-04-07)
+→ Note: REMOTE_SRC is /home/solution/source_for_test/EtapV3 (confirmed 2026-04-07)
 
 ### Build failure retry
 Fix source → Step 1 (sync) → Step 2 (build) repeat.

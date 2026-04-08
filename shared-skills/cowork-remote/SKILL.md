@@ -350,7 +350,12 @@ dev updates queue.json                test executes task
 | Execute task | test | (local) | test-workflow.md |
 | Write result | test | results/ | test-workflow.md |
 | Read results | dev | results/ | dev-workflow.md |
+| **Scan results (detect)** | **dev** | **results/** | **scan_results.sh** |
 | Archive completed | dev | local_archive/ | dev-workflow.md |
+
+**⚠ 핵심 규칙: "Already up to date" ≠ 결과 없음**
+git pull은 전송 수단이다. 결과 탐지는 반드시 `scan_results.sh` (filesystem 스캔)로 수행한다.
+git pull 출력을 결과 유무 판단에 사용하지 않는다. → See dev-workflow.md § 폴링 루프.
 
 ---
 

@@ -1,10 +1,20 @@
 ---
-name: genai-warning-pipeline
+name: genai-apf-pipeline
 description: >
-  Master orchestrator for APF **warning** pipeline — managing the 3-phase warning workflow: frontend inspect → warning design → warning implementation. Use this skill when the user wants to coordinate warning delivery across services, check warning pipeline status, advance to the next warning phase, onboard a new service into the warning pipeline, or review cross-service warning progress. Trigger on: "경고 pipeline", "warning 상태", "경고 설계", "warning phase", "전체 현황", "다음 phase". Do NOT use for HAR capture, block registration, SQL/C++ generation, or build/deploy — those belong to genai-apf-pipeline. Do NOT use for hands-on implementation of a specific warning — that belongs to apf-warning-impl.
+  Master orchestrator for GenAI APF (ai_prompt_filter) pipeline — full lifecycle
+  from HAR capture through block verification to warning implementation.
+  7-phase workflow: capture → analysis → block verify → frontend inspect →
+  warning design → warning impl → release.
+  Use for any APF service work: adding services, HAR capture/analysis,
+  checking status, advancing phases, debugging block/warning issues,
+  build/deploy, or reviewing cross-service progress.
+  Trigger on: "APF", "서비스 추가", "HAR", "capture", "차단", "block",
+  "경고", "warning", "pipeline", "phase", "전체 현황", "다음 phase",
+  "SQL", "C++", "registration".
+  Do NOT use for hands-on warning code debugging — that belongs to apf-warning-impl.
 ---
 
-# APF Warning Pipeline — Master Orchestrator
+# GenAI APF Pipeline — Master Orchestrator
 
 ## Quick Reference (매 작업 시작 시 확인)
 - **한 번에 한 서비스만** (Single-Service Focus)
@@ -14,16 +24,15 @@ description: >
 
 ## Goal
 
-Design and implement frontend-aware warning messages for AI services in EtapV3.
-When a user's prompt contains sensitive information, Etap intercepts the request
-and sends a block response. This pipeline ensures that block response renders
-correctly as a visible, user-friendly warning in the AI service's frontend.
+Analyze AI service prompt requests and response messages, then register per-service
+block responses and warning messages in the EtapV3 `ai_prompt_filter` module.
 
-**Complementary to the prior APF pipeline:**
-- Prior pipeline (backed up): *what* to send as a block response (network format)
-- This pipeline: *how* the user sees the warning (frontend rendering)
+**Full lifecycle in one pipeline:**
+- Phase 1-3: Block — *what* to send as a block response (network format: HAR → analysis → registration)
+- Phase 4-7: Warning — *how* the user sees the warning (frontend rendering)
+- 최종 목표는 경고 문구 표시. 안 되면 차단까지만 진행이 목표.
 
-Both operate on the same codebase (`ai_prompt_filter`) and share `etap-build-deploy`.
+Both stages operate on the same codebase (`ai_prompt_filter`) and share `etap-build-deploy`.
 
 → **All skills follow `../guidelines.md`** — read it before any work.
 
@@ -46,53 +55,76 @@ dev는 GitHub MCP connector, test는 git CLI를 사용한다.
 
 ## Role Division
 
-역할을 나누는 이유: dev PC는 코드와 빌드 서버에 접근 가능하지만 신망에 없고,
-test PC는 실망에 있지만 코드를 수정할 수 없다. sub agent는 대규모 DOM/코드 분석에
+역할을 나누는 이유: dev PC는 코드와 빌드 서버에 접근 가능하지만 실망에 없고,
+test PC는 실망에 있지만 코드를 수정할 수 없다. sub agent는 대규모 HAR/DOM 분석에
 독립 컨텍스트가 필요하다. 이 물리적 제약이 역할 분담을 결정한다.
 
-| Role | Responsibilities |
-|------|-----------------|
-| **User** | Phase 1: instruct inspection. Phase 3: review test results, report issues. |
-| **Cowork (dev PC)** | Phase 1: send inspect request to test PC via cowork-remote. Phase 2: orchestrate sub agent. Phase 3: propose code, send test request to test PC, monitor etap logs. Phase 4: verify test log removal, trigger release build. |
-| **Cowork (test PC)** | Phase 1: access AI service via desktop-commander, capture screenshot. Phase 3: verify block/warning behavior, capture console logs, report results. (automated via cowork-remote) |
-| **Claude Code (sub agent)** | Phase 2: deep frontend analysis + warning design generation (stdout only, no file edits). |
-| **Claude Code (main agent)** | Phase 3: apply approved code changes. Phase 4: build + deploy via etap-build-deploy. |
+| Role | Block (Phase 1-3) | Warning (Phase 4-7) |
+|------|-------------------|---------------------|
+| **User** | P1: login, dismiss ads, confirm capture | P6: review test results, report issues |
+| **Cowork (dev PC)** | P1: run capture script. P2: call sub-agent, review, direct file changes. P3: build/deploy coordination | P4: send inspect request. P5: orchestrate design sub-agent. P6: propose code, send test request, monitor logs. P7: verify log removal, trigger release |
+| **Cowork (test PC)** | P3: verify block behavior | P4: capture frontend screenshot. P6: verify warning behavior, capture logs |
+| **Claude Code (sub agent)** | P2: HAR analysis + SQL/C++ generation (stdout only, Read-only) | P5: frontend analysis + design generation (stdout only) |
+| **Claude Code (main agent)** | P2: apply approved results. P3: build + deploy | P6: apply code changes. P7: build + deploy |
 
 > **Cowork 실행:** guidelines.md §Claude Code 실행 규칙 참조
+
+### Quality Gate (Phase 2, Phase 5)
+
+Sub agent 출력을 Cowork이 리뷰하는 2단계 품질 관리.
+
+**Primary mode (Cowork-orchestrated):**
+Sub agent가 structured text (`=== ANALYSIS === / === SQL === / ...`) 를 stdout에 출력.
+Cowork이 캡처 후 리뷰, 승인된 결과만 main agent에게 적용 지시.
+
+**토론 에스컬레이션 (선택):** Quality Gate에서 판단이 불확실한 경우
+`skill-discussion-review`로 다자간 토론을 진행할 수 있다.
+
+**Fallback mode (Standalone):**
+Claude Code가 Cowork 없이 직접 호출되면, 결과를 `services/{service_id}_pending.md`에
+쓰고 중단. Cowork이 후에 리뷰하여 승인/거부.
 
 ---
 
 ## Pipeline Overview
 
-| Phase | Action | ⚠️ Load Skill | Input | Output |
-|-------|--------|--------------|-------|--------|
-| 1 | Frontend Inspect | genai-frontend-inspect | service_id | frontend profile |
-| 2 | Warning Design | apf-warning-design | frontend profile | design doc |
-| 3 | Implement & Test | apf-warning-impl + etap-build-deploy | design doc | working code + verified warning |
-| 4 | Release Build | etap-build-deploy | clean code (test logs removed) | deployed build |
-| 5 | Experience | (inline, each phase end) | phase outputs | experience files |
+| Phase | Action | ⚠️ Load Reference / Skill | Input | Output |
+|-------|--------|--------------------------|-------|--------|
+| 1 | HAR Capture | references/phase1-har-capture.md | service_id | HAR + metadata |
+| 2 | Analysis + Registration | references/phase2-analysis-registration.md | HAR files | SQL + C++ code |
+| 3 | Build + Deploy + Block Verify | references/phase3-block-verify.md + etap-build-deploy | code | verified block |
+| 4 | Frontend Inspect | references/phase4-frontend-inspect.md | service_id | frontend profile |
+| 5 | Warning Design | references/phase5-warning-design.md | frontend profile | design doc |
+| 6 | Warning Implement & Test | **apf-warning-impl** (독립 스킬) | design doc | working warning |
+| 7 | Release Build | etap-build-deploy | clean code (test logs removed) | deployed build |
 
-Phase 3 빌드-배포: `etap-build-deploy.sh` (권장) 또는 개별 명령어.
-요청 전송: `send-request.sh` (git CLI) 또는 GitHub MCP `push_files` (메인 세션).
-Phase 5 promotion: 2+ 서비스에서 확인된 패턴은 references/로 승격.
+- Phase 1-3: **Block 단계** — 서비스 등록, 차단 동작 확인
+- Phase 4-7: **Warning 단계** — 경고 문구가 브라우저에 보이도록 구현
+- Phase 6만 독립 스킬(apf-warning-impl) 호출 — 나머지는 references/ 파일 로드
+- Phase-skip 지원: 기존 block 코드가 있으면 Phase 4부터 시작
+- 빌드-배포: `etap-build-deploy.sh` (권장) 또는 개별 명령어
+- 요청 전송: `send-request.sh` (git CLI) 또는 GitHub MCP `push_files` (메인 세션)
+- Experience promotion: 2+ 서비스에서 확인된 패턴은 references/로 승격
 
-### Phase 전환 시 스킬 재로드 규칙
+### Phase 전환 시 참조 로드 규칙
 
-각 Phase를 시작할 때 반드시 해당 sub-skill을 Skill 도구로 다시 로드한다.
+각 Phase를 시작할 때 반드시 해당 reference 파일을 Read 도구로 로드한다.
 기억에 의존하면 업데이트된 절차를 빠뜨리고, context break 후에는 특히 위험하다.
 
-| Phase 시작 | 로드할 스킬 |
-|-----------|------------|
-| Phase 1 | genai-frontend-inspect |
-| Phase 2 | apf-warning-design |
-| Phase 3 | apf-warning-impl |
-| Phase 3 빌드 시 | etap-build-deploy |
-| Phase 4 | etap-build-deploy |
-| 폴링 시작/재개 | cowork-remote |
+| Phase 시작 | 로드 대상 | 방법 |
+|-----------|----------|------|
+| Phase 1 (HAR Capture) | references/phase1-har-capture.md | Read |
+| Phase 2 (Analysis) | references/phase2-analysis-registration.md | Read |
+| Phase 3 (Block Verify) | references/phase3-block-verify.md + etap-build-deploy 스킬 | Read + Skill |
+| Phase 4 (Frontend Inspect) | references/phase4-frontend-inspect.md | Read |
+| Phase 5 (Warning Design) | references/phase5-warning-design.md | Read |
+| Phase 6 (Warning Impl) | **apf-warning-impl** | Skill (독립 스킬) |
+| Phase 7 (Release Build) | etap-build-deploy | Skill |
+| 폴링 시작/재개 | cowork-remote | Skill |
 
-스킬을 로드하지 않고 작업을 시작하지 않는다.
+참조를 로드하지 않고 작업을 시작하지 않는다.
 이 규칙이 만들어진 이유: 스킬을 기억에 의존하여 작업하다
-4-Phase 중 Phase 3-4를 생략하거나, 절차를 빠뜨린 사례가 반복되었다.
+Phase를 생략하거나 절차를 빠뜨린 사례가 반복되었다.
 
 ---
 
@@ -134,20 +166,27 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
 
 | From | To | Condition |
 |------|----|-----------|
-| — | Phase 1 | User requests warning work for a service |
-| Phase 1 | Phase 2 | Frontend profile saved (`services/{service_id}_frontend.md` exists) |
-| Phase 2 | Phase 3 | Design document approved (`services/{service_id}_design.md` exists) |
-| Phase 3 | Phase 4 | All test criteria pass + regression test pass + `grep -r "APF_WARNING_TEST"` returns 0 matches after log removal |
-| Phase 4 | Done | Successful deploy + user confirms warning display on test server |
+| — | Phase 1 | User requests new service registration |
+| — | Phase 4 | Existing block code → Phase-skip to warning stages |
+| Phase 1 | Phase 2 | HAR captured (`metadata.json total_requests > 0`) |
+| Phase 2 | Phase 3 | SQL + C++ approved (Cowork quality gate pass) |
+| Phase 3 | Phase 4 | Block verified on test server + regression pass |
+| Phase 4 | Phase 5 | Frontend profile saved (`services/{service_id}_frontend.md`) |
+| Phase 5 | Phase 6 | Design document approved (`services/{service_id}_design.md`) |
+| Phase 6 | Phase 7 | Warning verified + regression pass + test logs removed |
+| Phase 7 | Done | Successful deploy + user confirms warning display |
 
-**Backward transitions (프론트엔드가 변했거나 설계가 맞지 않을 때):**
-- Phase 3 → Phase 2: design이 실제 렌더링과 다를 때 (재설계)
-- Phase 3 → Phase 1: 서비스가 프론트엔드를 업데이트했을 때 (재캡처)
+**Block-only endpoint:** Phase 3 DONE — 경고 구현이 불가능한 서비스는 여기서 종료.
 
-**Regression gate (Phase 3 → Phase 4):**
-새 서비스가 추가될 때마다 기존 VERIFIED/DONE 서비스 리그레션 테스트를 통과해야 한다.
-코드 변경이 기존 서비스의 경고 렌더링에 영향을 줄 수 있기 때문이다.
-한 서비스라도 실패하면 Phase 4로 진행하지 않는다.
+**Backward transitions:**
+- Phase 3 → Phase 2: block 실패, 재분석 필요
+- Phase 6 → Phase 5: design이 실제 렌더링과 다를 때 (재설계)
+- Phase 6 → Phase 4: 서비스가 프론트엔드를 업데이트했을 때 (재캡처)
+- Phase 6 → Phase 1: 근본적 재캡처 필요
+
+**Regression gate:** Phase 3, Phase 7 모두 적용.
+새 서비스/변경이 기존 서비스의 block/warning에 영향을 줄 수 있으므로
+한 서비스라도 리그레션 실패하면 다음 phase로 진행하지 않는다.
 
 ---
 
@@ -177,7 +216,11 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
 
 Each service's progress is tracked in `services/status.md`.
 
-States: `PENDING → CAPTURED → DESIGNED → TESTING → TEST_FAIL → VERIFIED → DONE`
+States: `PENDING → CAPTURING → CAPTURED → REGISTERED → BLOCK_TESTING → BLOCK_VERIFIED → INSPECTED → DESIGNED → TESTING → TEST_FAIL → VERIFIED → DONE`
+
+- Phase 1-3 (Block): PENDING → CAPTURING → CAPTURED → REGISTERED → BLOCK_TESTING → BLOCK_VERIFIED
+- Phase 4-7 (Warning): INSPECTED → DESIGNED → TESTING → TEST_FAIL → VERIFIED → DONE
+- Block-only endpoint: BLOCK_VERIFIED (경고 불가 시 여기서 종료)
 
 status.md는 `regen-status.sh`가 impl journal에서 자동 재생성한다.
 수동 편집 금지 — impl journal에 verdict를 기록하면 다음 regen 시 반영된다.
@@ -285,20 +328,31 @@ impl의 references에 정리되어 있다.
 
 ---
 
-## Sub-Skills
+## Sub-Skills & References
+
+**Phase별 참조 (내부 — Read 도구로 로드):**
+
+| Phase | Reference file | 내용 |
+|-------|---------------|------|
+| 1 | `references/phase1-har-capture.md` | HAR capture, Playwright, bot detection, session |
+| 2 | `references/phase2-analysis-registration.md` | HAR analysis, SSE, SQL/C++ generation, quality gate |
+| 3 | `references/phase3-block-verify.md` | Block test, Test-Fix cycle, fail HAR diagnosis |
+| 4 | `references/phase4-frontend-inspect.md` | Frontend capture via test PC desktop-commander |
+| 5 | `references/phase5-warning-design.md` | Warning UX design + design patterns |
+| 7 | `references/phase7-release-build.md` | Test log cleanup, regression gate, release |
+
+**독립 스킬 (Skill 도구로 호출):**
 
 | Skill | Phase | Role |
 |-------|-------|------|
-| `genai-frontend-inspect` | 1 | Frontend capture via test PC desktop-commander |
-| `apf-warning-design` | 2 | Warning UX design + design patterns |
-| `apf-warning-impl` | 3 | Implementation + test via test PC |
-| `etap-build-deploy` | 4 | Build + deploy + install (reused) |
-| `cowork-remote` | 1, 3 | Dev PC에서 작업 요청 생성/결과 수신 |
-| `test-pc-worker` | 1, 3 | Test PC에서 desktop-commander로 작업 실행/결과 보고. 서비스별 자동화 프로필(`test-pc-worker/references/service-automation/`)로 접속/입력 경로 관리 |
+| `apf-warning-impl` | 6 | Warning implementation + hands-on debugging |
+| `etap-build-deploy` | 3, 7 | Build + deploy + install |
+| `cowork-remote` | 3, 6 | Dev PC에서 작업 요청 생성/결과 수신 |
+| `test-pc-worker` | 3, 6 | Test PC에서 desktop-commander로 작업 실행/결과 보고 |
 
-**Read only the skill needed for the current phase.**
+**현재 Phase의 참조만 읽는다.**
 
-→ See `references/remote-test-integration.md` for Phase 1, 3 test PC integration details.
+→ See `references/remote-test-integration.md` for test PC integration details.
 
 ---
 
@@ -327,6 +381,10 @@ context break 재개 흐름:
 **왜 파일 기반인가:** compact summary는 디테일이 소실된다 (전략명, 빌드 시각, 반복 횟수 등).
 status.md + pipeline_state.json + impl journal 3개가 복구의 안전장치이다.
 
+**Hook 통합:** `pipeline-context.sh` 훅이 resume/compact 시 자동 실행되어
+pipeline_state.json에서 현재 서비스, phase, 다음 작업을 additionalContext로 주입한다.
+수동 복구 전에 이미 기본 컨텍스트가 복원된 상태이다.
+
 ---
 
 ## Experience Storage
@@ -335,16 +393,18 @@ status.md + pipeline_state.json + impl journal 3개가 복구의 안전장치이
 
 Quick reference:
 
-| Type | Location |
-|------|----------|
-| Frontend profile | `genai-frontend-inspect/services/{service_id}_frontend.md` |
-| Warning design | `apf-warning-design/services/{service_id}_design.md` |
-| Implementation journal | `apf-warning-impl/services/{service_id}_impl.md` |
-| Design patterns (cross-service) | `apf-warning-design/references/design-patterns.md` |
-| Test log templates | `apf-warning-impl/references/test-log-templates.md` |
-| Pipeline status | `genai-warning-pipeline/services/status.md` |
-| Prior network-level analysis | `_backup_20260317/apf-add-service/services/{service_id}.md` |
-| Pipeline artifacts | Git repo: `dev_test_sync/artifacts/warning-pipeline/` |
+| Type | Phase | Location |
+|------|-------|----------|
+| Capture experience | 1 | `references/phase1-har-capture.md` Known Service Notes |
+| Per-service HAR analysis | 2 | `services/{service_id}_analysis.md` |
+| Common block pitfalls | 2-3 | `references/phase2-analysis-registration.md` Common Pitfalls |
+| Frontend profile | 4 | `services/{service_id}_frontend.md` |
+| Warning design | 5 | `services/{service_id}_design.md` |
+| Implementation journal | 6 | `apf-warning-impl/services/{service_id}_impl.md` |
+| Design patterns (cross-service) | 5 | `references/phase5-warning-design.md` Design Patterns |
+| Test log templates | 6 | `apf-warning-impl/references/test-log-templates.md` |
+| Pipeline status | all | `services/status.md` (regen-status.sh 자동 재생성) |
+| Pipeline artifacts | all | Git repo: `dev_test_sync/artifacts/` |
 
 ---
 
