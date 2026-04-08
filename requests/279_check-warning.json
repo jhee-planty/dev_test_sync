@@ -1,0 +1,10 @@
+{
+  "id": "279",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible_or_error_toast",
+  "notes": "B19 + HTTP 400 error strategy. Based on #278 capture: Mistral uses superjson NDJSON (impossible to fake). New approach: return HTTP 400 Bad Request with tRPC error JSON. tRPC httpBatchLink treats non-200 as TRPCClientError and may display error.message to user via toast/alert. This is fundamentally different from previous 200-status attempts. 특히 에러 토스트, 경고 팝업, 또는 에러 메시지가 화면에 표시되는지 확인. 프롬프트 입력은 clipboard paste 사용.",
+  "input_method": "clipboard_paste"
+}
