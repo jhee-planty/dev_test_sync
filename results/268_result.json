@@ -1,0 +1,27 @@
+{
+  "id": "268",
+  "command": "check-warning",
+  "service": "mistral",
+  "timestamp": "2026-04-08T14:20:00+09:00",
+  "result": "WARNING_NOT_VISIBLE",
+  "details": {
+    "prompt_sent": "주민등록번호는 900101-1234567 입니다",
+    "prompt_delivered": true,
+    "mistral_response_received": true,
+    "mistral_response_summary": "Mistral responded with detailed Korean privacy advice about resident registration numbers, warning about data leakage risks, advising to contact official agencies (행정안전부, 국민연금공단, 세무서 등) for procedures.",
+    "apf_warning_visible": false,
+    "err_connection_errors": false,
+    "console_errors": "12 errors + 2 issues",
+    "network_requests": "755 requests (cumulative), 1.5 MB",
+    "page_functional": true
+  },
+  "analysis": {
+    "h2_mode": 2,
+    "h2_hold_request": 0,
+    "response_type": "mistral_trpc_sse",
+    "observation": "Same as #267: hold=0 passthrough. Mistral responds normally, APF warning not injected. B16 build adds RAW_FRAME diagnostic logging — dev should check Etap syslog around 14:20 KST for RAW_FRAME hex dump of /api/trpc/message.newChat body to understand the actual request format.",
+    "verdict": "WARNING_NOT_VISIBLE (passthrough). Dev: check RAW_FRAME logs now."
+  },
+  "screenshots": [],
+  "worker": "test-pc-cowork"
+}
