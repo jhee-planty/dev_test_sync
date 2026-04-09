@@ -1,0 +1,10 @@
+{
+  "id": "297",
+  "command": "check-warning",
+  "service": "gamma",
+  "url": "https://gamma.app",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Gamma B23 retry: templates were NOT reloaded in #294. Now reload_templates called. New template is HTTP 400 JSON error (~259 bytes). h2_mode=2 + hold=0. If login required, report 'login_required'.",
+  "input_method": "clipboard_paste"
+}
