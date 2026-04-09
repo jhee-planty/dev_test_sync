@@ -1,0 +1,11 @@
+{
+  "id": "319",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "any_block_indicator",
+  "created": "2026-04-09T17:00:00+09:00",
+  "notes": "Mistral 200 OK tRPC success 테스트. 템플릿을 429→200 OK로 변경. tRPC batch success format으로 chatId='apf-blocked', title=경고메시지 반환. 프론트엔드가 200 성공 응답을 처리할 때 가짜 대화로 이동하거나 에러 표시 여부 확인. 이전: #317(400)=silent, #318(429)=silent.",
+  "input_method": "clipboard_paste"
+}
