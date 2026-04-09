@@ -1,0 +1,12 @@
+{
+  "id": "320",
+  "command": "har-capture",
+  "service": "mistral",
+  "status": "SKIPPED",
+  "result": "skipped_by_dev",
+  "timestamp": "2026-04-09T17:30:00+09:00",
+  "findings": {
+    "reason": "har-capture command not supported by test-pc-worker. Skipped by dev PC to unblock queue.",
+    "alternative": "Superjson format researched via web docs instead. Proceeding with #321 using correct superjson tRPC format."
+  }
+}
