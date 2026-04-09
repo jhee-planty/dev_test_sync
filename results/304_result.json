@@ -1,0 +1,18 @@
+{
+  "id": "304",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/304/check_warning_304.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "OUTLINE generation ALSO blocked by h2_hold_request=1. Hold intercepted ALL requests to ai.api.gamma.app (both outline and render-generation endpoints). Outline section shows 1 empty card. ERR_CONNECTION_CLOSED 200 (OK) on render-generation. 49 requests, 115 kB.",
+    "http_status": 200,
+    "console_error": "5 errors, 2 issues. (1) [PromptAndOutlineSettings] error generating outline: Failed to fetch (ai.api.gamma.app). (2) POST https://ai.api.gam... net::ERR_CONNECTION_CLOSED 200 (OK). (3) [deckStyledImages] Failed to select image style TypeError: Failed to fetch. Plus stack traces from 1615-*.js and 5887-*.js chunks.",
+    "input_method": "JS console: querySelector .tiptap.ProseMirror + execCommand insertText + click '개요 생성' button"
+  },
+  "notes": "Gamma B25 with h2_hold_request=1 + SSE envelope: **HOLD=1 BLOCKS EVERYTHING including outline**. (1) h2_hold_request=1 intercepts the outline generation request BEFORE server responds — so outline generation itself fails with 'Failed to fetch'. (2) Only 1 empty card generated (no title, no bullet points). (3) render-generation endpoint also got ERR_CONNECTION_CLOSED 200 (OK) — connection closed after 200 but SSE delivery failed. (4) COMPARISON: Previous #300 (h2_hold_request=0, JSON 400) was the BEST Gamma result — outline succeeded, render-gen got clean 400 with warning text in JSON. #303 (SSE) was worse. #304 (hold=1) is WORST — blocks everything. (5) CONCLUSION: For Gamma, h2_hold_request=0 with HTTP 400 JSON response (#300 approach) is the correct strategy. Hold=1 is too aggressive — it blocks the outline endpoint too, which prevents the normal flow from starting. The warning should only intercept render-generation, not outline.",
+  "timestamp": "2026-04-09T11:16:00+09:00"
+}
