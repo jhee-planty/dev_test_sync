@@ -2,12 +2,13 @@
 
 ## Summary
 
-Session covered tests #288–#311. Key achievements:
+Session covered tests #288–#316. Key achievements:
 - **B24 RST_STREAM fix** resolves HTTP/2 protocol errors for h2_mode=2 + no-hold services
 - **B25 Gamma hold test** (#304) confirmed VTS EventSource H2 limitation — Gamma classified BLOCKED_ONLY
-- **DuckDuckGo** (#310) — ✅ WARNING VISIBLE. Root cause was path_matcher trailing slash bug (NOT ECH). DB fix applied, 403 JSON shown in chat bubble
-- **DeepSeek** (#305/#309) — HAR captured, named SSE format identified, template deployed (id=26), test #311 pending
-- **B26 path_matcher fix** — code fix for trailing slash condition (pending build/deploy)
+- **DuckDuckGo** (#310) — ✅ WARNING VISIBLE. path_matcher trailing slash bug fixed, 403 JSON in chat bubble
+- **DeepSeek** (#311–#315) — SSE approach failed 4x (0 body bytes), switched to 403 JSON → 🔶 status code visible
+- **B26 path_matcher fix** — built [172/172], deployed to test server
+- **Grok** (#316) — ✅ WARNING VISIBLE. APF redirect + Korean warning banner. Free access confirmed
 
 ## Service Status
 
@@ -21,7 +22,7 @@ Session covered tests #288–#311. Key achievements:
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
 | DuckDuckGo | ✅ Working | Yes | Yes | 1 (GOAWAY) | SSE OpenAI-like | Confirmed #310 — path fix verified, 403 JSON visible in chat bubble |
 | DeepSeek | 🔶 403 Visible | Partial | Yes | 1 (GOAWAY+hold) | 403 JSON error | #315: 403 status visible in chat, JSON body in DevTools only |
-| Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
+| Grok | ✅ Working | Yes | Yes | 1 (GOAWAY) | APF redirect + banner | Confirmed #316 — Korean warning banner visible, free access |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
 
 ## B24 Changes (this session)
