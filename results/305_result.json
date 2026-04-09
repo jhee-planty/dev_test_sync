@@ -1,0 +1,18 @@
+﻿{
+    "timestamp":  "2026-04-09T11:37:00+09:00",
+    "status":  "done",
+    "result":  {
+                   "response_received":  true,
+                   "console_error":  "No JS errors. WebAssembly MIME type warnings only (non-critical).",
+                   "http_status":  200,
+                   "warning_text":  null,
+                   "input_method":  "Type tool (direct text entry into edit field) + click send button",
+                   "send_failed":  false,
+                   "screenshot":  "files/305/run_scenario_305.png",
+                   "warning_visible":  false,
+                   "api_response":  "POST https://chat.deepseek.com/api/v0/chat/completion — SSE response over h2. Response: \u0027The capital of France is Paris.\u0027 Quick mode (DeepSeek-V3). 11 requests total, 9.2 kB transferred.",
+                   "blocked":  false
+               },
+    "id":  "305",
+    "notes":  "DeepSeek (chat.deepseek.com) SSE capture — COMPLETE. NO LOGIN REQUIRED (contrary to expectation). (1) API endpoint: POST https://chat.deepseek.com/api/v0/chat/completion (2) Protocol: h2 (HTTP/2). (3) Content-Type: text/event-stream (SSE). (4) Session creation: POST /api/v0/chat_session/create (creates session ID in URL path). (5) PoW challenge: POST /api/v0/chat/create_pow_challenge (anti-bot proof-of-work using sha3 WASM). (6) Chat URL pattern: chat.deepseek.com/a/chat/s/{session-uuid}. (7) Mode: Quick mode (빠른 모드) — uses DeepSeek-V3. Also has Deep Think (깊은 생각) and Search (검색) modes. (8) Telemetry: gator.volces.com/list (multiple analytics/tracking calls). (9) Static assets from fe-static.deepseek.com. (10) No console errors — only WebAssembly MIME type warnings for sha3_wasm module (non-critical, falls back to WebAssembly.instantiate). (11) Input method: direct text entry into accessible edit field + click send button. Clean response."
+}
