@@ -19,8 +19,8 @@ Session covered tests #288–#309. Key achievements:
 | Perplexity | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 422 JSON error | User data blocked, search just doesn't execute |
 | Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | VTS EventSource H2 limitation (13+ builds + #304 hold) |
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
-| DuckDuckGo | ⚠️ ECH blocked | No | No | 1 (GOAWAY) | SSE OpenAI-like | VT cannot MITM due to ECH — #308 diagnostic pending |
-| DeepSeek | 🆕 Registered | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | SQL ready, #309 EventStream capture pending |
+| DuckDuckGo | 🔧 Retesting | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | path_matcher bug fixed (trailing slash), retest #310 |
+| DeepSeek | 🆕 Deployed | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | Template id=26 deployed, test #311 pending |
 | Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
 

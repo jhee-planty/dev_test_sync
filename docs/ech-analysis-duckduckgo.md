@@ -1,10 +1,34 @@
-# ECH (Encrypted Client Hello) Analysis — duck.ai VT Interception Failure
+# duck.ai #307 Failure Analysis — RESOLVED
 
 ## Problem
 
-Test #307: DuckDuckGo AI Chat (duck.ai) APF warning template deployed correctly, but VT never intercepted the connection. APF saw zero log entries for duck.ai. The request went directly to the server without MITM.
+Test #307: DuckDuckGo AI Chat (duck.ai) APF warning template deployed correctly, but APF didn't block the request.
 
-## Root Cause Hypothesis: ECH
+## Root Cause: ~~ECH~~ → APF path_matcher Trailing Slash Bug
+
+**ECH hypothesis was WRONG.** Server-side investigation revealed:
+
+### Actual findings:
+1. **VT successfully MITMed duck.ai** — `ssl_visible_success.log` shows `ESTB` at 11:41:30 with `SSL negotiation finished successfully`
+2. **duck.ai is on Azure (IP 20.43.161.105), NOT Cloudflare** — ECH was never involved
+3. **APF path_matcher bug**: `path_patterns='/duckchat/'` (with trailing slash) failed prefix matching against `/duckchat/v1/chat` because after matching 10-char prefix, `path[10]='v'` ≠ `'/'`
+
+### Bug in path_matcher::match():
+```cpp
+// pattern="/duckchat/", path="/duckchat/v1/chat"
+// prefix match OK: first 10 chars match
+// BUT: path[10]='v' (not '/') → match fails!
+// The trailing '/' in the pattern is already a separator, 
+// but the code requires ANOTHER '/' after the prefix
+```
+
+### Fix:
+- **DB fix (immediate)**: Changed `path_patterns` from `/duckchat/` to `/duckchat` → `path[9]='/'` → match succeeds
+- **Code fix (B26)**: Added `pattern.back() == '/'` condition to path_matcher
+- **APF reloaded**: `reload_services` + `reload_templates` executed
+- **Retest #310 created**
+
+## ~~Root Cause Hypothesis: ECH~~ (DISPROVEN)
 
 **Encrypted Client Hello (ECH)** encrypts the SNI (Server Name Indication) in the TLS ClientHello, preventing MITM proxies from identifying the target domain.
 
