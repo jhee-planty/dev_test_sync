@@ -1,0 +1,11 @@
+{
+  "id": "311",
+  "command": "check-warning",
+  "service": "deepseek",
+  "url": "https://chat.deepseek.com",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "created": "2026-04-09T13:55:00+09:00",
+  "notes": "DeepSeek AI Chat 첫 APF 경고 테스트. 새 템플릿(deepseek_sse, id=26) 배포 완료. h2_mode=1 (GOAWAY), SSE OpenAI-like 형식 + type field. domain=deepseek.com,*.deepseek.com,chat.deepseek.com. path=/api/v0/chat/completion. 로그인 불필요. PoW challenge 이후 chat completion 요청이 차단 대상. Quick 모드(DeepSeek-V3) 사용.",
+  "input_method": "clipboard_paste"
+}
