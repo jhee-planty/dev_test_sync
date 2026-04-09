@@ -1,8 +1,13 @@
-# APF Warning Pipeline Status — 2026-04-09
+# APF Warning Pipeline Status — 2026-04-09 (Updated)
 
 ## Summary
 
-Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resolves HTTP/2 protocol errors for h2_mode=2 + no-hold services.
+Session covered tests #288–#309. Key achievements:
+- **B24 RST_STREAM fix** resolves HTTP/2 protocol errors for h2_mode=2 + no-hold services
+- **B25 Gamma hold test** (#304) confirmed VTS EventSource H2 limitation — Gamma classified BLOCKED_ONLY
+- **DuckDuckGo** (#307) — template correct but **ECH (Encrypted Client Hello)** prevents VT MITM
+- **DeepSeek** (#305) — HAR captured, no login required, service registration SQL prepared
+- **ECH analysis** — identified as emerging threat to all Cloudflare-hosted services
 
 ## Service Status
 
@@ -12,9 +17,10 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
 | Claude | ✅ Working | Yes | Yes | 1 (GOAWAY) | SSE message_start | Confirmed #246 |
 | Genspark | ✅ Working | Yes | Yes | 2 (keep-alive+hold) | SSE | Confirmed #254 |
 | Perplexity | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 422 JSON error | User data blocked, search just doesn't execute |
-| Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | Warning in console error; EventSource delivery impossible with current VTS |
+| Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | VTS EventSource H2 limitation (13+ builds + #304 hold) |
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
-| DuckDuckGo | 🆕 Testing | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | New template — test #307 pending |
+| DuckDuckGo | ⚠️ ECH blocked | No | No | 1 (GOAWAY) | SSE OpenAI-like | VT cannot MITM due to ECH — #308 diagnostic pending |
+| DeepSeek | 🆕 Registered | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | SQL ready, #309 EventStream capture pending |
 | Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
 
@@ -106,3 +112,54 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
 | 21 | grok | NDJSON token-only | 928 |
 | 22 | chatgpt | SSE delta | ~800 |
 | 7 | claude | SSE message events | ~700 |
+| 17 | duckduckgo | SSE OpenAI-like | 252 |
+| — | deepseek | SSE OpenAI-like (pending #309) | ~300 |
+
+## ECH (Encrypted Client Hello) Issue
+
+### Discovery
+Test #307 (DuckDuckGo) failed with zero APF log entries. VT never intercepted the connection.
+
+### Root Cause
+duck.ai uses Cloudflare, which activated ECH globally in late 2024. ECH encrypts the SNI in TLS ClientHello, making the actual domain name invisible to MITM proxies. VT sees only the outer SNI (`cloudflare-ech.com`) and either:
+1. Creates a cert mismatch (outer SNI ≠ expected domain) → TLS error
+2. Encounters unknown TLS extension → handshake failure
+3. Either way → `auto_bypass` triggers (all TLS errors → bypass in current config)
+
+### VT Code Analysis
+- `visible_tls_auto_bypass.xml`: ALL TLS errors trigger bypass (300+ reasons)
+- `tls_proxy.cpp`: `get_server_name()` extracts outer SNI only — no ECH awareness
+- No ECH-related code exists anywhere in VT source
+
+### Fix Options (priority order)
+1. **Chrome flag** (immediate test): Disable ECH in `chrome://flags` → test #308
+2. **DNS-level**: Block HTTPS DNS records containing ECH keys → browser falls back to non-ECH TLS
+3. **VT ECH stripping**: Strip ECH extension from ClientHello before forwarding (~200-400 LOC)
+
+### Affected Services
+Any Cloudflare-hosted service may be affected. Currently confirmed:
+- **duck.ai**: ECH blocks VT MITM (#307)
+- **chatgpt.com**: Cloudflare, but currently working (ECH may not be active for this zone yet)
+- **claude.ai**: Cloudflare, but currently working (same)
+
+### Diagnostic Test #308
+- Disable ECH in Chrome on test PC → retest duck.ai
+- If APF intercepts after ECH disabled → ECH confirmed as root cause
+
+## New Service: DeepSeek (pending)
+
+### HAR Capture #305 Results
+- API: `POST https://chat.deepseek.com/api/v0/chat/completion`
+- Protocol: h2, Content-Type: text/event-stream (SSE)
+- Login: NOT required (free access)
+- PoW: sha3 WASM proof-of-work challenge before chat
+- Modes: Quick (DeepSeek-V3), Deep Think, Search
+
+### DB Registration (prepared)
+- File: `apf-db-driven-service/deepseek_registration.sql`
+- h2_mode=1 (GOAWAY), domain=chat.deepseek.com, path=/api/v0/chat/
+- Template: OpenAI-compatible SSE (pending #309 EventStream verification)
+
+### Pending
+- #309: Detailed EventStream capture to verify exact SSE event structure
+- Template may need adjustment if web app format differs from public API
