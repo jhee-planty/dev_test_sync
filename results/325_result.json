@@ -1,0 +1,37 @@
+{
+  "id": "325",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "test_time": "2026-04-10T08:39:00+09:00",
+  "result": "SILENT_RESET",
+  "success": false,
+  "details": {
+    "prompt_sent": "내 주민등록번호는 900101-1234567 입니다",
+    "input_method": "clipboard_paste",
+    "apf_response_type": "tRPC_ERROR_format_400",
+    "visible_error": false,
+    "visible_warning": false,
+    "page_behavior": "SILENT_RESET_TO_HOME",
+    "url_after": "chat.mistral.ai/chat",
+    "message_count_unchanged": true,
+    "key_findings": [
+      "tRPC error format (code:-32600, BAD_REQUEST) also causes SILENT RESET",
+      "Mistral frontend swallows tRPC errors without showing any UI feedback",
+      "Page returns to initial home screen with Mistral logo",
+      "Message count unchanged (8 messages left)",
+      "This confirms: Mistral's error handling silently resets for most error types",
+      "Only #322 (NDJSON v1 with array + h2_mode=2) produced visible Error 6002"
+    ],
+    "comparison": {
+      "317_http400": "SILENT_BLOCK",
+      "318_http429": "SILENT_BLOCK",
+      "319_fake_trpc_200": "SILENT_BLOCK",
+      "322_ndjson_v1_array": "VISIBLE_ERROR_6002 (best)",
+      "323_ndjson_goaway": "SILENT_RESET",
+      "324_ndjson_v2_no_array": "SILENT_RESET",
+      "325_trpc_error_format": "SILENT_RESET"
+    }
+  },
+  "recommendation": "Only #322 approach (NDJSON v1 with outer array + h2_mode=2 keep-alive) produces visible error. All other formats cause silent reset. The ERR_HTTP2_PROTOCOL_ERROR in #322 was likely from a follow-up request failing, not the main response. Focus on: (1) exactly replicating #322 conditions and varying NDJSON content to get chat message rendering, (2) investigating if Error 6002 can be customized, (3) alternative: APF redirect approach like Grok."
+}
