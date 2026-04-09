@@ -1,0 +1,10 @@
+{
+  "id": "289",
+  "command": "check-warning",
+  "service": "grok",
+  "url": "https://grok.com",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Grok re-test: (1) h2_mode changed from 2→1 (cascade shutdown + GOAWAY), (2) template simplified to token-only NDJSON (removed conversation object to prevent URL redirect to synthetic conversation ID). Previous #283 showed frontend redirected to /c/00000000-... URL which returned 400. Now only sending the token line with warning message. 프롬프트 입력은 clipboard paste 사용.",
+  "input_method": "clipboard_paste"
+}
