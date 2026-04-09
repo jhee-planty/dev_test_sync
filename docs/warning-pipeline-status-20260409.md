@@ -2,12 +2,12 @@
 
 ## Summary
 
-Session covered tests #288–#309. Key achievements:
+Session covered tests #288–#311. Key achievements:
 - **B24 RST_STREAM fix** resolves HTTP/2 protocol errors for h2_mode=2 + no-hold services
 - **B25 Gamma hold test** (#304) confirmed VTS EventSource H2 limitation — Gamma classified BLOCKED_ONLY
-- **DuckDuckGo** (#307) — template correct but **ECH (Encrypted Client Hello)** prevents VT MITM
-- **DeepSeek** (#305) — HAR captured, no login required, service registration SQL prepared
-- **ECH analysis** — identified as emerging threat to all Cloudflare-hosted services
+- **DuckDuckGo** (#310) — ✅ WARNING VISIBLE. Root cause was path_matcher trailing slash bug (NOT ECH). DB fix applied, 403 JSON shown in chat bubble
+- **DeepSeek** (#305/#309) — HAR captured, named SSE format identified, template deployed (id=26), test #311 pending
+- **B26 path_matcher fix** — code fix for trailing slash condition (pending build/deploy)
 
 ## Service Status
 
@@ -19,7 +19,7 @@ Session covered tests #288–#309. Key achievements:
 | Perplexity | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 422 JSON error | User data blocked, search just doesn't execute |
 | Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | VTS EventSource H2 limitation (13+ builds + #304 hold) |
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
-| DuckDuckGo | 🔧 Retesting | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | path_matcher bug fixed (trailing slash), retest #310 |
+| DuckDuckGo | ✅ Working | Yes | Yes | 1 (GOAWAY) | SSE OpenAI-like | Confirmed #310 — path fix verified, 403 JSON visible in chat bubble |
 | DeepSeek | 🆕 Deployed | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | Template id=26 deployed, test #311 pending |
 | Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
