@@ -146,7 +146,7 @@ Any Cloudflare-hosted service may be affected. Currently confirmed:
 - Disable ECH in Chrome on test PC → retest duck.ai
 - If APF intercepts after ECH disabled → ECH confirmed as root cause
 
-## New Service: DeepSeek (pending)
+## New Service: DeepSeek
 
 ### HAR Capture #305 Results
 - API: `POST https://chat.deepseek.com/api/v0/chat/completion`
@@ -155,11 +155,24 @@ Any Cloudflare-hosted service may be affected. Currently confirmed:
 - PoW: sha3 WASM proof-of-work challenge before chat
 - Modes: Quick (DeepSeek-V3), Deep Think, Search
 
-### DB Registration (prepared)
+### DB Registration
 - File: `apf-db-driven-service/deepseek_registration.sql`
-- h2_mode=1 (GOAWAY), domain=chat.deepseek.com, path=/api/v0/chat/
-- Template: OpenAI-compatible SSE (pending #309 EventStream verification)
+- h2_mode=1 (GOAWAY), domain=deepseek.com,*.deepseek.com,chat.deepseek.com, path=/api/v0/chat/completion
+- Template id=26: Named SSE events (event:message + event:close)
 
-### Pending
-- #309: Detailed EventStream capture to verify exact SSE event structure
-- Template may need adjustment if web app format differs from public API
+### Test #311: BLOCKED but no visible warning
+- GOAWAY terminated connection after 200 OK but before SSE events delivered
+- Frontend showed generic "네트워크를 확인하고 다시 시도하세요.." error
+- Root cause: `Content-Length: 0` in envelope → browser ignores SSE body
+- Fix: Removed Content-Length: 0 and Connection: keep-alive from template
+- Retest #312 pending
+
+## B26 Code Fix (deployed)
+
+### path_matcher trailing slash fix
+- **File**: `ai_prompt_filter_db_config_loader.cpp` line 189
+- **Problem**: Pattern ending with `/` (e.g., `/duckchat/`) failed prefix match against `/duckchat/v1/chat`
+- **Fix**: Added `pattern.back() == '/'` condition — trailing slash already serves as separator
+- **Build**: [172/172] compiled and linked successfully
+- **Deploy**: etap-root-260409.sv.debug.x86_64.el.tgz → test server, etapd restarted
+- **Binary timestamp**: Apr 9 13:49 (verified)
