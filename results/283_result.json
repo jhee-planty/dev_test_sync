@@ -1,0 +1,21 @@
+﻿{
+  "id": "283",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "error_page_visible": true,
+    "error_page_text": "오류가 발생했습니다 (An error occurred)",
+    "screenshot": "files/283/check_warning_283.png",
+    "send_failed": false,
+    "response_received": false,
+    "api_response": "APF redirected to synthetic conversation URL: /c/00000000-apf0-warn-0000-000000000001?rid=00000000-apf0-warn-0000-000000000002. Multiple 400 (Bad Request) on response-node?includeThreads=true. ERR_HTTP2_PROTOCOL_ERROR on monitoring endpoints.",
+    "http_status": 400,
+    "redirect_url": "https://grok.com/c/00000000-apf0-warn-0000-000000000001?rid=00000000-apf0-warn-0000-000000000002",
+    "console_error": "GET 400 (Bad Request) on /rest/app-chat/conversations/00000000-apf0-warn-0000-000000000001/response-node?includeThreads=true (x2). POST net::ERR_HTTP2_PROTOCOL_ERROR on /monitoring. GET 400 on conversations_v2/00000000-apf0-warn-0000-000000000001.",
+    "input_method": "JS console: querySelector contenteditable + execCommand insertText"
+  },
+  "notes": "Grok APF warning test: BLOCKED with URL redirect to synthetic APF conversation (00000000-apf0-warn-0000-000000000001). APF successfully intercepted and redirected, but Grok client cannot load the synthetic conversation - returns 400 Bad Request when trying to fetch conversation data. Page shows generic error 'An error occurred' with 'Go back to home' button instead of warning message. Warning delivery mechanism (URL redirect + synthetic conversation) needs revision - Grok validates conversation IDs server-side.",
+  "timestamp": "2026-04-09T08:59:00+09:00"
+}

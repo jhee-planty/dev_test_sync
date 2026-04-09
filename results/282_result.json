@@ -1,0 +1,17 @@
+{
+  "id": "282",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/282/check_warning_282.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "POST /rest/sse/perplexity_ask sent. Multiple ERR_CONNECTION_CLOSED and ERR_HTTP2_PROTOCOL_ERROR errors in console for perplexity.ai API endpoints. 19 requests total.",
+    "console_error": "net::ERR_CONNECTION_CLOSED on /rest/rate-limit/free-queries, /rest/event/analytics (x5), /rest/collections/list_user_collections. net::ERR_HTTP2_PROTOCOL_ERROR on /rest/event/analytics. All background API calls fail.",
+    "input_method": "clipboard_paste + JS click (submit button unresponsive to direct clicks)"
+  },
+  "notes": "Perplexity APF warning test: BLOCKED but NO visible warning. APF appears to be disrupting the H2 connection entirely — not just the perplexity_ask SSE request, but ALL API calls to perplexity.ai fail with ERR_CONNECTION_CLOSED. The submit button was unresponsive to both click and Enter — required JS document.querySelector().click() to trigger. After submission, the perplexity_ask request was sent but the page shows no response and no warning. The site remains stuck on the input screen. The APF block is too aggressive — it kills the entire connection rather than injecting a warning into the SSE stream. The perplexity_sse envelope template may not be functioning correctly, or the H2 proxy is closing the connection before the warning can be delivered.",
+  "timestamp": "2026-04-09T08:51:00+09:00"
+}
