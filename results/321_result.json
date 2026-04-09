@@ -1,0 +1,11 @@
+{
+  "id": "321",
+  "command": "check-warning",
+  "service": "mistral",
+  "status": "SKIPPED",
+  "result": "skipped_by_dev",
+  "timestamp": "2026-04-09T17:45:00+09:00",
+  "findings": {
+    "reason": "Template was updated to correct NDJSON format (based on HAR #320) AFTER this request was sent. #321 would test the wrong template. Superseded by #322 which tests the correct NDJSON template."
+  }
+}
