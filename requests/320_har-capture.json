@@ -1,0 +1,11 @@
+{
+  "id": "320",
+  "command": "har-capture",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "오늘 날씨가 어때?",
+  "expected": "normal_response",
+  "created": "2026-04-09T17:05:00+09:00",
+  "notes": "Mistral 정상 응답 HAR 캡처. APF가 mistral에 대해 disabled 상태이므로 정상적으로 대화가 진행됨. DevTools Network 탭에서 message.newChat 요청의 Response 탭(응답 본문)과 EventStream 탭(SSE 이벤트)을 모두 캡처해야 함. 특히: (1) message.newChat 뮤테이션의 HTTP 응답 본문 전체 (superjson 형태), (2) 별도의 SSE 스트리밍 엔드포인트가 있다면 그 URL과 이벤트 형태, (3) 응답의 Content-Type 헤더. 결과를 JSON으로 저장. HAR 파일 자체가 아닌 key response data만 추출해도 됨.",
+  "input_method": "clipboard_paste"
+}
