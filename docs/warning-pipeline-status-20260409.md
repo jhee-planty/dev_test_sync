@@ -14,6 +14,7 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
 | Perplexity | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 422 JSON error | User data blocked, search just doesn't execute |
 | Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | Warning in console error; EventSource delivery impossible with current VTS |
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
+| DuckDuckGo | 🆕 Testing | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | New template — test #307 pending |
 | Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
 
