@@ -1,14 +1,15 @@
-# APF Warning Pipeline Status — 2026-04-09 (Updated)
+# APF Warning Pipeline Status — 2026-04-10 (Updated)
 
 ## Summary
 
-Session covered tests #288–#316. Key achievements:
+Session covered tests #288–#326. Key achievements:
 - **B24 RST_STREAM fix** resolves HTTP/2 protocol errors for h2_mode=2 + no-hold services
 - **B25 Gamma hold test** (#304) confirmed VTS EventSource H2 limitation — Gamma classified BLOCKED_ONLY
 - **DuckDuckGo** (#310) — ✅ WARNING VISIBLE. path_matcher trailing slash bug fixed, 403 JSON in chat bubble
 - **DeepSeek** (#311–#315) — SSE approach failed 4x (0 body bytes), switched to 403 JSON → 🔶 status code visible
 - **B26 path_matcher fix** — built [172/172], deployed to test server
-- **Grok** (#316) — ✅ WARNING VISIBLE. APF redirect + Korean warning banner. Free access confirmed
+- **Grok** (#316) — ✅ WARNING VISIBLE. APF NDJSON token + Korean warning. Free access confirmed
+- **Mistral** (#317–#326) — 🔶 Visible Error 6002. 10 iterations. Only NDJSON array + h2_mode=2 produces visible error
 
 ## Service Status
 
@@ -23,7 +24,7 @@ Session covered tests #288–#316. Key achievements:
 | DuckDuckGo | ✅ Working | Yes | Yes | 1 (GOAWAY) | SSE OpenAI-like | Confirmed #310 — path fix verified, 403 JSON visible in chat bubble |
 | DeepSeek | 🔶 403 Visible | Partial | Yes | 1 (GOAWAY+hold) | 403 JSON error | #315: 403 status visible in chat, JSON body in DevTools only |
 | Grok | ✅ Working | Yes | Yes | 1 (GOAWAY) | APF redirect + banner | Confirmed #316 — Korean warning banner visible, free access |
-| Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
+| Mistral | 🔶 Visible Error | Partial | Yes | 2 (keep-alive+hold) | NDJSON superjson array | #326: Error 6002 confirmed reproducible. 10 iterations (#317-#326). Array format only |
 
 ## B24 Changes (this session)
 
@@ -103,6 +104,7 @@ Session covered tests #288–#316. Key achievements:
 | gamma | 2 | 1 | 0 | 0 |
 | gemini3 | 2 | 1 | 0 | 0 |
 | grok | 1 | 1 | 1 | 0 |
+| mistral | 2 | 1 | 0 | 1 |
 
 ### ai_prompt_response_templates (final)
 | id | service | format | size |
@@ -115,6 +117,7 @@ Session covered tests #288–#316. Key achievements:
 | 7 | claude | SSE message events | ~700 |
 | 17 | duckduckgo | SSE OpenAI-like | 252 |
 | — | deepseek | SSE OpenAI-like (pending #309) | ~300 |
+| 24 | mistral | NDJSON superjson array (v4, empty meta) | 763 |
 
 ## ECH (Encrypted Client Hello) Issue
 
@@ -178,6 +181,87 @@ Any Cloudflare-hosted service may be affected. Currently confirmed:
   - JSON body delivered and visible in DevTools Response tab
   - Policy message NOT rendered in chat UI (DeepSeek shows its own error)
 - Classification: 🔶 Functional block with visible status code
+
+## Mistral Warning Attempts (#317–#318)
+
+### #317: HTTP 400 tRPC Error (FAILED)
+- Template id=24: `400 Bad Request` + tRPC batch error JSON
+- tRPC error code: -32600 (BAD_REQUEST)
+- **Result**: Silent block. tRPC error handler catches 400, resets page to initial state
+- No error message, no warning banner, no redirect
+- Page silently clears textarea — user has no indication content was blocked
+
+### #318: HTTP 429 Too Many Requests (FAILED)
+- Changed template: `400 Bad Request` → `429 Too Many Requests`
+- tRPC error code: -32009, Added `Retry-After: 60` header
+- **Result**: Silent block. tRPC swallows 429 identically to 400
+
+### #319: HTTP 200 OK Fake tRPC Success (FAILED)
+- Changed to `200 OK` with tRPC batch success format: `[{"result":{"data":{"json":{...}}}}]`
+- **Result**: Silent block. tRPC client-side superjson schema validation rejects fake response
+
+### #320: HAR Capture (KEY DISCOVERY)
+- Captured normal Mistral chat response with APF disabled
+- **Discovery**: Mistral does NOT use SSE — uses tRPC polling (message.newChat → message.get)
+- Response format: NDJSON with superjson, batch result structure
+- Key fields: chatId(UUID), messages[], generationStatus, meta.values for Dates
+- API gateway: Kong proxy
+
+### #322: NDJSON Exact Format + h2_mode=2 (VISIBLE ERROR!)
+- Template: HAR-based exact NDJSON superjson format (827 bytes, 200 OK)
+- **Result: VISIBLE_ERROR** — Error 6002 "Oops, Something's Fishy" displayed!
+- ERR_HTTP2_PROTOCOL_ERROR on subsequent requests (h2_mode=2 keep-alive corruption)
+- Mistral error handler catches protocol error and shows built-in error UI
+- **Major improvement**: from silent block (#317-#319) to visible error (#322)
+
+### #323: NDJSON v1 + h2_mode=1 GOAWAY (FAILED)
+- Changed h2_mode from 2→1 (GOAWAY) to cleanly close connection after fake response
+- **Result**: SILENT_RESET. GOAWAY kills connection before NDJSON payload reaches client
+- Worse than #322 — no error, no warning, page silently returns to home
+
+### #324: NDJSON v2 — No Array Brackets (FAILED)
+- Removed outer `[...]` array — pure NDJSON object `{result:{...}}`
+- title: null, realistic UUID v4, h2_mode=2 (reverted from GOAWAY)
+- **Result**: SILENT_RESET. tRPC client rejects non-array format entirely
+
+### #325: tRPC Error Response Format (FAILED)
+- Returned tRPC error format `[{error:{message:"...",code:-32600}}]` instead of data
+- **Result**: SILENT_RESET. Mistral frontend swallows tRPC errors without UI feedback
+
+### #326: NDJSON v4 — Restored Array + Empty meta.values (CONFIRMED)
+- Restored v1 array format `[{result:{data:{...}}}]` + empty `meta.values: {}`
+- h2_mode=2 keep-alive + h2_hold_request=1
+- **Result**: VISIBLE_ERROR — Error 6002 reproduced! Identical to #322
+- User prompt visible in chat, Error 6002 overlay covers page
+- **CONFIRMED REPRODUCIBLE**: Array format NDJSON + h2_mode=2 = consistent Error 6002
+
+### Mistral Definitive Comparison (#317–#326)
+| Test | Format | h2_mode | Result |
+|------|--------|---------|--------|
+| #317 | HTTP 400 tRPC error | 1 GOAWAY | SILENT_BLOCK |
+| #318 | HTTP 429 tRPC error | 1 GOAWAY | SILENT_BLOCK |
+| #319 | HTTP 200 fake tRPC | 1 GOAWAY | SILENT_BLOCK |
+| #322 | NDJSON v1 array [{}] | 2 keep-alive | **VISIBLE_ERROR 6002** |
+| #323 | NDJSON v1 array [{}] | 1 GOAWAY | SILENT_RESET |
+| #324 | NDJSON v2 no array {} | 2 keep-alive | SILENT_RESET |
+| #325 | tRPC error [{error}] | 2 keep-alive | SILENT_RESET |
+| #326 | NDJSON v4 array+no meta | 2 keep-alive | **VISIBLE_ERROR 6002** |
+
+### Mistral Classification: 🔶 Functional Block (Visible Error)
+- Error 6002 is Mistral's built-in error handler — cannot inject custom message
+- User sees clear visual feedback that something went wrong
+- User's prompt is visible but message is not sent to Mistral servers
+- Effective block with visible error indication (better than silent block)
+
+### Mistral Technical Notes
+- Protocol: tRPC over HTTP/2 with superjson serialization (NOT SSE)
+- API: `message.newChat` batch mutation (POST /api/trpc/message.newChat?batch=1)
+- Current: h2_mode=2 (keep-alive), h2_hold_request=1, h2_goaway=0
+- Response: NDJSON with superjson encoding — exact format reverse-engineered from HAR #320
+- tRPC validates response schema aggressively — HTTP status irrelevant (400/429/200 all fail)
+- Only NDJSON array format `[{result:{data:{...}}}]` + h2_mode=2 triggers visible behavior (#322, #326)
+- Free access confirmed (no login required)
+- Input method: clipboard paste (React textarea requires physical keyboard events)
 
 ## B26 Code Fix (deployed)
 
