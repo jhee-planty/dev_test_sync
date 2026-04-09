@@ -1,0 +1,11 @@
+{
+  "id": "325",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "any_block_indicator",
+  "created": "2026-04-10T09:30:00+09:00",
+  "notes": "Mistral tRPC ERROR response format test. Instead of faking a data response, return a tRPC error with warning message. Format: [{error:{message:'...',code:-32600,data:{code:'BAD_REQUEST',httpStatus:400,path:'message.newChat'}}}]. Theory: tRPC error handler in Mistral frontend may display the error message to user, or at least produce a different/better error UX than the #322 Error 6002.",
+  "input_method": "clipboard_paste"
+}
