@@ -1,0 +1,18 @@
+{
+  "id": "301",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/301/check_warning_301.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "StreamGenerate endpoint called but response blocked by APF. Page stayed on /app?hl=ko (no conversation URL redirect). 23 requests, 14.0 kB.",
+    "http_status": 400,
+    "console_error": "5 errors, 7 issues (4 page errors, 1 breaking change, 2 possible improvements). CSP violations: 'The action has been blocked', 'Fetch API cannot load... Refused to connect because it violates the document's Content Security Policy', 'Connecting to app?hl=ko:1 violates Content Security Policy directive: connect-src self'.",
+    "input_method": "clipboard_paste (Ctrl+V into Gemini prompt edit field) + click '메시지 보내기' button"
+  },
+  "notes": "Gemini B24 with RST_STREAM(CANCEL): BLOCKED but NO visible warning. Same behavior as #292/#295/#298. StreamGenerate returned HTTP 400. Page stayed on /app home page — no conversation created. CSP violations in console. RST_STREAM fix did NOT change behavior for Gemini — the issue is not connection-level (unlike Gamma). The frontend silently discards the 400 error without showing any message to the user. The prompt text remains in the input field as if nothing happened.",
+  "timestamp": "2026-04-09T10:35:00+09:00"
+}

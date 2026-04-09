@@ -1,0 +1,18 @@
+{
+  "id": "299",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/299/check_warning_299.png",
+    "send_failed": true,
+    "response_received": true,
+    "api_response": "SSE perplexity_ask endpoint received APF response. Page navigated to /search/new/d6d4c102-... (new thread URL format, NOT /search/blocked-*). Frontend attempted to process SSE stream but failed on first chunk. 202 requests, 226 kB.",
+    "http_status": 200,
+    "console_error": "1 error, 8 issues. Uncaught (in promise) PplxStreamError: [STREAM_FAILED_FIRST_CHUNK_ERROR] thread_url_slug is required on first message — from pplx-stream-CShZTMNJ.js. Full stack trace through platform-core-CDD08CBQ.js Object.message/zr.oe/p/d/Object.u.",
+    "input_method": "Type (direct text entry into search input field) + click '제출' button"
+  },
+  "notes": "Perplexity B24+SSE with RST_STREAM(CANCEL): BLOCKED but NO visible warning. SIGNIFICANT BEHAVIOR CHANGE from #296. (1) Page now navigates to /search/new/ URL (previously stayed on home page in #296). (2) SSE 200 OK response was delivered to frontend (HTTP status 200, not 422). (3) Frontend tried to parse SSE stream but threw STREAM_FAILED_FIRST_CHUNK_ERROR because thread_url_slug was missing from first message (as intended by template change). (4) Page shows '사고' (Thinking) header but no answer content rendered — stuck in loading state. (5) The error confirms the SSE template IS being processed by the frontend JS parser, but the missing thread_url_slug causes a fatal parse error before any content is displayed. To show a visible warning, the template needs to include a valid thread_url_slug AND warning text in the SSE data.",
+  "timestamp": "2026-04-09T10:29:00+09:00"
+}
