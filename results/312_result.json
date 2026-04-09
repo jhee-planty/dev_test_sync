@@ -1,0 +1,33 @@
+{
+  "id": "312",
+  "command": "check-warning",
+  "service": "deepseek",
+  "status": "COMPLETED",
+  "result": "warning_not_visible",
+  "timestamp": "2026-04-09T14:00:00+09:00",
+  "findings": {
+    "apf_block_result": "BLOCKED_BUT_NO_WARNING",
+    "h2_mode": "1 (GOAWAY)",
+    "request_url": "https://chat.deepseek.com/api/v0/chat/completion",
+    "completion_status_code": "200 (initial response before GOAWAY)",
+    "eventstream_events": 0,
+    "eventstream_result": "EMPTY - no SSE events delivered (same as #311)",
+    "content_length_fix": {
+      "applied": true,
+      "description": "Removed Content-Length: 0 and Connection: keep-alive from template id=26",
+      "effect": "NO IMPROVEMENT - GOAWAY still terminates connection before SSE events"
+    },
+    "frontend_behavior": {
+      "error_message": "네트워크를 확인하고 다시 시도하세요..",
+      "user_can_see_block_reason": false,
+      "user_sees_generic_network_error": true,
+      "identical_to_311": true
+    },
+    "analysis": {
+      "root_cause": "H2 GOAWAY terminates the stream after 200 OK but before any SSE data frames are sent. Content-Length removal did not change this behavior.",
+      "recommendation": "Switch to h2_mode=2 (keep-alive) + inject fake SSE event with warning message, OR use h2_hold_request=1 to hold and return HTTP 4xx before 200 OK is sent"
+    }
+  },
+  "screenshots": [],
+  "notes": "Screenshot capture failed due to Desktop Commander session context limitation. Visual confirmation: DeepSeek shows generic network error identical to #311."
+}
