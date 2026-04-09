@@ -12,7 +12,7 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
 | Claude | ✅ Working | Yes | Yes | 1 (GOAWAY) | SSE message_start | Confirmed #246 |
 | Genspark | ✅ Working | Yes | Yes | 2 (keep-alive+hold) | SSE | Confirmed #254 |
 | Perplexity | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 422 JSON error | User data blocked, search just doesn't execute |
-| Gamma | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | Warning text in error body (console), not in UI |
+| Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | Warning in console error; EventSource delivery impossible with current VTS |
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
 | Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
@@ -52,14 +52,22 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
   - `ai_prompt_response_templates`: envelope changed from HTTP 400 JSON to SSE (200 OK + text/event-stream + JSON object data)
 - **Why hold=1 fixes delivery**: With hold, the outline request is buffered and never reaches the server. No race condition, no duplicate HEADERS, no ERR_CONNECTION_CLOSED. The SSE response goes directly to the client via SSL_write.
 - **VTS code path verification**: Line 622 `was_held=true` → buffer discarded → Line 654 h2_mode=2 → Line 658 `!was_held` is false → RST_STREAM skipped (correct, server never saw stream)
-- **Risk**: Hold buffers ALL client→server packets per-connection (PING, WINDOW_UPDATE). Short hold duration (~100ms) should be tolerable.
-- **Expected outcome**: SSE events parsed by EventSource. JSON object rendered in outline UI. Warning may be char-by-char (Build #26 pattern) but visible.
+- **Risk**: Hold buffers ALL client→server packets per-connection (PING, WINDOW_UPDATE).
+- **Expected outcome**: SSE events parsed by EventSource.
+
+### Test #304 Result: FAILED
+- h2_hold_request=1 blocked EVERYTHING (outline + render-generation)
+- ERR_CONNECTION_CLOSED on SSE delivery — same as Builds #30-#33
+- **Root cause confirmed**: ERR_CONNECTION_CLOSED is NOT from server interference. It's a VTS limitation with EventSource H2 delivery.
+- fetch()-based endpoints (render-generation): H2 DATA works ✓
+- EventSource-based endpoints (outline): H2 DATA fails ✗
+- **Reverted to #300 config** (h2_hold_request=0, h2_end_stream=1, HTTP 400 JSON)
 
 ### Key insight: Two Gamma endpoints
 - `/ai/v2/generation` (outline) — uses EventSource (SSE), is the first API call
 - `/ai/v2/render-generation` (rendering) — uses fetch+JSON.parse, called after outline completes
-- APF path_patterns=`/` matches both, but with h2_hold_request=0, only render-generation was blocked (outline completed before APF could block)
-- With h2_hold_request=1, the OUTLINE request is held and blocked, receiving the SSE warning response
+- APF path_patterns=`/` matches both, but with h2_hold_request=0, only render-generation was blocked
+- **Gamma classified as BLOCKED_ONLY** — all approaches exhausted (13+ SSE builds + #304 hold)
 
 ## Remaining Challenges
 
@@ -84,7 +92,7 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
 | genspark | 2 | 1 | 0 | 1 |
 | perplexity | 2 | 1 | 0 | 0 |
 | perfle | 2 | 1 | 0 | 0 |
-| gamma | 2 | 0 | 0 | 1 |
+| gamma | 2 | 1 | 0 | 0 |
 | gemini3 | 2 | 1 | 0 | 0 |
 | grok | 1 | 1 | 1 | 0 |
 
@@ -92,7 +100,7 @@ Session covered tests #288–#303. Key achievement: **B24 RST_STREAM fix** resol
 | id | service | format | size |
 |----|---------|--------|------|
 | 10 | perplexity | HTTP 422 JSON error | 277 |
-| 16 | gamma | SSE 200 OK + JSON object (B25) | 299 |
+| 16 | gamma | HTTP 400 JSON error (reverted) | 266 |
 | 19 | gemini | HTTP 400 JSON error | 268 |
 | 21 | grok | NDJSON token-only | 928 |
 | 22 | chatgpt | SSE delta | ~800 |
