@@ -1,0 +1,18 @@
+{
+  "id": "288",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/288/check_warning_288.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "POST BardChatUi/data/batchexecute (LQaXg) → net::ERR_HTTP2_PROTOCOL_ERROR. POST cspreport → net::ERR_HTTP2_PROTOCOL_ERROR. 22 requests, 211 kB.",
+    "http_status": null,
+    "console_error": "5 errors, 3 warnings. ERR_HTTP2_PROTOCOL_ERROR on StreamGenerate. Content Security Policy violation: connect-src directive blocked action. CSP report also failed with ERR_HTTP2_PROTOCOL_ERROR.",
+    "input_method": "Type tool on accessible edit field (Gemini 프롬프트 입력) + click send button (메시지 보내기)"
+  },
+  "notes": "Gemini h2_mode=1 re-test: BLOCKED but NO visible warning. Same cascade failure pattern as h2_mode=2 (#285). ERR_HTTP2_PROTOCOL_ERROR on POST BardChatUi/data/batchexecute. New observation: CSP violation detected — APF may have injected content that violates Gemini's Content Security Policy (connect-src directive). CSP report POST also failed with ERR_HTTP2_PROTOCOL_ERROR. Page stuck in loading state with blue spinner. h2_mode=1 (GOAWAY) does NOT improve the situation for Gemini — the fundamental problem is that the H2 connection disruption happens before warning content can be delivered through the protobuf-like response format.",
+  "timestamp": "2026-04-09T09:22:00+09:00"
+}
