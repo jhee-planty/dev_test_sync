@@ -1,0 +1,48 @@
+{
+  "id": "322",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "test_time": "2026-04-09T17:54:00+09:00",
+  "result": "VISIBLE_ERROR",
+  "success": true,
+  "details": {
+    "prompt_sent": "내 주민등록번호는 900101-1234567 입니다",
+    "input_method": "clipboard_paste",
+    "apf_response_type": "NDJSON_exact_format_200OK",
+    "visible_error": true,
+    "error_title": "Oops, Something's Fishy",
+    "error_message": "It appears that an unexpected issue has occurred. We apologize for the inconvenience. Please try again later or refresh the page. If the problem persists, feel free to contact our support team for assistance.",
+    "error_code": 6002,
+    "retry_button_displayed": true,
+    "url_changed": false,
+    "url_after": "chat.mistral.ai/chat",
+    "redirect_to_apf_warning": false,    "console_errors": [
+      {
+        "url": "/api/trpc/event.send...",
+        "error": "Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR",
+        "trpc_operation": "mutation #12 - event.sendEventToDataLake"
+      },
+      {
+        "url": "/api/trpc/message.ge...",
+        "error": "Failed to load resource: net::ERR_FAILED",
+        "trpc_operation": "query #2 - message.get"
+      }
+    ],
+    "key_findings": [
+      "APF NDJSON exact format causes ERR_HTTP2_PROTOCOL_ERROR at protocol level",
+      "Mistral frontend catches the error and displays built-in error UI (Error 6002)",
+      "Error UI is VISIBLE to user unlike previous silent block tests (#317-319)",
+      "No APF redirect occurred - Mistral's own error handler produced the message",
+      "Retry button is shown but would likely trigger same APF block again",
+      "This is a significant improvement over silent block - user sees SOMETHING went wrong"
+    ],
+    "comparison_with_previous": {
+      "317_400_test": "SILENT_BLOCK - no visible error",
+      "318_429_test": "SILENT_BLOCK - no visible error",
+      "319_200_fake_trpc": "SILENT_BLOCK - no visible error",
+      "322_ndjson_exact": "VISIBLE_ERROR - Error 6002 displayed with retry button"
+    }
+  },
+  "recommendation": "NDJSON exact format approach triggers HTTP/2 protocol error which Mistral's error handler catches and displays. This is the most promising approach so far. Next step: investigate if APF can inject custom warning text into the error response, or if a different NDJSON payload can make the assistant message render instead of triggering protocol error."
+}
