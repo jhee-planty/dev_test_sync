@@ -1,0 +1,11 @@
+{
+  "id": "308",
+  "command": "check-warning",
+  "service": "duckduckgo",
+  "url": "https://duck.ai",
+  "prompt": "What is the capital of France?",
+  "expected": "warning_visible",
+  "created": "2026-04-09T12:10:00+09:00",
+  "notes": "ECH 진단 테스트. duck.ai가 Cloudflare ECH(Encrypted Client Hello)를 사용하여 VT MITM이 실패하는 것으로 추정. 이 테스트 전에 다음을 수행: (1) Chrome 주소창에 chrome://flags/#encrypted-client-hello 입력. (2) 현재 설정 값 확인 (Default/Enabled/Disabled). (3) 'Disabled'로 변경. (4) Chrome 재시작. (5) duck.ai 접속하여 프롬프트 전송. (6) 결과 보고 시 ECH 이전 설정값과 변경 후 결과를 모두 포함. 만약 ECH 비활성화 후에도 차단이 안 되면, Chrome DevTools Security 탭에서 duck.ai 연결의 TLS 정보(Protocol, Certificate)를 캡처해주세요.",
+  "input_method": "clipboard_paste"
+}
