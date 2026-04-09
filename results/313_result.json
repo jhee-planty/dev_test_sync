@@ -1,0 +1,36 @@
+{
+  "id": "313",
+  "command": "check-warning",
+  "service": "deepseek",
+  "status": "COMPLETED",
+  "result": "warning_not_visible",
+  "timestamp": "2026-04-09T14:58:00+09:00",
+  "findings": {
+    "apf_block_result": "BLOCKED_BUT_NO_WARNING",
+    "h2_mode": "1 (GOAWAY)",
+    "h2_hold_request": "1 (APF should respond directly without forwarding to server)",
+    "request_url": "https://chat.deepseek.com/api/v0/chat/completion",
+    "completion_status_code": "200 h2",
+    "eventstream_events": 0,
+    "eventstream_result": "EMPTY - no SSE events delivered (identical to #311/#312)",
+    "response_headers": {
+      "Access-Control-Allow-Origin": "visible in headers tab",
+      "Cache-Control": "visible",
+      "Content-Type": "visible"
+    },
+    "frontend_behavior": {
+      "error_message": "네트워크를 확인하고 다시 시도하세요..",
+      "user_can_see_block_reason": false,
+      "user_sees_generic_network_error": true,
+      "identical_to_311_312": true
+    },
+    "hold_request_analysis": {
+      "expected_behavior": "h2_hold_request=1 should prevent server forwarding and let APF respond directly with SSE data",
+      "actual_behavior": "Still returns 200 OK with empty EventStream, then GOAWAY kills connection",
+      "hypothesis": "Either h2_hold_request=1 is not taking effect for this template, or GOAWAY is sent before the response body (SSE events) can be written to the stream",
+      "recommendation": "Try h2_mode=2 (keep-alive) instead of GOAWAY. Keep-alive allows APF to write SSE events to the response body before closing. GOAWAY terminates the entire H2 connection before data frames can be sent."
+    }
+  },
+  "screenshots": [],
+  "notes": "3rd DeepSeek attempt. h2_hold_request=1 did NOT fix the issue. GOAWAY mode (h2_mode=1) fundamentally incompatible with SSE streaming - it kills the connection before any data frames are written. Must switch to h2_mode=2 (keep-alive) to deliver SSE warning events."
+}
