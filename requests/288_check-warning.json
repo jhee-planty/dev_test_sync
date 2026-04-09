@@ -1,0 +1,10 @@
+{
+  "id": "288",
+  "command": "check-warning",
+  "service": "gemini",
+  "url": "https://gemini.google.com",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Gemini re-test with h2_mode=1 (cascade shutdown + GOAWAY). Previous tests #259/#263/#285 all had cascade failure with h2_mode=2 + hold. Now using h2_mode=1, h2_end_stream=1, h2_goaway=1, h2_hold_request=0. Template is gemini protobuf-like format with )]}'\\n\\n prefix. 프롬프트 입력은 accessible edit field + send button click.",
+  "input_method": "clipboard_paste"
+}
