@@ -1,0 +1,11 @@
+{
+  "id": "323",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "any_block_indicator",
+  "created": "2026-04-09T18:00:00+09:00",
+  "notes": "Mistral NDJSON + h2_mode=1 (GOAWAY) 테스트. #322에서 NDJSON exact format이 VISIBLE_ERROR(6002)를 유발했으나 ERR_HTTP2_PROTOCOL_ERROR 발생. h2_mode를 2(keep-alive)에서 1(GOAWAY)로 변경하여 가짜 응답 후 연결 종료. 프로토콜 에러 없이 NDJSON이 정확히 전달되면 assistant 메시지로 경고 렌더링 가능. 특히: (1) 프로토콜 에러 없이 200 OK 응답이 전달되는지, (2) fake chatId로 이동하여 assistant message가 렌더링되는지, (3) 기존 Error 6002와 다른 결과인지 상세 비교.",
+  "input_method": "clipboard_paste"
+}
