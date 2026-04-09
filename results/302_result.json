@@ -1,0 +1,18 @@
+{
+  "id": "302",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/302/check_warning_302.png",
+    "send_failed": false,
+    "response_received": true,
+    "api_response": "perplexity_ask SSE endpoint received APF response with thread_url_slug. Page navigated to /search/apf-warn-2a844227-19b5-4e08-9731-c96b11150af1 (thread_url_slug WORKED). Frontend then tried REST /rest/thread/apf-warn-* fetch which returned 400 (thread doesn't exist on real server). Page bounced back to perplexity.ai/? (home). 166 requests, 10.6 kB.",
+    "http_status": 200,
+    "console_error": "8 errors, 8 issues. (1) GET vendors-D_GPB3-J.js net::ERR_CONNECTION_RESET. (2-4) POST experimentation-* net::ERR_HTTP2_PROTOCOL_ERROR x3. (5) POST experimentation-* net::ERR_CONNECTION_RESET. (6) GET vendors-D_GPB3-J.js 400 (Bad Request). (7-8) GET /rest/thread/apf-warn-* 400 thread fetch failed x2.",
+    "input_method": "Type (direct text entry into search input field) + click '제출' button"
+  },
+  "notes": "Perplexity B24v2 with thread_url_slug restored: **SIGNIFICANT PROGRESS from #299**. (1) SSE stream parsed successfully - NO MORE STREAM_FAILED_FIRST_CHUNK_ERROR. (2) thread_url_slug='apf-warn-2a844227-...' correctly extracted by frontend. (3) Page navigated to /search/apf-warn-* URL as expected. (4) BUT: frontend then does REST GET /rest/thread/apf-warn-* to load thread data from server - returns 400 because this fake thread ID doesn't exist on Perplexity's real server. (5) After failed thread fetch, page redirects back to home (perplexity.ai/?). (6) Warning text from SSE chunks was NOT rendered - the thread data fetch failure causes the page to abandon the thread view. (7) CONCLUSION: thread_url_slug fixes the first-chunk parse error, but the subsequent thread validation step is a new blocker. Need to either: (a) use a thread_url_slug format that passes validation, or (b) find a way to make the SSE chunks render before the thread fetch happens.",
+  "timestamp": "2026-04-09T10:44:00+09:00"
+}

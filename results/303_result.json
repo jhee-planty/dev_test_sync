@@ -1,0 +1,18 @@
+{
+  "id": "303",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/303/check_warning_303.png",
+    "send_failed": false,
+    "response_received": true,
+    "api_response": "Outline generation succeeded (ai.api.gamma.app outline endpoint NOT blocked). render-generation SSE endpoint returned APF SSE chunk response. Frontend received SSE but tried to parse as JSON. Fonts loaded from fonts.gstatic.com. 36 requests, 55.3 kB.",
+    "http_status": 200,
+    "console_error": "1 error, 2 issues. [deckStyledImages] Failed to select image style SyntaxError: Unexpected token 'e', \"event: chu\"... is not valid JSON — from main-18df4bf5f1d4d331.js:5. Frontend attempted JSON.parse() on SSE response body.",
+    "input_method": "JS console: querySelector .tiptap.ProseMirror + execCommand insertText + click '개요 생성' button"
+  },
+  "notes": "Gamma B24v2 with SSE chunk format: **SSE FORMAT REJECTED BY FRONTEND**. (1) Outline generation succeeded — uses different API path not blocked by APF. (2) render-generation endpoint received APF SSE chunk response (event:chunk + event:done format). (3) Frontend code does JSON.parse() on the response body, NOT SSE stream parsing — got SyntaxError: 'event: chu...' is not valid JSON. (4) COMPARISON WITH #300: Previous B24 used HTTP 400 JSON format which was correctly parsed by error handler and showed warning text in console error. B24v2 SSE format is WORSE for Gamma — frontend can't parse SSE at all. (5) CONCLUSION: Gamma should KEEP the HTTP 400 JSON format from #300, NOT SSE. The JSON error response with {error:{message:'...',type:'content_policy'}} worked perfectly in #300 — the error was caught and the warning text appeared in console. SSE format is a step backward for Gamma. (6) For Gamma, the remaining challenge is surfacing the warning from console to user-visible UI.",
+  "timestamp": "2026-04-09T10:47:00+09:00"
+}
