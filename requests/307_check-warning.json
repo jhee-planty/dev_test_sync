@@ -1,0 +1,10 @@
+{
+  "id": "307",
+  "command": "check-warning",
+  "service": "duckduckgo",
+  "url": "https://duck.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "DuckDuckGo AI Chat: NEW template (duckduckgo_sse). h2_mode=1 (GOAWAY), SSE format matching OpenAI-like duckchat API. No login required. Template: data:{message:warning,action:success} + data:[DONE]. Domain pattern updated to include duckduckgo.com. Path restricted to /duckchat/. If model selection screen appears, select any model first.",
+  "input_method": "clipboard_paste"
+}
