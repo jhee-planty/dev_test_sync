@@ -1,0 +1,18 @@
+{
+  "id": "295",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/295/check_warning_295.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "StreamGenerate endpoint called but response blocked by APF. Page stayed on /app (no conversation URL redirect). 21 requests, 13.4 kB.",
+    "http_status": null,
+    "console_error": "3 errors, 6 issues (3 page errors, 1 breaking change, 2 possible improvements). CSP violations: 'The action has been blocked', 'Fetch API cannot load... Refused to connect because it violates the document's Content Security Policy', 'Connecting to /app:1 violates Content Security Policy directive: connect-src self'.",
+    "input_method": "clipboard_paste (Ctrl+V into Gemini prompt edit field) + click '메시지 보내기' button"
+  },
+  "notes": "Gemini B23 error response strategy (HTTP 400 JSON error replacing protobuf template): BLOCKED but NO visible warning. Same behavior as #292 (h2_mode=2 keep-alive strategy) — StreamGenerate called but APF intercepted response. Page stayed on welcome screen with prompt still in input field, no conversation created, no error displayed to user. CSP violations from APF response. B23 HTTP 400 JSON error did NOT improve over protobuf template approach — same CSP violation pattern, same user experience (silent failure).",
+  "timestamp": "2026-04-09T10:03:00+09:00"
+}

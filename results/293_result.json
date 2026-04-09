@@ -1,0 +1,18 @@
+{
+  "id": "293",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/293/check_warning_293.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "URL redirected to /search/blocked-476ab7be-4e22-4089-846b-9b7c7552745e. REST API polling blocked-prefix thread returns empty data. 155 requests, 8.1 kB.",
+    "http_status": null,
+    "console_error": "No new console errors. 7 issues (1 page error, 6 breaking changes) — pre-existing.",
+    "input_method": "clipboard_paste (Ctrl+V into search input field)"
+  },
+  "notes": "Perplexity B23 error response strategy (HTTP 422 JSON error replacing SSE template): BLOCKED but NO visible warning. Same behavior as #290 — page navigated to blocked-prefix thread URL, prompt text visible at top, answer area completely empty. HTTP 422 JSON error did NOT trigger frontend's built-in error handling — frontend still navigates to fake thread and polls empty data.",
+  "timestamp": "2026-04-09T09:55:00+09:00"
+}
