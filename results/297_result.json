@@ -1,0 +1,18 @@
+{
+  "id": "297",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/297/check_warning_297.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "Generation session created at /create/generate/1rbhtzf09ugiur6 but outline empty (only '1'). POST ai.api.gamma.app render-generation SSE endpoint blocked with ERR_HTTP2_PROTOCOL_ERROR. Font loading from fonts.gstatic.com also failed with ERR_HTTP2_PROTOCOL_ERROR. 41 requests, 26.6 kB.",
+    "http_status": null,
+    "console_error": "8 errors. [PromptAndOutlineSettings] error generating outline: Failed to fetch (ai.api.gamma.app). Multiple GET fonts.gstatic.com → net::ERR_HTTP2_PROTOCOL_ERROR. CSS font loading also blocked.",
+    "input_method": "JS console: querySelector .tiptap.ProseMirror + execCommand insertText + click '개요 생성' button"
+  },
+  "notes": "Gamma B23 retry with reload_templates: BLOCKED but NO visible warning. Same behavior as #291/#294 — generation session created, outline UI appeared but content empty. ERR_HTTP2_PROTOCOL_ERROR persists on ai.api.gamma.app. reload_templates did NOT change behavior for Gamma because the issue is at HTTP/2 connection level, not template content level. Font loading from fonts.gstatic.com also affected by ERR_HTTP2_PROTOCOL_ERROR (collateral damage from APF's HTTP/2 connection handling).",
+  "timestamp": "2026-04-09T10:13:00+09:00"
+}
