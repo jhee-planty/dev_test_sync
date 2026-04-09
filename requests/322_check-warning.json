@@ -1,0 +1,11 @@
+{
+  "id": "322",
+  "command": "check-warning",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "any_block_indicator",
+  "created": "2026-04-09T17:35:00+09:00",
+  "notes": "Mistral NDJSON 정확한 포맷 테스트 (HAR #320 분석 기반). 템플릿 변경: 200 OK + 정확한 tRPC batch NDJSON 형식. HAR에서 발견한 핵심: json 배열 [{}] 안에 chatId(UUID), messages[], generationStatus='success', meta.values로 Date 추적. 프론트엔드가 fake chatId로 이동하여 경고 메시지를 표시하는지 확인. 특히: (1) URL이 /chat/00000000-apf0-warn-0000-000000000001 로 변경되는지, (2) messages 배열의 assistant content가 렌더링되는지, (3) 기존처럼 silent reset이면 어떤 에러가 콘솔에 보이는지 상세 보고.",
+  "input_method": "clipboard_paste"
+}
