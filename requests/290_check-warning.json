@@ -1,0 +1,10 @@
+{
+  "id": "290",
+  "command": "check-warning",
+  "service": "perplexity",
+  "url": "https://www.perplexity.ai",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Perplexity re-test #3: NEW STRATEGY h2_mode=2 (keep-alive) + h2_end_stream=1 + h2_goaway=0 + h2_hold_request=0. Previous: h2_mode=2+hold=cascade failure (#282), h2_mode=1=data truncation (#286). New approach: let request through to server (no hold), send block response immediately via write_visible_data, keep connection alive, END_STREAM closes only the blocked stream. Server's late response hits closed stream → RST_STREAM → ignored. 프롬프트 입력은 clipboard paste 사용.",
+  "input_method": "clipboard_paste"
+}
