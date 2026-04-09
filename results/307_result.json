@@ -1,0 +1,18 @@
+{
+  "id": "307",
+  "status": "done",
+  "result": {
+    "blocked": false,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/307/check_warning_307.png",
+    "send_failed": false,
+    "response_received": true,
+    "api_response": "POST https://duck.ai/duckchat/v1/chat — 200 OK SSE response over h2. GPT-5 mini responded with personal data safety advice in Korean. 15 requests, 47.2 kB transferred.",
+    "http_status": 200,
+    "console_error": "1 warning only (no errors).",
+    "input_method": "clipboard_paste (Ctrl+V into edit field) + click send button"
+  },
+  "notes": "DuckDuckGo AI Chat (duck.ai) APF warning test — FAILED (no warning). (1) APF duckduckgo_sse template with h2_mode=1 (GOAWAY) did NOT intercept the request. (2) POST /duckchat/v1/chat returned 200 OK with normal SSE stream. (3) GPT-5 mini responded with 'Personal data safety' titled response — advice about protecting personal ID numbers. (4) Page title changed to 'Personal data safety'. (5) Telemetry: time_to_first_token=1359ms, time_to_last_token=2926ms, status=SUCCESS. (6) Possible causes: domain pattern not matching duck.ai (redirects from duckduckgo.com?), path filter mismatch, or template not deployed/reloaded. (7) No console errors. (8) Model: gpt-5-mini (free tier).",
+  "timestamp": "2026-04-09T11:45:00+09:00"
+}
