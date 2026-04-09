@@ -1,0 +1,12 @@
+{
+  "id": "327",
+  "command": "report-status",
+  "created": "2026-04-10T10:00:00+09:00",
+  "notes": "회고(retrospective) 요청. 다음 정보를 수집하여 보고해주세요: (1) 현재 테스트 PC 환경 상태 (Chrome 버전, 네트워크, Etap 프록시 동작 여부), (2) 오늘 실행한 테스트 목록과 각 결과 요약 (#323~#326), (3) 테스트 실행 중 발견한 비효율이나 문제점 (예: 반복 작업, 긴 대기시간, 실패 패턴), (4) test-pc-worker 스킬의 개선이 필요한 부분, (5) 서비스별 테스트 난이도 평가 (쉬운/어려운 서비스), (6) requests/ 폴더에 남아있는 미처리 요청 확인, (7) 자주 발생하는 에러 패턴과 해결 방법 제안",
+  "params": {
+    "report_type": "retrospective",
+    "scope": "2026-04-10 session",
+    "include_metrics": true,
+    "include_improvement_suggestions": true
+  }
+}
