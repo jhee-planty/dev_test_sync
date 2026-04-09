@@ -1,0 +1,18 @@
+{
+  "id": "292",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/292/check_warning_292.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "StreamGenerate endpoint called but response blocked by APF. Page stayed on /app (no conversation URL redirect). 21 requests, 13.1 kB.",
+    "http_status": null,
+    "console_error": "3 errors, 6 issues (3 page errors, 1 breaking change). CSP violations: 'The action has been blocked', 'Fetch API cannot load' (Refused to connect, violates CSP connect-src 'self'), 'Connecting to [app:1] violates Content Security Policy'.",
+    "input_method": "Type tool into Gemini prompt edit field + click '메시지 보내기' button"
+  },
+  "notes": "Gemini h2_mode=2 + h2_end_stream=1 + h2_goaway=0 + h2_hold_request=0 (NEW keep-alive STRATEGY): BLOCKED but NO visible warning. StreamGenerate called but APF intercepted response. Page stayed on welcome screen with prompt still in input field — no conversation created, no error displayed to user. CSP violations from APF response. Similar to h2_mode=1 (#288) but no ERR_HTTP2_PROTOCOL_ERROR cascade — connection stayed alive. Improvement: page remains functional (no crash/error page).",
+  "timestamp": "2026-04-09T09:41:00+09:00"
+}
