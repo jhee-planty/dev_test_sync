@@ -20,7 +20,7 @@ Session covered tests #288–#311. Key achievements:
 | Gamma | 🔶 BLOCKED_ONLY | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | VTS EventSource H2 limitation (13+ builds + #304 hold) |
 | Gemini | 🔶 Functional block | No | Yes | 2 (keep-alive, no-hold) | 400 JSON error | CSP violations, silent failure |
 | DuckDuckGo | ✅ Working | Yes | Yes | 1 (GOAWAY) | SSE OpenAI-like | Confirmed #310 — path fix verified, 403 JSON visible in chat bubble |
-| DeepSeek | 🆕 Deployed | TBD | TBD | 1 (GOAWAY) | SSE OpenAI-like | Template id=26 deployed, test #311 pending |
+| DeepSeek | 🔶 403 Visible | Partial | Yes | 1 (GOAWAY+hold) | 403 JSON error | #315: 403 status visible in chat, JSON body in DevTools only |
 | Grok | ❌ Silent block | No | Yes | 1 (GOAWAY) | NDJSON token | Frontend redirects to fake conversation → 400 |
 | Mistral | ❌ Silent block | No | Yes | 2 (keep-alive+hold) | HTTP 400 | superjson NDJSON unfakeable |
 
@@ -160,12 +160,23 @@ Any Cloudflare-hosted service may be affected. Currently confirmed:
 - h2_mode=1 (GOAWAY), domain=deepseek.com,*.deepseek.com,chat.deepseek.com, path=/api/v0/chat/completion
 - Template id=26: Named SSE events (event:message + event:close)
 
-### Test #311: BLOCKED but no visible warning
-- GOAWAY terminated connection after 200 OK but before SSE events delivered
-- Frontend showed generic "네트워크를 확인하고 다시 시도하세요.." error
-- Root cause: `Content-Length: 0` in envelope → browser ignores SSE body
-- Fix: Removed Content-Length: 0 and Connection: keep-alive from template
-- Retest #312 pending
+### SSE Approach Failed (#311–#314)
+- All 4 SSE tests delivered 0 response body bytes regardless of h2_mode
+- #311: h2_mode=1 (GOAWAY) → 0 events
+- #312: Removed Content-Length:0 → 0 events
+- #313: h2_hold_request=1 → 0 events
+- #314: h2_mode=2 (keep-alive) + hold → 0 events
+- Root cause unknown — APF code generates H2 DATA frames correctly (verified in code review)
+- DeepSeek frontend may use EventSource API which handles SSE differently
+
+### 403 JSON Approach SUCCESS (#315)
+- Switched to HTTP 403 Forbidden + JSON error body (DuckDuckGo pattern)
+- h2_mode=1 + h2_hold_request=1 + GOAWAY
+- **Result: PARTIAL SUCCESS**
+  - 403 status code VISIBLE in frontend: "전송 실패. 나중에 다시 시도하세요.. (403)"
+  - JSON body delivered and visible in DevTools Response tab
+  - Policy message NOT rendered in chat UI (DeepSeek shows its own error)
+- Classification: 🔶 Functional block with visible status code
 
 ## B26 Code Fix (deployed)
 
