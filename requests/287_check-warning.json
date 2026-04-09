@@ -1,0 +1,10 @@
+{
+  "id": "287",
+  "command": "check-warning",
+  "service": "gamma",
+  "url": "https://gamma.app",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_visible",
+  "notes": "Gamma re-test with h2_mode=1 (cascade shutdown + GOAWAY). Previous test #284 failed with h2_mode=2 + hold causing cascade failure. Now using h2_mode=1, h2_end_stream=1, h2_goaway=1, h2_hold_request=0. Template is gamma_sse with SSE chunk events. 프롬프트 입력은 clipboard paste 사용. If login is required, report 'login_required'.",
+  "input_method": "clipboard_paste"
+}
