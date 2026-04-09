@@ -1,0 +1,96 @@
+{
+  "id": "309",
+  "command": "run-scenario",
+  "service": "deepseek",
+  "url": "https://chat.deepseek.com",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-09T13:37:00+09:00",
+  "api_endpoint": "https://chat.deepseek.com/api/v0/chat/completion",
+  "protocol": "h2",
+  "prompt_used": "What is 2+2?",
+  "response_received": "2 + 2 equals 4.",
+  "response_headers": {
+    "note": "Headers observed from DevTools Headers tab for completion request",
+    "content_type": "text/event-stream (inferred from EventStream tab presence and h2 protocol)",
+    "server": "CloudFront (via X-Amz-Cf-* headers)",
+    "strict_transport_security": "present",
+    "cache_control": "present",
+    "via": "present (CloudFront CDN)",
+    "x_amz_cf_id": "present",
+    "x_amz_cf_pop": "present"
+  },  "eventstream_analysis": {
+    "total_event_count": 14,
+    "event_types_observed": ["request_message", "message", "update", "title", "close"],
+    "first_3_events": [
+      {
+        "id": 0,
+        "type": "request_message (re...)",
+        "data_preview": "{\"request_messa...}",
+        "description": "Initial event echoing the user's request message metadata"
+      },
+      {
+        "id": 1,
+        "type": "message (m...)",
+        "data_preview": "{\"v\":\"response\":...}",
+        "description": "Response initialization - sets up the response object path"
+      },
+      {
+        "id": 2,
+        "type": "message (m...)",
+        "data_preview": "{\"p\":\"response/fi...}",
+        "description": "Response field initialization using JSON Patch-like path notation (p=path)"
+      }
+    ],
+    "last_2_events": [
+      {
+        "id": 12,
+        "type": "title",
+        "data_preview": "{\"content\":\"Math...}",
+        "description": "Auto-generated chat title: 'Math question answer'"
+      },
+      {
+        "id": 13,
+        "type": "close (cl...)",
+        "data_preview": "{\"click_behavior\"...}",
+        "description": "Stream close event with UI behavior hints"
+      }
+    ],
+    "streaming_token_events": {
+      "description": "Token-by-token content delivery using message events with {v: token} format",
+      "examples": [
+        {"type": "message", "data": "{\"v\":\" \"}"},
+        {"type": "message", "data": "{\"v\":\"2\"}"},
+        {"type": "message", "data": "{\"v\":\" equals\"}"},
+        {"type": "message", "data": "{\"v\":\" \"}"},
+        {"type": "message", "data": "{\"v\":\"4\"}"},
+        {"type": "message", "data": "{\"v\":\".\"}"}
+      ]
+    },
+    "json_structure_keys": {
+      "streaming_chunks": ["v (value - token content)"],
+      "path_events": ["p (path - JSON Patch-like path)", "v (value)"],
+      "title_event": ["content"],
+      "close_event": ["click_behavior"],
+      "update_event": ["updated_at"]
+    }
+  },  "sse_protocol_summary": {
+    "format": "SSE (Server-Sent Events) over HTTP/2",
+    "content_type": "text/event-stream",
+    "event_naming": "Uses named event types: request_message, message, update, title, close",
+    "data_format": "JSON objects in each event's data field",
+    "streaming_pattern": "JSON Patch-like protocol with 'p' (path) and 'v' (value) fields",
+    "token_delivery": "Each token sent as separate 'message' event with {\"v\": \"token_text\"}",
+    "completion_signal": "Stream ends with update, title, and close events",
+    "apf_warning_implications": {
+      "key_insight": "DeepSeek uses named SSE event types (not just 'data:' lines). The frontend likely uses EventSource or similar SSE parser that dispatches on event type.",
+      "warning_approach": "APF warning template should send SSE events with the correct event types. First event should be 'message' type with a 'v' field containing warning text to appear as streaming content.",
+      "critical_events": "The 'request_message' event appears first and may be required. The 'close' event signals stream end."
+    }
+  },
+  "screenshots": [
+    "files/309/eventstream_overview.png",
+    "files/309/headers_tab.png"
+  ],
+  "browser": "Chrome 146.0.7680.180",
+  "notes": "DeepSeek SSE protocol uses a JSON Patch-like structure with named event types. This is different from OpenAI-style SSE which uses unnamed events with 'data: {json}' format. APF warning template must use named event types to be parsed correctly by the DeepSeek frontend."
+}

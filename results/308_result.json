@@ -1,0 +1,32 @@
+{
+  "id": "308",
+  "command": "check-warning",
+  "service": "duckduckgo",
+  "url": "https://duck.ai",
+  "status": "COMPLETED",
+  "result": "warning_not_visible",
+  "timestamp": "2026-04-09T13:30:00+09:00",
+  "findings": {
+    "ech_flag_status": "NOT_AVAILABLE",
+    "ech_flag_detail": "chrome://flags/#encrypted-client-hello does NOT exist in Chrome 146.0.7680.180. The flag was removed in newer Chrome versions (around Chrome 120+). ECH is now enabled by default with no user-facing toggle. 'No matching experiments' shown on flags page.",
+    "vt_mitm_status": "WORKING",
+    "vt_mitm_detail": "VT MITM proxy IS successfully intercepting duck.ai. Security tab confirms certificate issued by 'Plantynet OfficeGuarad CA_V3'.",
+    "tls_info": {
+      "protocol": "TLS 1.3",
+      "key_exchange": "X25519MLKEM768",
+      "cipher": "AES_256_GCM",
+      "certificate_issuer": "Plantynet OfficeGuarad CA_V3",
+      "certificate_status": "valid and trusted"
+    },
+    "apf_block_result": "NOT_BLOCKED",
+    "apf_block_detail": "Prompt 'What is the capital of France?' was sent and GPT-5 mini responded with 'Paris.' normally. No APF block or warning was triggered.",
+    "ech_conclusion": "ECH is NOT preventing VT MITM interception for duck.ai. The Plantynet proxy certificate is being served, meaning the MITM is fully operational. The #307 warning failure is NOT caused by ECH.",
+    "root_cause_hypothesis": "The APF warning template for DuckDuckGo may not be correctly configured, or the SSE response format may not match the template. Since VT MITM works and the prompt passes through without any APF intervention, the issue is in APF service matching or template response generation, not in network-level ECH bypass."
+  },
+  "screenshots": [
+    "files/308/security_tab_tls_info.png",
+    "files/308/prompt_response_no_block.png"
+  ],
+  "browser": "Chrome 146.0.7680.180",
+  "notes": "KEY FINDING: ECH hypothesis is DISPROVEN. VT MITM works perfectly for duck.ai. The warning failure from #307 must be investigated at the APF template/service configuration level, not at the network/TLS level."
+}
