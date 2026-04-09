@@ -1,18 +1,18 @@
 ---
-name: skill-discussion-review
+name: discussion-review
 description: >
-  구조화된 다자간 토론을 통해 문제를 다각도로 분석하고 합의된 결론을 도출하는 스킬.
-  스킬 점검뿐 아니라 기술 설계, 프로세스 개선, 리스크 평가, 전략 결정 등
-  모든 문제 도메인에 적용 가능한 범용 토론 프레임워크.
+  구조화된 다자간 토론을 통해 문제를 다각도로 분석하고 합의된 결론을 도출하는 범용 토론 프레임워크.
+  기술 설계, 프로세스 개선, 리스크 평가, 전략 결정, 스킬 점검 등
+  모든 문제 도메인에 적용 가능하다.
   토론 전문가(DF)가 구조화된 진행과 품질 점검을 수행하고, 외부 컨설턴트(EC)가 비판적 질문을 던지며,
   도메인 전문가들이 역할별 고유 관점으로 충분한 의견 교환을 거쳐 결론을 산출한다.
   토론 본문은 영문으로 진행하여 토큰 효율과 추론 품질을 극대화한다.
   Use this skill whenever: "토론 진행해줘", "토론으로 점검", "다각도로 검토",
   "discussion review", "충분히 논의해줘", "이것에 대해 토론해줘",
-  "스킬 토론", "스킬 리뷰 토론", "structured discussion",
+  "structured discussion", "비판적으로 검토해줘",
   or any request for multi-perspective deliberation on any topic.
   Also trigger on: "성급하게 결론 내리지 말고", "충분한 토론 후 결론",
-  "모든 관점에서 검토", "비판적으로 검토해줘".
+  "모든 관점에서 검토", "스킬 토론", "스킬 리뷰 토론".
   Do NOT trigger for: simple skill creation (skill-creator), automated
   quality checks without discussion (skill-review-deploy), or runtime
   skill execution.
@@ -300,20 +300,21 @@ DF: "[Name] hasn't spoken in this round. [Name], as [role],
 
 이 스킬은 다음 상황에서 트리거된다:
 
-**직접 요청 (범용):**
+**직접 요청:**
 - "이것에 대해 토론해줘"
 - "토론을 진행해줘"
 - "다각도로 리뷰해줘"
 - "비판적으로 검토해줘"
-
-**직접 요청 (스킬 관련 — 하위 호환):**
-- "이 스킬을 토론으로 점검해줘"
-- "스킬 토론 진행해줘"
+- "충분히 논의해줘"
+- "structured discussion"
 
 **간접 신호:**
 - "성급하게 결론 내리지 말고" → 깊은 논의 요구
 - "모든 참가자의 의견을 충분히 고려해줘" → 다자간 토론 필요
 - "왜 이 방식이어야 하는지 논의해줘" → 단순 리뷰가 아닌 토론 필요
+
+**하위 호환 (스킬 관련 토론):**
+- "스킬 토론 진행해줘", "스킬 리뷰 토론"
 
 **사용자가 문제를 제시한 경우:**
 문제 보고서나 실패 사례가 주어지면, 해당 내용을 논점 목록의 핵심으로 삼아
@@ -321,14 +322,15 @@ DF: "[Name] hasn't spoken in this round. [Name], as [role],
 
 ---
 
-## Integration with Other Skills
+## Integration Pattern
 
-**skill-review-deploy와의 관계:**
-- 이 스킬로 토론 → 수정 사항 도출 후,
-  skill-review-deploy로 패키지 + 배포하는 순서가 자연스럽다.
+토론 결과(수정/실행 사항 목록)는 해당 도메인의 실행 스킬로 전달된다.
 
-**skill-creator와의 관계:**
-- 새 스킬 생성 후 이 스킬로 점검하는 것도 가능.
+**예시:**
+- 스킬 개선 토론 → `skill-review-deploy`로 수정 적용 및 배포
+- 스킬 설계 토론 → `skill-creator`로 신규 생성
+- APF 설계 토론 → `genai-apf-pipeline`로 구현
+- 프로세스 개선 토론 → 해당 프로세스 스킬로 적용
 
 **Cowork vs Claude Code — 모호한 경계 작업 라우팅:**
 토론 대상이 코드 관련일 때, 어느 환경에서 어떤 작업을 수행할지 판단 기준:

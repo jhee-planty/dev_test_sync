@@ -78,7 +78,7 @@ Sub agent가 structured text (`=== ANALYSIS === / === SQL === / ...`) 를 stdout
 Cowork이 캡처 후 리뷰, 승인된 결과만 main agent에게 적용 지시.
 
 **토론 에스컬레이션 (선택):** Quality Gate에서 판단이 불확실한 경우
-`skill-discussion-review`로 다자간 토론을 진행할 수 있다.
+`discussion-review`로 다자간 토론을 진행할 수 있다.
 
 **Fallback mode (Standalone):**
 Claude Code가 Cowork 없이 직접 호출되면, 결과를 `services/{service_id}_pending.md`에

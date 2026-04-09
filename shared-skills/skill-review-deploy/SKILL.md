@@ -52,7 +52,7 @@ references에 정리되어 있다.
 
 **진입점 2가지:**
 1. **독립 사용** — 스킬 리뷰 요청 → Phase 1부터 전체 수행
-2. **토론 후 사용** — `skill-discussion-review`로 토론 완료 후, 수정 사항 표를 받아
+2. **토론 후 사용** — `discussion-review`로 토론 완료 후, 수정 사항 표를 받아
    Phase 2(Fix)부터 시작. 토론 합의의 수정 목록이 Phase 2의 입력이 된다.
 
 ### Phase 1 — Review (리뷰)
