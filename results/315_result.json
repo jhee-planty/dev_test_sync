@@ -1,0 +1,49 @@
+{
+  "id": "315",
+  "command": "check-warning",
+  "service": "deepseek",
+  "status": "COMPLETED",
+  "result": "warning_partially_visible",
+  "timestamp": "2026-04-09T15:29:00+09:00",
+  "findings": {
+    "apf_block_result": "BLOCKED_WITH_403_AND_JSON",
+    "h2_mode": "1 (GOAWAY)",
+    "h2_hold_request": "1",
+    "template_approach": "HTTP 403 Forbidden + JSON error body",
+    "request_url": "https://chat.deepseek.com/api/v0/chat/completion",
+    "completion_status_code": "403 h2",
+    "create_session_status": "200 h2 (SUCCESS - session creation not blocked)",
+    "response_body": {
+      "delivered": true,
+      "content_type": "application/json",
+      "json_body": {
+        "error": {
+          "code": "POLICY_VIOLATION",
+          "message": "이 서비스는 회사 보안 정책에 의해 차단되었습니다. 업무용 AI 서비스만 이용해 주세요.\n\nThis service has been blocked by company security policy.",
+          "status": 403
+        }
+      }
+    },
+    "frontend_behavior": {
+      "error_message": "전송 실패. 나중에 다시 시도하세요.. (403)",
+      "status_code_visible": true,
+      "json_body_rendered_in_chat": false,
+      "user_sees_403_error": true,
+      "user_sees_policy_message_in_chat": false,
+      "user_sees_policy_message_in_devtools": true
+    },
+    "comparison_with_311_314": {
+      "311_314_status": "200 (SSE approach) → empty EventStream → generic network error",
+      "315_status": "403 (JSON approach) → response body delivered → 403 visible in frontend",
+      "improvement": "MAJOR - status code now visible, response body successfully delivered"
+    },
+    "analysis": {
+      "success_level": "PARTIAL SUCCESS",
+      "what_works": "HTTP 403 status code is delivered and displayed to user. JSON response body is transmitted and visible in DevTools Response tab. This proves the 403+JSON approach works for data delivery over H2.",
+      "what_doesnt_work": "DeepSeek frontend does NOT render the JSON body content as a visible warning in the chat UI. It shows its own generic error message with the status code appended: '전송 실패. 나중에 다시 시도하세요.. (403)'. The policy violation message is only visible in DevTools.",
+      "recommendation": "The 403 approach is a significant improvement over SSE (which delivered nothing). For full warning visibility, consider: 1) Accept this as sufficient (user sees 403 block), 2) Try different status codes (429, 503) that might trigger different frontend behavior, 3) The DuckDuckGo pattern worked because DuckDuckGo renders JSON error responses in the chat bubble — DeepSeek does not."
+    }
+  },
+  "screenshots": [],
+  "notes": "BREAKTHROUGH: 5th DeepSeek attempt. HTTP 403+JSON approach successfully delivers both status code and response body. User sees '전송 실패. 나중에 다시 시도하세요.. (403)' — the 403 is visible. JSON warning body is in DevTools but not rendered in chat UI. This is a MAJOR improvement over #311-#314 which all showed generic 'network error' with no status code."
+}
