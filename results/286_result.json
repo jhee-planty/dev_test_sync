@@ -1,0 +1,18 @@
+{
+  "id": "286",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/286/check_warning_286.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "GET/POST vendors-D_GPB3-J.js, experimentation-DFmW... → net::ERR_CONNECTION_CLOSED. Thread URL: blocked-3b165395-1f9c-4610-8077-bdf4573e7918. 400 (Bad Request) on thread endpoint. 165 requests, 45.2 kB.",
+    "http_status": 400,
+    "console_error": "5 errors, 2 warnings. ERR_CONNECTION_CLOSED on multiple API endpoints (models/config, billing/asi-access-decision, homepage-widgets). Thread loaded as 'blocked-3b165395-...' but showed login modal instead of warning.",
+    "input_method": "Submit button click (label 36) with pre-filled prompt text"
+  },
+  "notes": "Perplexity h2_mode=1 re-test: BLOCKED but NO visible warning. APF with h2_mode=1 (cascade shutdown + GOAWAY) created a thread with 'blocked-' prefix UUID but ERR_CONNECTION_CLOSED disrupted multiple API calls (models/config, asi-access-decision, homepage-widgets/public, homepage-widgets/computer/primers). Perplexity client showed login modal instead of warning content. The 'blocked' thread URL (blocked-3b165395-1f9c-4610-8077-bdf4573e7918) was generated but thread data fetch failed. Compared to #282 (h2_mode=2): h2_mode=1 still causes connection disruption via ERR_CONNECTION_CLOSED — the GOAWAY approach does not prevent cascade failure on Perplexity. Warning template (perplexity_sse) was NOT delivered.",
+  "timestamp": "2026-04-09T09:16:00+09:00"
+}

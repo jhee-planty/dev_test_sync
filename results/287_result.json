@@ -1,0 +1,18 @@
+{
+  "id": "287",
+  "status": "done",
+  "result": {
+    "blocked": true,
+    "warning_visible": false,
+    "warning_text": null,
+    "screenshot": "files/287/check_warning_287.png",
+    "send_failed": true,
+    "response_received": false,
+    "api_response": "POST ai.api.gamma.app/ai/v2/render-generation → partial SSE response before connection kill. 41 requests, 152 kB. Generation session created at evlbh6tc3ogyi5o.",
+    "http_status": 200,
+    "console_error": "2 errors. [deckStyledImages] Failed to select image style SyntaxError: Unexpected token 'e', \"event: chu\"... is not valid JSON. [PromptAndOutlineSettings] error generating outline: Unable to complete request.",
+    "input_method": "JS console: querySelector .tiptap.ProseMirror + execCommand insertText"
+  },
+  "notes": "Gamma h2_mode=1 re-test: BLOCKED but NO visible warning. Key improvement vs #284 (h2_mode=2): APF partially delivered SSE template data before killing connection. Console shows SyntaxError parsing 'event: chu...' — this is the beginning of the gamma_sse template 'event: chunk' prefix that was truncated. The h2_mode=1 (GOAWAY) approach DID attempt to inject the warning SSE payload but the connection was terminated before the full JSON payload arrived. Gamma client received partial SSE data ('event: chu...') which it tried to parse as JSON → SyntaxError. Outline shows only '1' with no content. Compared to #284: h2_mode=1 partially injects data (progress!) but still fails to deliver complete warning. The GOAWAY frame timing may need adjustment to allow the full SSE response to be delivered before closing.",
+  "timestamp": "2026-04-09T09:19:00+09:00"
+}
