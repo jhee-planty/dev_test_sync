@@ -150,6 +150,8 @@
 11. ~~**copilot/m365_copilot 도메인 충돌**~~ → **해결**: m365_copilot에서 copilot.microsoft.com 제거 (substrate.office.com만 유지)
 12. **Gemini hold_overflow**: 234KB webchannel POST → 64KB 버퍼 한계 초과 시 flush/re-hold 반복. binary 데이터이므로 PII 위험 없으나 불필요한 CPU 사용. 낮은 우선순위.
 13. **Dola WebSocket**: www.dola.com/chat에서 WS 업그레이드 확인됨. 현재 허용 처리 (keyword-less blocking 없음). 채팅은 WS로 전송되므로 HTTP POST 기반 차단 불가 — ws_fallback_error 전환 검토 필요
+14. **"sex" EXACT 키워드 오탐**: claude에서 7초간 10건 연속 차단 (12:00). EXACT 모드로 "sex" 서브스트링 매칭 → "sexual", "sexist" 등 정상 텍스트에서도 차단. `\bsex\b` word-boundary regex 또는 키워드 제거 검토 필요
+15. **VTS hold_discard 로그 누락**: 15:39 차단에서 VTS delivery 로그만 있고 APF "AI prompt blocked" 로그 없음. 기능 정상이나 로그 추적성 개선 필요
 
 ## Tier 3C 프로토콜 분석 결과
 | 서비스 | 실제 프로토콜 | response_type | 전략 |
