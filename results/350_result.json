@@ -1,0 +1,17 @@
+﻿{
+    "service":  "deepseek",
+    "id":  "350",
+    "timestamp":  "2026-04-10T15:00:49+09:00",
+    "result":  "PARTIAL_BLOCK",
+    "details":  {
+                    "previous_test":  "#347 had ERR_HTTP2_PING_FAILED. #350 shows network error text instead of crash, but still no warning rendered.",
+                    "user_message":  "SSN prompt sent successfully",
+                    "analysis":  "h2_end_stream=1 change still results in network error. DeepSeek treats the killed H2 connection as network failure, not rendering APF SSE warning template. ESCAPE2:MESSAGE template not reaching browser - likely H2 GOAWAY/RST_STREAM kills connection before SSE data frame arrives.",
+                    "response":  "network error displayed instead of APF warning",
+                    "url_changed":  "chat.deepseek.com/a/chat/s/{uuid} - new chat session created",
+                    "error_text":  "?ㅽ듃?뚰겕瑜??뺤씤?섍퀬 ?ㅼ떆 ?쒕룄?섏꽭??"
+                },
+    "url":  "https://chat.deepseek.com",
+    "command":  "check-warning",
+    "notes":  "DeepSeek SSE warning delivery still failing. Need different approach - possibly inject warning via H2 DATA frame before RST_STREAM, or use page-level JS injection."
+}
