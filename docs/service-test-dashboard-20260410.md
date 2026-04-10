@@ -1,4 +1,4 @@
-# APF Service Test Dashboard — 2026-04-10 16:10
+# APF Service Test Dashboard — 2026-04-10 16:30
 
 ## 핵심 변경 (이번 세션)
 - **페이지 로드 즉시 차단 완전 제거**: 사용자 피드백 반영. APF는 POST body에 민감정보 키워드가 있을 때만 차단.
@@ -10,6 +10,11 @@
   - #356: DeepSeek ERR_H2 지속 → h2_hold=1 근본 문제
   - #354: copilot QUIC 우회 발견 → Tier 4 재분류
   - #358: CLOVA X 서비스 종료 → disabled
+- **#359-360 결과 분석 완료** (16:30):
+  - #359: ERR_H2 = TRANSIENT 확인 (consensus 25분 후 정상 로드)
+  - #360: **consensus 키워드 차단 SUCCESS ✅** (SSN regex 2회 차단) → Tier 1.5 승격
+  - #360: blackbox 페이지 로드 복구 ✅, dola 페이지 로드 복구 + WS 채팅 확인 → Tier 4
+  - #362: wrtn/blackbox 키워드 테스트 요청 생성
 - **DB 수정 (16:06)**: clova/clova_x disabled, consensus response_type 수정, sex 키워드 FP 수정
 
 ## DB 현황 요약
@@ -29,9 +34,10 @@
 | duckduckgo | duckduckgo_sse | **#348 한국어 경고 채팅 버블** (charset 수정 완료) |
 | grok | grok_ndjson | **#349 한국어 경고 배너** (redirect → 경고 표시) |
 
-### Tier 1.5 — 차단 동작 확인 (에러 UI 표시)
+### Tier 1.5 — 차단 동작 확인 (에러/차단 UI 표시)
 | 서비스 | response_type | 이슈 | 조치 |
 |--------|--------------|------|------|
+| consensus | generic_sse | **#360 키워드 차단 ✅** | SSN regex 2회 차단, generic_sse 템플릿 정상. hold→block→H2→RST_STREAM 전체 파이프라인 동작 |
 | mistral | mistral_trpc_sse | tRPC 프로토콜 | NDJSON array format → Error 6002 표시 (#322,#326). 커스텀 경고 불가, 에러 UI는 표시됨 |
 | perplexity/perfle | perplexity_sse | thread 아키텍처 | 실시간 로그에서 차단 확인 (14:22). 경고 렌더링 검증 필요 |
 
@@ -56,7 +62,7 @@
 | baidu | baidu_sse | 2 | 1 | 테스트 대기 (ERNIE SSE, result 필드) |
 | qwen3 | qwen3_sse | 2 | 1 | #342 대기 |
 | you | you_json | 2 | 1 | #342 대기 |
-| blackbox | blackbox_json | 2 | 1 | 테스트 대기 |
+| blackbox | blackbox_json | 2 | 1 | **#360** 페이지 로드 복구 ✅ — 키워드 테스트 대기 (#362) |
 | v0 | v0_json | 2 | 1 | 테스트 대기 |
 
 ### Tier 3C — WebSocket / 기타
@@ -64,9 +70,7 @@
 |--------|--------------|---------|------|------|
 | character | ws_fallback_error | 2 | 1 | **#354** BLANK_PAGE (ERR_H2_PROTOCOL_ERROR) |
 | poe | ws_fallback_error | 2 | 1 | **#354** LOGIN_REQUIRED (페이지 정상 로드) |
-| wrtn | openai_compat_sse | 2 | 1 | **#358** 페이지 정상 로드 ✅ (프롬프트 미제출) |
-| consensus | generic_sse | 2 | 1 | #353 ERR_H2, 15:59 트래픽 확인 (hold/release 정상) |
-| dola | generic_sse | 2 | 1 | #353 BLANK_PAGE, **WS 사용 확인** |
+| wrtn | openai_compat_sse | 2 | 1 | **#358/#360** 페이지 정상, hold/release clean — 키워드 테스트 대기 (#362) |
 | phind | generic_sse | 2 | 1 | SERVICE_DOWN |
 
 ### Tier 4 — 특수 환경 필요
@@ -74,6 +78,7 @@
 |--------|--------------|------|
 | github_copilot | copilot_403 | IDE 전용 (VS Code/JetBrains) |
 | m365_copilot | m365_copilot_sse | Microsoft 계정 로그인 필요 |
+| dola | generic_sse | **#360** 페이지 로드 복구 ✅, **WebSocket 전용 채팅** — HTTP POST 차단 불가 |
 | copilot | ws_fallback_error | **#354 QUIC/H3 우회**: etap.log 트래픽 0건, APF 미인터셉트 |
 | gamma | gamma_sse | EventSource 실패 |
 | notion | notion_ndjson | WS 전용 |
@@ -93,25 +98,22 @@
 - **#347**: deepseek — ⚠️ PARTIAL_BLOCK (end_stream=0으로 SSE 미렌더링 → end_stream=1로 수정, #350 리테스트 대기)
 - **#345**: blackbox — ⚠️ NO_BLOCK (페이지 로드만 테스트, API 차단은 프롬프트 입력 필요)
 
-## APF 실시간 차단 로그 (2026-04-10, etap.log — 15:45 업데이트)
-| 서비스 | 차단 횟수 | 비고 |
-|--------|----------|------|
-| gemini3 | 20 | Tier 2 — Strategy D 400 동작 확인, VTS 전송 검증 완료 |
-| claude | 18 | Tier 1 — 가장 활발 |
-| mistral | 8 | Tier 1.5 — Error 6002 표시 |
-| deepseek | 5 | Tier 2 — Strategy D 400으로 변경, #356 리테스트 대기 |
-| notion | 3 | Tier 4 — WS 전용이지만 HTTP 차단 동작 |
-| perplexity | 2 | Tier 1.5 — "스레드 없음" 표시 |
-| perfle | 2 | Tier 1.5 — perplexity와 동일 |
-| grok | 2 | Tier 1 — 한국어 경고 배너 |
-| chatgpt | 2 | Tier 1 — SSE 채팅 버블 |
-| you | 1 | Tier 3 — you_json 차단 동작 |
-| wrtn | 1 | Tier 3 — openai_compat_sse 차단 동작 |
-| qwen3 | 1 | Tier 3 — qwen3_sse 차단 동작 |
-| phind | 1 | Tier 3 — SERVICE_DOWN 이전 차단 |
-| duckduckgo | 1 | Tier 1 — 채팅 버블 경고 |
-| blackbox | 1 | Tier 3 — blackbox_json 차단 동작 |
-| **총계** | **68+** | **15개 서비스에서 실제 차단 발생** |
+## DB 차단 통계 (2026-04-10, 16:25 업데이트)
+| 서비스 | 차단 횟수 | 카테고리 | 비고 |
+|--------|----------|---------|------|
+| gemini3 | 21 | ssn | Tier 2 — Strategy D 400 |
+| claude | 11 | ssn(1)+etc(10) | Tier 1 — sex FP 수정 완료 |
+| mistral | 8 | ssn | Tier 1.5 — Error 6002 |
+| deepseek | 5 | ssn | Tier 2 — ERR_H2 지속 |
+| notion | 3 | ssn | Tier 4 — WS 전용 |
+| chatgpt | 2 | ssn | Tier 1 ✅ |
+| perplexity | 2 | ssn | Tier 1.5 |
+| perfle | 2 | ssn | Tier 1.5 |
+| consensus | 2 | ssn | **Tier 1.5 ✅ NEW** (#360) |
+| grok | 2 | ssn | Tier 1 ✅ |
+| qwen3 | 1 | ssn | Tier 3 |
+| duckduckgo | 1 | ssn | Tier 1 ✅ |
+| **총계** | **60** | | **12개 서비스 (DB 확인)** |
 
 ## 테스트 결과 (추가)
 - **#348**: batch test 1 결과 도착
@@ -149,8 +151,15 @@
 - **결론**: ERR_H2_PROTOCOL_ERROR는 **일시적(TRANSIENT)** 현상. h2_hold 설정이 원인 아님. APF hold/release 메커니즘 정상 동작 확인.
 - **추정 원인**: 브라우저 QUIC↔H2 fallback 타이밍, H2 connection pool stale, 또는 일시적 SetCertificate 실패
 
+## 테스트 결과 (#360 — etap.log 기반 분석, 16:25)
+- **consensus**: ✅ **KEYWORD_BLOCK_SUCCESS** — SSN regex `\d{6}-\d{7}` 2회 차단. generic_sse 템플릿 338바이트 전송. H2 block→RST_STREAM 전체 동작 확인. → **Tier 1.5 승격**
+- **wrtn**: ⚠️ PAGE_LOADS (hold/release clean 3회). 키워드 프롬프트 미제출 — 자동화 한계 추정. #362 재테스트 요청.
+- **blackbox**: ✅ PAGE_LOADS_RECOVERED — www.blackbox.ai + app.blackbox.ai 정상 로드 (ERR_H2 transient 확인). 키워드 테스트 대기 #362.
+- **dola**: ✅ PAGE_LOADS_RECOVERED + **WS_CONFIRMED** — www.dola.com/chat/ 정상 로드, WebSocket upgrade 감지. 채팅은 WS 전용 → HTTP POST 키워드 차단 불가 → **Tier 4 재분류**
+
 ## 대기 중인 테스트
-- **#360**: #353 서비스 재테스트 + 키워드 차단 검증 (consensus, wrtn, blackbox, dola)
+- **#361**: Tier 3 나머지 서비스 (baidu, you, v0, character) — 테스트 PC 미처리
+- **#362**: wrtn/blackbox 키워드 차단 테스트 (페이지 로드 확인됨, SSN 프롬프트 제출 필요)
 
 ## 알려진 이슈 (16:10 업데이트)
 1. ~~cross-domain API SNI~~ → **해결**
@@ -181,9 +190,9 @@
 | poe | WS + GraphQL | ws_fallback_error | #354 LOGIN_REQUIRED | 페이지 정상, 로그인 후 재테스트 |
 | ~~clova/clova_x~~ | Naver SSE | generic_sse | #358 서비스 종료 | enabled=false |
 | phind | HTTP SSE | generic_sse | SERVICE_DOWN | 복구 대기 |
-| consensus | HTTP API | generic_sse | 15:59 hold/release 정상 | 키워드 차단 테스트 필요 |
-| dola | **WebSocket** | generic_sse | #353 BLANK, WS 확인 | ws_fallback_error 전환 검토 |
-| wrtn | OpenAI-compat | openai_compat_sse | #358 페이지 정상 ✅ | 키워드 차단 테스트 필요 |
+| consensus | HTTP API | generic_sse | **#360 키워드 차단 ✅** | → Tier 1.5 승격 |
+| dola | **WebSocket** | generic_sse | **#360 페이지 복구, WS 확인** | → Tier 4 (WS 전용) |
+| wrtn | OpenAI-compat | openai_compat_sse | #358/#360 페이지 정상 | 키워드 차단 테스트 #362 대기 |
 
 ## 템플릿 포맷 매핑 (API 조사 기반)
 | response_type | 포맷 | 서비스 |
