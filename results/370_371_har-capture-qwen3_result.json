@@ -1,0 +1,71 @@
+{
+  "id": "370+371",
+  "command": "har-capture + run-scenario",
+  "executed_by": "test",
+  "timestamp": "2026-04-10T18:08:00+09:00",
+  "results": {
+    "test_371_phase3b25b_delay": {
+      "result": "STILL_STUCK_ON_THINKING",
+      "service": "qwen3",
+      "url": "https://chat.qwen.ai/c/55891dc0-359b-4894-aa6e-e8c6a80bf043",
+      "phase3b25b_deployed": true,
+      "delay_50ms_applied": true,
+      "user_experience": "SSN prompt submitted. 'Thinking...' spinner appeared and stayed for 60+ seconds. Phase3-B25b 50ms delay before on_disconnected() did NOT fix the perpetual spinner. This is the 6th consecutive STUCK_ON_THINKING result (#363, #365, #366, #368, #369-qwen3, #371).",
+      "hypothesis_result": "REJECTED — TCP RST timing is NOT the root cause. 50ms delay did not help.",
+      "consecutive_failures": 6
+    },
+    "test_370_har_capture": {
+      "result": "HAR_CAPTURED",
+      "service": "qwen3",
+      "completions_endpoint": "https://chat.qwen.ai/api/v2/chat/completions?chat_id=55891dc0-359b-4894-aa6e-e8c6a80bf043",
+      "headers": {
+        "general": {
+          "request_url": "https://chat.qwen.ai/api/v2/chat/completions?chat_id=55891dc0-359b-4894-aa6e-e8c6a80bf043",
+          "request_method": "POST",
+          "status_code": "200 OK",
+          "remote_address": "8.220.243.44:443",
+          "referrer_policy": "no-referrer-when-downgrade"
+        },
+        "response_headers": {
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-cache",
+          "Connection": "close",
+          "Content-Length": "401",
+          "Content-Type": "text/event-stream; charset=utf-8"
+        },
+        "request_headers": {
+          "warning": "Provisional headers are shown",
+          "Accept": "application/json",
+          "Accept-Language": "ko-KR,ko;q=0.9"
+        }
+      },
+      "response_tab": "Failed to load response data: Request with the provided ID has already finished loading",
+      "eventstream_tab": {
+        "exists": true,
+        "events_count": 0,
+        "CRITICAL_FINDING": "EventStream tab EXISTS (browser detected text/event-stream content type) but shows ZERO events. Browser received 200 OK + 401 bytes but could NOT parse any SSE events from the body."
+      },
+      "analysis": {
+        "what_works": [
+          "APF sends 200 OK status — browser accepts it",
+          "Content-Type: text/event-stream correctly set — browser creates EventStream tab",
+          "Connection: close header present — Phase3-B25 substitution works",
+          "Content-Length: 401 — body size is known and non-zero"
+        ],
+        "what_fails": [
+          "ZERO SSE events parsed from 401-byte body",
+          "Response tab says 'Failed to load response data' — request already finished loading",
+          "Request headers are 'Provisional' — actual request headers not captured (MITM artifact)"
+        ],
+        "root_cause_hypothesis": "The SSE body data format is likely malformed or incompatible with the browser's EventSource parser. Possible issues: (1) Accept header is 'application/json' but response is text/event-stream — JS fetch() with ReadableStream may not parse SSE format; (2) The SSE data fields don't match qwen3's expected format (qwen3 expects specific JSON structure in data: fields); (3) Content-Length header present with SSE — EventSource typically expects chunked transfer encoding, not Content-Length; (4) The 401 bytes may not contain valid SSE format (data: ... \\n\\n pattern).",
+        "key_insight": "The issue is NOT TCP delivery or socket timing. Browser DID receive the complete response (200 OK, 401 bytes, connection closed). The problem is that the SSE body content is not being parsed into events. The JS code waiting for ReadableStream chunks may be getting the data but not recognizing it as valid SSE events for qwen3's expected format.",
+        "next_steps": [
+          "CRITICAL: Inspect the actual 401-byte SSE body APF sends — compare with real qwen3 SSE format",
+          "Check if Accept: application/json vs Content-Type: text/event-stream mismatch causes fetch() to not parse SSE",
+          "Check if Content-Length header conflicts with SSE streaming expectations",
+          "Consider: qwen3 JS may use fetch() + ReadableStream.getReader() not EventSource — the SSE format needs to match what the reader code expects"
+        ]
+      }
+    }
+  }
+}
