@@ -53,7 +53,7 @@
 | cohere | cohere_sse | named events | #351 LOGIN_REQUIRED |
 | baidu | baidu_sse | SSE result 필드 | #353 LOADING_STUCK (ERR_H2) |
 | qwen3 | qwen3_sse | OpenAI-compat | 미테스트 |
-| blackbox | blackbox_json | JSON response | **#360** 페이지 로드 복구 ✅ (ERR_H2 transient) — 키워드 테스트 대기 |
+| blackbox | blackbox_json | JSON response | **#360** HTTP 정상이나 JS 렌더링 실패 (BLANK_PAGE 지속) — app.blackbox.ai redirect 후 빈 페이지 |
 | v0 | v0_json | JSON error | #353 BLANK_PAGE (ERR_H2) |
 | you | you_json | JSON answer | 미테스트 |
 
@@ -69,7 +69,7 @@
 
 | 서비스 | response_type | 제약 사항 |
 |--------|--------------|----------|
-| dola | generic_sse | **#360** 페이지 로드 복구 ✅, **WebSocket 전용 채팅** — HTTP POST 키워드 차단 불가 |
+| dola | generic_sse | **#360** HTTP/WS 연결 정상이나 SPA 미렌더링 (LOADING_STUCK), **WebSocket 전용 채팅** |
 | github_copilot | copilot_403 | IDE 전용 (VS Code/JetBrains) |
 | m365_copilot | m365_copilot_sse | Microsoft 계정 로그인 필요 |
 | copilot | ws_fallback_error | **#354 QUIC/H3 우회**: etap.log에 트래픽 0건, APF 미인터셉트 |
@@ -116,7 +116,7 @@
 gemini3(18096), claude(438), mistral(96), perfle(65), notion(48), deepseek(41), perplexity(14), grok(13), chatgpt(12), duckduckgo(6), qwen3(5), **consensus(16:17 block×2)**
 
 **트래픽 관찰, 차단 미확인** (10개):
-phind(21, SERVICE_DOWN), blackbox(14, **#360 page load 복구**), dola(10, **#360 WS 확인**), github_copilot(8, IDE), you(6), wrtn(6, **#360 hold/release clean**), huggingface(4), cohere(2), poe(15:50 hold 확인), character(미확인)
+phind(21, SERVICE_DOWN), blackbox(14, **#360 HTTP OK but JS BLANK_PAGE**), dola(10, **#360 LOADING_STUCK, WS 확인**), github_copilot(8, IDE), you(6), wrtn(6, **#360 hold/release clean**), huggingface(4), cohere(2), poe(15:50 hold 확인), character(미확인)
 
 **QUIC 우회 (1개)**: copilot (etap.log 트래픽 0건)
 

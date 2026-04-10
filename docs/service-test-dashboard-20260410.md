@@ -13,7 +13,7 @@
 - **#359-360 결과 분석 완료** (16:30):
   - #359: ERR_H2 = TRANSIENT 확인 (consensus 25분 후 정상 로드)
   - #360: **consensus 키워드 차단 SUCCESS ✅** (SSN regex 2회 차단) → Tier 1.5 승격
-  - #360: blackbox 페이지 로드 복구 ✅, dola 페이지 로드 복구 + WS 채팅 확인 → Tier 4
+  - #360: blackbox STILL_BROKEN (JS 렌더링), dola LOADING_STUCK (WS SPA 미렌더링) → Tier 4 유지
   - #362: wrtn/blackbox 키워드 테스트 요청 생성
 - **DB 수정 (16:06)**: clova/clova_x disabled, consensus response_type 수정, sex 키워드 FP 수정
 
@@ -62,7 +62,7 @@
 | baidu | baidu_sse | 2 | 1 | 테스트 대기 (ERNIE SSE, result 필드) |
 | qwen3 | qwen3_sse | 2 | 1 | #342 대기 |
 | you | you_json | 2 | 1 | #342 대기 |
-| blackbox | blackbox_json | 2 | 1 | **#360** 페이지 로드 복구 ✅ — 키워드 테스트 대기 (#362) |
+| blackbox | blackbox_json | 2 | 1 | **#360** HTTP 정상이나 JS BLANK_PAGE 지속 (app.blackbox.ai SPA 렌더링 실패) |
 | v0 | v0_json | 2 | 1 | 테스트 대기 |
 
 ### Tier 3C — WebSocket / 기타
@@ -70,7 +70,7 @@
 |--------|--------------|---------|------|------|
 | character | ws_fallback_error | 2 | 1 | **#354** BLANK_PAGE (ERR_H2_PROTOCOL_ERROR) |
 | poe | ws_fallback_error | 2 | 1 | **#354** LOGIN_REQUIRED (페이지 정상 로드) |
-| wrtn | openai_compat_sse | 2 | 1 | **#358/#360** 페이지 정상, hold/release clean — 키워드 테스트 대기 (#362) |
+| wrtn | openai_compat_sse | 2 | 1 | **#360** 페이지 정상, SUBMIT_FAILED (React paste 문제/로그인 필요) — #362 재시도 |
 | phind | generic_sse | 2 | 1 | SERVICE_DOWN |
 
 ### Tier 4 — 특수 환경 필요
@@ -78,7 +78,7 @@
 |--------|--------------|------|
 | github_copilot | copilot_403 | IDE 전용 (VS Code/JetBrains) |
 | m365_copilot | m365_copilot_sse | Microsoft 계정 로그인 필요 |
-| dola | generic_sse | **#360** 페이지 로드 복구 ✅, **WebSocket 전용 채팅** — HTTP POST 차단 불가 |
+| dola | generic_sse | **#360** LOADING_STUCK — HTTP/WS 연결 정상이나 SPA 미렌더링, **WebSocket 전용 채팅** |
 | copilot | ws_fallback_error | **#354 QUIC/H3 우회**: etap.log 트래픽 0건, APF 미인터셉트 |
 | gamma | gamma_sse | EventSource 실패 |
 | notion | notion_ndjson | WS 전용 |
@@ -151,15 +151,15 @@
 - **결론**: ERR_H2_PROTOCOL_ERROR는 **일시적(TRANSIENT)** 현상. h2_hold 설정이 원인 아님. APF hold/release 메커니즘 정상 동작 확인.
 - **추정 원인**: 브라우저 QUIC↔H2 fallback 타이밍, H2 connection pool stale, 또는 일시적 SetCertificate 실패
 
-## 테스트 결과 (#360 — etap.log 기반 분석, 16:25)
-- **consensus**: ✅ **KEYWORD_BLOCK_SUCCESS** — SSN regex `\d{6}-\d{7}` 2회 차단. generic_sse 템플릿 338바이트 전송. H2 block→RST_STREAM 전체 동작 확인. → **Tier 1.5 승격**
-- **wrtn**: ⚠️ PAGE_LOADS (hold/release clean 3회). 키워드 프롬프트 미제출 — 자동화 한계 추정. #362 재테스트 요청.
-- **blackbox**: ✅ PAGE_LOADS_RECOVERED — www.blackbox.ai + app.blackbox.ai 정상 로드 (ERR_H2 transient 확인). 키워드 테스트 대기 #362.
-- **dola**: ✅ PAGE_LOADS_RECOVERED + **WS_CONFIRMED** — www.dola.com/chat/ 정상 로드, WebSocket upgrade 감지. 채팅은 WS 전용 → HTTP POST 키워드 차단 불가 → **Tier 4 재분류**
+## 테스트 결과 (#360 — 테스트 PC 결과 + etap.log 병합, 16:35)
+- **consensus**: ✅ **BLOCK_CONFIRMED** — SSN keyword 제출, APF 400 Bad Request 반환. etap.log 2회 차단 확인. → **Tier 1.5 승격**
+- **wrtn**: ⚠️ **SUBMIT_FAILED** — 페이지 정상 로드, MITM 확인. 클립보드 붙여넣기는 React state 미업데이트, Enter 무반응. 로그인 필요 추정. #362 재시도 요청.
+- **blackbox**: ❌ **STILL_BROKEN** (BLANK_PAGE) — app.blackbox.ai redirect 후 제목만 로드, 콘텐츠 영역 빈 페이지. etap.log에서 HTTP 요청 정상이나 JS SPA 렌더링 실패. ERR_H2→JS 렌더링 이슈로 원인 변경.
+- **dola**: ❌ **LOADING_STUCK** — dola.com/chat/ redirect, 스켈레톤 UI만 표시되고 실제 콘텐츠 미렌더링. WS 연결은 성공하나 SPA 초기화 실패. → **Tier 4 유지** (WS + SPA 렌더링 이슈)
 
 ## 대기 중인 테스트
 - **#361**: Tier 3 나머지 서비스 (baidu, you, v0, character) — 테스트 PC 미처리
-- **#362**: wrtn/blackbox 키워드 차단 테스트 (페이지 로드 확인됨, SSN 프롬프트 제출 필요)
+- **#362**: wrtn 키워드 차단 재시도 (React paste 이슈 우회 필요) + blackbox는 STILL_BROKEN으로 테스트 불가
 
 ## 알려진 이슈 (16:10 업데이트)
 1. ~~cross-domain API SNI~~ → **해결**
@@ -191,7 +191,7 @@
 | ~~clova/clova_x~~ | Naver SSE | generic_sse | #358 서비스 종료 | enabled=false |
 | phind | HTTP SSE | generic_sse | SERVICE_DOWN | 복구 대기 |
 | consensus | HTTP API | generic_sse | **#360 키워드 차단 ✅** | → Tier 1.5 승격 |
-| dola | **WebSocket** | generic_sse | **#360 페이지 복구, WS 확인** | → Tier 4 (WS 전용) |
+| dola | **WebSocket** | generic_sse | **#360 LOADING_STUCK** (스켈레톤만) | → Tier 4 (WS + SPA 렌더링 이슈) |
 | wrtn | OpenAI-compat | openai_compat_sse | #358/#360 페이지 정상 | 키워드 차단 테스트 #362 대기 |
 
 ## 템플릿 포맷 매핑 (API 조사 기반)
