@@ -1,4 +1,4 @@
-# APF Service Test Dashboard — 2026-04-10 12:25
+# APF Service Test Dashboard — 2026-04-10 13:45
 
 ## 핵심 변경 (이번 세션)
 - **페이지 로드 즉시 차단 완전 제거**: 사용자 피드백 반영. APF는 POST body에 민감정보 키워드가 있을 때만 차단. 페이지 접속 자체를 막지 않음.
@@ -7,11 +7,17 @@
 - **h2_end_stream=1 전환**: 전 서비스 END_STREAM 활성화 (브라우저가 응답 완료를 인식하도록)
 - **cross-domain API 도메인 추가**: blackbox(useblackbox.io), phind(https.api.phind.com), kimi(api.moonshot.cn)
 - **v0 도메인 확장**: v0.dev 추가 (기존 v0.app만)
+- **템플릿 정교화** (NEW):
+  - kimi, huggingface, qianwen, chatglm → `openai_compat_sse` (OpenAI-compatible SSE 포맷)
+  - cohere → `cohere_sse` (Cohere 전용 named event 포맷)
+  - baidu → `baidu_sse` (ERNIE SSE 스트리밍 포맷, result 필드)
+  - gemini → **Strategy D** (503 에러 응답으로 프론트엔드 자체 에러 UI 유도, CSP 우회 불필요)
+- **누락 템플릿 보완**: chatgpt2, perfle, clova_x, gemini3 메시지 템플릿 추가
 
 ## DB 현황 요약
 - 서비스: 37개 등록 (block_mode=1: 36개, block_mode=0: 1개)
-- Response templates: 37개
-- Envelope templates: 21개 (unique response_type)
+- Response templates: 43개
+- Envelope templates: 23개 (unique response_type)
 
 ## 서비스별 상태
 
@@ -22,37 +28,49 @@
 | claude | claude | SSE 정상 |
 | genspark | genspark_sse | SSE 정상 |
 | duckduckgo | duckduckgo_sse | SSE 정상 |
+| grok | grok_ndjson | **경고 배너 정상** (redirect → 한국어 경고 표시, #316 SUCCESS) |
+
+### Tier 1.5 — 차단 동작 확인 (에러 UI 표시)
+| 서비스 | response_type | 이슈 | 조치 |
+|--------|--------------|------|------|
+| mistral | mistral_trpc_sse | tRPC 프로토콜 | NDJSON array format → Error 6002 표시 (#322,#326). 커스텀 경고 불가, 에러 UI는 표시됨 |
+| perplexity/perfle | perplexity_sse | thread 아키텍처 | 실시간 로그에서 차단 확인 (14:22). 경고 렌더링 검증 필요 |
 
 ### Tier 2 — 차단 확인, 경고 개선 진행 중
 | 서비스 | response_type | 이슈 | 조치 |
 |--------|--------------|------|------|
-| deepseek | deepseek_sse | 한글 인코딩 깨짐 | ESCAPE2+CRLF 수정 완료, #347 리테스트 대기 |
-| gemini3 | gemini | CSP가 webchannel 차단 | Strategy D (END_STREAM only) 필요 |
-| perplexity/perfle | perplexity_sse | thread 아키텍처 | Thread API 차단으로 대안 |
-| mistral | mistral_trpc_sse | 403→silent reset | tRPC 호환 에러 |
-| grok | grok_ndjson | redirect 인식 실패 | NDJSON 재시도 |
+| deepseek | deepseek_sse | SSE 미렌더링 | end_stream=1 수정, #350 리테스트 대기 |
+| gemini3 | gemini | CSP가 webchannel 차단 | **Strategy D 적용** (503 에러 → 프론트엔드 자체 에러 UI) |
 
-### Tier 3 — 템플릿 신규 생성, 테스트 대기
+### Tier 3A — OpenAI-compatible SSE (정교화 완료)
 | 서비스 | response_type | h2_mode | hold | 상태 |
 |--------|--------------|---------|------|------|
+| kimi | openai_compat_sse | 2 | 1 | 테스트 대기 (API: api.moonshot.cn) |
+| huggingface | openai_compat_sse | 2 | 1 | 테스트 대기 |
+| qianwen | openai_compat_sse | 2 | 1 | 테스트 대기 |
+| chatglm | openai_compat_sse | 2 | 1 | 테스트 대기 |
+
+### Tier 3B — 서비스 전용 SSE/JSON (정교화 완료)
+| 서비스 | response_type | h2_mode | hold | 상태 |
+|--------|--------------|---------|------|------|
+| cohere | cohere_sse | 2 | 1 | 테스트 대기 (named event: stream-start/text-generation/stream-end) |
+| baidu | baidu_sse | 2 | 1 | 테스트 대기 (ERNIE SSE, result 필드) |
 | qwen3 | qwen3_sse | 2 | 1 | #342 대기 |
 | you | you_json | 2 | 1 | #342 대기 |
 | blackbox | blackbox_json | 2 | 1 | 테스트 대기 |
-| baidu | baidu_json | 2 | 1 | 테스트 대기 |
 | v0 | v0_json | 2 | 1 | 테스트 대기 |
+
+### Tier 3C — generic_sse (정보 부족, 테스트 후 개선)
+| 서비스 | response_type | h2_mode | hold | 상태 |
+|--------|--------------|---------|------|------|
 | character | generic_sse | 2 | 1 | 테스트 대기 (WebSocket 서비스) |
-| chatglm | generic_sse | 2 | 1 | 테스트 대기 |
 | clova | generic_sse | 1 | 0 | 테스트 대기 |
 | clova_x | generic_sse | 1 | 0 | 테스트 대기 |
-| cohere | generic_sse | 2 | 1 | 테스트 대기 |
 | consensus | generic_sse | 2 | 1 | 테스트 대기 |
 | copilot | generic_sse | 1 | 0 | 테스트 대기 (WebSocket 주의) |
 | dola | generic_sse | 2 | 1 | 테스트 대기 |
-| huggingface | generic_sse | 2 | 1 | 테스트 대기 |
-| kimi | generic_sse | 2 | 1 | 테스트 대기 (API: api.moonshot.cn) |
 | phind | generic_sse | 2 | 1 | 테스트 대기 (API: https.api.phind.com) |
 | poe | generic_sse | 2 | 1 | 테스트 대기 (GraphQL/WebSocket) |
-| qianwen | generic_sse | 2 | 1 | 테스트 대기 |
 | wrtn | generic_sse | 2 | 1 | 테스트 대기 |
 
 ### Tier 4 — 특수 환경 필요
@@ -82,6 +100,16 @@
 - **#350**: deepseek 리테스트 (h2_end_stream=1)
 
 ## 알려진 이슈
-1. **cross-domain API**: blackbox(useblackbox.io), phind(https.api.phind.com), kimi(api.moonshot.cn) — VT SNI 추가 필요
+1. **cross-domain API**: blackbox(useblackbox.io), phind(https.api.phind.com), kimi(api.moonshot.cn) — VT SNI 추가 필요 여부 확인
 2. **WebSocket 서비스**: character.ai, poe.com — on_upgraded() 콜백 + generic_sse 병행
-3. **Gemini CSP**: webchannel 차단 시 프론트엔드가 silent fail → Strategy D 필요
+3. **Gemini CSP**: ~~webchannel 차단 시 프론트엔드가 silent fail~~ → **Strategy D 적용 완료** (503 응답)
+4. **generic_sse 호환성**: 프론트엔드가 `{"text":"..."}` 포맷을 파싱하지 못할 수 있음 → 테스트 결과에 따라 개별 수정
+
+## 템플릿 포맷 매핑 (API 조사 기반)
+| response_type | 포맷 | 서비스 |
+|--------------|------|--------|
+| openai_compat_sse | `data: {"choices":[{"delta":{"content":"..."}}]}` | kimi, huggingface, qianwen, chatglm |
+| cohere_sse | `event: text-generation\ndata: {"text":"..."}` | cohere |
+| baidu_sse | `data: {"result":"...","is_end":true}` | baidu |
+| generic_sse | `data: {"text":"..."}` | character, clova, poe, wrtn 등 |
+| gemini (Strategy D) | HTTP 503 (빈 응답) | gemini, gemini3 |
