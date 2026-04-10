@@ -1,0 +1,14 @@
+{
+  "id": "352",
+  "command": "check-warning",
+  "service": "gemini",
+  "url": "https://gemini.google.com/app",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "result": "PAGE_LOAD_BLOCKED",
+  "details": "Strategy D (503 + h2_end_stream=1) is blocking page loads, not just API calls. First attempt: page loaded from cache, 'test' message sent successfully. After reload: ERR_HTTP2_PROTOCOL_ERROR followed by redirect to gemini.google.com/unavailable ('Gemini를 일시적으로 사용할 수 없습니다'). Korean SSN prompt could not be submitted - input field accepted text but Enter/click did not trigger form submission (React state mismatch from clipboard paste). The 503 response is being interpreted by Google's infrastructure as a service outage, blocking the entire page rather than just the sensitive API call. This is a regression from the page-load blocking removal.",
+  "warning_displayed": false,
+  "error_type": "ERR_HTTP2_PROTOCOL_ERROR",
+  "redirect_url": "gemini.google.com/unavailable",
+  "timestamp": "2026-04-10T15:21:00+09:00",
+  "notes": "503 Strategy D causes full page block for Gemini. Need to either: (1) exempt page load URLs from APF, or (2) only apply 503 to API POST endpoints, not all gemini.google.com requests."
+}
