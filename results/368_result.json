@@ -1,0 +1,38 @@
+{
+  "id": "368",
+  "command": "run-scenario",
+  "executed_by": "test",
+  "timestamp": "2026-04-10T17:45:00+09:00",
+  "results": {
+    "qwen3": {
+      "result": "STILL_STUCK_ON_THINKING",
+      "page_loaded": true,
+      "keyword_submitted": true,
+      "apf_blocked": true,
+      "warning_rendered": false,
+      "user_experience": "Perpetual 'thinking' spinner (생각 중...) — identical to #363, #365, #366. Phase3-B25 HTTP/1.1 hold + Connection: close did NOT resolve the issue.",
+      "details": {
+        "url": "chat.qwen.ai/c/0c5ec1f1-b53b-45cc-bbfc-70393823f74f",
+        "model": "Qwen3.6-Plus",
+        "prompt_used": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+        "response_status": "STUCK_ON_THINKING",
+        "thinking_duration": ">80 seconds with no response or warning",
+        "warning_shown": false,
+        "phase3_b25_effective": false,
+        "build_timestamp": "Apr 10 17:38 KST"
+      },
+      "verdict": "STILL_STUCK_ON_THINKING — Phase3-B25 (HTTP/1.1 hold + Connection: close) did NOT fix qwen3 spinner. 4th consecutive test (#363, #365, #366, #368) with same result. The block response body is still not being rendered by the browser."
+    },
+    "v0": {
+      "result": "SEE_367_RESULT",
+      "details": {
+        "reference": "#367 result (same session, tested 10 minutes ago)",
+        "h2_mode": "1 (GOAWAY)",
+        "outcome": "ERR_CONNECTION_CLOSED — GOAWAY tears down HTTP/2 connection entirely. fetch() fails with TypeError: Failed to fetch. No warning shown.",
+        "console_errors": ["TypeError: Failed to fetch", "net::ERR_HTTP2_PROTOCOL_ERROR", "net::ERR_CONNECTION_CLOSED"]
+      },
+      "verdict": "ERR_CONNECTION_CLOSED — Already tested in #367. h2_mode=1 (GOAWAY) is WORSE than h2_mode=2. Kills connection entirely, preventing any response delivery."
+    }
+  },
+  "summary": "Phase3-B25 build FAILED to fix spinner issue. qwen3: STILL_STUCK_ON_THINKING (same as #363/#365/#366). v0: ERR_CONNECTION_CLOSED (same as #367, GOAWAY kills connection). Neither HTTP/1.1 hold+Connection:close nor GOAWAY approach delivers the warning to the browser. The fundamental problem remains: the block response body is not being consumed/rendered by the browser's JavaScript SSE/fetch handler."
+}
