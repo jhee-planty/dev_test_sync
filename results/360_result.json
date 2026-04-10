@@ -1,0 +1,58 @@
+{
+  "id": "360",
+  "command": "run-scenario",
+  "timestamp": "2026-04-10T16:35:00+09:00",
+  "executed_by": "test-pc",
+  "description": "RE-TEST: #353 services + keyword blocking verification",
+  "results": {
+    "consensus": {
+      "url": "https://consensus.app",
+      "result": "BLOCK_CONFIRMED",
+      "page_loaded": true,
+      "certificate_issuer": "Plantynet OfficeGuarad CA_V3",
+      "mitm_confirmed": true,
+      "keyword_submitted": true,
+      "block_response": "400 Bad Request (Cloudflare)",
+      "details": "Page loaded normally with MITM cert. SSN keyword (900101-1234567) submitted via search. APF intercepted and returned 400 Bad Request through Cloudflare. Block confirmed working.",
+      "verdict": "PASS"
+    },
+    "wrtn": {
+      "url": "https://wrtn.ai",
+      "result": "SUBMIT_FAILED",
+      "page_loaded": true,
+      "certificate_issuer": "Plantynet OfficeGuarad CA_V3",
+      "mitm_confirmed": true,
+      "keyword_submitted": false,
+      "details": "Page loaded successfully. SSN keyword pasted into chat input via clipboard, but Enter key did not trigger submission. Likely causes: (1) React state mismatch — clipboard paste doesn't update React internal state, (2) Login may be required for submission. Page load confirmed fixed from #353.",
+      "verdict": "PARTIAL — page load OK, submit needs login or alternative input method"
+    },
+    "blackbox": {
+      "url": "https://www.blackbox.ai",
+      "result": "BLANK_PAGE",
+      "page_loaded": false,
+      "redirect": "app.blackbox.ai",
+      "details": "Redirected to app.blackbox.ai. Page title loads but content area is completely blank — no input field, no chat UI rendered. Same behavior as #353. Likely JavaScript rendering failure through MITM proxy.",
+      "verdict": "STILL_BROKEN"
+    },
+    "dola": {
+      "url": "https://www.dola.com",
+      "result": "LOADING_STUCK",
+      "page_loaded": false,
+      "redirect": "dola.com/chat/",
+      "details": "Redirected to dola.com/chat/. Skeleton loading UI appears (gray placeholder blocks) but actual content never renders. Chat interface never becomes interactive. WebSocket-based service may have issues through MITM proxy.",
+      "verdict": "STILL_BROKEN"
+    }
+  },
+  "summary": {
+    "total_services": 4,
+    "block_confirmed": 1,
+    "submit_failed": 1,
+    "still_broken": 2,
+    "key_findings": [
+      "consensus.app: APF keyword blocking CONFIRMED working (400 Bad Request)",
+      "wrtn.ai: Page load FIXED (was ERR_H2 in #353), but submit failed (login/React issue)",
+      "blackbox.ai: STILL BROKEN — blank page, JS rendering failure persists",
+      "dola.com: STILL BROKEN — loading stuck, WebSocket service incompatible with MITM"
+    ]
+  }
+}
