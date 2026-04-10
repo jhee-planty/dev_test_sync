@@ -1,9 +1,10 @@
-# APF Pipeline Status — 2026-04-10 16:36
+# APF Pipeline Status — 2026-04-10 16:55 (Final)
 
 ## 전체 현황
 - **37개 등록** → **32개 enabled+block_mode=1** (+ amazon block_mode=0, clova/clova_x/chatgpt2/gemini disabled)
-- **DB 차단 통계**: 60건 / 12개 서비스 (오늘)
+- **DB 차단 통계**: **61건 / 12개 서비스** (오늘, qwen3 +1)
 - **키워드**: 5개 (SSN regex, \bsex\b, 한글날, phone regex, email regex)
+- **검증 서비스**: Tier 1(5) + Tier 1.5(5) = **10개 검증 완료** (32개 중 31.3%)
 
 ## 서비스별 검증 상태 (32개 enabled+block_mode=1)
 
@@ -89,9 +90,15 @@
 8. **you.com GET 우회 이슈 발견** — 검색 모드가 GET /search?q= 사용 → APF POST-only 검사 우회
 
 ## 다음 우선순위 (16:50 업데이트)
-1. **#363 qwen3 프로덕션 차단 검증** — ⭐ 최우선! 이미 실사용자 차단 중
-2. **v0 키워드 테스트** — #361에서 페이지 복구 확인, 키워드 테스트 가능
-3. **you.com GET 우회 대응** — 채팅 API POST 확인 또는 GET URL 파라미터 검사 검토
+1. ~~**#363 qwen3 프로덕션 차단 검증**~~ ✅ **완료** — etap.log + DB 확인, 테스트 PC 스크린샷 결과 대기 중
+2. **#364 v0 키워드 테스트** — 페이지 복구 확인(#361), 테스트 요청 전송됨, 테스트 PC 결과 대기
+3. **you.com GET 우회 대응** — 기술 노트 작성 완료(issue-you-get-bypass.md). Option B(서비스별 GET 검사 플래그) 검토 권장
 4. **wrtn 로그인 후 재테스트** — 인증 필요
 5. **SPA 렌더링 이슈** — blackbox/character 수동 테스트 필요
 6. **로그인 필요 서비스** — huggingface/cohere/poe 계정 확보 후 테스트
+
+## 테스트 PC 상태 (16:55)
+- 16:46:37 이후 etap.log 무트래픽 — 테스트 PC 오프라인 추정
+- #363 결과 미push (git에 없음) — qwen3 차단은 etap.log/DB에서 확인됨
+- #364 미처리 (v0 키워드 테스트)
+- 다음 세션에서 테스트 PC 상태 확인 후 진행
