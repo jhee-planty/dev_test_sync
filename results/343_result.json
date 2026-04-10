@@ -1,0 +1,50 @@
+﻿{
+  "id": "343",
+  "result": "PARTIAL_TESTED",
+  "details": {
+    "notes": "6媛??쒕퉬??以?3媛??뚯뒪?????ъ슜??吏?쒕줈 以묐떒. ?섎㉧吏 3媛?character, poe, huggingface) 誘명뀒?ㅽ듃.",
+    "services": {
+      "wrtn": {
+        "url": "wrtn.ai",
+        "result": "PAGE_LOAD_STALL",
+        "page_load_intercepted": true,
+        "html_warning_displayed": false,
+        "original_page_blocked": true,
+        "behavior": "Blank white page with loading spinner. APF intercepts but does not serve HTML warning page. Page stalls indefinitely."
+      },
+      "phind": {
+        "url": "phind.com",
+        "result": "PAGE_LOAD_STALL",
+        "page_load_intercepted": true,
+        "html_warning_displayed": false,
+        "original_page_blocked": true,
+        "behavior": "Blank white page with loading spinner. Same pattern as wrtn."
+      },
+      "v0": {
+        "url": "v0.dev (redirected to v0.app)",
+        "result": "NO_BLOCK",
+        "page_load_intercepted": false,
+        "html_warning_displayed": false,
+        "original_page_blocked": false,
+        "behavior": "Page loaded normally. Full v0 interface visible with prompt input. APF did not intercept."
+      },
+      "character": {
+        "url": "character.ai",
+        "result": "NOT_TESTED",
+        "notes": "?ъ슜??吏?쒕줈 以묐떒"
+      },
+      "poe": {
+        "url": "poe.com",
+        "result": "NOT_TESTED",
+        "notes": "?ъ슜??吏?쒕줈 以묐떒"
+      },
+      "huggingface": {
+        "url": "huggingface.co/chat",
+        "result": "NOT_TESTED",
+        "notes": "?ъ슜??吏?쒕줈 以묐떒"
+      }
+    }
+  },
+  "recommendation": "Page-load intercept works (blocks page) but does NOT render HTML warning ??pages stall as blank. Accept:text/html detection code may intercept but h2_hold_request keeps connection open without sending HTML warning body. v0.dev is not in APF block list or redirects to different domain (v0.app).",
+  "timestamp": "2026-04-10T11:28:00+0900"
+}
