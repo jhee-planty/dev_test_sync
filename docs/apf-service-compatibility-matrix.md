@@ -95,13 +95,20 @@
 - copilot 도메인 수정: www.bing.com 제거, copilot.microsoft.com만 유지
 - m365_copilot 도메인 수정: copilot.microsoft.com 제거, substrate.office.com만 유지
 
-### ⚠️ Content-Length 일괄 수정 (17:00 적용)
-- **이슈**: `Content-Length: 0` 템플릿이 HTTP/1.1 fallback 시 body 무시 → 영구 스피너
-- **원인**: HTTP/2에서는 DATA 프레임 크기로 body 결정하므로 CL:0 무해. HTTP/1.1에서는 CL:0이면 body=0바이트로 파싱
-- **발견 경위**: qwen3 #363 테스트 — http2=0(HTTP/1.1)으로 전달되어 영구 "생각 중..." 스피너
-- **수정**: 26개 템플릿의 `Content-Length: 0` → `Content-Length: {{BODY_INNER_LENGTH}}`
+### ⚠️ Content-Length 일괄 수정 (17:00 적용) — 후속 분석: 불필요한 수정이었음
+- **이슈**: `Content-Length: 0` 템플릿이 HTTP/1.1 fallback 시 body 무시 → 영구 스피너 **(초기 가설)**
+- **후속 발견**: `recalculate_content_length()` (line 1077-1110)이 CL:0을 이미 자동 수정하고 있었음
+- **증거**: qwen3 response size가 CL fix 전후 모두 570B — `recalculate_content_length()`가 작동 중
+- **수정**: 26개 템플릿의 `Content-Length: 0` → `Content-Length: {{BODY_INNER_LENGTH}}` **(무해하지만 불필요)**
 - **결과**: CL:DYNAMIC 39개, OTHER 1개(mistral, Content-Length 없음)
-- **검증 대기**: #365 qwen3 재테스트 요청 전송
+- **검증 대기**: #365 qwen3 재테스트 (스피너 지속 예상)
+
+### ⚠️ Phase3-B25: HTTP/1.1 hold + Connection: close (C++ 변경)
+- **진짜 이슈 1**: HTTP/1.1 POST에 hold 미적용 → 서버에 즉시 포워딩 → race condition
+- **진짜 이슈 2**: `Connection: keep-alive` 헤더 + 즉시 `on_disconnected()` → 브라우저 혼란
+- **Fix 1**: `on_http_request()`에 hold 로직 추가, `on_http_request_content_data()`에 release 추가
+- **Fix 2**: `generate_block_response()`에서 HTTP/1.1 모드일 때 `Connection: close`로 치환
+- **빌드 필요**: 아직 미배포. 다음 세션에서 빌드+배포+테스트
 
 ### H2 파라미터 분포 (16:10 업데이트, enabled=true만)
 | h2_mode | h2_end_stream | h2_hold_request | 서비스 수 | 비고 |
