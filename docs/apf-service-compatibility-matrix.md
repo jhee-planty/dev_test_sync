@@ -1,14 +1,14 @@
-# APF Service Compatibility Matrix — 2026-04-10 16:10
+# APF Service Compatibility Matrix — 2026-04-10 16:25
 
 ## 검증 결과 요약
 
 | Tier | 서비스 수 | 설명 |
 |------|----------|------|
 | 1 — 경고 정상 | 5 | 사용자에게 한국어 경고 메시지 직접 표시 |
-| 1.5 — 에러 표시 | 3 | 차단 동작, 서비스 자체 에러 UI 표시 (커스텀 경고 불가) |
+| 1.5 — 에러/차단 표시 | 4 | 차단 동작, 서비스 자체 에러 UI 표시 (커스텀 경고 불가) |
 | 2 — 부분 수정 | 2 | #355 gemini 400 수정 성공, deepseek H2 에러 지속 |
-| 3 — 테스트 대기 | 14 | 템플릿 완비, 테스트 미실시 (clova 2개 비활성, poe/wrtn/character 테스트 완료) |
-| 4 — 특수 환경 | 6 | IDE/로그인/리전/QUIC 제한 (+copilot QUIC) |
+| 3 — 테스트 대기 | 12 | 템플릿 완비, 키워드 테스트 미실시 |
+| 4 — 특수 환경 | 7 | IDE/로그인/리전/QUIC/WS 제한 |
 | 비활성 | 3 | amazon(block_mode=0), clova, clova_x(서비스 종료) |
 
 ## Tier 1 — 경고 정상 (5개)
@@ -21,10 +21,11 @@
 | duckduckgo | duckduckgo_sse | SSE simple JSON | **#348** 채팅 버블 렌더링 ✅ (charset 수정) | 가장 단순한 구현 |
 | grok | grok_ndjson | NDJSON + redirect | **#349** 한국어 경고 배너 ✅ | APF redirect 방식 |
 
-## Tier 1.5 — 에러 표시 (3개)
+## Tier 1.5 — 에러/차단 표시 (4개)
 
 | 서비스 | response_type | 프로토콜 | 검증 결과 | 비고 |
 |--------|--------------|---------|----------|------|
+| consensus | generic_sse | SSE generic | **#360** 키워드 차단 확인 ✅ (SSN regex 2회 차단) | hold→block→generic_sse→H2→RST_STREAM 전체 파이프라인 동작 |
 | mistral | mistral_trpc_sse | tRPC/NDJSON | #322,#326 Error 6002 | 커스텀 경고 불가, 에러 UI 표시 |
 | perplexity | perplexity_sse | SSE 6-event | **#332,#348** "스레드 없음" 표시 | thread_url_slug blocked-{uuid} 문제 |
 | perfle | perplexity_sse | SSE 6-event | 실시간 로그 차단 확인(14:23) | perplexity와 동일 이슈 |
@@ -52,24 +53,23 @@
 | cohere | cohere_sse | named events | #351 LOGIN_REQUIRED |
 | baidu | baidu_sse | SSE result 필드 | #353 LOADING_STUCK (ERR_H2) |
 | qwen3 | qwen3_sse | OpenAI-compat | 미테스트 |
-| blackbox | blackbox_json | JSON response | #353 BLANK_PAGE (ERR_H2) |
+| blackbox | blackbox_json | JSON response | **#360** 페이지 로드 복구 ✅ (ERR_H2 transient) — 키워드 테스트 대기 |
 | v0 | v0_json | JSON error | #353 BLANK_PAGE (ERR_H2) |
 | you | you_json | JSON answer | 미테스트 |
 
-### 3C: WebSocket / 기타 (5개)
+### 3C: WebSocket / 기타 (4개)
 | 서비스 | response_type | 테스트 결과 |
 |--------|--------------|----------|
 | character | ws_fallback_error | **#354** BLANK_PAGE (ERR_H2_PROTOCOL_ERROR) |
 | poe | ws_fallback_error | **#354** LOGIN_REQUIRED (페이지 정상 로드) |
-| wrtn | openai_compat_sse | **#358** 페이지 정상 로드 ✅ (프롬프트 미제출) |
+| wrtn | openai_compat_sse | **#358** 페이지 정상, **#360** hold/release clean (키워드 프롬프트 미제출) |
 | phind | generic_sse | cross-domain: https.api.phind.com (SERVICE_DOWN) |
-| consensus | generic_sse | #353 ERR_H2, 15:59 hold/release 정상 동작 확인 |
-| dola | generic_sse | #353 BLANK_PAGE, **WS 사용 확인** (etap.log) |
 
-## Tier 4 — 특수 환경 (6개)
+## Tier 4 — 특수 환경 (7개)
 
 | 서비스 | response_type | 제약 사항 |
 |--------|--------------|----------|
+| dola | generic_sse | **#360** 페이지 로드 복구 ✅, **WebSocket 전용 채팅** — HTTP POST 키워드 차단 불가 |
 | github_copilot | copilot_403 | IDE 전용 (VS Code/JetBrains) |
 | m365_copilot | m365_copilot_sse | Microsoft 계정 로그인 필요 |
 | copilot | ws_fallback_error | **#354 QUIC/H3 우회**: etap.log에 트래픽 0건, APF 미인터셉트 |
@@ -110,13 +110,13 @@
 | 전화번호 regex | phone | REGEX | |
 | 이메일 regex | email | REGEX | |
 
-### 실시간 트래픽 관찰 (2026-04-10, etap.log 기준, 16:06 업데이트)
+### 실시간 트래픽 관찰 (2026-04-10, etap.log 기준, 16:25 업데이트)
 
-**차단 + 트래픽 확인** (11개):
-gemini3(18096), claude(438), mistral(96), perfle(65), notion(48), deepseek(41), perplexity(14), grok(13), chatgpt(12), duckduckgo(6), qwen3(5)
+**차단 + 트래픽 확인** (12개):
+gemini3(18096), claude(438), mistral(96), perfle(65), notion(48), deepseek(41), perplexity(14), grok(13), chatgpt(12), duckduckgo(6), qwen3(5), **consensus(16:17 block×2)**
 
-**트래픽 관찰, 차단 미확인** (11개):
-phind(21, SERVICE_DOWN), blackbox(14), dola(10, WS), github_copilot(8, IDE), you(6), wrtn(6), huggingface(4), cohere(2), poe(15:50 hold 확인), consensus(15:59 hold 확인), character(미확인)
+**트래픽 관찰, 차단 미확인** (10개):
+phind(21, SERVICE_DOWN), blackbox(14, **#360 page load 복구**), dola(10, **#360 WS 확인**), github_copilot(8, IDE), you(6), wrtn(6, **#360 hold/release clean**), huggingface(4), cohere(2), poe(15:50 hold 확인), character(미확인)
 
 **QUIC 우회 (1개)**: copilot (etap.log 트래픽 0건)
 
@@ -127,7 +127,7 @@ phind(21, SERVICE_DOWN), blackbox(14), dola(10, WS), github_copilot(8, IDE), you
 ### DB 차단 통계 (2026-04-10)
 | 서비스 | 건수 | 카테고리 | 비고 |
 |--------|------|---------|------|
-| gemini3 | 20 | ssn | Tier 2, #355 400 수정 성공 |
+| gemini3 | 21 | ssn | Tier 2, #355 400 수정 성공 |
 | claude | 11 | ssn(1)+etc(10) | ✅ "sex" FP 수정됨 (\bsex\b REGEX) |
 | mistral | 8 | ssn | Tier 1.5, Error 6002 |
 | deepseek | 5 | ssn | Tier 2, #356 ERR_H2 지속 |
@@ -135,7 +135,8 @@ phind(21, SERVICE_DOWN), blackbox(14), dola(10, WS), github_copilot(8, IDE), you
 | chatgpt | 2 | ssn | Tier 1 ✅ |
 | perplexity | 2 | ssn | Tier 1.5 |
 | perfle | 2 | ssn | Tier 1.5 |
+| consensus | 2 | ssn | **Tier 1.5 ✅ NEW** (#360 키워드 차단 성공) |
 | grok | 2 | ssn | Tier 1 ✅ |
 | qwen3 | 1 | ssn | Tier 3 |
 | duckduckgo | 1 | ssn | Tier 1 ✅ |
-| **총계** | **57** | | **11개 서비스** |
+| **총계** | **60** | | **12개 서비스** |
