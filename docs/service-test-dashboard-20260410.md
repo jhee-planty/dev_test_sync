@@ -98,14 +98,14 @@
 - **#347**: deepseek — ⚠️ PARTIAL_BLOCK (end_stream=0으로 SSE 미렌더링 → end_stream=1로 수정, #350 리테스트 대기)
 - **#345**: blackbox — ⚠️ NO_BLOCK (페이지 로드만 테스트, API 차단은 프롬프트 입력 필요)
 
-## APF 실시간 차단 로그 (2026-04-10, etap.log)
+## APF 실시간 차단 로그 (2026-04-10, etap.log — 15:45 업데이트)
 | 서비스 | 차단 횟수 | 비고 |
 |--------|----------|------|
+| gemini3 | 20 | Tier 2 — Strategy D 400 동작 확인, VTS 전송 검증 완료 |
 | claude | 18 | Tier 1 — 가장 활발 |
-| gemini3 | 11 | Tier 2 — Strategy D 동작 확인 |
 | mistral | 8 | Tier 1.5 — Error 6002 표시 |
+| deepseek | 5 | Tier 2 — Strategy D 400으로 변경, #356 리테스트 대기 |
 | notion | 3 | Tier 4 — WS 전용이지만 HTTP 차단 동작 |
-| deepseek | 3 | Tier 2 — h2_end_stream=1 수정됨 |
 | perplexity | 2 | Tier 1.5 — "스레드 없음" 표시 |
 | perfle | 2 | Tier 1.5 — perplexity와 동일 |
 | grok | 2 | Tier 1 — 한국어 경고 배너 |
@@ -116,7 +116,7 @@
 | phind | 1 | Tier 3 — SERVICE_DOWN 이전 차단 |
 | duckduckgo | 1 | Tier 1 — 채팅 버블 경고 |
 | blackbox | 1 | Tier 3 — blackbox_json 차단 동작 |
-| **총계** | **57** | **15개 서비스에서 실제 차단 발생** |
+| **총계** | **68+** | **15개 서비스에서 실제 차단 발생** |
 
 ## 테스트 결과 (추가)
 - **#348**: batch test 1 결과 도착
@@ -127,30 +127,36 @@
   - perplexity: ⚠️ PARTIAL_BLOCK (차단 성공, "스레드 없음" 에러)
 
 ## 대기 중인 테스트
-- **#349**: batch test 2 (mistral, grok, chatgpt, claude, gemini) — test PC 대기
-- **#350**: deepseek 리테스트 (h2_end_stream=1) — test PC 대기
-- **#351**: openai_compat_sse batch (kimi, huggingface, cohere) — test PC 대기
-- **#352**: Gemini Strategy D 검증 — test PC 대기
+- **#351**: openai_compat_sse batch (kimi, huggingface, cohere)
+- **#352**: Gemini Strategy D 검증
+- **#353**: generic_sse/JSON batch (consensus, dola, blackbox, v0, baidu)
+- **#354**: WebSocket batch (character, copilot, poe)
+- **#355**: Gemini 400 리테스트 (503→400 변경)
+- **#356**: DeepSeek Strategy D 리테스트 (SSE→400 변경)
+- **#357**: WebSocket Strategy D batch (character, copilot, poe — ws_fallback_error)
+- **#358**: Korean/Chinese batch (wrtn, clova, clova_x)
 
-## 알려진 이슈
-1. **cross-domain API**: blackbox(useblackbox.io), phind(https.api.phind.com), kimi(api.moonshot.cn) — VT SNI 추가 필요 여부 확인
-2. **WebSocket 서비스**: character.ai, poe.com, copilot — 주로 WebSocket 통신. HTTP POST 차단은 동작하나 경고 렌더링 불가 (에러 UI 표시)
-3. **Gemini CSP**: ~~webchannel 차단 시 프론트엔드가 silent fail~~ → **Strategy D 적용 완료** (503 응답)
-4. **generic_sse 호환성**: 프론트엔드가 `{"text":"..."}` 포맷을 파싱하지 못할 수 있음 → 테스트 결과에 따라 개별 수정
-5. **Perplexity Tier 1.5 확정**: thread_url_slug "blocked-{uuid}" → 후속 API 400 → 에러 표시. 차단+데이터 보호는 달성.
-6. **copilot 도메인 확장**: copilot.microsoft.com 추가됨 (기존 www.bing.com만)
-7. **clova_x envelope 수정**: NULL → generic_sse envelope 복사
+## 알려진 이슈 (15:45 업데이트)
+1. ~~cross-domain API SNI~~ → **해결**: VT use_white_list_servers=0 (전체 MITM, SNI 불필요)
+2. ~~WebSocket 서비스 generic_sse 불가~~ → **해결**: character/copilot/poe → ws_fallback_error (400 에러)
+3. ~~Gemini CSP/webchannel~~ → **해결**: Strategy D 400 Bad Request
+4. **generic_sse 호환성**: clova/clova_x/consensus/dola — 테스트 결과에 따라 개별 수정 필요
+5. **Perplexity Tier 1.5 확정**: 차단+데이터 보호 달성 (커스텀 경고 불가)
+6. **DeepSeek Strategy D**: SSE JSON Patch 실패 → 400 에러로 변경, #356 리테스트
+7. **Gemini URL decode 에러**: webchannel 바이너리 데이터 null byte → 정상 동작 (chat 메시지는 정상 디코딩+차단)
+8. **copilot h2_hold=1**: PII 서버 전달 방지 수정 완료
+9. **gamma/notion h2_hold=1**: 미테스트 서비스 안전 보호 수정 완료
 
 ## Tier 3C 프로토콜 분석 결과
-| 서비스 | 실제 프로토콜 | generic_sse 호환성 | 전략 |
-|--------|-------------|-------------------|------|
-| character | WebSocket | ❌ 불가 | HTTP POST 차단, 에러 표시 (Tier 1.5) |
-| copilot | SignalR WS | ❌ 불가 | HTTP POST 차단, 에러 표시 (Tier 1.5) |
-| poe | WS + GraphQL | ❌ 불가 | HTTP POST 차단, 에러 표시 (Tier 1.5) |
-| clova/clova_x | Naver SSE | ⚠️ 테스트 필요 | 커스텀 포맷 가능성 |
-| phind | HTTP SSE | ⚠️ 서비스 다운 | 복구 후 테스트 |
-| consensus | HTTP API | ⚠️ 테스트 필요 | generic_sse 가능성 |
-| dola | Unknown | ⚠️ 테스트 필요 | generic_sse 가능성 |
+| 서비스 | 실제 프로토콜 | response_type | 전략 |
+|--------|-------------|--------------|------|
+| character | WebSocket | ws_fallback_error | 400 에러 → 프론트엔드 에러 UI |
+| copilot | SignalR WS | ws_fallback_error | 400 에러 → 프론트엔드 에러 UI |
+| poe | WS + GraphQL | ws_fallback_error | 400 에러 → 프론트엔드 에러 UI |
+| clova/clova_x | Naver SSE | generic_sse | h2_hold=1, 테스트 필요 |
+| phind | HTTP SSE | generic_sse | SERVICE_DOWN, 복구 후 테스트 |
+| consensus | HTTP API | generic_sse | 테스트 필요 |
+| dola | Unknown | generic_sse | 테스트 필요 |
 
 ## 템플릿 포맷 매핑 (API 조사 기반)
 | response_type | 포맷 | 서비스 |
@@ -159,5 +165,7 @@
 | cohere_sse | `event: text-generation\ndata: {"text":"..."}` | cohere |
 | baidu_sse | `data: {"result":"...","is_end":true}` | baidu |
 | generic_sse | `data: {"text":"..."}` | clova, clova_x, consensus, dola, phind |
-| generic_sse (WS fallback) | `data: {"text":"..."}` | character, copilot, poe |
-| gemini (Strategy D) | HTTP 503 (빈 응답) | gemini, gemini3 |
+| ws_fallback_error | `{"error":{"message":"...","code":"content_filter"}}` | character, copilot, poe |
+| gemini (Strategy D) | HTTP 400 + JSON error | gemini, gemini3 |
+| deepseek_sse (Strategy D) | HTTP 400 + JSON error | deepseek |
+| gamma_sse (Strategy D) | HTTP 400 + JSON error | gamma |
