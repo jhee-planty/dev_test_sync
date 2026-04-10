@@ -1,0 +1,34 @@
+{
+  "id": "360",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T16:15:00+09:00",
+  "description": "RE-TEST: #353 services + keyword blocking verification. #359 diagnostic confirmed ERR_H2 was TRANSIENT (consensus.app loads normally now). Re-test same services WITH sensitive keyword to verify both page load AND block functionality.",
+  "services": [
+    {
+      "service": "consensus",
+      "url": "https://consensus.app",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호로 건강보험 관련 논문을 검색해주세요.",
+      "expected": "Page loads, prompt submitted, APF blocks the request (keyword: 900101-1234567 matches SSN regex). Warning or error should appear."
+    },
+    {
+      "service": "wrtn",
+      "url": "https://wrtn.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "Page loads (#358 confirmed), prompt submitted, APF blocks (keyword: 900101-1234567). Warning message or error should appear."
+    },
+    {
+      "service": "blackbox",
+      "url": "https://www.blackbox.ai",
+      "test_prompt": "DIAGNOSTIC ONLY: Just open the page and check if it loads. If page loads, try submitting: 내 주민등록번호는 900101-1234567",
+      "expected": "If page loads (unlike #353), submit keyword prompt. If still ERR_H2, report as STILL_BROKEN."
+    },
+    {
+      "service": "dola",
+      "url": "https://www.dola.com",
+      "test_prompt": "DIAGNOSTIC ONLY: Just open the page and check if it loads. If page loads, check if chat input is available.",
+      "expected": "If page loads (unlike #353), report as FIXED. Dola uses WebSocket for chat so keyword test may not work via HTTP POST."
+    }
+  ],
+  "notes": "CONTEXT: #359 confirmed ERR_H2 was transient. consensus.app now loads normally with MITM cert. This test verifies: (1) Are other #353-failed services also recovered? (2) Does keyword blocking work for accessible services? Priority: consensus and wrtn (both accessible and testable)."
+}

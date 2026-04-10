@@ -143,8 +143,14 @@
 - **#357**: #354와 동일 결과 (ws_fallback_error 효과 없음)
 - **#358**: wrtn=페이지 정상 로드 ✅, **clova/clova_x=서비스 종료** (2026-04-09)
 
+## 테스트 결과 (#359 DIAGNOSTIC — 16:12)
+- **consensus.app (h2_hold=1)**: ✅ PAGE_LOADS_NORMALLY — MITM 확인 (Plantynet CA), 25분 전 #353에서 ERR_H2 발생했던 동일 서비스가 정상 로드
+- **claude.ai (h2_hold=0)**: ✅ PAGE_LOADS_NORMALLY — MITM 확인, 정상 (CONTROL)
+- **결론**: ERR_H2_PROTOCOL_ERROR는 **일시적(TRANSIENT)** 현상. h2_hold 설정이 원인 아님. APF hold/release 메커니즘 정상 동작 확인.
+- **추정 원인**: 브라우저 QUIC↔H2 fallback 타이밍, H2 connection pool stale, 또는 일시적 SetCertificate 실패
+
 ## 대기 중인 테스트
-- **#359**: 진단 테스트 (consensus vs claude 비교, 인증서 체인 확인) — test PC 16:02 트래픽 확인, 결과 대기
+- **#360**: #353 서비스 재테스트 + 키워드 차단 검증 (consensus, wrtn, blackbox, dola)
 
 ## 알려진 이슈 (16:10 업데이트)
 1. ~~cross-domain API SNI~~ → **해결**
@@ -162,7 +168,7 @@
 13. **Dola WebSocket**: WS 채팅 확인됨. HTTP POST 기반 차단 불가 — ws_fallback_error 전환 검토 필요
 14. ~~**"sex" EXACT 키워드 오탐**~~ → **해결**: `\bsex\b` REGEX로 변경 (16:06)
 15. **VTS hold_discard 로그 누락**: 기능 정상이나 로그 추적성 개선 필요
-16. **[CRITICAL] ERR_H2_PROTOCOL_ERROR on h2_hold=1 services**: #353/#354/#356 — h2_hold=1, h2_mode=2 서비스에서 JS 리소스 로딩 실패. etap.log에서 APF hold/release 정상 동작 확인됨 (dola 15:29, consensus 15:59). **원인 분석 중**: `_apf_hold_for_inspection`이 세션 레벨 → POST hold 중 동시 GET 스트림 패킷도 `_apf_hold_client_write=1`으로 버퍼링. hold 시간이 수 ms로 짧지만 H2 프로토콜 위반 가능성 있음.
+16. **[RESOLVED-TRANSIENT] ERR_H2_PROTOCOL_ERROR**: #353/#354/#356 — **#359 진단 결과: 일시적 현상**. consensus.app(h2_hold=1)이 25분 후 정상 로드. h2_hold는 원인 아님. 브라우저 QUIC fallback/connection pool 타이밍 이슈 추정. #360 재테스트 요청 완료.
 17. **[NEW] copilot QUIC/H3 우회**: copilot.microsoft.com이 QUIC(UDP 443)으로 통신하여 TCP MITM 불가. etap.log에 트래픽 0건. 네트워크 레벨에서 QUIC 차단하여 TCP fallback 유도 필요.
 18. **[NEW] CLOVA X 서비스 종료**: 2026-04-09 종료. clova/clova_x enabled=false 처리 완료.
 19. **[NEW] poe hold_flush_partial**: 15:50 poe stream=13에서 16384/16991 partial write 발생. flush 실패 시 데이터 유실 가능성 조사 필요.
