@@ -60,7 +60,7 @@
 | 서비스 | response_type | 주의사항 |
 |--------|--------------|---------|
 | character | ws_fallback_error | WebSocket 서비스. 400 에러로 프론트엔드 에러 UI 유도 |
-| copilot | ws_fallback_error | Bing Copilot, WebSocket. h2_hold=1 수정 완료 |
+| copilot | ws_fallback_error | Copilot, WebSocket. h2_hold=1, **www.bing.com 제거** (도메인 과도 포함 수정) |
 | poe | ws_fallback_error | GraphQL/WebSocket. 400 에러 fallback |
 
 ### 3C-2: generic_sse — 정보 부족 (6개)
@@ -71,7 +71,7 @@
 | clova_x | generic_sse | Naver X, h2_hold=1 |
 | phind | generic_sse | cross-domain: https.api.phind.com (SERVICE_DOWN) |
 | consensus | generic_sse | 학술 검색 |
-| dola | generic_sse | - |
+| dola | generic_sse | **WebSocket 사용 확인** (etap.log). WS 채팅 검사 불가 — 향후 WS inspection 필요 |
 
 ## Tier 4 — 특수 환경 (5개)
 
@@ -86,17 +86,18 @@
 ## 기술 매트릭스
 
 ### Envelope 템플릿 커버리지
-- 전체 23개 response_type → **23개 envelope 보유 (100%)**
-- 전체 36개 block_mode=1 서비스 → **39개 message 템플릿 (100%, 중복 포함)**
-- NULL envelope/response_type 행 정리 완료 (legacy: mistral NULL rt, perple 오타 삭제)
-- copilot 도메인 확장: copilot.microsoft.com 추가
+- 전체 24개 response_type → **24개 envelope 보유 (100%)**
+- 전체 34개 block_mode=1 enabled 서비스 → **42개 템플릿 (100%, 중복 포함)**
+- 40개 envelope 템플릿 — 전부 HTTP/1.1 헤더 + Content-Type + separator 검증 완료
+- copilot 도메인 수정: www.bing.com 제거, copilot.microsoft.com만 유지
+- m365_copilot 도메인 수정: copilot.microsoft.com 제거, substrate.office.com만 유지
 
-### H2 파라미터 분포
-| h2_mode | h2_end_stream | h2_hold_request | 서비스 수 |
-|---------|--------------|-----------------|----------|
-| 2 (keep-alive) | 1 | 1 | 23 |
-| 1 (GOAWAY) | 1 | 0 | 12 |
-| 2 (keep-alive) | 1 | 0 | 1 (notion) |
+### H2 파라미터 분포 (15:37 업데이트)
+| h2_mode | h2_end_stream | h2_hold_request | 서비스 수 | 비고 |
+|---------|--------------|-----------------|----------|------|
+| 1 (GOAWAY) | 1 | 0 | 5 | Tier 1: chatgpt, claude, grok, duckduckgo, m365_copilot |
+| 1 (GOAWAY) | 1 | 1 | 3 | clova, clova_x, copilot |
+| 2 (keep-alive) | 1 | 1 | 26 | 대부분 Tier 3+ 서비스 |
 
 ### 키워드 패턴 (enabled=1)
 | 패턴 | 카테고리 | 매칭 모드 |
