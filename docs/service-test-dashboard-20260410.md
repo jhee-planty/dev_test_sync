@@ -24,11 +24,11 @@
 ### Tier 1 — Warning 정상 동작 (VERIFIED)
 | 서비스 | response_type | 비고 |
 |--------|--------------|------|
-| chatgpt | chatgpt_sse | SSE 스트리밍 정상 |
-| claude | claude | SSE 정상 |
+| chatgpt | chatgpt_sse | **#349 한국어 경고 채팅 버블 렌더링** |
+| claude | claude | **#349 sparkle 아이콘 + 경고 메시지 렌더링** |
 | genspark | genspark_sse | SSE 정상 |
-| duckduckgo | duckduckgo_sse | SSE 정상 |
-| grok | grok_ndjson | **경고 배너 정상** (redirect → 한국어 경고 표시, #316 SUCCESS) |
+| duckduckgo | duckduckgo_sse | **#348 한국어 경고 채팅 버블** (charset 수정 완료) |
+| grok | grok_ndjson | **#349 한국어 경고 배너** (redirect → 경고 표시) |
 
 ### Tier 1.5 — 차단 동작 확인 (에러 UI 표시)
 | 서비스 | response_type | 이슈 | 조치 |
@@ -40,7 +40,7 @@
 | 서비스 | response_type | 이슈 | 조치 |
 |--------|--------------|------|------|
 | deepseek | deepseek_sse | SSE 미렌더링 | end_stream=1 수정, #350 리테스트 대기 |
-| gemini3 | gemini | CSP가 webchannel 차단 | **Strategy D 적용** (503 에러 → 프론트엔드 자체 에러 UI) |
+| gemini3 | gemini | webchannel + CSP | **#349 UI 프리즈** (503 → stop 버튼 멈춤). 400으로 변경, #355 리테스트 |
 
 ### Tier 3A — OpenAI-compatible SSE (정교화 완료)
 | 서비스 | response_type | h2_mode | hold | 상태 |
