@@ -14,7 +14,16 @@
 
 SCRIPT_NAME="scan-results"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/../lib/common.sh"
+
+# lib/common.sh 로드 — 없으면 standalone 모드 (no-op fallback)
+if [ -f "${SCRIPT_DIR}/../lib/common.sh" ]; then
+  source "${SCRIPT_DIR}/../lib/common.sh"
+else
+  # Minimal fallback: JSONL helper functions as no-ops
+  json_step_start() { :; }
+  json_summary() { :; }
+  RUN_ID="standalone-$$"
+fi
 
 # ── Defaults ──
 REPO="${GIT_SYNC_REPO:-$HOME/Documents/workspace/dev_test_sync}"
