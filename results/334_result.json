@@ -1,0 +1,38 @@
+{
+  "id": "334",
+  "command": "check-warning",
+  "service": "deepseek",
+  "url": "https://chat.deepseek.com",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "result": "PARTIAL_BLOCK",
+  "success": false,
+  "timestamp": "2026-04-10T10:40:00+09:00",
+  "details": {
+    "template_version": "SSE named events (481B), event:message + event:close",
+    "h2_mode": "1 (GOAWAY) + h2_hold_request=1",
+    "apf_intercepted": true,
+    "warning_text_displayed": false,
+    "user_visible_error": "네트워크를 확인하고 다시 시도하세요.",
+    "error_type": "network_error_generic",
+    "chat_created": true,
+    "chat_url": "chat.deepseek.com/a/chat/s/d6b83185-7d12-49c6-9ca2-bb4b65954e4f",
+    "sidebar_entry": "새로운 채팅",
+    "response_icons": ["retry", "edit"],
+    "deepseek_mode": "빠른 (fast)",
+    "network_observations": {
+      "protocol": "h2",
+      "goaway_triggered": true,
+      "sse_template_delivered": false,
+      "connection_reset_visible": true
+    }
+  },
+  "comparison_with_previous": {
+    "previous_result": "#315 PARTIAL — 403 status only, no warning text",
+    "template_upgrade": "403 JSON → SSE named events (481B)",
+    "improvement": "No improvement — GOAWAY kills connection before SSE template can be delivered",
+    "root_cause": "h2_mode=1 GOAWAY resets HTTP/2 connection; client interprets as network failure, never reads SSE response body"
+  },
+  "recommendation": "For DeepSeek with GOAWAY mode: SSE template cannot work because GOAWAY terminates connection before response body delivery. Options: (1) Switch to h2_mode=2 keep-alive to allow SSE template delivery, (2) Use h2_mode=1 but accept generic error display, (3) Inject warning via different mechanism (e.g., DNS redirect to warning page).",
+  "executed_by": "test-pc-worker",
+  "executed_at": "2026-04-10T10:40:00+09:00"
+}
