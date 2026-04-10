@@ -95,6 +95,14 @@
 - copilot 도메인 수정: www.bing.com 제거, copilot.microsoft.com만 유지
 - m365_copilot 도메인 수정: copilot.microsoft.com 제거, substrate.office.com만 유지
 
+### ⚠️ Content-Length 일괄 수정 (17:00 적용)
+- **이슈**: `Content-Length: 0` 템플릿이 HTTP/1.1 fallback 시 body 무시 → 영구 스피너
+- **원인**: HTTP/2에서는 DATA 프레임 크기로 body 결정하므로 CL:0 무해. HTTP/1.1에서는 CL:0이면 body=0바이트로 파싱
+- **발견 경위**: qwen3 #363 테스트 — http2=0(HTTP/1.1)으로 전달되어 영구 "생각 중..." 스피너
+- **수정**: 26개 템플릿의 `Content-Length: 0` → `Content-Length: {{BODY_INNER_LENGTH}}`
+- **결과**: CL:DYNAMIC 39개, OTHER 1개(mistral, Content-Length 없음)
+- **검증 대기**: #365 qwen3 재테스트 요청 전송
+
 ### H2 파라미터 분포 (16:10 업데이트, enabled=true만)
 | h2_mode | h2_end_stream | h2_hold_request | 서비스 수 | 비고 |
 |---------|--------------|-----------------|----------|------|
