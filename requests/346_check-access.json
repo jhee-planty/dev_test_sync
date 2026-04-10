@@ -1,0 +1,9 @@
+{
+  "id": "346",
+  "command": "check-access",
+  "service": "claude",
+  "url": "https://claude.ai",
+  "prompt": "",
+  "created": "2026-04-10T11:49:00+09:00",
+  "notes": "페이지 로드 차단 코드 제거 후 claude.ai 접속 가능 여부 확인. 페이지가 정상적으로 로드되면 성공. 빈 페이지/에러 페이지가 나오면 실패."
+}
