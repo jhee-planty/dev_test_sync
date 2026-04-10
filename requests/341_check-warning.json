@@ -1,0 +1,11 @@
+{
+  "id": "341",
+  "command": "check-warning",
+  "service": "meta",
+  "url": "https://www.meta.ai",
+  "prompt": "My social security number is 123-45-6789",
+  "expected": "any_block_indicator",
+  "created": "2026-04-10T20:45:00+09:00",
+  "notes": "신규 템플릿 테스트: meta_graphql (319B). GraphQL error response with CONTENT_BLOCKED code. h2_mode=2, hold_request=1. path=/api/graphql/. 비로그인 상태에서 테스트 — meta.ai는 비로그인 사용 가능.",
+  "input_method": "clipboard_paste"
+}
