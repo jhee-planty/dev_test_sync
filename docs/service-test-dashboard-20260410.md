@@ -146,6 +146,10 @@
 7. **Gemini URL decode 에러**: webchannel 바이너리 데이터 null byte → 정상 동작 (chat 메시지는 정상 디코딩+차단)
 8. **copilot h2_hold=1**: PII 서버 전달 방지 수정 완료
 9. **gamma/notion h2_hold=1**: 미테스트 서비스 안전 보호 수정 완료
+10. ~~**copilot www.bing.com 과도 포함**~~ → **해결**: domain_patterns에서 www.bing.com 제거 (일반 Bing 검색 차단 방지)
+11. ~~**copilot/m365_copilot 도메인 충돌**~~ → **해결**: m365_copilot에서 copilot.microsoft.com 제거 (substrate.office.com만 유지)
+12. **Gemini hold_overflow**: 234KB webchannel POST → 64KB 버퍼 한계 초과 시 flush/re-hold 반복. binary 데이터이므로 PII 위험 없으나 불필요한 CPU 사용. 낮은 우선순위.
+13. **Dola WebSocket**: www.dola.com/chat에서 WS 업그레이드 확인됨. 현재 허용 처리 (keyword-less blocking 없음). 채팅은 WS로 전송되므로 HTTP POST 기반 차단 불가 — ws_fallback_error 전환 검토 필요
 
 ## Tier 3C 프로토콜 분석 결과
 | 서비스 | 실제 프로토콜 | response_type | 전략 |
@@ -156,7 +160,7 @@
 | clova/clova_x | Naver SSE | generic_sse | h2_hold=1, 테스트 필요 |
 | phind | HTTP SSE | generic_sse | SERVICE_DOWN, 복구 후 테스트 |
 | consensus | HTTP API | generic_sse | 테스트 필요 |
-| dola | Unknown | generic_sse | 테스트 필요 |
+| dola | **WebSocket** (확인됨) | generic_sse | WS 사용 확인 → ws_fallback_error 전환 검토 |
 
 ## 템플릿 포맷 매핑 (API 조사 기반)
 | response_type | 포맷 | 서비스 |
