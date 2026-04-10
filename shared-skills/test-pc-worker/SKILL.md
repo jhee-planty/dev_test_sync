@@ -142,6 +142,16 @@ Stage 3: 1시간 간격
   새 요청 있으면 → 사용자 확인 없이 즉시 실행 → 결과 작성 → 완료 보고
   없으면 → 무음 대기 (불필요한 "없음" 보고 생략)
 
+**Heartbeat 기록 (진단용):**
+매 폴링 사이클마다 `results/heartbeat.json`에 타임스탬프를 기록한다.
+dev PC의 Scheduled Task가 이 파일의 age로 test PC 가용성을 진단한다.
+```powershell
+# 매 폴링 사이클 시작 시 실행
+$heartbeat = @{ timestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss"); status = "alive" } | ConvertTo-Json
+Set-Content -Path "$base\results\heartbeat.json" -Value $heartbeat -Encoding UTF8
+```
+→ git push는 결과 파일과 함께 배치한다 (heartbeat만을 위한 별도 push 불필요).
+
 종료 조건:
   - 사용자가 "멈춰", "중단" → 즉시 종료
   - 에러 3회 연속 → 일시 중지 후 보고

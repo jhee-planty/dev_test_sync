@@ -40,7 +40,7 @@ desktop-commander(Windows MCP)를 통해 PowerShell + 브라우저 자동화로 
 
 **이 섹션의 규칙은 어떤 상황에서도 위반하지 않는다.**
 
-### 1. 폴링은 사용자 명시적 중지 전까지 절대 멈추지 않는다
+### 1a. 폴링 연속성 — 폴링 루프는 절대 종료하지 않는다
 
 폴링 모드가 시작되면 다음 조건에서**만** 중단한다:
 - 사용자가 "멈춰", "중단", "stop" 등을 **명시적으로** 말한 경우
@@ -50,6 +50,36 @@ desktop-commander(Windows MCP)를 통해 PowerShell + 브라우저 자동화로 
 - "할 일이 없어 보여서", "다음 작업이 뭔지 몰라서" → 스캔 계속
 - "사용자에게 물어볼 것이 있어서" → 스스로 판단하고 실행
 - 컨텍스트가 길어져서 → 폴링은 계속 유지
+- 현재 서비스에서 결과가 안 와서 → §1b에 따라 다음 서비스로 진행 (폴링 자체는 계속)
+
+### 1b. 정체 에스컬레이션 — 무응답 30분 시 다음 서비스로 진행
+
+현재 서비스에서 결과가 도착하지 않을 때 무한 대기하지 않는다.
+`pipeline_state.json`의 `stall_count`(빈 폴링 횟수)를 추적하여 에스컬레이션한다.
+
+**동작 규칙:**
+- 빈 폴링(결과 없음) → `stall_count` +1
+- 결과 도착 또는 서비스 변경 → `stall_count` 리셋 (0)
+- **`stall_count` ≥ 6 (5분 간격 기준 약 30분):**
+  1. 현재 서비스를 `STALLED`로 표시
+  2. `monitoring.visual_needed = true` 설정 (L3 진단 대상)
+  3. service_queue에서 다음 `pending_check` 서비스로 진행
+  4. macOS 알림 전송: "{서비스} 30분 무응답 — 다음 서비스로 진행"
+  5. `stall_count` 리셋 후 **폴링 계속** (§1a 유지)
+
+**예시:**
+```
+poll #1: 결과 없음 → stall_count=1
+poll #2: 결과 없음 → stall_count=2
+...
+poll #6: 결과 없음 → stall_count=6 ≥ 6
+  → Gemini를 STALLED로 표시
+  → 다음 서비스(DeepSeek)로 전환
+  → macOS 알림
+  → stall_count=0, 폴링 계속
+```
+
+**이 규칙이 없으면:** test PC 오프라인 시 14시간 무한 대기 발생 (4/10 회고 실측)
 
 ### 2. 폴링 중 사용자에게 확인/승인/다음 단계를 요청하지 않는다
 
@@ -69,6 +99,36 @@ desktop-commander(Windows MCP)를 통해 PowerShell + 브라우저 자동화로 
 
 다른 스킬(genai-apf-pipeline 등)에서 Claude Code sub-agent 사용을 지시하면
 직접 처리하지 말고 Agent 도구로 위임한다. 스킬의 도구 사용 지시를 무시하지 않는다.
+
+---
+
+## BEHAVIORAL RULES (행동 규칙)
+
+CRITICAL RULES만큼 절대적이지는 않지만, 파이프라인 효율을 위해 반드시 따르는 규칙.
+
+### Auto-SUSPEND: 동일 실패 3회 연속 시 서비스 일시 중단
+
+동일 서비스에서 **같은 실패 카테고리**가 3회 연속 발생하면 해당 서비스를 `SUSPENDED`로 표시하고
+batch 테스트에서 제외한다. 빌드 번호가 변경되면 실패 카운트를 리셋한다.
+
+**실패 카테고리 (5종):**
+
+| 카테고리 | 의미 | 예시 |
+|----------|------|------|
+| `PROTOCOL_MISMATCH` | HTTP 수준 변경이 앱 프로토콜과 불일치 | tRPC/SSE/WebSocket 서비스에 HTTP 상태코드 변경 |
+| `NOT_RENDERED` | 차단/경고가 주입되었으나 사용자에게 표시 안됨 | DOM 삽입 성공이나 CSS로 가려짐 |
+| `SERVICE_CHANGED` | 서비스 구조가 이전 분석과 달라짐 | 엔드포인트 변경, 프론트엔드 리뉴얼 |
+| `AUTH_REQUIRED` | 로그인 벽으로 테스트 불가 | 세션 만료, CAPTCHA |
+| `INFRASTRUCTURE` | test PC/네트워크/타임아웃 등 인프라 문제 | desktop-commander timeout, 브라우저 크래시 |
+
+**판정 흐름:**
+1. 결과 수신 시 `failure_history`에 `{category, result_status, request_id, build}` 기록
+2. 최근 3건이 같은 카테고리 → `SUSPENDED` 표시 + macOS 알림
+3. 새 빌드 배포 시 → failure_history 리셋, SUSPENDED 해제
+
+**이 규칙이 없으면:** Mistral처럼 동일 실패 10회 반복 (4/10 회고 실측, 45분 낭비)
+
+→ See `references/pipeline-state-schema.md` for `failure_history` 필드 스키마.
 
 ---
 
@@ -188,9 +248,7 @@ dev_test_sync/scripts/mac/send-request.sh <요청_json_파일>
        성공: impl journal 갱신 + 다음 서비스 자동 진행 + git push
             (다음 서비스: service_queue에서 status=="pending_check"인 최상위 우선순위)
        실패: 원인 분석 → 자동 수정 가능 여부 판단 → 액션 실행
-       Auto-SUSPEND: 동일 서비스에서 3회 연속 같은 실패(동일 result_status + 동일 빌드) 시
-                     해당 서비스를 SUSPENDED로 표시하고 batch 테스트에서 제외.
-                     빌드 번호가 변경되면 실패 카운트 리셋.
+       Auto-SUSPEND: §BEHAVIORAL RULES 참조 — 같은 실패 카테고리 3회 연속 시 SUSPENDED.
   4. pipeline_state.json 갱신 (last_delivered_id 포함)
   5. pipeline_dashboard.md 갱신
   6. macOS 알림 전송 (핵심 이벤트만)
