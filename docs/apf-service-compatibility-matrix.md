@@ -1,4 +1,4 @@
-# APF Service Compatibility Matrix — 2026-04-10 14:30
+# APF Service Compatibility Matrix — 2026-04-10 15:00
 
 ## 검증 결과 요약
 
@@ -82,8 +82,10 @@
 ## 기술 매트릭스
 
 ### Envelope 템플릿 커버리지
-- 전체 22개 response_type → **22개 envelope 보유 (100%)**
-- 전체 36개 block_mode=1 서비스 → **36개 message 템플릿 (100%)**
+- 전체 23개 response_type → **23개 envelope 보유 (100%)**
+- 전체 36개 block_mode=1 서비스 → **39개 message 템플릿 (100%, 중복 포함)**
+- NULL envelope/response_type 행 정리 완료 (legacy: mistral NULL rt, perple 오타 삭제)
+- copilot 도메인 확장: copilot.microsoft.com 추가
 
 ### H2 파라미터 분포
 | h2_mode | h2_end_stream | h2_hold_request | 서비스 수 |
