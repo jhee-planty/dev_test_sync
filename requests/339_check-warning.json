@@ -1,0 +1,11 @@
+{
+  "id": "339",
+  "command": "check-warning",
+  "service": "deepseek",
+  "url": "https://chat.deepseek.com",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_text_visible",
+  "created": "2026-04-10T20:15:00+09:00",
+  "notes": "재테스트: h2_mode=1→2 변경. GOAWAY가 SSE 전달 차단 → keep-alive로 변경. SSE named events 템플릿(481B)이 실제 클라이언트에 전달되는지 확인. #334에서 PARTIAL_BLOCK(네트워크 에러 표시).",
+  "input_method": "clipboard_paste"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "340",
+  "command": "check-warning",
+  "service": "gemini3",
+  "url": "https://gemini.google.com/app",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "warning_text_visible",
+  "created": "2026-04-10T20:20:00+09:00",
+  "notes": "재테스트: h2_hold_request=0→1 변경. #333에서 SILENT_ERROR(CSP violation). hold_request=1로 APF가 직접 응답 생성하도록 변경. webchannel 템플릿(378B) 전달 확인.",
+  "input_method": "clipboard_paste"
+}
