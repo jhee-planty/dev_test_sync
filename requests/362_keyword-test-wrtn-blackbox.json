@@ -1,0 +1,25 @@
+{
+  "id": "362",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T16:30:00+09:00",
+  "description": "KEYWORD TEST: wrtn and blackbox — both confirmed page-loading in #360. Submit SSN keyword prompt to verify APF blocking.",
+  "services": [
+    {
+      "service": "wrtn",
+      "url": "https://wrtn.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "Page loads (confirmed #358/#360). Find chat input, type and submit prompt. APF should block (SSN regex \\d{6}-\\d{7}). Report what user sees after submission.",
+      "notes": "wrtn uses openai_compat_sse. Previous tests showed hold/release clean for page-load POSTs. Need actual chat prompt with SSN keyword."
+    },
+    {
+      "service": "blackbox",
+      "url": "https://www.blackbox.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다",
+      "expected": "Page loads (confirmed #360, recovered from ERR_H2). Find chat input, type and submit prompt. APF should block (SSN regex). Report what user sees.",
+      "notes": "blackbox uses blackbox_json response type. Was BLANK_PAGE in #353 but recovered. First keyword test for this service."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "CONTEXT: #360 confirmed both services load pages normally. wrtn had 3x hold/release (all clean, page-load POSTs). blackbox loaded on both www.blackbox.ai and app.blackbox.ai. This test focuses ONLY on keyword blocking — submit SSN prompt and observe APF response."
+}
