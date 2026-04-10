@@ -1,4 +1,4 @@
-# APF Service Compatibility Matrix — 2026-04-10 15:00
+# APF Service Compatibility Matrix — 2026-04-10 15:05
 
 ## 검증 결과 요약
 
@@ -6,7 +6,7 @@
 |------|----------|------|
 | 1 — 경고 정상 | 5 | 사용자에게 한국어 경고 메시지 직접 표시 |
 | 1.5 — 에러 표시 | 3 | 차단 동작, 서비스 자체 에러 UI 표시 (커스텀 경고 불가) |
-| 2 — 리테스트 대기 | 2 | 수정 후 검증 필요 |
+| 2 — 리테스트 대기 | 2 | 수정 후 재검증 필요 |
 | 3 — 테스트 대기 | 19 | 템플릿 완비, 테스트 미실시 |
 | 4 — 특수 환경 | 5 | IDE/로그인/리전 제한 |
 | 비활성 | 1 | block_mode=0 |
@@ -15,26 +15,26 @@
 
 | 서비스 | response_type | 프로토콜 | 검증 결과 | 비고 |
 |--------|--------------|---------|----------|------|
-| chatgpt | chatgpt_sse | SSE delta_encoding | #330 경고 채팅 버블 렌더링 | 가장 복잡한 템플릿 |
-| claude | claude | SSE message_start | #346 접속 정상, 차단 시 경고 | Anthropic SSE 프로토콜 |
-| genspark | genspark_sse | SSE project/message | 경고 정상 | 다중 이벤트 타입 |
-| duckduckgo | duckduckgo_sse | SSE simple JSON | #310 채팅 버블 렌더링 | 가장 단순한 구현 |
-| grok | grok_ndjson | NDJSON + redirect | #316 한국어 경고 배너 | APF redirect 방식 |
+| chatgpt | chatgpt_sse | SSE delta_encoding | **#349** 한국어 경고 채팅 버블 렌더링 ✅ | 가장 복잡한 템플릿 |
+| claude | claude | SSE message_start | **#349** sparkle 아이콘 + 경고 렌더링 ✅ | Anthropic SSE 프로토콜 |
+| genspark | genspark_sse | SSE project/message | 경고 정상 ✅ | 다중 이벤트 타입 |
+| duckduckgo | duckduckgo_sse | SSE simple JSON | **#348** 채팅 버블 렌더링 ✅ (charset 수정) | 가장 단순한 구현 |
+| grok | grok_ndjson | NDJSON + redirect | **#349** 한국어 경고 배너 ✅ | APF redirect 방식 |
 
 ## Tier 1.5 — 에러 표시 (3개)
 
 | 서비스 | response_type | 프로토콜 | 검증 결과 | 비고 |
 |--------|--------------|---------|----------|------|
-| mistral | mistral_trpc_sse | tRPC/NDJSON | #322,#326 Error 6002 | array-format NDJSON만 가능 |
-| perplexity | perplexity_sse | SSE 6-event | #332 "스레드 없음" | thread ID 문제 |
-| perfle | perplexity_sse | SSE 6-event | 실시간 차단 확인(14:23) | perplexity와 동일 이슈 |
+| mistral | mistral_trpc_sse | tRPC/NDJSON | #322,#326 Error 6002 | 커스텀 경고 불가, 에러 UI 표시 |
+| perplexity | perplexity_sse | SSE 6-event | **#332,#348** "스레드 없음" 표시 | thread_url_slug blocked-{uuid} 문제 |
+| perfle | perplexity_sse | SSE 6-event | 실시간 로그 차단 확인(14:23) | perplexity와 동일 이슈 |
 
 ## Tier 2 — 리테스트 대기 (2개)
 
 | 서비스 | response_type | 수정 사항 | 대기 요청 |
 |--------|--------------|----------|----------|
-| deepseek | deepseek_sse | h2_end_stream=0→1 | #350 |
-| gemini3 | gemini | Strategy D (503 에러) | #352 |
+| deepseek | deepseek_sse | h2_end_stream=0→1 수정 완료 | #350 대기 (14:58 로그에서 차단 확인) |
+| gemini3 | gemini | Strategy D 503→400 변경 | **#349** UI 프리즈(503) → #355 400 리테스트 |
 
 ## Tier 3 — 테스트 대기 (19개)
 
