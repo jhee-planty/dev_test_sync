@@ -70,7 +70,7 @@
 |--------|--------------|---------|------|------|
 | character | ws_fallback_error | 2 | 1 | **#354** BLANK_PAGE (ERR_H2_PROTOCOL_ERROR) |
 | poe | ws_fallback_error | 2 | 1 | **#354** LOGIN_REQUIRED (페이지 정상 로드) |
-| wrtn | openai_compat_sse | 2 | 1 | **#360** 페이지 정상, SUBMIT_FAILED (React paste 문제/로그인 필요) — #362 재시도 |
+| wrtn | openai_compat_sse | 2 | 1 | **#362** 페이지 정상, **LOGIN_REQUIRED** (4가지 입력 시도 모두 실패, 인증 게이트) |
 | phind | generic_sse | 2 | 1 | SERVICE_DOWN |
 
 ### Tier 4 — 특수 환경 필요
@@ -157,9 +157,12 @@
 - **blackbox**: ❌ **STILL_BROKEN** (BLANK_PAGE) — app.blackbox.ai redirect 후 제목만 로드, 콘텐츠 영역 빈 페이지. etap.log에서 HTTP 요청 정상이나 JS SPA 렌더링 실패. ERR_H2→JS 렌더링 이슈로 원인 변경.
 - **dola**: ❌ **LOADING_STUCK** — dola.com/chat/ redirect, 스켈레톤 UI만 표시되고 실제 콘텐츠 미렌더링. WS 연결은 성공하나 SPA 초기화 실패. → **Tier 4 유지** (WS + SPA 렌더링 이슈)
 
+## 테스트 결과 (#362 — 16:35)
+- **wrtn**: ❌ **LOGIN_REQUIRED_FOR_SUBMIT** — 4가지 입력 시도 모두 실패: clipboard paste, direct type, JS nativeInputValueSetter, JS KeyboardEvent. 페이지 로드·React state 업데이트는 성공하나 프롬프트 제출에 인증 필요. → **LOGIN_REQUIRED 확정**
+- **blackbox**: ❌ **STILL_BROKEN** (BLANK_PAGE) — app.blackbox.ai redirect 후 제목만, JS 렌더링 실패 지속. #353/#360/#362 동일 결과.
+
 ## 대기 중인 테스트
 - **#361**: Tier 3 나머지 서비스 (baidu, you, v0, character) — 테스트 PC 미처리
-- **#362**: wrtn 키워드 차단 재시도 (React paste 이슈 우회 필요) + blackbox는 STILL_BROKEN으로 테스트 불가
 
 ## 알려진 이슈 (16:10 업데이트)
 1. ~~cross-domain API SNI~~ → **해결**
@@ -192,7 +195,7 @@
 | phind | HTTP SSE | generic_sse | SERVICE_DOWN | 복구 대기 |
 | consensus | HTTP API | generic_sse | **#360 키워드 차단 ✅** | → Tier 1.5 승격 |
 | dola | **WebSocket** | generic_sse | **#360 LOADING_STUCK** (스켈레톤만) | → Tier 4 (WS + SPA 렌더링 이슈) |
-| wrtn | OpenAI-compat | openai_compat_sse | #358/#360 페이지 정상 | 키워드 차단 테스트 #362 대기 |
+| wrtn | OpenAI-compat | openai_compat_sse | **#362 LOGIN_REQUIRED** | 인증 계정 필요 |
 
 ## 템플릿 포맷 매핑 (API 조사 기반)
 | response_type | 포맷 | 서비스 |

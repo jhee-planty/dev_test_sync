@@ -44,7 +44,7 @@
 |--------|--------------|------|------|
 | kimi | openai_compat_sse | choices[0].delta.content | #351 INPUT_FAILED (자동화 한계) |
 | huggingface | openai_compat_sse | choices[0].delta.content | #351 LOGIN_REQUIRED |
-| qianwen | openai_compat_sse | choices[0].delta.content | 미테스트 |
+| qianwen | openai_compat_sse | choices[0].delta.content | 미테스트 (트래픽 없음) |
 | chatglm | openai_compat_sse | choices[0].delta.content | 미테스트 |
 
 ### 3B: 서비스 전용 포맷 (5개)
@@ -62,7 +62,7 @@
 |--------|--------------|----------|
 | character | ws_fallback_error | **#354** BLANK_PAGE (ERR_H2_PROTOCOL_ERROR) |
 | poe | ws_fallback_error | **#354** LOGIN_REQUIRED (페이지 정상 로드) |
-| wrtn | openai_compat_sse | **#358** 페이지 정상, **#360** hold/release clean (키워드 프롬프트 미제출) |
+| wrtn | openai_compat_sse | **#362** 페이지 정상, **LOGIN_REQUIRED** (4가지 입력 방식 시도 모두 실패, 인증 필요) |
 | phind | generic_sse | cross-domain: https.api.phind.com (SERVICE_DOWN) |
 
 ## Tier 4 — 특수 환경 (7개)
