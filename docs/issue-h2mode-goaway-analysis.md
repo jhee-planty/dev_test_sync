@@ -20,14 +20,20 @@
 
 **결과**: Content-Length 제거 후에도 EventStream ZERO events. 필요 조건이지만 충분 조건은 아님.
 
-### 가설 4: Transfer-Encoding: chunked 누락 (현재 테스트 중 — #374)
+### 가설 4: Transfer-Encoding: chunked 누락 (기각 — #374)
 > HTTP/1.1 SSE에서 chunked encoding 없이 전송 → 브라우저 EventStream 파서 미작동.
 
-**근거** (#372 실제 qwen3 캡처 vs APF 비교):
-- 실제: `Transfer-Encoding: chunked`, `Connection: keep-alive`
-- APF(#373): Transfer-Encoding 없음, `Connection: close`
-- EventStream 파서는 chunked framing으로 이벤트를 분리
-- **Phase3-B25d**: chunked encoding 포맷 + TE 헤더 추가
+**결과**: chunked encoding 추가 후에도 EventStream ZERO events. 필요 조건이지만 충분 조건은 아님.
+
+### 가설 5: CORS 정책 위반 (현재 테스트 중 — #375)
+> qwen3 JS가 `fetch(credentials:'include')` 사용 → `Access-Control-Allow-Origin: *` 시 CORS 정책으로 응답 body 접근 차단.
+
+**근거** (HTTP CORS 사양):
+- `credentials: 'include'` 모드에서는 `ACAO: *`가 허용되지 않음
+- 반드시 특정 origin(`https://chat.qwen.ai`) + `Access-Control-Allow-Credentials: true` 필요
+- CORS 위반 시 브라우저가 response body를 JS에 노출하지 않음
+- 이는 Content-Length, Transfer-Encoding 등과 **독립적**으로 모든 시도를 실패시킴
+- **Phase3-B25e**: DB 템플릿에 정확한 CORS 헤더 적용
 
 ## 실험 결과 타임라인
 
@@ -40,7 +46,9 @@
 | 371 | 18:00 | qwen3 50ms delay | STUCK_ON_THINKING | TCP RST 가설 기각 |
 | 372 | 18:20 | qwen3 비차단 SSE 캡처 | **REAL_SSE_CAPTURED** | TE:chunked, Connection:keep-alive |
 | 373 | 18:20 | Content-Length 제거 | **STILL_STUCK** (8th) | CL 제거만으로 불충분 |
-| 374 | 18:39 | TE:chunked 추가 | **대기 중** | chunked 인코딩 가설 검증 |
+| 374 | 18:39 | TE:chunked 추가 | **STILL_STUCK** (9th) | chunked만으로 불충분 |
+| 375 | 18:50 | CORS 수정 | **STILL_STUCK** (10th) | CORS 원인 아님 |
+| 376 | 19:01 | **JSON 에러 전환** | **✅ WARNING_VISIBLE** | SSE 포기, JSON 성공! |
 
 ## Phase3-B25c 변경사항 (18:19 배포)
 
@@ -83,14 +91,31 @@
 |------|---------|------|------|------------|
 | SSE + H2 (Tier 1) | HTTP/2 | chatgpt, claude, grok | ✅ 경고 표시 | 유지 |
 | SSE + H2 (keep-alive) | HTTP/2 | genspark, consensus | ⚠️ 에러 UI | 템플릿 개선 |
-| SSE + HTTP/1.1 | HTTP/1.1 | qwen3 | ❌ 스피너 | Content-Length 제거 (#373) |
+| SSE + HTTP/1.1 | HTTP/1.1 | qwen3 | ✅ **경고 표시** | JSON 에러 전환 (#376) |
 | JSON + H2 | HTTP/2 | v0 | ❌ 미차단 | 키워드 매칭 조사 필요 |
 | Error UI | HTTP/2 | mistral, perplexity | ⚠️ 에러 표시 | 수용 가능 |
 
+## 결론 및 교훈
+
+### HTTP/1.1 SSE 주입은 불가능
+10회 연속 테스트(#363~#375)를 통해 확인: Etap APF가 HTTP/1.1에서 SSE 응답을 주입하고
+즉시 연결을 종료하는 방식은 브라우저의 EventStream 파서와 호환되지 않는다.
+Content-Length, Transfer-Encoding:chunked, CORS, Connection 등 모든 헤더 조합을 시도했으나
+EventStream은 항상 0 events.
+
+### 해결: JSON 에러 응답 (#376)
+Content-Type을 `application/json`으로 변경하면 브라우저가 SSE 파싱을 시도하지 않고,
+qwen3 프론트엔드의 에러 핸들러가 JSON body의 `message` 필드를 읽어 에러 버블로 표시.
+첫 시도에서 성공. qwen3 Tier 1.5 (WARNING_VISIBLE).
+
+### 적용 대상
+HTTP/1.1 + SSE 서비스는 모두 JSON 에러 방식으로 전환 필요.
+HTTP/2 SSE 서비스는 기존 GOAWAY/RST_STREAM 방식 유지.
+
 ## 다음 단계
 
-1. **#374 결과 대기** — Transfer-Encoding: chunked로 EventStream 파싱 성공 여부
-2. **#374 성공 시** → generic_sse, openai_compat_sse 등 다른 SSE 템플릿 자동 적용 (코드에서 처리)
-3. **#374 실패 시** → 대안: qwen3를 비-SSE 응답(JSON/HTML)으로 전환, 에러 UI 수용
-4. **v0 진단** — v0 트래픽 시 v0_diag 로그로 키워드 미매칭 원인 파악
-5. **DB 정리** — SSE 템플릿에서 `Content-Length: {{BODY_INNER_LENGTH}}` 라인 일괄 제거 (코드가 처리하지만 정리 목적)
+1. ✅ **qwen3 경고 표시 성공** (#376)
+2. **선택적**: HTTP 4xx 상태 코드로 스피너 중지 (Tier 1 승격 시도)
+3. **v0 진단** — v0 트래픽 시 v0_diag 로그로 키워드 미매칭 원인 파악
+4. **다른 HTTP/1.1 서비스** — 동일 JSON 에러 방식 적용 검토
+5. **H2 SSE 템플릿** — Content-Length 제거 + chunked encoding 코드가 이미 적용됨 (향후 필요 시)
