@@ -33,7 +33,7 @@
 
 | 서비스 | response_type | 수정 사항 | 대기 요청 |
 |--------|--------------|----------|----------|
-| deepseek | deepseek_sse | h2_end_stream=0→1 수정 완료 | #350 대기 (14:58 로그에서 차단 확인) |
+| deepseek | deepseek_sse | **Strategy D 적용**: SSE→400 error (JSON Patch 초기상태 부재) | **#350** network error → **#356** 400 리테스트 대기 |
 | gemini3 | gemini | Strategy D 503→400 변경 | **#349** UI 프리즈(503) → #355 400 리테스트 |
 
 ## Tier 3 — 테스트 대기 (19개)

@@ -39,7 +39,7 @@
 ### Tier 2 — 차단 확인, 경고 개선 진행 중
 | 서비스 | response_type | 이슈 | 조치 |
 |--------|--------------|------|------|
-| deepseek | deepseek_sse | SSE 미렌더링 | end_stream=1 수정, #350 리테스트 대기 |
+| deepseek | deepseek_sse | SSE→Strategy D | **#350** network error (SSE JSON Patch 실패). **Strategy D 적용**: 400 Bad Request + JSON error. **#356** 리테스트 대기 |
 | gemini3 | gemini | webchannel + CSP | **#349 UI 프리즈** (503 → stop 버튼 멈춤). 400으로 변경, #355 리테스트 |
 
 ### Tier 3A — OpenAI-compatible SSE (정교화 완료)
