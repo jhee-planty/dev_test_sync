@@ -1,4 +1,4 @@
-# APF Service Compatibility Matrix — 2026-04-10 15:05
+# APF Service Compatibility Matrix — 2026-04-10 15:50
 
 ## 검증 결과 요약
 
@@ -107,3 +107,30 @@
 | 한글날 | - | PARTIAL |
 | 전화번호 regex | phone | REGEX |
 | 이메일 regex | email | REGEX |
+
+### 실시간 트래픽 관찰 (2026-04-10, etap.log 기준)
+
+**차단 + 트래픽 확인** (11개):
+gemini3(18096), claude(438), mistral(96), perfle(65), notion(48), deepseek(41), perplexity(14), grok(13), chatgpt(12), duckduckgo(6), qwen3(5)
+
+**트래픽 관찰, 차단 미확인** (7개):
+phind(21, SERVICE_DOWN), blackbox(14), dola(10, WS), github_copilot(8, IDE), you(6), wrtn(6), huggingface(4), cohere(2)
+
+**트래픽 없음** (16개):
+baidu, character, chatglm, clova, clova_x, consensus, copilot, gamma, kimi, m365_copilot, meta, poe, qianwen, v0
+
+### DB 차단 통계 (2026-04-10)
+| 서비스 | 건수 | 카테고리 | 비고 |
+|--------|------|---------|------|
+| gemini3 | 20 | ssn | Tier 2, Strategy D 400 |
+| claude | 11 | ssn(1)+etc(10) | ⚠️ "sex" FP 10건 |
+| mistral | 8 | ssn | Tier 1.5, Error 6002 |
+| deepseek | 5 | ssn | Tier 2, Strategy D 400 |
+| notion | 3 | ssn | Tier 4, WS 전용 |
+| chatgpt | 2 | ssn | Tier 1 ✅ |
+| perplexity | 2 | ssn | Tier 1.5 |
+| perfle | 2 | ssn | Tier 1.5 |
+| grok | 2 | ssn | Tier 1 ✅ |
+| qwen3 | 1 | ssn | Tier 3 |
+| duckduckgo | 1 | ssn | Tier 1 ✅ |
+| **총계** | **57** | | **11개 서비스** |
