@@ -1,73 +1,75 @@
-# GOAWAY Flush Hypothesis — Analysis & Findings
+# GOAWAY Flush Hypothesis → SSE Format Issue — Analysis & Findings
 
-**Date**: 2026-04-10 17:30~18:00  
-**Tests**: #367 (v0 h2_mode=1), #368 (qwen3 Phase3-B25)
+**Date**: 2026-04-10 17:30~18:30  
+**Tests**: #367–#373
 
-## 가설
+## 가설 변천
 
-> Tier 1 서비스(chatgpt, claude 등)가 경고를 정상 렌더링하는 이유는 h2_mode=1 (GOAWAY)이
-> on_disconnected()를 호출하여 TCP send buffer를 flush하기 때문이다.
-> h2_mode=2 (keep-alive)에서는 flush가 없어 데이터가 버퍼에 체류한다.
+### 가설 1: GOAWAY Flush (기각 — #367)
+> h2_mode=1 GOAWAY가 TCP buffer flush를 유발하여 경고 표시.
 
-## 실험 결과
+**결과**: GOAWAY가 HTTP/2 연결 전체를 파괴 → ERR_CONNECTION_CLOSED. SSE 서비스에서만 작동하는 이유는 GOAWAY가 아님.
 
-### #367: v0를 h2_mode=1(GOAWAY)로 변경
-- **결과**: `ERR_CONNECTION_CLOSED` — **가설 전체 부정이 아닌 수정 필요**
-- GOAWAY가 전체 HTTP/2 연결을 파괴하여 fetch()가 TypeError 발생
-- 경고 미표시 + 사용자 경험 h2_mode=2보다 악화
-- Console: `TypeError: Failed to fetch`, `net::ERR_HTTP2_PROTOCOL_ERROR`
+### 가설 2: TCP RST Timing (기각 — #371)
+> HTTP/1.1에서 on_disconnected() 즉시 호출 → TCP RST → 브라우저 수신 버퍼 폐기.
 
-### #368: qwen3 Phase3-B25 (HTTP/1.1 hold + Connection: close)
-- **결과**: `STILL_STUCK_ON_THINKING` — Phase3-B25 수정이 스피너 미해결
-- hold_set → block → hold_discard → vts_post(565B) 전체 파이프라인 정상 동작 확인
-- VTS delivery 100% (written=565 expected=565)
-- 하지만 브라우저 JS가 응답을 처리하지 않음
+**결과**: 50ms delay 추가에도 STILL_STUCK_ON_THINKING. 6번 연속 실패.
 
-## 수정된 가설
+### 가설 3: SSE Content-Length (현재 테스트 중 — #373)
+> Content-Length 포함 SSE 응답 → 브라우저가 스트리밍이 아닌 완료된 응답으로 처리.
 
-### 가설 1: SSE 점진적 처리 (Tier 1이 작동하는 이유)
-- Tier 1 서비스(chatgpt, claude, grok)는 모두 SSE/NDJSON 형태로 경고를 전송
-- 브라우저의 ReadableStream이 데이터 청크를 **점진적으로 처리**
-- GOAWAY/disconnect 전에 이미 경고 텍스트가 UI에 렌더링됨
-- GOAWAY 후 연결이 끊겨도 이미 표시된 경고는 유지
+**근거** (#370 HAR 캡처):
+- 브라우저가 200 OK + 401 bytes를 **완전히 수신**
+- EventStream 탭 존재 → ZERO events (SSE 파싱 실패)
+- Response 탭: "Failed to load response data" (이미 완료)
+- **TCP 전송 문제 아님 — SSE 형식/파싱 문제**
 
-### 가설 2: TCP RST 데이터 폐기 (qwen3 HTTP/1.1 실패 원인)
-- `on_disconnected()` → `shut_down()` → `SSL_shutdown()` → 소켓 즉시 닫힘
-- 비블로킹 소켓에서 `SO_LINGER=0` (기본값) → TCP RST 전송
-- **TCP RST가 수신 측의 미읽은 데이터를 폐기함**
-- SSE: ReadableStream이 데이터를 점진적으로 소비 → RST 전에 처리 완료
-- HTTP/1.1 일반 응답: 전체 응답을 읽기 전에 RST 도달 → 데이터 폐기
+## 실험 결과 타임라인
 
-### 가설 3: v0 JSON + GOAWAY 연결 파괴 (v0 실패 원인)
-- v0는 JSON 응답 (비-SSE) → fetch()가 전체 응답을 기다림
-- GOAWAY frame이 HTTP/2 연결 전체를 파괴
-- fetch()가 네트워크 에러로 reject (TypeError)
-- 설령 DATA frame이 먼저 도착해도 GOAWAY가 응답을 무효화
+| # | 시간 | 변경 | 결과 | 결론 |
+|---|------|------|------|------|
+| 367 | 17:35 | v0 h2_mode=1 | ERR_CONNECTION_CLOSED | GOAWAY가 연결 파괴 |
+| 368 | 17:41 | qwen3 hold+Connection:close | STUCK_ON_THINKING | HTTP/1.1 hold 무효 |
+| 369 | 17:57 | v0 h2_goaway=1 | NOT_BLOCKED | 키워드 매칭 실패 (조사 중) |
+| 370 | 18:00 | qwen3 HAR 캡처 | **ZERO SSE events** | 핵심 진단 결과 |
+| 371 | 18:00 | qwen3 50ms delay | STUCK_ON_THINKING | TCP RST 가설 기각 |
+| 372 | 18:20 | qwen3 비차단 SSE 캡처 | 대기 중 | 실제 형식 확인용 |
+| 373 | 18:20 | Content-Length 제거 | **대기 중** | SSE 파싱 가설 검증 |
 
-## h2_goaway 발견
-- Tier 1 성공 서비스: `h2_mode=1` + `h2_goaway=1` (GOAWAY frame을 APF 응답 데이터에 포함)
-- v0 실험: `h2_mode=1` + `h2_goaway=0` → GOAWAY frame 미포함
-- 이후 `h2_goaway=1`로 변경했으나 #369 테스트 전에 #367 결과(ERR_CONNECTION_CLOSED) 확인
-- **h2_goaway=1 추가가 필요하지만 v0의 JSON 특성상 GOAWAY 자체가 문제**
+## Phase3-B25c 변경사항 (18:19 배포)
 
-## 서비스 유형별 대응 전략
+### 코드 변경
+1. `ai_prompt_filter.cpp`: `recalculate_content_length()`에서 text/event-stream 응답에 Content-Length 미추가
+2. `visible_tls_session.cpp`: 50ms usleep 제거 (TCP RST 가설 기각)
+3. `ai_prompt_filter.cpp`: v0 POST body 진단 info 로그 추가
 
-| 유형 | 프로토콜 | 예시 | 현재 상태 | 필요한 대응 |
-|------|---------|------|----------|------------|
-| SSE/NDJSON + H2 | HTTP/2 | chatgpt, claude, grok | ✅ 작동 | 유지 |
-| SSE + H2 (keep-alive) | HTTP/2 | genspark, consensus | 부분 작동 | 템플릿 개선 |
-| JSON + H2 | HTTP/2 | v0 | ❌ GOAWAY 실패 | 다른 접근 필요 |
-| SSE + HTTP/1.1 | HTTP/1.1 | qwen3 | ❌ 스피너 | TCP flush 대기 (#371) |
-| Error UI | HTTP/2 | mistral, perplexity | 에러 표시 | 템플릿 개선 (선택) |
+### DB 변경
+- qwen3_sse 템플릿에서 `Content-Length: {{BODY_INNER_LENGTH}}` 라인 제거
 
-## Phase3-B25b: 50ms Delay (진행 중)
-- VTS visible_tls_session.cpp에 HTTP/1.1 block 경로에 `usleep(50000)` 추가
-- write_visible_data → **50ms 대기** → on_disconnected
-- TCP 스택이 데이터를 전송할 시간 확보
-- #371에서 검증 중 (배포 완료: 17:54 KST)
+## v0 키워드 매칭 실패 (별도 이슈)
+
+**증상**: etapd 재시작 후 v0 POST body에서 `\d{6}-\d{7}` 매칭 안 됨
+**이전**: 동일 키워드로 v0 정상 차단 (17:52까지 16건)
+**원인 후보**:
+- HTTP/2 멀티플렉싱에서 `accumulated_buffer`가 스트림 간 공유
+- v0 POST body 인코딩 변경 (비정상적)
+- 재시작 전 차단은 check_completed=1 누적 상태의 영향
+
+**진단**: v0 전용 info 레벨 로그 추가 (stream별 api_path + body sample)
+
+## 서비스 유형별 현재 상태
+
+| 유형 | 프로토콜 | 예시 | 상태 | 필요한 대응 |
+|------|---------|------|------|------------|
+| SSE + H2 (Tier 1) | HTTP/2 | chatgpt, claude, grok | ✅ 경고 표시 | 유지 |
+| SSE + H2 (keep-alive) | HTTP/2 | genspark, consensus | ⚠️ 에러 UI | 템플릿 개선 |
+| SSE + HTTP/1.1 | HTTP/1.1 | qwen3 | ❌ 스피너 | Content-Length 제거 (#373) |
+| JSON + H2 | HTTP/2 | v0 | ❌ 미차단 | 키워드 매칭 조사 필요 |
+| Error UI | HTTP/2 | mistral, perplexity | ⚠️ 에러 표시 | 수용 가능 |
 
 ## 다음 단계
-1. **#371 결과 대기** — 50ms delay가 qwen3 스피너 해결하는지
-2. **#370 HAR capture** — 브라우저가 실제로 뭘 받는지 확인
-3. **v0 대안 검토** — JSON 서비스에 redirect 방식 또는 h2_mode=2 + RST_STREAM 최적화
-4. **Tier 1.5 서비스 경고 개선** — 에러 UI 대신 실제 경고 표시
+
+1. **#373 결과 대기** — Content-Length 제거로 qwen3 스피너 해결되는지
+2. **#372 결과** — 실제 qwen3 SSE 형식 확인 → 템플릿 정밀 매칭
+3. **v0 진단** — v0 트래픽 시 body 로그로 키워드 미매칭 원인 파악
+4. **#373 실패 시** → qwen3 실제 SSE 형식(#372)과 비교하여 템플릿 재설계
