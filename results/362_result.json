@@ -1,0 +1,44 @@
+{
+  "id": "362",
+  "command": "run-scenario",
+  "timestamp": "2026-04-10T16:35:00+09:00",
+  "executed_by": "test-pc",
+  "description": "KEYWORD TEST: wrtn and blackbox — SSN keyword blocking verification",
+  "results": {
+    "wrtn": {
+      "url": "https://wrtn.ai",
+      "result": "LOGIN_REQUIRED_FOR_SUBMIT",
+      "page_loaded": true,
+      "certificate_issuer": "Plantynet OfficeGuarad CA_V3",
+      "mitm_confirmed": true,
+      "keyword_submitted": false,
+      "details": "Page loaded successfully with full UI (chat input, tabs, sidebar). SSN keyword text entered via: (1) clipboard paste — React state mismatch, Enter didn't submit. (2) Direct typing via automation — Enter didn't submit. (3) JS nativeInputValueSetter + dispatchEvent('input') — React state updated (VALUE_SET confirmed in console), but Enter keydown event still didn't trigger submission. (4) JS KeyboardEvent dispatch — returned true but no API call made. CONCLUSION: wrtn requires authenticated session (login) to submit chat prompts. The input field accepts text but submission is gated by auth. Console showed ERR_HTTP2_PROTOCOL_ERROR on analytics.tiktok.com and cdn-cgi/challenge resources (third-party, not affecting core functionality).",
+      "approaches_tried": [
+        "clipboard_paste + enter",
+        "direct_type + enter",
+        "js_nativeInputValueSetter + dispatchEvent",
+        "js_KeyboardEvent_enter"
+      ],
+      "verdict": "CANNOT_TEST — login required for prompt submission. Page load works, APF keyword blocking cannot be verified without auth."
+    },
+    "blackbox": {
+      "url": "https://www.blackbox.ai",
+      "result": "BLANK_PAGE",
+      "page_loaded": false,
+      "redirect": "app.blackbox.ai",
+      "details": "Redirected to app.blackbox.ai. Page title shows 'BLACKBOX.AI' but content area is completely blank — no chat input, no UI elements, no interactive elements detected. Same behavior as #353 and #360. JavaScript rendering fails through MITM proxy. Cannot test keyword blocking on a blank page.",
+      "verdict": "STILL_BROKEN — JS rendering failure through MITM proxy persists"
+    }
+  },
+  "summary": {
+    "total_services": 2,
+    "keyword_blocked": 0,
+    "login_required": 1,
+    "still_broken": 1,
+    "key_findings": [
+      "wrtn.ai: Page loads fine, React state can be updated via JS, but prompt submission requires login/auth",
+      "blackbox.ai: Still blank page — JS rendering broken through MITM, same as #353/#360",
+      "Neither service could be keyword-tested in current state"
+    ]
+  }
+}
