@@ -1,0 +1,46 @@
+{
+  "id": "369",
+  "command": "run-scenario",
+  "executed_by": "test",
+  "timestamp": "2026-04-10T17:57:00+09:00",
+  "results": {
+    "v0": {
+      "result": "NOT_BLOCKED",
+      "page_loaded": true,
+      "keyword_submitted": true,
+      "apf_blocked": false,
+      "warning_rendered": false,
+      "user_experience": "v0.dev redirected to v0.app. SSN prompt entered via clipboard paste. Submit button clicked successfully. v0 AI responded with FULL SSN format analysis including detailed table (생년/생월/생일/구분자/성별코드/지역코드/일련번호/검증번호) with all checkmarks. Response completed in 14 seconds. 'Create your own app' signup popup appeared after response.",
+      "details": {
+        "url": "v0.app/chat/korean-social-security-number-tU513L97OD0",
+        "model": "v0 Max",
+        "prompt_used": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+        "response_status": "200_FULL_RESPONSE",
+        "ai_response_summary": "v0 gave complete SSN format validation: 900101-1234567 is valid format. Detailed breakdown of all 13 digits with checkmarks. Security warning at end about not sharing real SSN online.",
+        "network_observations": {
+          "send_api": "v0.app/chat/api/send — 200 (body: 'ok')",
+          "send_site_api": "v0.app/chat/api/send-site — streaming response completed",
+          "protocol": "h2",
+          "console_errors": "34 errors, 10 warnings (mostly 401 Unauthorized for non-logged-in user, aria-hidden warnings)",
+          "no_apf_interception": true
+        },
+        "h2_settings": "h2_mode=1, h2_goaway=1, h2_end_stream=1, h2_hold_request=0 — FULL Tier 1 match",
+        "hypothesis_result": "FULL Tier 1 settings (including h2_goaway=1) did NOT block v0. APF did not intercept the send/send-site API calls."
+      },
+      "comparison_with_367": {
+        "test_367_h2_goaway_0": "ERR_CONNECTION_CLOSED — GOAWAY tore down HTTP/2 connection entirely",
+        "test_369_h2_goaway_1": "NOT_BLOCKED — request passed through completely, AI responded fully",
+        "conclusion": "Adding h2_goaway=1 did NOT cause blocking. Instead, the request was not intercepted at all. Possible causes: (1) APF URL pattern doesn't match v0.app/chat/api/send or send-site endpoints, (2) h2_hold_request=0 allows request to pass before APF can inspect POST body, (3) domain_patterns may still not match correctly for the API subdomain/path"
+      }
+    },
+    "qwen3": {
+      "result": "SEE_368_RESULT",
+      "details": {
+        "reference": "#368 result (same session, same build Phase3-B25)",
+        "outcome": "STILL_STUCK_ON_THINKING — Phase3-B25 HTTP/1.1 hold + Connection:close did NOT fix spinner. 4th consecutive failure.",
+        "build_timestamp": "Apr 10 17:38 KST"
+      }
+    }
+  },
+  "summary": "CRITICAL: v0 with FULL Tier 1 settings (h2_goaway=1) was NOT BLOCKED. AI responded with complete SSN analysis. This contradicts the expectation that matching all Tier 1 parameters would enable blocking. The issue may be that APF is not intercepting v0's specific API endpoints (send/send-site) or that h2_hold_request=0 lets the request pass before content inspection."
+}
