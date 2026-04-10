@@ -94,6 +94,26 @@
 - **#347**: deepseek — ⚠️ PARTIAL_BLOCK (end_stream=0으로 SSE 미렌더링 → end_stream=1로 수정, #350 리테스트 대기)
 - **#345**: blackbox — ⚠️ NO_BLOCK (페이지 로드만 테스트, API 차단은 프롬프트 입력 필요)
 
+## APF 실시간 차단 로그 (2026-04-10, etap.log)
+| 서비스 | 차단 횟수 | 비고 |
+|--------|----------|------|
+| claude | 18 | Tier 1 — 가장 활발 |
+| gemini3 | 11 | Tier 2 — Strategy D 동작 확인 |
+| mistral | 8 | Tier 1.5 — Error 6002 표시 |
+| notion | 3 | Tier 4 — WS 전용이지만 HTTP 차단 동작 |
+| deepseek | 3 | Tier 2 — h2_end_stream=1 수정됨 |
+| perplexity | 2 | Tier 1.5 — "스레드 없음" 표시 |
+| perfle | 2 | Tier 1.5 — perplexity와 동일 |
+| grok | 2 | Tier 1 — 한국어 경고 배너 |
+| chatgpt | 2 | Tier 1 — SSE 채팅 버블 |
+| you | 1 | Tier 3 — you_json 차단 동작 |
+| wrtn | 1 | Tier 3 — openai_compat_sse 차단 동작 |
+| qwen3 | 1 | Tier 3 — qwen3_sse 차단 동작 |
+| phind | 1 | Tier 3 — SERVICE_DOWN 이전 차단 |
+| duckduckgo | 1 | Tier 1 — 채팅 버블 경고 |
+| blackbox | 1 | Tier 3 — blackbox_json 차단 동작 |
+| **총계** | **57** | **15개 서비스에서 실제 차단 발생** |
+
 ## 테스트 결과 (추가)
 - **#348**: batch test 1 결과 도착
   - duckduckgo: ✅ WARNING_SUCCESS (채팅 버블 경고, charset 인코딩 수정 완료)
