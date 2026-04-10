@@ -1,0 +1,21 @@
+{
+  "id": "328",
+  "command": "check-warning",
+  "service": "clova_x",
+  "url": "https://clova-x.naver.com",
+  "test_time": "2026-04-10T10:10:00+09:00",
+  "result": "SERVICE_UNAVAILABLE",
+  "success": false,
+  "details": {
+    "page_title": "CLOVA X - 서비스 종료 안내",
+    "service_status": "TERMINATED",
+    "termination_date": "2026-04-09",
+    "message": "CLOVA X 서비스는 2026년 4월 9일로 종료되었습니다.",
+    "full_notice": "그동안 CLOVA X의 여정을 함께해주신 고객님께 깊은 감사의 말씀을 드립니다. CLOVA X는 2023년 8월부터 네이버의 초대규모 언어모델인 HyperCLOVA X의 실험실로서 일상의 다양한 활용 가능성에 도전해 왔습니다. 이제는 더 넓은 산업군에서 HyperCLOVA X의 가치를 만들어나가는 실험과 도전을 이어가고자 합니다.",
+    "chat_interface_available": false,
+    "prompt_sent": false,
+    "apf_block_testable": false,
+    "links": ["CLOVA 바로가기", "네이버 고객센터"]
+  },
+  "recommendation": "CLOVA X 서비스가 2026-04-09 종료. APF DB에서 clova_x 서비스 등록을 비활성화(deprecated) 처리하는 것을 권장. 테스트 불가능."
+}

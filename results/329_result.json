@@ -1,0 +1,34 @@
+{
+  "id": "329",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "test_time": "2026-04-10T10:13:00+09:00",
+  "result": "NO_BLOCK",
+  "success": false,
+  "details": {
+    "prompt_sent": "My social security number is 123-45-6789",
+    "input_method": "keyboard_type",
+    "api_domain": "api.individual.githubcopilot.com",
+    "api_path": "/github/chat/threads/{thread_id}/messages",
+    "thread_id": "950c1874-60ac-4b19-9e30-73597cefda81",
+    "protocol": "h2",
+    "apf_blocked": false,
+    "copilot_response_received": true,
+    "copilot_self_safety": true,
+    "response_summary": "Copilot (Claude Haiku 4.5) responded with safety advice: Never share SSN in chat, never share passwords/tokens/API keys, be cautious with personal data.",
+    "page_title_changed_to": "Sharing sensitive personal information",
+    "network_requests": "24 requests, 18.2 kB transferred",
+    "messages_request_status": "200 OK (normal response, not blocked by APF)",
+    "console_errors": ["Matched leaf route at /copilot does not have element or Component warning (React Router)"],
+    "key_findings": [
+      "APF did NOT intercept/block the request to api.individual.githubcopilot.com",
+      "Copilot responded normally with its own built-in safety refusal about SSN sharing",
+      "The registered APF path is /github/chat but actual API path is /github/chat/threads/{id}/messages",
+      "APF service registration may need path pattern update to match actual API endpoints",
+      "Model used: Claude Haiku 4.5 (GitHub Copilot uses Anthropic models)",
+      "Login was already active (jhee-planty, Copilot Free)"
+    ]
+  },
+  "recommendation": "APF is not blocking GitHub Copilot traffic. Possible causes: (1) APF path matching '/github/chat' may not match the actual endpoint '/github/chat/threads/{id}/messages', (2) The domain api.individual.githubcopilot.com may not be in the VT SNI interception list, (3) h2_mode=2+hold may not be activating. Dev should verify: APF service path matching logic, VT domain list, and etapcomm logs for this domain."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "331",
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "result": "NO_BLOCK",
+  "success": false,
+  "timestamp": "2026-04-10T10:25:00+09:00",
+  "details": {
+    "url": "https://copilot.microsoft.com",
+    "chat_url": "copilot.microsoft.com/chats/bdK61cv62DKUSHvEdtN1E",
+    "registered_domains": ["substrate.office.com", "copilot.microsoft.com"],
+    "h2_mode": "1 (GOAWAY)",
+    "apf_intercepted": false,
+    "apf_goaway_triggered": false,
+    "copilot_response_received": true,
+    "copilot_self_safety": true,
+    "copilot_response_summary": "Copilot refused to process SSN, provided safety guidance about not sharing sensitive personal information",
+    "network_observations": {
+      "protocol": "h2",
+      "static_assets_status": "200 OK",
+      "telemetry_domains": ["browser.events.data.microsoft.com", "copilot.microsoft.com/cl/eus-c/collect"],
+      "substrate_office_com_calls": false,
+      "total_requests": 114,
+      "total_size": "214 kB"
+    },
+    "console_errors": false,
+    "login_status": "not_logged_in",
+    "prompt_sent": "My social security number is 123-45-6789",
+    "input_method": "keyboard_type"
+  },
+  "analysis": "APF did NOT intercept M365 Copilot traffic. h2_mode=1 GOAWAY was not triggered. All requests went through copilot.microsoft.com via h2 with status 200. No substrate.office.com API calls were observed — the anonymous (non-logged-in) Copilot chat appears to use copilot.microsoft.com directly. Copilot's own safety mechanism refused the SSN prompt. Possible causes: (1) copilot.microsoft.com may not be in VT SNI interception list despite DB registration, (2) anonymous mode may use a different API path than logged-in mode which routes through substrate.office.com, (3) GOAWAY mechanism may require specific TLS/ALPN conditions not met.",
+  "recommendation": "Re-test with MS account logged in — substrate.office.com calls may only appear when authenticated. Verify VT SNI list includes copilot.microsoft.com. Check if h2_mode=1 GOAWAY requires specific connection conditions."
+}
