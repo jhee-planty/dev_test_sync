@@ -94,22 +94,46 @@
 - **#347**: deepseek — ⚠️ PARTIAL_BLOCK (end_stream=0으로 SSE 미렌더링 → end_stream=1로 수정, #350 리테스트 대기)
 - **#345**: blackbox — ⚠️ NO_BLOCK (페이지 로드만 테스트, API 차단은 프롬프트 입력 필요)
 
+## 테스트 결과 (추가)
+- **#348**: batch test 1 결과 도착
+  - duckduckgo: ✅ WARNING_SUCCESS (채팅 버블 경고, charset 인코딩 수정 완료)
+  - huggingface: ⚠️ LOGIN_REQUIRED (로그인 필요)
+  - phind: ⚠️ SERVICE_DOWN (404, 서비스 오프라인)
+  - you: ⚠️ INPUT_FAILED (DPI 좌표 불일치)
+  - perplexity: ⚠️ PARTIAL_BLOCK (차단 성공, "스레드 없음" 에러)
+
 ## 대기 중인 테스트
-- **#348**: batch test 1 (duckduckgo, huggingface, phind, you, perplexity)
-- **#349**: batch test 2 (mistral, grok, chatgpt, claude, gemini)
-- **#350**: deepseek 리테스트 (h2_end_stream=1)
+- **#349**: batch test 2 (mistral, grok, chatgpt, claude, gemini) — test PC 대기
+- **#350**: deepseek 리테스트 (h2_end_stream=1) — test PC 대기
+- **#351**: openai_compat_sse batch (kimi, huggingface, cohere) — test PC 대기
+- **#352**: Gemini Strategy D 검증 — test PC 대기
 
 ## 알려진 이슈
 1. **cross-domain API**: blackbox(useblackbox.io), phind(https.api.phind.com), kimi(api.moonshot.cn) — VT SNI 추가 필요 여부 확인
-2. **WebSocket 서비스**: character.ai, poe.com — on_upgraded() 콜백 + generic_sse 병행
+2. **WebSocket 서비스**: character.ai, poe.com, copilot — 주로 WebSocket 통신. HTTP POST 차단은 동작하나 경고 렌더링 불가 (에러 UI 표시)
 3. **Gemini CSP**: ~~webchannel 차단 시 프론트엔드가 silent fail~~ → **Strategy D 적용 완료** (503 응답)
 4. **generic_sse 호환성**: 프론트엔드가 `{"text":"..."}` 포맷을 파싱하지 못할 수 있음 → 테스트 결과에 따라 개별 수정
+5. **Perplexity Tier 1.5 확정**: thread_url_slug "blocked-{uuid}" → 후속 API 400 → 에러 표시. 차단+데이터 보호는 달성.
+6. **copilot 도메인 확장**: copilot.microsoft.com 추가됨 (기존 www.bing.com만)
+7. **clova_x envelope 수정**: NULL → generic_sse envelope 복사
+
+## Tier 3C 프로토콜 분석 결과
+| 서비스 | 실제 프로토콜 | generic_sse 호환성 | 전략 |
+|--------|-------------|-------------------|------|
+| character | WebSocket | ❌ 불가 | HTTP POST 차단, 에러 표시 (Tier 1.5) |
+| copilot | SignalR WS | ❌ 불가 | HTTP POST 차단, 에러 표시 (Tier 1.5) |
+| poe | WS + GraphQL | ❌ 불가 | HTTP POST 차단, 에러 표시 (Tier 1.5) |
+| clova/clova_x | Naver SSE | ⚠️ 테스트 필요 | 커스텀 포맷 가능성 |
+| phind | HTTP SSE | ⚠️ 서비스 다운 | 복구 후 테스트 |
+| consensus | HTTP API | ⚠️ 테스트 필요 | generic_sse 가능성 |
+| dola | Unknown | ⚠️ 테스트 필요 | generic_sse 가능성 |
 
 ## 템플릿 포맷 매핑 (API 조사 기반)
 | response_type | 포맷 | 서비스 |
 |--------------|------|--------|
-| openai_compat_sse | `data: {"choices":[{"delta":{"content":"..."}}]}` | kimi, huggingface, qianwen, chatglm |
+| openai_compat_sse | `data: {"choices":[{"delta":{"content":"..."}}]}` | kimi, huggingface, qianwen, chatglm, wrtn |
 | cohere_sse | `event: text-generation\ndata: {"text":"..."}` | cohere |
 | baidu_sse | `data: {"result":"...","is_end":true}` | baidu |
-| generic_sse | `data: {"text":"..."}` | character, clova, poe, wrtn 등 |
+| generic_sse | `data: {"text":"..."}` | clova, clova_x, consensus, dola, phind |
+| generic_sse (WS fallback) | `data: {"text":"..."}` | character, copilot, poe |
 | gemini (Strategy D) | HTTP 503 (빈 응답) | gemini, gemini3 |

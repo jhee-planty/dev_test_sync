@@ -1,0 +1,27 @@
+{
+  "id": "354",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T14:57:00+09:00",
+  "description": "Tier 3C WebSocket-based services test — expect error display, not custom warning",
+  "services": ["character", "copilot", "poe"],
+  "test_prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected_behavior": "APF blocks HTTP POST. WebSocket services may show error or no response. Custom warning unlikely.",
+  "steps_per_service": [
+    "1. Navigate to the service URL",
+    "2. Wait for page to fully load",
+    "3. Find the chat input (may require free account login for character.ai)",
+    "4. Type or paste the test prompt",
+    "5. Submit the prompt",
+    "6. Wait 15 seconds for response",
+    "7. Take a screenshot of the result",
+    "8. Check if any error message or warning is displayed",
+    "9. Note any console errors or network failures"
+  ],
+  "service_urls": {
+    "character": "https://character.ai",
+    "copilot": "https://copilot.microsoft.com",
+    "poe": "https://poe.com"
+  },
+  "notes": "These services primarily use WebSocket. APF intercepts HTTP POST requests, but the frontend may not parse the SSE response. Expect Tier 1.5 behavior (error display) at best."
+}
