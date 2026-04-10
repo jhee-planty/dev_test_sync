@@ -1,0 +1,31 @@
+{
+  "id": "357",
+  "command": "run-scenario",
+  "timestamp": "2026-04-10T15:51:00+09:00",
+  "description": "WebSocket services Strategy D batch test (400 error) - same services as #354",
+  "results": [
+    {
+      "service": "character",
+      "url": "https://character.ai",
+      "result": "BLANK_PAGE",
+      "details": "Same as #354. JS resources blocked by ERR_HTTP2_PROTOCOL_ERROR. Page never rendered despite ws_fallback_error change.",
+      "warning_displayed": false,
+      "error_type": "ERR_HTTP2_PROTOCOL_ERROR"
+    },
+    {
+      "service": "copilot",
+      "url": "https://copilot.microsoft.com",
+      "result": "NOT_BLOCKED",
+      "details": "Same as #354. APF NOT intercepting copilot.microsoft.com. Full response received. h2_hold=1 change had no visible effect.",
+      "warning_displayed": false
+    },
+    {
+      "service": "poe",
+      "url": "https://poe.com",
+      "result": "LOGIN_REQUIRED",
+      "details": "Same as #354. Page loaded fine, login required.",
+      "warning_displayed": false
+    }
+  ],
+  "notes": "Results identical to #354. ws_fallback_error and h2_hold changes had no effect since the fundamental issue is JS resource blocking (character) or no interception (copilot)."
+}

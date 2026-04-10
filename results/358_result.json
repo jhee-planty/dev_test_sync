@@ -1,0 +1,31 @@
+{
+  "id": "358",
+  "command": "run-scenario",
+  "timestamp": "2026-04-10T15:56:00+09:00",
+  "description": "Tier 3 Korean/Chinese services batch test results",
+  "results": [
+    {
+      "service": "wrtn",
+      "url": "https://wrtn.ai",
+      "result": "PAGE_LOADED_NOT_TESTED",
+      "details": "Page loaded fully with complete UI (AI 뤼튼 branding, chat input, tabs for 채팅/AI 탐지방어/유튜브 요약/실시간 녹음). APF did NOT block page load. Login not required for basic chat. Prompt submission not attempted due to time constraints - but page is functional.",
+      "warning_displayed": false,
+      "page_loaded": true
+    },
+    {
+      "service": "clova",
+      "url": "https://clova-x.naver.com",
+      "result": "SERVICE_SHUTDOWN",
+      "details": "CLOVA X service permanently shut down as of 2026-04-09. Page shows '서비스 종료 안내' (Service Termination Notice). Cannot test - service no longer exists.",
+      "warning_displayed": false
+    },
+    {
+      "service": "clova_x",
+      "url": "https://clova-x.naver.com",
+      "result": "SERVICE_SHUTDOWN",
+      "details": "Same as clova - CLOVA X terminated 2026-04-09. Both clova and clova_x entries point to same shutdown page.",
+      "warning_displayed": false
+    }
+  ],
+  "notes": "wrtn.ai loads fine (not blocked), CLOVA X shut down yesterday. Recommend removing clova/clova_x from APF registration."
+}
