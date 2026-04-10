@@ -9,6 +9,23 @@
 
 ---
 
+## Session Actions Log (최신순)
+| 시간 | 작업 | 결과 |
+|------|------|------|
+| 19:45 | #335-337 재테스트 요청 (github_copilot path fix, notion JSON fix, m365 retest) | git push 완료 |
+| 19:30 | Notion 템플릿 NDJSON→single JSON 수정 (id=18, 282B) | APF reload 완료 |
+| 19:20 | chatgpt2 비활성화, clova_x/clova 비활성화 | DB 반영 |
+| 19:10 | Group B SSE 업그레이드 (perplexity 4205B, gemini 378B, deepseek 481B) + #332-334 | DB+APF+git push |
+| 18:30 | Group C 테스트 #328-331 (clova_x, github_copilot, notion, m365_copilot) | git push |
+| 18:30 | Group E 6개 서비스 block_mode=1 활성화 | DB 반영 |
+| 18:00 | DB 전체 조사 + 5그룹 분류 + 로드맵 생성 | 37개 서비스 분류 |
+
+## 현재 활성 서비스 현황 (33개 활성, 32개 차단 대상)
+- **비활성화 처리**: chatgpt2, clova_x, clova, gemini (4개)
+- **차단 제외**: amazon (block_mode=0, AWS 콘솔)
+
+---
+
 ## Group A — ✅ Warning 정상 동작 (5개)
 | # | service_name | domain | h2_mode | template | 비고 |
 |---|-------------|--------|---------|----------|------|
