@@ -1,0 +1,42 @@
+{
+  "id": "367",
+  "command": "run-scenario",
+  "executed_by": "test",
+  "timestamp": "2026-04-10T17:39:00+09:00",
+  "results": {
+    "v0": {
+      "result": "ERR_CONNECTION_CLOSED",
+      "page_loaded": true,
+      "keyword_submitted": true,
+      "apf_blocked": true,
+      "warning_rendered": false,
+      "user_experience": "Page loads normally (v0.dev→v0.app redirect). Text entered via clipboard paste. When submit button clicked, API call to v0.app/chat/api/send-site FAILS with TypeError: Failed to fetch. No Thinking spinner, no warning message — the request never completes.",
+      "details": {
+        "url": "v0.app/chat",
+        "model": "v0 Max",
+        "prompt_used": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+        "response_status": "ERR_CONNECTION_CLOSED",
+        "console_errors": [
+          "TypeError: Failed to fetch (at window.fetch) — send-site API call failed",
+          "net::ERR_HTTP2_PROTOCOL_ERROR — auth/login API calls failed",
+          "net::ERR_CONNECTION_CLOSED — pricing API call failed",
+          "401 on api/chat/global/daily-model-usage",
+          "404 on api/chat/chat/template, api/chat/chat/attributes"
+        ],
+        "network_requests": {
+          "send-site": "FAILED (TypeError: Failed to fetch)",
+          "sentry_error_reports": "2 envelope requests sent to sentry.io (200 OK)"
+        },
+        "h2_mode": "1 (GOAWAY)",
+        "hypothesis_result": "GOAWAY does NOT flush warning to browser. Instead, GOAWAY tears down HTTP/2 connection entirely, causing ERR_CONNECTION_CLOSED/ERR_HTTP2_PROTOCOL_ERROR. Browser's fetch() throws TypeError."
+      },
+      "verdict": "ERR_CONNECTION_CLOSED — h2_mode=1 (GOAWAY) is WORSE than h2_mode=2 (keep-alive). GOAWAY kills the entire HTTP/2 connection, so the API request fails with network error instead of showing warning. h2_mode=2 at least lets the connection stay alive (perpetual Thinking). Neither mode delivers the warning to the user.",
+      "comparison_with_h2mode2": {
+        "h2_mode_2_behavior": "Connection stays alive, POST reaches server, response held → perpetual Thinking spinner",
+        "h2_mode_1_behavior": "GOAWAY tears down connection → fetch() fails with TypeError → no spinner, no warning, just silent failure",
+        "conclusion": "TCP flush hypothesis NOT confirmed. The issue is NOT about flushing. GOAWAY kills connection before warning data can be delivered. Need different approach for warning delivery."
+      }
+    }
+  },
+  "summary": "CRITICAL FINDING: h2_mode=1 (GOAWAY) does NOT solve the warning rendering problem. It makes user experience WORSE — instead of seeing a Thinking spinner (h2_mode=2), users get a silent fetch failure. The root cause is NOT TCP buffer flushing. The warning response body is never delivered to the browser in either mode. A fundamentally different approach is needed for warning delivery on HTTP/2 streaming services."
+}
