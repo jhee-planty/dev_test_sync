@@ -60,18 +60,22 @@
 | blackbox | blackbox_json | 2 | 1 | 테스트 대기 |
 | v0 | v0_json | 2 | 1 | 테스트 대기 |
 
-### Tier 3C — generic_sse (정보 부족, 테스트 후 개선)
+### Tier 3C-1 — WebSocket → Strategy D (ws_fallback_error)
 | 서비스 | response_type | h2_mode | hold | 상태 |
 |--------|--------------|---------|------|------|
-| character | generic_sse | 2 | 1 | 테스트 대기 (WebSocket 서비스) |
-| clova | generic_sse | 1 | 0 | 테스트 대기 |
-| clova_x | generic_sse | 1 | 0 | 테스트 대기 |
+| character | ws_fallback_error | 2 | 1 | 400 에러 fallback 적용, 테스트 대기 |
+| copilot | ws_fallback_error | 1 | 1 | 400 에러 fallback 적용, **h2_hold=1 수정** |
+| poe | ws_fallback_error | 2 | 1 | 400 에러 fallback 적용, 테스트 대기 |
+
+### Tier 3C-2 — generic_sse (테스트 후 개선)
+| 서비스 | response_type | h2_mode | hold | 상태 |
+|--------|--------------|---------|------|------|
+| clova | generic_sse | 1 | 1 | 테스트 대기, **h2_hold=1 수정** |
+| clova_x | generic_sse | 1 | 1 | 테스트 대기, **h2_hold=1 수정** |
 | consensus | generic_sse | 2 | 1 | 테스트 대기 |
-| copilot | generic_sse | 1 | 0 | 테스트 대기 (WebSocket 주의) |
 | dola | generic_sse | 2 | 1 | 테스트 대기 |
-| phind | generic_sse | 2 | 1 | 테스트 대기 (API: https.api.phind.com) |
-| poe | generic_sse | 2 | 1 | 테스트 대기 (GraphQL/WebSocket) |
-| wrtn | generic_sse | 2 | 1 | 테스트 대기 |
+| phind | generic_sse | 2 | 1 | 테스트 대기 (SERVICE_DOWN) |
+| wrtn | openai_compat_sse | 2 | 1 | 테스트 대기 |
 
 ### Tier 4 — 특수 환경 필요
 | 서비스 | response_type | 이슈 |

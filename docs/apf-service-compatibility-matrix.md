@@ -56,16 +56,20 @@
 | v0 | v0_json | JSON error | v0.dev 추가됨 |
 | you | you_json | JSON answer | 검색+답변 형식 |
 
-### 3C: generic_sse — 정보 부족 (9개)
+### 3C-1: WebSocket → Strategy D (3개, ws_fallback_error 전환)
 | 서비스 | response_type | 주의사항 |
 |--------|--------------|---------|
-| character | generic_sse | WebSocket 서비스. HTTP fallback으로 차단 |
-| poe | generic_sse | GraphQL/WebSocket. HTTP fallback |
-| wrtn | generic_sse | 한국 서비스 |
-| copilot | generic_sse | Bing Copilot, WebSocket |
-| clova | generic_sse | Naver, h2_mode=1 |
-| clova_x | generic_sse | Naver X, h2_mode=1 |
-| phind | generic_sse | cross-domain: https.api.phind.com |
+| character | ws_fallback_error | WebSocket 서비스. 400 에러로 프론트엔드 에러 UI 유도 |
+| copilot | ws_fallback_error | Bing Copilot, WebSocket. h2_hold=1 수정 완료 |
+| poe | ws_fallback_error | GraphQL/WebSocket. 400 에러 fallback |
+
+### 3C-2: generic_sse — 정보 부족 (6개)
+| 서비스 | response_type | 주의사항 |
+|--------|--------------|---------|
+| wrtn | openai_compat_sse | 한국 서비스 |
+| clova | generic_sse | Naver, h2_hold=1 |
+| clova_x | generic_sse | Naver X, h2_hold=1 |
+| phind | generic_sse | cross-domain: https.api.phind.com (SERVICE_DOWN) |
 | consensus | generic_sse | 학술 검색 |
 | dola | generic_sse | - |
 
