@@ -21,7 +21,7 @@
 | duckduckgo | duckduckgo_sse | SSE simple JSON | **#348** 채팅 버블 렌더링 ✅ (charset 수정) | 가장 단순한 구현 |
 | grok | grok_ndjson | NDJSON + redirect | **#349** 한국어 경고 배너 ✅ | APF redirect 방식 |
 
-## Tier 1.5 — 에러/차단 표시 (4개)
+## Tier 1.5 — 에러/차단 표시 (5개)
 
 | 서비스 | response_type | 프로토콜 | 검증 결과 | 비고 |
 |--------|--------------|---------|----------|------|
@@ -29,6 +29,7 @@
 | mistral | mistral_trpc_sse | tRPC/NDJSON | #322,#326 Error 6002 | 커스텀 경고 불가, 에러 UI 표시 |
 | perplexity | perplexity_sse | SSE 6-event | **#332,#348** "스레드 없음" 표시 | thread_url_slug blocked-{uuid} 문제 |
 | perfle | perplexity_sse | SSE 6-event | 실시간 로그 차단 확인(14:23) | perplexity와 동일 이슈 |
+| **qwen3** | qwen3_sse | OpenAI-compat (HTTP/1.1) | **#363** 키워드 차단 확인 ✅ (SSN regex, 570B, DB 2건) | ⭐ 프로덕션 차단 중 (11:20 실사용자 + 16:46 테스트) |
 
 ## Tier 2 — 부분 수정 (2개)
 
@@ -52,7 +53,7 @@
 |--------|--------------|------|------|
 | cohere | cohere_sse | named events | #351 LOGIN_REQUIRED |
 | baidu | baidu_sse | SSE result 필드 | #353,**#361** LOADING_STUCK 지속 (지역 제한 추정) |
-| qwen3 | qwen3_sse | OpenAI-compat | 미테스트 |
+| qwen3 | qwen3_sse | OpenAI-compat | **#363** 키워드 차단 확인 ✅ (SSN regex, 570B 템플릿, HTTP/1.1) → **Tier 1.5 승격** |
 | blackbox | blackbox_json | JSON response | **#360** HTTP 정상이나 JS 렌더링 실패 (BLANK_PAGE 지속) — app.blackbox.ai redirect 후 빈 페이지 |
 | v0 | v0_json | JSON error | **#361** 페이지 로드 복구 ✅ (v0.app redirect, was BLANK_PAGE #353) — 키워드 테스트 필요 |
 | you | you_json | JSON answer | **#361** 페이지 OK, 키워드 제출 OK, **NOT_BLOCKED** — GET 검색 패턴 (/search?q=) APF POST-only 우회 |
@@ -145,6 +146,6 @@ phind(21, SERVICE_DOWN), blackbox(14, **#360 BLANK_PAGE 지속**), dola(10, **#3
 | perfle | 2 | ssn | Tier 1.5 |
 | consensus | 2 | ssn | **Tier 1.5 ✅ NEW** (#360 키워드 차단 성공) |
 | grok | 2 | ssn | Tier 1 ✅ |
-| qwen3 | 1 | ssn | Tier 3 |
+| qwen3 | 2 | ssn | **Tier 1.5 ✅ NEW** (#363 키워드 차단 성공, 프로덕션+테스트) |
 | duckduckgo | 1 | ssn | Tier 1 ✅ |
-| **총계** | **60** | | **12개 서비스** |
+| **총계** | **61** | | **12개 서비스** (qwen3 +1)
