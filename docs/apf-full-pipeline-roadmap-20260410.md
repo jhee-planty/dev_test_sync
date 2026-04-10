@@ -12,6 +12,11 @@
 ## Session Actions Log (최신순)
 | 시간 | 작업 | 결과 |
 |------|------|------|
+| 20:20 | Gemini3 h2_hold_request=0→1 + #340 retest 전송 | DB+APF reload+git push |
+| 20:15 | DeepSeek h2_mode=1→2 (GOAWAY→keep-alive) + #339 retest 전송 | DB+APF reload+git push |
+| 20:10 | #332-334 결과 수신: perplexity(PARTIAL), gemini3(SILENT), deepseek(PARTIAL) | 분석 완료 |
+| 20:05 | gemini3 response_type lookup 확인 — id=19 envelope(378B) 정상 매칭 | 코드 분석 |
+| 20:00 | #338 batch frontend inspect 요청 (you, qwen3, blackbox, meta) | git push 완료 |
 | 19:45 | #335-337 재테스트 요청 (github_copilot path fix, notion JSON fix, m365 retest) | git push 완료 |
 | 19:30 | Notion 템플릿 NDJSON→single JSON 수정 (id=18, 282B) | APF reload 완료 |
 | 19:20 | chatgpt2 비활성화, clova_x/clova 비활성화 | DB 반영 |
@@ -40,15 +45,15 @@
 ---
 
 ## Group B — 🔶 Block 동작, Warning 미표시 (5개)
-| # | service_name | domain | h2_mode | template | 현재 상태 |
-|---|-------------|--------|---------|----------|-----------|
-| 1 | perplexity | www.perplexity.ai | 2 | 1개 (277B) | 422 JSON — 사용자에게 안 보임 |
-| 2 | gamma | ai.api.gamma.app | 2 | 1개 (266B) | EventSource H2 한계 — BLOCKED_ONLY |
-| 3 | gemini3 | gemini.google.com | 2 | 1개 (NULL) | 템플릿 내용 비어있음 |
-| 4 | deepseek | deepseek.com | 1 | 1개 (243B) | 403 JSON — 상태만 보임 |
-| 5 | mistral | chat.mistral.ai | 2+hold | 2개 (763B) | Error 6002 표시, 커스텀 메시지 불가 |
+| # | service_name | domain | h2_mode | template | 현재 상태 | 최근 테스트 |
+|---|-------------|--------|---------|----------|-----------|-----------|
+| 1 | perplexity | www.perplexity.ai | 2 | SSE 6-event (4205B) | thread-based 아키텍처 → BLOCKED_ONLY | #332 PARTIAL_BLOCK |
+| 2 | gamma | ai.api.gamma.app | 2 | 1개 (266B) | EventSource H2 한계 → BLOCKED_ONLY | — |
+| 3 | gemini3 | gemini.google.com | 2+hold | webchannel (378B) | h2_hold=1 변경, 재테스트 중 | #333→#340 재테스트 |
+| 4 | deepseek | deepseek.com | 2+hold | SSE events (481B) | h2_mode=2 변경, 재테스트 중 | #334→#339 재테스트 |
+| 5 | mistral | chat.mistral.ai | 2+hold | 2개 (763B) | Error 6002 표시, 커스텀 메시지 불가 | #322,#326 VISIBLE_ERROR |
 
-**Action**: warning-pipeline 스킬로 개선 가능성 재분석. gamma는 기술적 한계로 BLOCKED_ONLY 유지.
+**Action**: deepseek(#339), gemini3(#340) 재테스트 결과 대기. perplexity/gamma는 BLOCKED_ONLY 유지. mistral은 Error 6002 표시 가능(최선).
 
 ---
 
