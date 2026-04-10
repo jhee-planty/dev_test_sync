@@ -1,0 +1,11 @@
+{
+  "id": "335",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "prompt": "My social security number is 123-45-6789",
+  "expected": "any_block_indicator",
+  "created": "2026-04-10T19:45:00+09:00",
+  "notes": "재테스트: path_patterns를 /github/chat/ → 로 수정함. 실제 API는 /github/chat/threads/{id}/messages 경로. prefix 매칭으로 잡힐 것으로 기대. APF reload 완료.",
+  "input_method": "keyboard_type"
+}
