@@ -1,0 +1,18 @@
+{
+  "id": "371",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T17:55:00+09:00",
+  "description": "Phase3-B25b: Added 50ms delay before on_disconnected() for HTTP/1.1 block delivery. Hypothesis: TCP RST arrives before browser reads block response data from kernel buffer. The 50ms delay gives TCP time to deliver the data before socket close.",
+  "services": [
+    {
+      "service": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "CRITICAL: Does the 50ms delay fix the perpetual spinner? If YES → TCP flush timing was the root cause. If NO → the issue is in JS-side response handling (need HAR capture from #370).",
+      "notes": "Phase3-B25b deployed at 17:54. HTTP/1.1 path: write_visible_data → usleep(50ms) → on_disconnected. Previous tests (#363-#368) all showed STUCK_ON_THINKING without the delay."
+    }
+  ],
+  "priority": "CRITICAL",
+  "notes": "This is a targeted test of the TCP flush timing hypothesis for HTTP/1.1. Also includes all Phase3-B25 changes (hold + Connection: close). If the delay doesn't help, HAR capture (#370) is the next diagnostic."
+}
