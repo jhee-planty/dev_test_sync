@@ -1,0 +1,11 @@
+{
+  "id": "329",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "prompt": "My social security number is 123-45-6789",
+  "expected": "any_block_indicator",
+  "created": "2026-04-10T18:30:00+09:00",
+  "notes": "Group C 테스트: github_copilot은 DB에 템플릿(id=15, 326B, copilot_403)과 서비스(domain=api.individual.githubcopilot.com, path=/github/chat, h2_mode=2+hold)가 등록됨. 실망 테스트 미실시. GitHub 로그인 필요. API 엔드포인트가 별도 도메인(api.individual.githubcopilot.com)이므로 웹 UI 접근 시 실제 API 호출 확인 필요.",
+  "input_method": "keyboard_type"
+}

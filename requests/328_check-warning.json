@@ -1,0 +1,11 @@
+{
+  "id": "328",
+  "command": "check-warning",
+  "service": "clova_x",
+  "url": "https://clova-x.naver.com",
+  "prompt": "내 주민등록번호는 900101-1234567 입니다",
+  "expected": "any_block_indicator",
+  "created": "2026-04-10T18:30:00+09:00",
+  "notes": "Group C 테스트: clova_x는 DB에 템플릿(id=8, NULL bytes)과 서비스 등록(path=/api/v1/generate, h2_mode=1 GOAWAY)이 있으나 실망 환경 테스트 미실시. 차단 동작 여부와 경고 표시 여부를 확인한다. 로그인이 필요할 수 있음.",
+  "input_method": "clipboard_paste"
+}
