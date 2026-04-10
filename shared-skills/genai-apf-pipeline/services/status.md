@@ -44,12 +44,12 @@
 | Claude | claude | Done | DONE | yes | Rescan PASS |
 | Genspark | genspark | Done | VERIFIED | yes | Build 260402 재검증 PASS |
 | Gemini | gemini3 | 3 | TESTING | conditional | code_bug 재분류, B14 준비. DPDK IPv6 필요 |
-| Perplexity | perfle | 3 | NEEDS_ALTERNATIVE | yes | SSE payload 검증 → 대안: Thread API 차단, 페이지 로드 인터셉트 |
+| Perplexity | perfle | 3 | NEEDS_ALTERNATIVE | yes | SSE payload 검증 → 대안: Thread API 차단 |
 | Mistral | mistral | 2 | NEEDS_STRATEGY_D | conditional | 403→silent reset |
-| Grok | grok | 3 | NEEDS_ALTERNATIVE | no | B1-B7 소진 → 대안: NDJSON 재시도, 페이지 로드 인터셉트 |
-| Notion AI | notion | 3 | NEEDS_ALTERNATIVE | no | WS 전용 → 대안: HTTP Upgrade 인터셉트, 페이지 로드 인터셉트 |
-| GitHub Copilot | github_copilot | 3 | NEEDS_ALTERNATIVE | conditional | SPA generic error → 대안: 페이지 로드 인터셉트, REST API 차단 |
-| Gamma | gamma | 3 | NEEDS_ALTERNATIVE | yes | EventSource 실패 → 대안: ES 호환 에러, 페이지 로드 인터셉트 |
+| Grok | grok | 3 | NEEDS_ALTERNATIVE | no | B1-B7 소진 → 대안: NDJSON 재시도 |
+| Notion AI | notion | 3 | NEEDS_ALTERNATIVE | no | WS 전용 → 대안: HTTP Upgrade 인터셉트 |
+| GitHub Copilot | github_copilot | 3 | NEEDS_ALTERNATIVE | conditional | SPA generic error → 대안: REST API 차단 |
+| Gamma | gamma | 3 | NEEDS_ALTERNATIVE | yes | EventSource 실패 → 대안: ES 호환 에러 |
 | M365 Copilot | m365_copilot | - | NEEDS_USER_SESSION | no | 로그인 필요 → 사용자 협업 세션 대기 |
 | DeepSeek | deepseek | - | NEEDS_USER_SESSION | no | 로그인 필요 → 사용자 협업 세션 대기 |
 | Copilot | copilot | - | INPUT_FAILED | no | 입력 자동화 불가 |
@@ -59,13 +59,13 @@
 | 우선순위 | 서비스 | 현재 상태 | 난이도 | 근거 |
 |---------|--------|----------|--------|------|
 | 1 | Gemini | TESTING | 중간 | code_bug 재분류, B14 준비 |
-| 2 | Perplexity | NEEDS_ALTERNATIVE | 중간 | Thread API 차단 / 페이지 로드 인터셉트 |
+| 2 | Perplexity | NEEDS_ALTERNATIVE | 중간 | Thread API 차단 |
 | 3 | Mistral | NEEDS_STRATEGY_D | 중간 | 403→silent reset, tRPC 호환 에러 |
-| 4 | Grok | NEEDS_ALTERNATIVE | 중간 | NDJSON 재시도, 페이지 로드 인터셉트 |
+| 4 | Grok | NEEDS_ALTERNATIVE | 중간 | NDJSON 재시도 |
 | 5 | DuckDuckGo | UNTESTED | 낮음 | 로그인 불필요, 팝업만 해결 |
-| 6 | Gamma | NEEDS_ALTERNATIVE | 중간 | EventSource 호환 에러, 페이지 로드 인터셉트 |
-| 7 | Notion | NEEDS_ALTERNATIVE | 높음 | WS → HTTP Upgrade / 페이지 로드 인터셉트 |
-| 8 | GitHub Copilot | NEEDS_ALTERNATIVE | 높음 | SPA → 페이지 로드 인터셉트 |
+| 6 | Gamma | NEEDS_ALTERNATIVE | 중간 | EventSource 호환 에러 |
+| 7 | Notion | NEEDS_ALTERNATIVE | 높음 | WS → HTTP Upgrade |
+| 8 | GitHub Copilot | NEEDS_ALTERNATIVE | 높음 | SPA → REST API 차단 |
 
 ### 사용자 협업 대기
 

@@ -61,7 +61,6 @@
 ### 대안 접근법 (2026-04-10)
 WebSocket 기반 서비스 — `apf-technical-limitations.md` §1 참조:
 1. HTTP Upgrade 응답 단계 인터셉트 (101 대신 403 + 경고 HTML)
-2. 초기 페이지 로드 시 경고 페이지 주입 (Accept: text/html)
+2. REST API 병행 차단 (초기화 단계에서 경고 반환)
 3. WS 프레임 레벨 인젝션 (APF 기능 확장 시)
-4. REST API 병행 차단 (초기화 단계)
-5. DNS/리다이렉트 방식
+4. DNS/리다이렉트 방식

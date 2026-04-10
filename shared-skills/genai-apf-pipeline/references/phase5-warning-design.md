@@ -301,7 +301,7 @@ After receiving sub agent output, Cowork reviews in two stages:
 - 대안 방법 (apf-technical-limitations.md 참조):
   1. {첫 번째 대안 방법}
   2. {두 번째 대안 방법}
-  3. PAGE_LOAD_INTERCEPT (범용 대안)
+  3. 모든 API 레벨 대안 소진 시 → PENDING_INFRA
 
 ### Notes
 - {대안 방법 적용 시 필요한 추가 조사/캡처}

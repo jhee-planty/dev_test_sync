@@ -191,8 +191,7 @@ bo_mlog_info("[APF_WARNING_TEST:perplexity] body_size=%zu events=6(init+tabs+pla
 **Alternative architectures considered:**
 
 1. **Error response injection (JSON):** Perplexity uses SSE/WebSocket, not JSON REST APIs. Not applicable.
-2. **HTML error page:** Perplexity fetches via fetch API with text/event-stream expectation. Content-Type mismatch would trigger fetch error, but frontend shows generic error (not custom warning).
-3. **WebSocket interception:** Perplexity uses WS for real-time updates (Phase 1: "ws (status 101) detected"). Current Etap architecture does not support WebSocket request/response modification.
+2. **WebSocket interception:** Perplexity uses WS for real-time updates (Phase 1: "ws (status 101) detected"). Current Etap architecture does not support WebSocket request/response modification.
 
 **Future reconsideration triggers:**
 
@@ -228,7 +227,7 @@ bo_mlog_info("[APF_WARNING_TEST:perplexity] body_size=%zu events=6(init+tabs+pla
 | 4-5: Field modification side effects | answer field → thread breakage | Documented in v6/v8/v9/v10 failures |
 | 4-6: Alternative delivery paths | None viable | SSE validation defeats mimicking |
 
-**대안 방법 트리거:** 4-1 (payload validation) + 4-6 (기존 대안 없음) → **NEEDS_ALTERNATIVE** (apf-technical-limitations.md §2: Thread API 차단, 유효 thread 구조 반환, 페이지 로드 인터셉트)
+**대안 방법 트리거:** 4-1 (payload validation) + 4-6 (기존 대안 없음) → **NEEDS_ALTERNATIVE** (apf-technical-limitations.md §2: Thread API 차단, 유효 thread 구조 반환)
 
 ---
 
@@ -236,7 +235,7 @@ bo_mlog_info("[APF_WARNING_TEST:perplexity] body_size=%zu events=6(init+tabs+pla
 
 ### Current Block Implementation (v5 — LOCKED)
 
-The implementation remains as documented in `generate_perplexity_sse_block_response()`. Warning text injection is inserted into the `chunks` array (lines 1365, 1377, 1401, 1406) via the `msg_escaped` variable. However, this approach serves only as block indication, not as user-facing warning per the BLOCKED_ONLY classification.
+The implementation remains as documented in `generate_perplexity_sse_block_response()`. Warning text injection is inserted into the `chunks` array (lines 1365, 1377, 1401, 1406) via the `msg_escaped` variable. However, this approach serves only as block indication, not as user-facing warning. (이전 BLOCKED_ONLY 판정 기준 — 현재는 NEEDS_ALTERNATIVE로 전환됨)
 
 ### Version History: SSE Mimic Attempts (v5-v11)
 

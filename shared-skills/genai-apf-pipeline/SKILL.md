@@ -247,7 +247,7 @@ status.md는 `regen-status.sh`가 impl journal에서 자동 재생성한다.
 | Tier | 설명 | 예시 | 파이프라인 조치 |
 |------|------|------|----------------|
 | **Full-function** | 로그인 없이 AI 기능 동작 | ChatGPT (제한 모드), Claude.ai 게스트 | 일반 파이프라인 진행 |
-| **Partial-function** | 페이지 로드 가능하나 AI 기능에 인증 필요 | 일부 서비스의 비로그인 리다이렉트 | 비인증 기능 먼저 테스트 (페이지 로드 인터셉트 등), 인증 필요 기능만 NEEDS_USER_SESSION |
+| **Partial-function** | 페이지 로드 가능하나 AI 기능에 인증 필요 | 일부 서비스의 비로그인 리다이렉트 | 비인증 API 기능 먼저 테스트, 인증 필요 기능만 NEEDS_USER_SESSION |
 | **No-function** | 즉시 로그인 페이지로 리다이렉트 | m365_copilot, 엔터프라이즈 서비스 | 처음부터 NEEDS_USER_SESSION |
 
 ### 사용자 협업 세션 워크플로우

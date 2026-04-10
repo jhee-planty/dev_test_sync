@@ -15,8 +15,7 @@ SPA fetch handler가 Etap의 응답을 무시. H2 single write도 실패.
 8회 연속 실패 이력.
 
 **대안 접근법** (2026-04-10):
-1. 페이지 로드 인터셉트 (SPA - Accept: text/html → 경고 HTML)
-2. REST API 단계 차단 (초기화/인증 API에서 경고 반환)
+1. REST API 단계 차단 (초기화/인증 API에서 경고 반환)
 
 ### Known Constraints
 - GitHub SPA의 fetch handler가 SSE 응답을 인터셉트

@@ -27,7 +27,6 @@
 ③ JS injection (content script 방식) — 최대 2회
   ↓ 구조적 실패 또는 2회 소진
 ④ 대안 접근법 전환 (apf-technical-limitations.md 참조) — 별도 5회 예산
-  - 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML 반환)
   - HTTP Upgrade 인터셉트 (WS 서비스)
   - REST API 단계 차단
   - WS 프레임 인젝션 (APF 기능 확장)

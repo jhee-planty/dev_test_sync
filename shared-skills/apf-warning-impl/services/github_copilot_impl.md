@@ -116,5 +116,4 @@ Build #20: 2-frame DATA + GOAWAY → 0건, 에러 없음 (6ms, 깨끗한 차단)
 - Escalation ②③ (JS injection) 또는 Etap H2 비동기 분할 write 필요
 
 ### 대안 접근법 (2026-04-10)
-1. 페이지 로드 인터셉트 (SPA이므로 Accept: text/html → 경고 HTML)
-2. REST API 단계 차단 (초기화/인증 API에서 경고 반환)
+1. REST API 단계 차단 (초기화/인증 API에서 경고 반환)

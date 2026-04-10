@@ -58,5 +58,4 @@
 ### 대안 접근법 (2026-04-10)
 상태를 NEEDS_ALTERNATIVE로 전환. 자동화 불가(봇 탐지)는 HAR 수동 캡처로 우회.
 1. NDJSON 대안 시도 계속
-2. 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML 반환)
 참조: `apf-technical-limitations.md` §공통 전략

@@ -247,4 +247,3 @@ Build #30: SSE single-key JSON + 2-frame (ES=false, GA=false) → PENDING
 ### 대안 접근법 (2026-04-10)
 상태를 NEEDS_ALTERNATIVE로 전환. `apf-technical-limitations.md` §5 참조:
 1. EventSource 호환 에러 이벤트 전달 시도
-2. 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML 반환)
