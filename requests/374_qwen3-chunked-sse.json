@@ -1,0 +1,18 @@
+{
+  "id": "374",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T18:39:00+09:00",
+  "description": "Phase3-B25d: Added Transfer-Encoding: chunked to SSE responses. Root cause from #372 comparison: real qwen3 uses chunked encoding, APF was sending raw body. Browser EventStream parser requires chunked framing to parse SSE events. Also: Connection: keep-alive preserved, Content-Length removed from all SSE via code (both template-hardcoded and auto-added cases).",
+  "services": [
+    {
+      "service": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "CRITICAL 9th attempt: Does Transfer-Encoding: chunked fix EventStream parsing? Check: (1) Does warning text appear in chat? (2) Does EventStream tab show events now? (3) Check response headers for Transfer-Encoding: chunked. Previous 8 tests all showed STUCK_ON_THINKING with 0 EventStream events.",
+      "notes": "Phase3-B25d changes: (a) recalculate_content_length() now wraps SSE body in HTTP chunked encoding format (<hex-size>\\r\\n<data>\\r\\n0\\r\\n\\r\\n), (b) Adds Transfer-Encoding: chunked header, (c) Ensures Connection: keep-alive, (d) Removes Content-Length even from templates that had it hardcoded. Deployed at 18:37 KST."
+    }
+  ],
+  "priority": "CRITICAL",
+  "notes": "9th attempt at qwen3. Key insight from #372 real capture: real qwen3 uses Transfer-Encoding: chunked (NO Content-Length). If this still fails, consider alternative: switch qwen3 to non-SSE error response (simple HTML/JSON)."
+}
