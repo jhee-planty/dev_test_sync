@@ -1,0 +1,42 @@
+{
+  "id": "376",
+  "command": "run-scenario",
+  "request_file": "376_qwen3-json-error.json",
+  "result": "WARNING_VISIBLE",
+  "test_time": "2026-04-10T19:04:00+09:00",
+  "service": "qwen3",
+  "url": "https://chat.qwen.ai",
+  "build": "Phase3-B25f",
+  "symptom": "WARNING TEXT IS DISPLAYED in chat! Qwen3 shows error bubble with full warning message. Small spinner below warning still active but warning IS visible and readable.",
+  "warning_text_displayed": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "network_analysis": {
+    "request_url": "https://chat.qwen.ai/api/v2/chat/completions?chat_id=c20e247b-f335-46cd-94ca-774eaad30ec7",
+    "status_code": "200 OK",
+    "remote_address": "8.220.243.44:443",
+    "response_headers": {
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Origin": "https://chat.qwen.ai",
+      "Cache-Control": "no-cache",
+      "Connection": "close",
+      "Content-Length": "338",
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "key_difference": "Content-Type changed from text/event-stream to application/json. Browser treats it as complete JSON response, NOT SSE stream. This is why it works!"
+  },
+  "assessment": {
+    "warning_visible": true,
+    "warning_text_complete": true,
+    "spinner_stopped": false,
+    "spinner_note": "Small loading spinner still active below warning text, but warning IS displayed and readable",
+    "error_icon_shown": true,
+    "user_can_read_warning": true,
+    "input_field_available": true
+  },
+  "breakthrough": "AFTER 10 CONSECUTIVE SSE FAILURES (#363-#375), JSON error approach WORKS on first try. qwen3 JS handles non-SSE error responses correctly — displays message field from JSON body in error UI bubble.",
+  "tier_classification": "Tier 1.5 — WARNING_VISIBLE (block confirmed + warning text displayed in error UI). Upgrade to Tier 1 if spinner can be stopped.",
+  "recommendations": {
+    "priority_1": "Consider this a SUCCESS. qwen3 warning is now working via JSON error response.",
+    "priority_2": "Optional improvement: Return HTTP 4xx status (e.g., 403 or 422) instead of 200 to stop the spinner and trigger proper error state.",
+    "priority_3": "Optional: Add finish_reason or error code that qwen3 JS recognizes to cleanly terminate the 'thinking' state."
+  }
+}
