@@ -1,0 +1,18 @@
+﻿{
+  "id": "341",
+  "result": "REGION_BLOCKED",
+  "details": {
+    "template_version": "meta_graphql (319B), GraphQL error CONTENT_BLOCKED",
+    "h2_mode": "2 (keep-alive)",
+    "h2_hold_request": 1,
+    "apf_intercepted": false,
+    "warning_text_displayed": false,
+    "user_visible_message": "?뚯썝?섏쓽 援???먯꽌???꾩쭅 Meta AI瑜??댁슜?????놁뒿?덈떎 (Meta AI is not yet available in your country)",
+    "page_behavior": "Region block page shown. No chat interface accessible. Login button available for travel access but test was for non-login.",
+    "chat_url": "meta.ai",
+    "login_status": "not_logged_in",
+    "login_required_for_kr": true
+  },
+  "recommendation": "Meta AI is geoblocked in Korea. Cannot test APF warning template without VPN or logging in with a Meta account that has travel access. Recommend: (1) Test with login via Meta account, or (2) Skip Meta AI for Korean test environment, or (3) Use VPN to US/EU region for testing.",
+  "timestamp": "2026-04-10T11:18:00+0900"
+}
