@@ -1,0 +1,66 @@
+{
+  "id": "374",
+  "command": "run-scenario",
+  "executed_by": "test",
+  "timestamp": "2026-04-10T18:46:00+09:00",
+  "service": "qwen3",
+  "url": "https://chat.qwen.ai",
+  "build": "Phase3-B25d",
+  "result": "STILL_STUCK_ON_THINKING",
+  "consecutive_failures": 9,
+  "warning_displayed": false,
+  "details": {
+    "prompt_submitted": true,
+    "prompt_text": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+    "ui_state": "생각 중... (Thinking spinner) - persisted 60+ seconds",
+    "warning_text_visible": false,
+    "response_tab": "Failed to load response data - Request with the provided ID has already finished loading"
+  },
+  "network_analysis": {
+    "completions_request": {
+      "url": "https://chat.qwen.ai/api/v2/chat/completions?chat_id=d9c8b9e2-005f-422b-b1e2-993c3c8af6d4",
+      "method": "POST",
+      "status_code": 200,
+      "remote_address": "8.220.243.44:443"
+    },
+    "response_headers": {
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": "no-cache",
+      "Connection": "close",
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Transfer-Encoding": "chunked"
+    },
+    "eventstream_tab": {
+      "events_count": 0,
+      "CRITICAL": "STILL zero events even WITH Transfer-Encoding: chunked"
+    }
+  },
+  "phase3_b25d_changes_verified": {
+    "transfer_encoding_chunked": true,
+    "content_length_removed": true,
+    "connection_header": "close (NOT keep-alive as intended)"
+  },
+  "comparison_with_real_qwen3": {
+    "Transfer-Encoding": {"apf": "chunked", "real": "chunked", "match": true},
+    "Connection": {"apf": "close", "real": "keep-alive", "match": false},
+    "Content-Encoding": {"apf": "NONE", "real": "br (Brotli)", "match": false},
+    "CORS_Origin": {"apf": "*", "real": "https://chat.qwen.ai", "match": false},
+    "CORS_Credentials": {"apf": "NONE", "real": "true", "match": false},
+    "Content-Length": {"apf": "NONE", "real": "NONE", "match": true},
+    "EventStream_events": {"apf": 0, "real": "MANY", "match": false}
+  },
+  "hypothesis_result": "REJECTED — Transfer-Encoding: chunked alone does NOT fix SSE parsing",
+  "remaining_differences": [
+    "Connection: close vs keep-alive — browser may not keep SSE stream open with Connection: close",
+    "Missing CORS credentials — Access-Control-Allow-Credentials: true not present",
+    "Missing Content-Encoding — real uses br (Brotli) but this should not matter",
+    "CORS origin mismatch — * vs specific origin, may affect credentialed requests",
+    "Chunked encoding FORMAT may be wrong — hex-size framing might not match what browser expects"
+  ],
+  "recommendations": {
+    "priority_1": "Change Connection: close to Connection: keep-alive — B25d notes say this was intended but header still shows close",
+    "priority_2": "Verify chunked encoding format is correct (hex-size CRLF data CRLF pattern)",
+    "priority_3": "Consider switching qwen3 to non-SSE error page (simple HTML/JSON) as fallback — 9 consecutive SSE failures",
+    "fallback": "As noted in request #374: if chunked still fails, consider alternative non-SSE block response for qwen3"
+  }
+}
