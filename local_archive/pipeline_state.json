@@ -1,36 +1,44 @@
 {
-  "current_service": "full_rescan_batch",
-  "current_phase": "rescan_complete",
-  "last_request_id": 244,
-  "last_checked_result_id": 244,
-  "updated_at": "2026-04-07T13:30:00+09:00",
-  "batch_info": {
-    "total_requests": 27,
-    "range": "218-244",
-    "results_received": 27,
-    "results_pending": 0
-  },
+  "current_phase": "polling_group_c",
+  "last_result_id": 331,
+  "pending_requests": [],
+  "stall_count": 0,
+  "last_poll": "2026-04-10T15:45:00+09:00",
   "results_summary": {
-    "PASS": ["218_chatgpt", "221_claude"],
-    "BLOCKED_SILENT_RESET": ["219_gemini3", "223_perfle", "226_mistral"],
-    "BLOCKED_REDIRECT_FAIL": ["224_grok"],
-    "LOGIN_REQUIRED": ["220_deepseek"],
-    "INPUT_FAILED": ["222_copilot", "227_qwen3", "228_baidu", "244_m365_copilot"],
-    "NOT_BLOCKED": ["225_you", "229_kimi", "230_chatglm", "231_dola", "232_qianwen", "233_clova", "234_wrtn", "235_blackbox", "236_duckduckgo", "237_consensus", "238_v0", "239_clova_x", "240_perplexity", "241_genspark", "242_github_copilot", "243_gamma"]
+    "328": {
+      "service": "clova_x",
+      "status": "FAIL",
+      "result": "SERVICE_UNAVAILABLE",
+      "detail": "Service terminated 2026-04-09. Recommend deprecating in APF DB.",
+      "received_at": "2026-04-10T15:45:00+09:00"
+    },
+    "329": {
+      "service": "github_copilot",
+      "status": "FAIL",
+      "result": "NO_BLOCK",
+      "detail": "APF path /github/chat does not match actual endpoint /github/chat/threads/{id}/messages. Need path pattern update.",
+      "received_at": "2026-04-10T15:45:00+09:00"
+    },
+    "330": {
+      "service": "notion",
+      "status": "PARTIAL",
+      "result": "SILENT_ERROR",
+      "detail": "APF intercepted but NDJSON response causes JSON parse error in Notion. No warning visible to user. Need alternative warning delivery.",
+      "received_at": "2026-04-10T15:45:00+09:00"
+    },
+    "331": {
+      "service": "m365_copilot",
+      "status": "FAIL",
+      "result": "NO_BLOCK",
+      "detail": "APF not intercepting. Anonymous mode may bypass substrate.office.com. Re-test with MS login. Check VT SNI list.",
+      "received_at": "2026-04-10T15:45:00+09:00"
+    }
   },
-  "statistics": {
-    "PASS": 2,
-    "BLOCKED_SILENT_RESET": 3,
-    "BLOCKED_REDIRECT_FAIL": 1,
-    "LOGIN_REQUIRED": 1,
-    "INPUT_FAILED": 4,
-    "NOT_BLOCKED": 16,
-    "TOTAL": 27
-  },
-  "work_context": {
-    "strategy": "full_rescan_after_AI_prompt_branch_alignment",
-    "last_build": "2026-04-07T11:30:00+09:00",
-    "last_action": "Full rescan 218-244 complete. 27/27 results received and analyzed.",
-    "next_step": "1) NOT_BLOCKED services: most are untested (login required, service changed, or test PC skipped). 2) BLOCKED_SILENT_RESET: Gemini/Perplexity/Mistral need Strategy D. 3) PASS services confirmed: ChatGPT, Claude."
+  "group_c_summary": {
+    "total": 4,
+    "success": 0,
+    "partial": 1,
+    "fail": 3,
+    "completion": "all_received"
   }
 }

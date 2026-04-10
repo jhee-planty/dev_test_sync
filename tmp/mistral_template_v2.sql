@@ -1,0 +1,4 @@
+UPDATE ai_prompt_response_templates SET envelope_template = CONCAT(
+'HTTP/1.1 200 OK\nContent-Type: application/json\nCache-Control: no-cache\naccess-control-allow-origin: https://chat.mistral.ai\naccess-control-allow-credentials: true\nstrict-transport-security: max-age=15552000; includeSubDomains; preload\nx-content-type-options: nosniff\nx-frame-options: DENY\nvary: Origin\n\n',
+'{"result":{"data":{"json":[{"chatId":"a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d","title":null,"messages":[{"role":"assistant","content":"{{MESSAGE}}","contentChunk":"","createdAt":"2026-04-10T00:00:00.000Z"}],"generationStatus":"success","status":"active","isAcceleratedAnswer":false,"moderationCategory":null,"reaction":"neutral","visibility":"private","version":0,"files":[],"canvas":[],"references":null,"memories":null,"followups":[]}],"meta":{"values":{"0.messages.0.createdAt":["Date"]}}}}}'
+) WHERE id = 24;
