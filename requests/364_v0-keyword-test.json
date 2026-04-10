@@ -1,0 +1,25 @@
+{
+  "id": "364",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T16:50:00+09:00",
+  "description": "v0 page recovered (#361 FIXED). Test keyword blocking on v0.app. Also re-test qwen3 if #363 not yet done.",
+  "services": [
+    {
+      "service": "v0",
+      "url": "https://v0.dev",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "Page loads (redirects to v0.app). Find chat input ('Ask v0 to build...'). Submit SSN keyword. Report: (1) Does page load? (2) After submit, is there a block/warning? (3) What does user see? Screenshot.",
+      "notes": "v0 uses v0_json response type. Was BLANK_PAGE in #353, FIXED in #361. h2_hold=1, h2_mode=2."
+    },
+    {
+      "service": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "ONLY if #363 was not completed. Page loads. Submit SSN keyword. Report what user sees — warning/error/block.",
+      "notes": "qwen3 has 1 PRODUCTION block (11:20). HIGH PRIORITY. Skip if #363 already tested this."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "v0 recovery is the main new test. qwen3 is backup if #363 not done."
+}

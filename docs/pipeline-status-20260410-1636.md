@@ -37,8 +37,8 @@
 |--------|------|---------|----------|
 | **wrtn** | 페이지 로드 OK, SUBMIT_FAILED | 0건 | #362 재시도 (keyboard sim, 로그인 시도) |
 | **qwen3** | 미테스트 | **1건** (11:20) | ⭐ 이미 프로덕션 차단! warning 렌더링 확인만 필요 |
-| **you** | 미테스트 | 0건 | #361 대기. 트래픽 6건 관찰됨 |
-| **baidu** | #353 LOADING_STUCK | 0건 | #361 대기. ERR_H2 transient 후 복구 가능성 |
+| **you** | **#361 NOT_BLOCKED** — GET 검색 패턴 우회 | 0건 | ⚠️ you.com/search?q= GET 요청 → APF POST-only 우회. 채팅 API POST 확인 필요 |
+| **baidu** | **#361 STILL_STUCK** | 0건 | 지역 제한 추정, 한국 네트워크에서 접근 불가 |
 
 **B. 접근 제한:**
 | 서비스 | 이슈 | 다음 액션 |
@@ -54,8 +54,12 @@
 | 서비스 | 이슈 | 다음 액션 |
 |--------|------|----------|
 | blackbox | BLANK_PAGE (JS SPA 미렌더링) | MITM proxy SRI/CSP 이슈. 수동 테스트 필요 |
-| v0 | BLANK_PAGE | 동일 |
 | character | BLANK_PAGE (ERR_H2) | ERR_H2 transient 후 복구 가능, 이후 SPA 확인 |
+
+**E. 페이지 복구 — 키워드 테스트 필요:**
+| 서비스 | 이슈 | 다음 액션 |
+|--------|------|----------|
+| **v0** | **#361 FIXED** — v0.app redirect 정상 로드 | ⭐ 키워드 테스트 가능! #364에서 테스트 |
 
 **D. 서비스 다운:**
 | 서비스 | 이슈 |
@@ -73,17 +77,20 @@
 | notion | WS 전용 | HTTP 차단은 동작 (3건 DB) |
 | meta | 한국 리전 차단 | 접근 불가 |
 
-## 핵심 성과 (오늘 세션)
+## 핵심 성과 (오늘 세션, 16:50 업데이트)
 1. **consensus 키워드 차단 E2E 검증** — hold→keyword match→block→generic_sse template→H2 response→RST_STREAM 전체 파이프라인 동작
 2. **ERR_H2_PROTOCOL_ERROR 원인 규명** — transient SetCertificate 실패, APF 버그 아님
 3. **12개 서비스 DB 차단 확인** — gemini3(21), claude(11), mistral(8), deepseek(5), notion(3), chatgpt/perplexity/perfle/consensus/grok(각 2), qwen3/duckduckgo(각 1)
 4. **sex 키워드 FP 수정** — EXACT→REGEX \bsex\b
 5. **CLOVA X 서비스 종료 대응** — disabled 처리
 6. **copilot QUIC 우회 발견** — Tier 4 재분류
+7. **#361 분석 완료** — v0 페이지 복구(BLANK→정상), you.com GET 검색 패턴 우회 발견, baidu 지속 불가
+8. **you.com GET 우회 이슈 발견** — 검색 모드가 GET /search?q= 사용 → APF POST-only 검사 우회
 
-## 다음 우선순위
-1. **wrtn 키워드 테스트** (#362) — 가장 유망, 페이지 로드 확인됨
-2. **qwen3 warning 렌더링 확인** — 이미 프로덕션 차단 중!
-3. **you/baidu 페이지 로드 + 키워드 테스트** (#361)
-4. **SPA 렌더링 이슈 조사** — blackbox/v0/character 공통 원인 분석
-5. **로그인 필요 서비스** — huggingface/cohere/poe 계정 확보 후 테스트
+## 다음 우선순위 (16:50 업데이트)
+1. **#363 qwen3 프로덕션 차단 검증** — ⭐ 최우선! 이미 실사용자 차단 중
+2. **v0 키워드 테스트** — #361에서 페이지 복구 확인, 키워드 테스트 가능
+3. **you.com GET 우회 대응** — 채팅 API POST 확인 또는 GET URL 파라미터 검사 검토
+4. **wrtn 로그인 후 재테스트** — 인증 필요
+5. **SPA 렌더링 이슈** — blackbox/character 수동 테스트 필요
+6. **로그인 필요 서비스** — huggingface/cohere/poe 계정 확보 후 테스트

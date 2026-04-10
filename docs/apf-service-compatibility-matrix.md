@@ -51,11 +51,11 @@
 | 서비스 | response_type | 포맷 | 비고 |
 |--------|--------------|------|------|
 | cohere | cohere_sse | named events | #351 LOGIN_REQUIRED |
-| baidu | baidu_sse | SSE result 필드 | #353 LOADING_STUCK (ERR_H2) |
+| baidu | baidu_sse | SSE result 필드 | #353,**#361** LOADING_STUCK 지속 (지역 제한 추정) |
 | qwen3 | qwen3_sse | OpenAI-compat | 미테스트 |
 | blackbox | blackbox_json | JSON response | **#360** HTTP 정상이나 JS 렌더링 실패 (BLANK_PAGE 지속) — app.blackbox.ai redirect 후 빈 페이지 |
-| v0 | v0_json | JSON error | #353 BLANK_PAGE (ERR_H2) |
-| you | you_json | JSON answer | 미테스트 |
+| v0 | v0_json | JSON error | **#361** 페이지 로드 복구 ✅ (v0.app redirect, was BLANK_PAGE #353) — 키워드 테스트 필요 |
+| you | you_json | JSON answer | **#361** 페이지 OK, 키워드 제출 OK, **NOT_BLOCKED** — GET 검색 패턴 (/search?q=) APF POST-only 우회 |
 
 ### 3C: WebSocket / 기타 (4개)
 | 서비스 | response_type | 테스트 결과 |
@@ -110,19 +110,27 @@
 | 전화번호 regex | phone | REGEX | |
 | 이메일 regex | email | REGEX | |
 
-### 실시간 트래픽 관찰 (2026-04-10, etap.log 기준, 16:25 업데이트)
+### 실시간 트래픽 관찰 (2026-04-10, etap.log 기준, 16:50 업데이트)
 
 **차단 + 트래픽 확인** (12개):
 gemini3(18096), claude(438), mistral(96), perfle(65), notion(48), deepseek(41), perplexity(14), grok(13), chatgpt(12), duckduckgo(6), qwen3(5), **consensus(16:17 block×2)**
 
 **트래픽 관찰, 차단 미확인** (10개):
-phind(21, SERVICE_DOWN), blackbox(14, **#360 HTTP OK but JS BLANK_PAGE**), dola(10, **#360 LOADING_STUCK, WS 확인**), github_copilot(8, IDE), you(6), wrtn(6, **#360 hold/release clean**), huggingface(4), cohere(2), poe(15:50 hold 확인), character(미확인)
+phind(21, SERVICE_DOWN), blackbox(14, **#360 BLANK_PAGE 지속**), dola(10, **#360 LOADING_STUCK, WS 확인**), github_copilot(8, IDE), **you(6, #361 GET 검색 패턴→APF POST-only 우회)**, wrtn(6, **#362 LOGIN_REQUIRED**), huggingface(4), cohere(2), poe(15:50 hold 확인), character(미확인)
+
+**페이지 복구** (1개): **v0 (#361 FIXED — v0.app redirect 정상, was BLANK_PAGE #353)**
 
 **QUIC 우회 (1개)**: copilot (etap.log 트래픽 0건)
 
-**트래픽 없음 (10개)**: baidu, chatglm, gamma, kimi, m365_copilot, meta, qianwen, v0(15:31 page load만)
+**트래픽 없음 (9개)**: baidu(**#361 STILL_STUCK**), chatglm, gamma, kimi, m365_copilot, meta, qianwen
 
 **서비스 종료 (2개)**: clova, clova_x (enabled=false)
+
+### ⚠️ you.com GET 검색 패턴 이슈 (NEW — #361 발견)
+- you.com 검색 모드: `GET /search?q=SSN키워드` — URL 파라미터로 전송
+- APF는 POST body만 키워드 검사 → GET 요청의 URL 파라미터는 검사하지 않음
+- 11:20에 page_load_block 발생 (금지된 동작) — 이후 수정됨
+- **대응 방안**: (1) you.com 채팅 API가 POST 사용하는지 확인, (2) GET URL 파라미터 검사 기능 검토
 
 ### DB 차단 통계 (2026-04-10)
 | 서비스 | 건수 | 카테고리 | 비고 |
