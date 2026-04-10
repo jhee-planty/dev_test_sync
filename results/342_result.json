@@ -1,0 +1,47 @@
+﻿{
+  "id": "342",
+  "result": "MIXED",
+  "details": {
+    "services": {
+      "qwen3": {
+        "url": "chat.qwen.ai/c/c2877952-d50b-40e1-8c0a-3277b00c661c",
+        "result": "PARTIAL_BLOCK",
+        "apf_intercepted": true,
+        "warning_text_displayed": false,
+        "user_visible_error": "?? Qwen3.6-Plus???곌껐?섎뒗 ??臾몄젣媛 ?덉뿀?듬땲?? unknown error",
+        "error_type": "connection_error_generic",
+        "response_format": "SSE streaming intercepted, frontend shows unknown error",
+        "login_status": "logged_in_as_理쒖옣??,
+        "model": "Qwen3.6-Plus",
+        "notes": "APF blocks the API call successfully but custom warning text not displayed. Generic error shown instead."
+      },
+      "you": {
+        "url": "you.com/search",
+        "result": "PAGE_LOAD_BLOCK",
+        "apf_intercepted": true,
+        "warning_text_displayed": true,
+        "page_title": "AI Service Blocked",
+        "warning_message": "[寃쎄퀬] 誘쇨컧??媛쒖씤?뺣낫媛 ?ы븿??硫붿떆吏媛 媛먯??섏뿀?듬땲?? 蹂댁븞 ?뺤콉???곕씪 ?대떦 ?붿껌??李⑤떒?섏뿀?듬땲?? 媛쒖씤?뺣낫(二쇰??깅줉踰덊샇, ?꾪솕踰덊샇, 二쇱냼 ??瑜?AI ?쒕퉬?ㅼ뿉 ?낅젰?섏? 留덉꽭??",
+        "service_label": "Service: you",
+        "notes": "Perfect page-load block. Full HTML warning page rendered. No prompt input needed ??page load itself was intercepted."
+      },
+      "blackbox": {
+        "url_tested": ["www.blackbox.ai (landing page)", "app.blackbox.ai (chat app)"],
+        "result": "PARTIAL_BLOCK",
+        "www_blackbox_ai": {
+          "page_loaded": true,
+          "apf_intercepted": false,
+          "notes": "Marketing/landing page loaded normally. No APF block on www.blackbox.ai."
+        },
+        "app_blackbox_ai": {
+          "page_loaded": false,
+          "apf_intercepted": true,
+          "page_behavior": "Blank white page, loading spinner never completes. APF intercepts page load but returns response that stalls the page instead of showing warning.",
+          "warning_text_displayed": false,
+          "notes": "APF blocks app.blackbox.ai page load but doesn't serve HTML warning page. Page stalls indefinitely."
+        }
+      }
+    }
+  },
+  "timestamp": "2026-04-10T11:24:00+0900"
+}
