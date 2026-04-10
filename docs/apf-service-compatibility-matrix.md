@@ -55,7 +55,7 @@
 | baidu | baidu_sse | SSE result 필드 | #353,**#361** LOADING_STUCK 지속 (지역 제한 추정) |
 | qwen3 | qwen3_sse | OpenAI-compat | **#363** 키워드 차단 확인 ✅ (SSN regex, 570B 템플릿, HTTP/1.1) → **Tier 1.5 승격** |
 | blackbox | blackbox_json | JSON response | **#360** HTTP 정상이나 JS 렌더링 실패 (BLANK_PAGE 지속) — app.blackbox.ai redirect 후 빈 페이지 |
-| v0 | v0_json | JSON error | **#361** 페이지 로드 복구 ✅ (v0.app redirect, was BLANK_PAGE #353) — 키워드 테스트 필요 |
+| v0 | v0_json | JSON error | **#361** 페이지 복구, **#364** FALSE POSITIVE (Thinking 스피너≠APF 차단, 도메인 미매칭). v0.app 도메인 추가+CL fix 후 #366 재테스트 |
 | you | you_json | JSON answer | **#361** 페이지 OK, 키워드 제출 OK, **NOT_BLOCKED** — GET 검색 패턴 (/search?q=) APF POST-only 우회 |
 
 ### 3C: WebSocket / 기타 (4개)

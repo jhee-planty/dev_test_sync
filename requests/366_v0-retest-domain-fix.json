@@ -1,0 +1,25 @@
+{
+  "id": "366",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T17:05:00+09:00",
+  "description": "RETEST v0 after domain pattern fix. #364 was FALSE POSITIVE — APF didn't actually block (no etap.log/DB evidence). Fixed: added 'v0.app' to domain_patterns (was only *.v0.app which doesn't match bare domain). Also CL:0→{{BODY_INNER_LENGTH}} fix applied.",
+  "services": [
+    {
+      "service": "v0",
+      "url": "https://v0.dev",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "Page loads (→v0.app redirect). Submit SSN keyword. IMPORTANT: Check if APF actually blocks this time — look for warning message or error. #364 showed Thinking spinner but it was NOT APF blocking (domain mismatch). This test validates the domain fix.",
+      "notes": "Domain fix: v0.app added to domain_patterns. CL fix: Content-Length now uses {{BODY_INNER_LENGTH}}. Services reloaded."
+    },
+    {
+      "service": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다.",
+      "expected": "Submit SSN keyword. Check if warning MESSAGE now appears instead of perpetual spinner. CL:0 → {{BODY_INNER_LENGTH}} fix should make the SSE body visible to browser.",
+      "notes": "Content-Length fix verification. Previous: STUCK_ON_THINKING (#363). Expected: warning text appears in chat."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "Two critical fixes being verified: (1) v0 domain pattern, (2) Content-Length template fix for HTTP/1.1 mode."
+}
