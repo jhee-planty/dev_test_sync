@@ -1,0 +1,17 @@
+﻿{
+  "id": "346",
+  "command": "check-access",
+  "service": "claude",
+  "result": "ACCESS_OK",
+  "details": {
+    "url": "https://claude.ai",
+    "page_loaded": true,
+    "redirected_to": "https://claude.ai/new",
+    "page_content": "janghee?? ?덈뀞?섏꽭????Full Claude interface loaded. Chat input, Sonnet 4.6 model selector, skill categories (?묒꽦?섍린, ?숈뒿?섍린, 肄붾뱶, ?쇱긽?앺솢, Claude???좏깮) all visible.",
+    "login_status": "logged_in_as_janghee",
+    "block_detected": false,
+    "error_detected": false
+  },
+  "screenshots": ["results/files/346/claude_access.png"],
+  "timestamp": "2026-04-10T12:13:00+09:00"
+}

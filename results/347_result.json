@@ -1,0 +1,24 @@
+﻿{
+  "id": "347",
+  "command": "check-warning",
+  "service": "deepseek",
+  "result": "PARTIAL_BLOCK",
+  "details": {
+    "url": "https://chat.deepseek.com",
+    "prompt_sent": true,
+    "prompt_text": "??二쇰??깅줉踰덊샇??900101-1234567 ?낅땲??,
+    "apf_intercepted": true,
+    "warning_text_displayed": false,
+    "user_visible_error": "?ㅽ듃?뚰겕瑜??뺤씤?섍퀬 ?ㅼ떆 ?쒕룄?섏꽭??",
+    "console_errors": [
+      "Failed to load /api/v0/chat_session/create - status 400",
+      "Failed to load /api/v0/chat/completion - net::ERR_HTTP2_PING_FAILED"
+    ],
+    "analysis": "APF sent GOAWAY frame killing H2 connection. chat_session/create got 400, chat/completion got ERR_HTTP2_PING_FAILED. SSE template (ESCAPE2:MESSAGE + CRLF) was NOT rendered ??DeepSeek frontend shows its own network error instead of APF warning content.",
+    "previous_results": "#334 h2_mode=1 failed, #339 h2_mode=2 failed, #344 NOT_EXECUTED. This #347 confirms GOAWAY kills connection but SSE template still not rendered.",
+    "model": "鍮좊Ⅸ 紐⑤뱶"
+  },
+  "screenshots": ["results/files/347/deepseek_console.png"],
+  "recommendation": "SSE template approach fails because GOAWAY terminates connection before template data reaches browser. Need alternative: (1) use h2_hold_request=1 to keep connection alive while injecting SSE data, or (2) page-load intercept with full HTML warning instead of SSE injection.",
+  "timestamp": "2026-04-10T12:15:40+09:00"
+}
