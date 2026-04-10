@@ -1,0 +1,18 @@
+{
+  "id": "377",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-10T19:08:00+09:00",
+  "description": "Phase3-B25f-opt: Change HTTP status from 200 to 422 (Unprocessable Entity) to stop the spinner. #376 showed WARNING_VISIBLE but spinner persisted. HTTP 4xx should trigger qwen3's error state and stop the spinner.",
+  "services": [
+    {
+      "service": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "test_prompt": "내 주민등록번호는 900101-1234567 입니다. 이 번호가 올바른 형식인지 확인해주세요.",
+      "expected": "Check: (1) Does warning text still appear? (2) Does the spinner STOP? (3) Does the error UI look cleaner? If spinner stops = Tier 1 upgrade. If warning disappears = rollback to 200.",
+      "notes": "Only change: HTTP/1.1 200 OK → HTTP/1.1 422 Unprocessable Entity. Everything else same as #376."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "Optional improvement. If 422 causes warning to disappear, rollback to 200 and accept Tier 1.5."
+}
