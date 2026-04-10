@@ -15,14 +15,19 @@
 
 **결과**: 50ms delay 추가에도 STILL_STUCK_ON_THINKING. 6번 연속 실패.
 
-### 가설 3: SSE Content-Length (현재 테스트 중 — #373)
+### 가설 3: SSE Content-Length (기각 — #373)
 > Content-Length 포함 SSE 응답 → 브라우저가 스트리밍이 아닌 완료된 응답으로 처리.
 
-**근거** (#370 HAR 캡처):
-- 브라우저가 200 OK + 401 bytes를 **완전히 수신**
-- EventStream 탭 존재 → ZERO events (SSE 파싱 실패)
-- Response 탭: "Failed to load response data" (이미 완료)
-- **TCP 전송 문제 아님 — SSE 형식/파싱 문제**
+**결과**: Content-Length 제거 후에도 EventStream ZERO events. 필요 조건이지만 충분 조건은 아님.
+
+### 가설 4: Transfer-Encoding: chunked 누락 (현재 테스트 중 — #374)
+> HTTP/1.1 SSE에서 chunked encoding 없이 전송 → 브라우저 EventStream 파서 미작동.
+
+**근거** (#372 실제 qwen3 캡처 vs APF 비교):
+- 실제: `Transfer-Encoding: chunked`, `Connection: keep-alive`
+- APF(#373): Transfer-Encoding 없음, `Connection: close`
+- EventStream 파서는 chunked framing으로 이벤트를 분리
+- **Phase3-B25d**: chunked encoding 포맷 + TE 헤더 추가
 
 ## 실험 결과 타임라인
 
@@ -33,8 +38,9 @@
 | 369 | 17:57 | v0 h2_goaway=1 | NOT_BLOCKED | 키워드 매칭 실패 (조사 중) |
 | 370 | 18:00 | qwen3 HAR 캡처 | **ZERO SSE events** | 핵심 진단 결과 |
 | 371 | 18:00 | qwen3 50ms delay | STUCK_ON_THINKING | TCP RST 가설 기각 |
-| 372 | 18:20 | qwen3 비차단 SSE 캡처 | 대기 중 | 실제 형식 확인용 |
-| 373 | 18:20 | Content-Length 제거 | **대기 중** | SSE 파싱 가설 검증 |
+| 372 | 18:20 | qwen3 비차단 SSE 캡처 | **REAL_SSE_CAPTURED** | TE:chunked, Connection:keep-alive |
+| 373 | 18:20 | Content-Length 제거 | **STILL_STUCK** (8th) | CL 제거만으로 불충분 |
+| 374 | 18:39 | TE:chunked 추가 | **대기 중** | chunked 인코딩 가설 검증 |
 
 ## Phase3-B25c 변경사항 (18:19 배포)
 
@@ -45,6 +51,20 @@
 
 ### DB 변경
 - qwen3_sse 템플릿에서 `Content-Length: {{BODY_INNER_LENGTH}}` 라인 제거
+
+## Phase3-B25d 변경사항 (18:37 배포)
+
+### 코드 변경 (`recalculate_content_length()` 전면 개편)
+1. SSE 응답 감지 시 전체 경로 변경:
+   - Content-Length 제거 (템플릿에 하드코딩된 경우 포함)
+   - `Transfer-Encoding: chunked` 헤더 추가
+   - `Connection: keep-alive` 보장
+   - Body를 HTTP chunked encoding 포맷으로 래핑 (`<hex>\r\n<data>\r\n0\r\n\r\n`)
+2. 비-SSE 응답: 기존 동작 유지 (Content-Length 교체/추가)
+
+### 배포 시각
+- 빌드: 18:38, 8/8 steps, 48초
+- etapd 재시작: 18:37:38 KST
 
 ## v0 키워드 매칭 실패 (별도 이슈)
 
@@ -69,7 +89,8 @@
 
 ## 다음 단계
 
-1. **#373 결과 대기** — Content-Length 제거로 qwen3 스피너 해결되는지
-2. **#372 결과** — 실제 qwen3 SSE 형식 확인 → 템플릿 정밀 매칭
-3. **v0 진단** — v0 트래픽 시 body 로그로 키워드 미매칭 원인 파악
-4. **#373 실패 시** → qwen3 실제 SSE 형식(#372)과 비교하여 템플릿 재설계
+1. **#374 결과 대기** — Transfer-Encoding: chunked로 EventStream 파싱 성공 여부
+2. **#374 성공 시** → generic_sse, openai_compat_sse 등 다른 SSE 템플릿 자동 적용 (코드에서 처리)
+3. **#374 실패 시** → 대안: qwen3를 비-SSE 응답(JSON/HTML)으로 전환, 에러 UI 수용
+4. **v0 진단** — v0 트래픽 시 v0_diag 로그로 키워드 미매칭 원인 파악
+5. **DB 정리** — SSE 템플릿에서 `Content-Length: {{BODY_INNER_LENGTH}}` 라인 일괄 제거 (코드가 처리하지만 정리 목적)
