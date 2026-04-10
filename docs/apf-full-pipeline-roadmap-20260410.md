@@ -2,9 +2,11 @@
 > Generated: 2026-04-10 | DB snapshot from test server (218.232.120.58)
 
 ## Executive Summary
-- **DB 등록 서비스**: 38개 (활성 37개, gemini disabled)
-- **테스트 완료**: 10개 (27%)
-- **Warning 정상**: 5개 (13.5%)
+- **DB 등록 서비스**: 38개 (활성 32개, disabled 5개, amazon 제외 1개)
+- **테스트 완료**: 14개 (44%)
+- **Warning 정상**: 5개 (16%)
+- **신규 기능 배포**: Accept header 감지 + WebSocket Upgrade 인터셉트 + 페이지 로드 HTML 경고
+- **페이지 로드 인터셉트**: 모든 서비스에 범용 적용 (템플릿 없이도 HTML 경고 표시)
 - **목표**: 전체 서비스 대상 차단 + 경고 문구 표시
 
 ---
@@ -12,6 +14,13 @@
 ## Session Actions Log (최신순)
 | 시간 | 작업 | 결과 |
 |------|------|------|
+| 11:15 | #343 페이지 로드 인터셉트 테스트 (wrtn, phind, v0, character, poe, huggingface) | git push |
+| 11:12 | Group D 13개 서비스 h2_mode=2+hold 일괄 전환 (페이지 로드 인터셉트 활성화) | DB+reload |
+| 11:10 | #342 batch test (qwen3 SSE, you JSON, blackbox page) 전송 | git push |
+| 11:08 | qwen3 SSE 템플릿 + you JSON 템플릿 INSERT | DB+reload |
+| 11:07 | qwen3/you/blackbox h2_mode=2+hold+response_type 설정 | DB+reload |
+| 11:05 | #335-338 결과 수신 분석 | github_copilot(NO_BLOCK-다른 도메인), notion(SILENT), m365(NO_BLOCK-다른API), frontend inspect 완료 |
+| 11:04 | APF 빌드+배포 성공 (Accept header + WebSocket + page-load HTML) | 8/8 steps OK, 53초 |
 | 20:20 | Gemini3 h2_hold_request=0→1 + #340 retest 전송 | DB+APF reload+git push |
 | 20:15 | DeepSeek h2_mode=1→2 (GOAWAY→keep-alive) + #339 retest 전송 | DB+APF reload+git push |
 | 20:10 | #332-334 결과 수신: perplexity(PARTIAL), gemini3(SILENT), deepseek(PARTIAL) | 분석 완료 |
@@ -19,14 +28,14 @@
 | 20:00 | #338 batch frontend inspect 요청 (you, qwen3, blackbox, meta) | git push 완료 |
 | 19:45 | #335-337 재테스트 요청 (github_copilot path fix, notion JSON fix, m365 retest) | git push 완료 |
 | 19:30 | Notion 템플릿 NDJSON→single JSON 수정 (id=18, 282B) | APF reload 완료 |
-| 19:20 | chatgpt2 비활성화, clova_x/clova 비활성화 | DB 반영 |
+| 19:20 | chatgpt2 비활성화, clova_x/clova 비활성화, copilot 비활성화 | DB 반영 |
 | 19:10 | Group B SSE 업그레이드 (perplexity 4205B, gemini 378B, deepseek 481B) + #332-334 | DB+APF+git push |
 | 18:30 | Group C 테스트 #328-331 (clova_x, github_copilot, notion, m365_copilot) | git push |
 | 18:30 | Group E 6개 서비스 block_mode=1 활성화 | DB 반영 |
 | 18:00 | DB 전체 조사 + 5그룹 분류 + 로드맵 생성 | 37개 서비스 분류 |
 
-## 현재 활성 서비스 현황 (33개 활성, 32개 차단 대상)
-- **비활성화 처리**: chatgpt2, clova_x, clova, gemini (4개)
+## 현재 활성 서비스 현황 (32개 활성, 31개 차단 대상)
+- **비활성화 처리**: chatgpt2, clova_x, clova, copilot, gemini (5개)
 - **차단 제외**: amazon (block_mode=0, AWS 콘솔)
 
 ---
