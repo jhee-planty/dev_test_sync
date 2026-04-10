@@ -1,0 +1,82 @@
+{
+  "id": "372+373",
+  "command": "har-capture + run-scenario",
+  "executed_by": "test",
+  "timestamp": "2026-04-10T18:31:00+09:00",
+  "results": {
+    "test_372_real_sse_capture": {
+      "result": "REAL_SSE_CAPTURED",
+      "service": "qwen3",
+      "prompt": "오늘 날씨가 어때? (benign, non-blocked)",
+      "real_response_headers": {
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://chat.qwen.ai",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Content-Encoding": "br",
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Transfer-Encoding": "chunked"
+      },
+      "real_sse_format": {
+        "events_parsed": "MANY",
+        "event_data_structure": "{\"choices\": [{\"delta\": {\"role\": \"assistant\", \"content\": \"...\"}}]}",
+        "notes": "Real qwen3 uses Transfer-Encoding: chunked (NO Content-Length), Connection: keep-alive, Content-Encoding: br (Brotli), CORS with specific origin + credentials"
+      }
+    },
+    "test_373_phase3b25c_no_content_length": {
+      "result": "STILL_STUCK_ON_THINKING",
+      "service": "qwen3",
+      "build": "Phase3-B25c",
+      "changes_applied": [
+        "Content-Length removed from SSE templates",
+        "50ms usleep removed from visible_tls_session.cpp",
+        "qwen3_sse DB template updated"
+      ],
+      "consecutive_failures": 8,
+      "observed_response_headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache",
+        "Connection": "close",
+        "Content-Type": "text/event-stream; charset=utf-8"
+      },
+      "content_length_removed": true,
+      "eventstream_tab": {
+        "exists": true,
+        "events_count": 0,
+        "CRITICAL": "STILL zero events even without Content-Length"
+      },
+      "response_tab": "Failed to load response data - Request with the provided ID has already finished loading",
+      "hypothesis_result": "REJECTED — Content-Length removal alone does NOT fix SSE parsing"
+    }
+  },
+  "comparison_apf_vs_real": {
+    "header_differences": {
+      "Content-Length": {"apf_370": "401", "apf_373": "NONE", "real": "NONE"},
+      "Transfer-Encoding": {"apf": "NONE", "real": "chunked"},
+      "Connection": {"apf": "close", "real": "keep-alive"},
+      "Content-Encoding": {"apf": "NONE", "real": "br (Brotli)"},
+      "CORS_Origin": {"apf": "*", "real": "https://chat.qwen.ai"},
+      "CORS_Credentials": {"apf": "NONE", "real": "true"}
+    },
+    "body_differences": {
+      "apf_events_parsed": 0,
+      "real_events_parsed": "MANY",
+      "likely_root_causes": [
+        "1. Missing Transfer-Encoding: chunked — browser may not process SSE without chunked encoding",
+        "2. Connection: close causes immediate completion — JS fetch reader gets no stream chunks",
+        "3. SSE body data format mismatch with what qwen3 JS parser expects",
+        "4. CORS mismatch may cause JS to reject response (origin * vs specific + credentials)"
+      ]
+    }
+  },
+  "recommendations": {
+    "next_steps": [
+      "Add Transfer-Encoding: chunked to SSE response",
+      "Change Connection: close to keep-alive",
+      "Match CORS headers exactly: Access-Control-Allow-Origin: https://chat.qwen.ai + Credentials: true",
+      "Consider: qwen3 JS may use fetch() ReadableStream, not EventSource — needs chunked transfer to work",
+      "Alternative: abandon SSE approach for qwen3, use simple error page (non-SSE content-type)"
+    ],
+    "priority": "Transfer-Encoding: chunked is likely the #1 missing piece"
+  }
+}
