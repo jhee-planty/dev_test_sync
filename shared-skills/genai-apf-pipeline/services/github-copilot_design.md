@@ -1,7 +1,7 @@
 ## GitHub Copilot — Warning Design
 
 ### Strategy
-- Pattern: SSE_STREAM_WARNING (attempted) → BLOCKED_ONLY
+- Pattern: SSE_STREAM_WARNING (attempted) → **NEEDS_ALTERNATIVE**
 - HTTP/2 strategy: B (keep-alive, is_http2=2)
 - Based on: GitHub Copilot uses SSE via SPA fetch handler that ignores injected responses.
 
@@ -10,9 +10,13 @@
 - Content-Type: text/event-stream
 - is_http2: 2 (keep-alive)
 
-### Current State: BLOCKED_ONLY
+### Current State: NEEDS_ALTERNATIVE
 SPA fetch handler가 Etap의 응답을 무시. H2 single write도 실패.
 8회 연속 실패 이력.
+
+**대안 접근법** (2026-04-10):
+1. 페이지 로드 인터셉트 (SPA - Accept: text/html → 경고 HTML)
+2. REST API 단계 차단 (초기화/인증 API에서 경고 반환)
 
 ### Known Constraints
 - GitHub SPA의 fetch handler가 SSE 응답을 인터셉트

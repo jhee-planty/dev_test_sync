@@ -169,7 +169,7 @@ Build #21: JSON error 422 + 2-frame DATA + GOAWAY → 422 확인! (PARTIAL_PASS)
 ### Final Production Config
 - is_http2=2, END_STREAM=false (1-frame DATA, flags=0x00), GOAWAY=false
 - Generator: SSE format (현재 Build #33 코드 유지 — 차단 동작 정상)
-- 상태: **BLOCKED_ONLY** — 차단O, 경고 텍스트 표시X
+- 상태: **NEEDS_ALTERNATIVE** — 차단O, 경고 텍스트 표시X
 
 ### Iteration 7 (2026-03-27) — Builds #22-#25 (non-SSE approaches)
 - Build #22: 200 OK + text/plain → "Unable to complete request", 1 empty card
@@ -243,3 +243,8 @@ Build #30: SSE single-key JSON + 2-frame (ES=false, GA=false) → PENDING
 - 차단: 정상 (빈 outline → 발표 생성 실패)
 - 경고: 불가 (H2 DATA frame 전달 안됨 + 프론트엔드 fallback)
 - 재시도 조건: Etap H2 응답 주입 개선 또는 Gamma 프론트엔드 변경 시
+
+### 대안 접근법 (2026-04-10)
+상태를 NEEDS_ALTERNATIVE로 전환. `apf-technical-limitations.md` §5 참조:
+1. EventSource 호환 에러 이벤트 전달 시도
+2. 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML 반환)

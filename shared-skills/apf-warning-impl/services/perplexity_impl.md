@@ -47,3 +47,9 @@
   /rest/thread/blocked-* 로드 → 실패 → 홈 리디렉트.
 - #122 확인: etap log에서 block 확인 (5105B, 6 events), 프론트엔드는 /search/blocked-* → 홈 리디렉트
 - 향후 재시도 조건: generator 함수 시그니처 변경하여 api_path 전달 → perfle가 HTML 경고 페이지 반환 (에러 페이지 교체 방식)
+
+### 대안 접근법 (2026-04-10)
+상태를 NEEDS_ALTERNATIVE로 전환. `apf-technical-limitations.md` §2 참조:
+1. Thread 생성 API 단계에서 차단 (검색 요청 인터셉트)
+2. 유효한 thread 구조 반환하여 경고 텍스트를 검색 결과로 표시
+3. 페이지 로드 시 HTML 경고 주입

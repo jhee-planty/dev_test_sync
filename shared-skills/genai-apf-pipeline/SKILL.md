@@ -171,12 +171,18 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
 | Phase 1 | Phase 2 | HAR captured (`metadata.json total_requests > 0`) |
 | Phase 2 | Phase 3 | SQL + C++ approved (Cowork quality gate pass) |
 | Phase 3 | Phase 4 | Block verified on test server + regression pass |
+| Phase 3 | NEEDS_ALTERNATIVE | 표준 경고 전달 불가 → 대안 방법 탐색 (apf-technical-limitations.md 참조) |
+| NEEDS_ALTERNATIVE | Phase 4 | 대안 방법 선택 완료 → 해당 방법 기반 프론트엔드/메커니즘 검사 |
+| NEEDS_USER_SESSION | Phase 1 | 사용자 세션 제공됨 → 파이프라인 재진입 (HAR 재캡처) |
 | Phase 4 | Phase 5 | Frontend profile saved (`services/{service_id}_frontend.md`) |
 | Phase 5 | Phase 6 | Design document approved (`services/{service_id}_design.md`) |
 | Phase 6 | Phase 7 | Warning verified + regression pass + test logs removed |
 | Phase 7 | Done | Successful deploy + user confirms warning display |
 
-**Block-only endpoint:** Phase 3 DONE — 경고 구현이 불가능한 서비스는 여기서 종료.
+**Alternative approach trigger:** BLOCK_VERIFIED 후 표준 경고 전달이 불가능하면 NEEDS_ALTERNATIVE로 전환.
+`apf-technical-limitations.md`에서 해당 서비스의 대안 방법을 참조하여 순차 시도한다.
+모든 대안 방법을 소진하면 PENDING_INFRA (인프라 확장 대기)로 전환한다.
+**BLOCKED_ONLY 판정은 존재하지 않는다 — 모든 서비스에 대해 가능한 모든 방법을 시도한다.**
 
 **Backward transitions:**
 - Phase 3 → Phase 2: block 실패, 재분석 필요
@@ -204,7 +210,9 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
   2. 해당 서비스만 Phase 3 진행 (코드 수정 → 빌드 → 테스트)
   3. 성공 → regression test → Phase 4 → 다음 서비스로
   4. 3회 연속 실패 → 3-Strike Rule 적용 (apf-warning-impl 참조)
-  5. 3-Strike 후에도 진전 없으면 → 해당 서비스 보류, 다음 서비스로
+  5. 3-Strike 후에도 진전 없으면 → 대안 접근법 전환 (apf-technical-limitations.md 참조)
+  6. 대안 방법 모두 소진 → PENDING_INFRA (인프라 확장 대기, 정기 재검토)
+  7. NEEDS_USER_SESSION 서비스 → 사용자 협업 세션에서 일괄 처리 (아래 프로토콜 참조)
 ```
 
 ### 서비스 우선순위
@@ -220,10 +228,54 @@ States: `PENDING → CAPTURING → CAPTURED → REGISTERED → BLOCK_TESTING →
 
 - Phase 1-3 (Block): PENDING → CAPTURING → CAPTURED → REGISTERED → BLOCK_TESTING → BLOCK_VERIFIED
 - Phase 4-7 (Warning): INSPECTED → DESIGNED → TESTING → TEST_FAIL → VERIFIED → DONE
-- Block-only endpoint: BLOCK_VERIFIED (경고 불가 시 여기서 종료)
+- 대안 경로: BLOCK_VERIFIED → **NEEDS_ALTERNATIVE** → INSPECTED (대안 방법 기반 검사)
+- 로그인 필요: **NEEDS_USER_SESSION** → CAPTURING (사용자 세션 제공 후 재진입)
+- 인프라 대기: **PENDING_INFRA** (모든 대안 소진, 인프라 확장 대기 — 정기 재검토)
 
 status.md는 `regen-status.sh`가 impl journal에서 자동 재생성한다.
 수동 편집 금지 — impl journal에 verdict를 기록하면 다음 regen 시 반영된다.
+
+---
+
+## 로그인 필요 서비스 협업 프로토콜
+
+일부 서비스는 인증된 세션이 있어야 AI 기능이 동작한다. 이런 서비스는 자동 테스트가
+불가능하므로 **사용자와 협업하여** 테스트를 진행한다.
+
+### 로그인 분류 (3-Tier)
+
+| Tier | 설명 | 예시 | 파이프라인 조치 |
+|------|------|------|----------------|
+| **Full-function** | 로그인 없이 AI 기능 동작 | ChatGPT (제한 모드), Claude.ai 게스트 | 일반 파이프라인 진행 |
+| **Partial-function** | 페이지 로드 가능하나 AI 기능에 인증 필요 | 일부 서비스의 비로그인 리다이렉트 | 비인증 기능 먼저 테스트 (페이지 로드 인터셉트 등), 인증 필요 기능만 NEEDS_USER_SESSION |
+| **No-function** | 즉시 로그인 페이지로 리다이렉트 | m365_copilot, 엔터프라이즈 서비스 | 처음부터 NEEDS_USER_SESSION |
+
+### 사용자 협업 세션 워크플로우
+
+```
+1. NEEDS_USER_SESSION 서비스를 status.md의 "사용자 협업 대기" 그룹에서 확인
+2. 사용자에게 협업 세션 요청:
+   - 필요한 서비스 목록
+   - 서비스별 필요 계정/권한
+   - 예상 소요 시간
+3. 사용자가 세션 시간을 지정하면, 해당 시간에 일괄 테스트 진행:
+   a. 사용자가 test PC에서 로그인
+   b. 로그인 상태에서 HAR 캡처 / 경고 테스트 실행
+   c. 결과 수집 및 파이프라인 상태 갱신
+4. 세션 만료 관리: 세션 유효 기간을 사전에 확인하고,
+   긴 테스트 시 세션 갱신 단계를 포함
+```
+
+### 세션 요청 메시지 템플릿
+
+```
+[사용자 협업 요청]
+다음 서비스들의 테스트에 로그인이 필요합니다:
+- {서비스명}: {필요 계정 유형} ({예상 작업})
+- ...
+예상 소요 시간: 약 {N}분
+편하신 시간에 알려주시면 해당 시간에 일괄 진행하겠습니다.
+```
 
 ---
 
@@ -316,7 +368,7 @@ impl의 references에 정리되어 있다.
 → See `references/operational-lessons.md` for 전체 교훈 상세.
 
 핵심 요약 (작업 전 반드시 상기):
-- **확인 불가 서비스는 즉시 제외**, 가능한 서비스부터 완료
+- **모든 대안 방법 시도 후 PENDING_INFRA로 전환** (불가 판정 없음), 로그인 필요 서비스는 NEEDS_USER_SESSION으로 분류
 - **test PC 품질 검증**: Phase 3 batch 전에 DONE 서비스로 단건 검증 (actual_test_performed 확인)
 - **DB 변경 후 4단계**: UPDATE → reload_services → detect grep → check-warning
 - **컨텍스트 관리**: 50~100턴마다 /compact, 대용량 데이터는 파일 참조

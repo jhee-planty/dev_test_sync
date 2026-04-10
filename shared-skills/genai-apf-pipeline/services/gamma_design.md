@@ -1,7 +1,7 @@
 ## Gamma — Warning Design
 
 ### Strategy
-- Pattern: H2_DATA_WARNING (attempted) → BLOCKED_ONLY
+- Pattern: H2_DATA_WARNING (attempted) → **NEEDS_ALTERNATIVE**
 - HTTP/2 strategy: B (keep-alive, is_http2=2)
 - Based on: Gamma uses HTTP/2 streaming. H2 DATA frame delivery 실패.
 
@@ -9,8 +9,12 @@
 - API: ai.api.gamma.app, path=/
 - is_http2: 2 (keep-alive)
 
-### Current State: BLOCKED_ONLY
+### Current State: NEEDS_ALTERNATIVE
 H2 DATA frame delivery 실패. 7빌드 실패 이력.
+
+**대안 접근법** (2026-04-10, apf-technical-limitations.md §5):
+1. EventSource 호환 에러 이벤트 전달
+2. 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML)
 
 ### Known Constraints
 - H2 DATA frame이 클라이언트에 도달하지 않음

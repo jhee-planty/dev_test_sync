@@ -1,14 +1,14 @@
 # Grok — Warning Design
 
 **Document Date**: 2026-04-02
-**Status**: BLOCKED_ONLY (Phase 1 Analysis)
+**Status**: NEEDS_ALTERNATIVE (이전: BLOCKED_ONLY)
 **Based on**: grok_frontend.md (Phase 1 inspection), ai_prompt_filter.cpp (existing B6 implementation)
 
 ---
 
 ## Strategy
 
-### Primary: BLOCKED_ONLY
+### Primary: NEEDS_ALTERNATIVE (이전: BLOCKED_ONLY)
 
 **Reason**: Grok uses NDJSON (newline-delimited JSON) over HTTP/2, which presents fundamental delivery obstacles.
 
@@ -19,7 +19,7 @@
 - Best achieved state (B6): Partial success — NDJSON parsing succeeds, token text appears, but redirect occurs and response is incomplete
 - Protocol complexity + multiplexing risk on H2 make reliable warning delivery infeasible
 
-**Fallback if BLOCKED_ONLY is unacceptable**:
+**대안 접근법 (apf-technical-limitations.md 참조):**
 - See "Alternative Approach (Requires Extended Discussion)" at end of document
 
 ---
@@ -91,7 +91,7 @@ The existing code minimally demonstrates text delivery into the Grok response pi
 
 ## Test Criteria
 
-### Phase 3 Testing (if BLOCKED_ONLY is overridden):
+### Phase 3 Testing (대안 접근법 적용 시):
 
 #### Minimal Success Threshold:
 - B6 response delivered completely (all 3 chunks buffered before H2 stream close)
@@ -177,7 +177,7 @@ The existing B6 code **represents the limit** of what can be reliably achieved w
 2. **H2 Timing**: Etap's single-write architecture cannot guarantee all chunks are buffered before H2 closes the stream
 3. **State Machine**: Grok frontend's async state machine expects finalization events beyond `messageTag:final`; attempts to provide these (B1–B5) caused parse errors or timeouts
 
-### If BLOCKED_ONLY Is Overridden:
+### 대안 접근법 적용 시:
 
 - **No C++ code change required**: B6 is already implemented and deployable
 - **Test**: Phase 3 should confirm whether B6 + current H2 handling results in visible warning (unlikely) or error page (likely)
@@ -191,7 +191,7 @@ The existing B6 code **represents the limit** of what can be reliably achieved w
 
 ### Design Rationale:
 
-**Why BLOCKED_ONLY?**
+**이전 BLOCKED_ONLY 판정 사유 (참고용):**
 
 1. **Grok Protocol Incompatibility**:
    - Unlike ChatGPT (SSE), Grok uses NDJSON — a multi-object, newline-delimited format designed for incremental streaming
@@ -226,9 +226,9 @@ From grok_frontend.md:
 
 ### Design Document Precedent:
 
-Grok's BLOCKED_ONLY status mirrors:
-- **Gemini**: WebSocket-based response → BLOCKED_ONLY (HTTP injection impossible)
-- **Gamma**: Polling-based + card-consumption of text → BLOCKED_ONLY (warning absorbed into content)
+Grok's previous BLOCKED_ONLY status mirrored:
+- **Gemini**: WebSocket-based response → NEEDS_ALTERNATIVE (HTTP injection impossible)
+- **Gamma**: Polling-based + card-consumption of text → NEEDS_ALTERNATIVE (warning absorbed into content)
 
 Unlike:
 - **ChatGPT**: OpenAI-compatible SSE → SSE_STREAM_WARNING (standard format, well-understood)
@@ -236,7 +236,7 @@ Unlike:
 
 ### Alternative Approach (Requires Extended Discussion):
 
-If BLOCKED_ONLY is not acceptable, consider:
+대안 접근법 (순차 시도):
 
 1. **Error Response with Grok API Compatibility**:
    - Return 403 or 422 JSON error response (not NDJSON)
@@ -253,7 +253,7 @@ If BLOCKED_ONLY is not acceptable, consider:
    - Etap redirects to it; Grok displays warning natively
    - Requires cross-team coordination
 
-**Recommendation**: Proceed with BLOCKED_ONLY unless Phase 3 testing of B6 reveals that the error page (redirect target) is user-visible and acceptable.
+**Recommendation**: NEEDS_ALTERNATIVE 상태로 전환. 대안 접근법을 순차 시도한다. apf-technical-limitations.md 참조.
 
 ---
 
@@ -261,7 +261,7 @@ If BLOCKED_ONLY is not acceptable, consider:
 
 | Aspect | Finding |
 |--------|---------|
-| **Verdict** | BLOCKED_ONLY |
+| **Verdict** | NEEDS_ALTERNATIVE (이전: BLOCKED_ONLY) |
 | **Reason** | NDJSON protocol mismatch, H2 multiplexing risk, no alternative delivery path |
 | **Best Achievable** | B6 — Partial success (token text partial delivery, redirect overshadows warning) |
 | **Fallback** | Error page display (requires Phase 1 re-inspection) or arch discussion with Grok |

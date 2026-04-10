@@ -228,7 +228,7 @@ bo_mlog_info("[APF_WARNING_TEST:perplexity] body_size=%zu events=6(init+tabs+pla
 | 4-5: Field modification side effects | answer field → thread breakage | Documented in v6/v8/v9/v10 failures |
 | 4-6: Alternative delivery paths | None viable | SSE validation defeats mimicking |
 
-**Early termination condition triggered:** 4-1 (payload validation) + 4-6 (no alternatives) → **BLOCKED_ONLY classification confirmed**
+**대안 방법 트리거:** 4-1 (payload validation) + 4-6 (기존 대안 없음) → **NEEDS_ALTERNATIVE** (apf-technical-limitations.md §2: Thread API 차단, 유효 thread 구조 반환, 페이지 로드 인터셉트)
 
 ---
 

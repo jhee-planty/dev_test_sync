@@ -77,7 +77,7 @@ Guidelines: SKILLS_DIR/guidelines.md
 
 IMPORTANT: Fill out the warning delivery checklist (Section 1 and 2) BEFORE choosing a strategy.
 Use the checklist Section 3 matrix to select the HTTP/2 strategy and warning pattern.
-If any early determination condition in Section 3.3 is met, skip Steps 3-5 and use the BLOCKED_ONLY output format with justification.
+If any alternative method trigger condition in Section 3.3 is met, skip Steps 3-5 and use the NEEDS_ALTERNATIVE output format with justification and alternative approach references.
 When filling Section 2 items, you may additionally read design docs of services with the same comm_type (in services/ directory) for reference.
 If the frontend profile data contradicts basic assumptions (e.g., comm_type changed from SSE to WebSocket, API endpoint domain changed), add === FRONTEND_STALE === section at the top of output with specific discrepancies found.
 
@@ -120,10 +120,10 @@ ETAP_ROOT  = ~/Documents/workspace/Officeguard/EtapV3/
 frontend profile과 HAR 데이터를 근거로 YES / NO / N/A / 불명을 기록한다.
 (N/A = 통신 유형에 해당 없음, 불명 = 데이터 부족 → 리스크 기록)
 
-> **조기 판정:** Section 3.3의 조기 판정 조건에 해당하면
-> Phase 3 진입 전에 BLOCKED_ONLY를 판정하고, design doc에 근거를 명시한다.
-> → **Step 3~5를 건너뛰고 'Output Format (BLOCKED_ONLY)' 템플릿으로 직행한다.**
-> 이는 불필요한 빌드 반복을 방지한다.
+> **대안 방법 트리거:** Section 3.3의 대안 방법 트리거 조건에 해당하면
+> 표준 경고 전달이 불가능하므로 대안 접근법을 적용한다.
+> → **Step 3~5를 건너뛰고 'Output Format (NEEDS_ALTERNATIVE)' 템플릿으로 직행한다.**
+> 대안 방법은 `apf-technical-limitations.md`를 참조한다. BLOCKED_ONLY 판정은 존재하지 않는다.
 
 아래는 체크리스트의 핵심 질문 요약 (전체 항목은 체크리스트 문서 참조):
 
@@ -131,7 +131,7 @@ frontend profile과 HAR 데이터를 근거로 YES / NO / N/A / 불명을 기록
 |------|----------|----------|
 | 통신 | 통신 유형, 프로토콜, 다중화, SSE 구분자, WS 사용 여부 | 사용 가능한 패턴과 Strategy 제한 |
 | 렌더링 | Content-Type, 필수 키, init 이벤트, 마크다운, 비채팅 소비 | 경고 텍스트 표시 가능 여부 |
-| 에러 처리 | 에러 핸들러 범위, 에러 UI 유형, 에러 역할 대체 가능성, silent failure | BLOCKED_ONLY 조기 판정 |
+| 에러 처리 | 에러 핸들러 범위, 에러 UI 유형, 에러 역할 대체 가능성, silent failure | 대안 방법 트리거 판정 |
 | 전달 가능성 | payload 검증, 단일 write 종료, 필드 수정 부작용, 대안 존재 | 최종 전달 방식 선택 |
 
 ### Step 3 — Choose Warning Strategy
@@ -181,7 +181,7 @@ After receiving sub agent output, Cowork reviews in two stages:
 | FRONTEND_STALE 플래그 확인 | output에 `=== FRONTEND_STALE ===` 섹션이 있으면 → Phase 1 재수행 후 sub agent 재실행. 설계를 진행하지 않는다 |
 | 전 항목이 채워졌는가 | Full Checklist Record에서 N/A 외 빈 항목 없는지 확인 |
 | 불명 항목이 리스크로 기록되었는가 | 불명 항목마다 "Phase 3 우선 확인" 또는 "Phase 1 재조사" 지시가 있는지 |
-| 조기 판정 조건(3.3)을 확인했는가 | 해당 시 BLOCKED_ONLY 판정과 근거가 명시되었는지 |
+| 대안 방법 트리거 조건(3.3)을 확인했는가 | 해당 시 NEEDS_ALTERNATIVE 판정과 대안 방법 참조가 명시되었는지 |
 | Strategy가 매트릭스(3.1, 3.2) 결과와 일치하는가 | Checklist Results의 조건 조합이 선택된 Strategy와 매칭되는지 |
 
 > **Stage 1 미통과 시 즉시 반려한다.** 체크리스트가 불완전한 상태에서 Stage 2를 진행하지 않는다.
@@ -277,13 +277,13 @@ After receiving sub agent output, Cowork reviews in two stages:
 
 ---
 
-## Output Format (BLOCKED_ONLY): services/{service_id}_design.md
+## Output Format (NEEDS_ALTERNATIVE): services/{service_id}_design.md
 
-조기 판정(Section 3.3)으로 BLOCKED_ONLY가 확정된 서비스용 단축 템플릿.
-Response Specification, Frontend Rendering Prediction, Test Log Points는 생략한다.
+대안 방법 트리거(Section 3.3)에 해당하는 서비스용 단축 템플릿.
+표준 경고 전달 대신 대안 접근법을 적용한다. BLOCKED_ONLY 판정은 존재하지 않는다.
 
 ```markdown
-## {Service Name} — Warning Design (BLOCKED_ONLY)
+## {Service Name} — Warning Design (NEEDS_ALTERNATIVE)
 
 ### Checklist Results
 - 통신 유형: {1-1 결과}
@@ -292,15 +292,20 @@ Response Specification, Frontend Rendering Prediction, Test Log Points는 생략
 - 에러 핸들러: {3-1 결과}
 - 에러 UI: {3-2 결과}
 - payload 검증: {4-1 결과}
-- **조기 판정: YES — Section 3.3 조건 #{번호} 해당**
+- 로그인 필요: {1-6 결과}
+- **대안 방법 트리거: YES — Section 3.3 조건 #{번호} 해당**
 
 ### Strategy
-- Pattern: BLOCKED_ONLY (차단O, 경고X)
-- 근거: {조기 판정 조건과 구체적 근거}
+- Pattern: NEEDS_ALTERNATIVE (표준 전달 불가 → 대안 접근법 적용)
+- 차단 사유: {표준 전달이 불가능한 이유}
+- 대안 방법 (apf-technical-limitations.md 참조):
+  1. {첫 번째 대안 방법}
+  2. {두 번째 대안 방법}
+  3. PAGE_LOAD_INTERCEPT (범용 대안)
 
 ### Notes
-- {추후 경고 전달이 가능해지는 조건 (있다면)}
-- {Etap 아키텍처 변경, 프론트엔드 변경 등으로 재검토 가능한 시점}
+- {대안 방법 적용 시 필요한 추가 조사/캡처}
+- {인프라 확장이 필요한 경우 구체적 요건}
 
 ### Full Checklist Record
 <details>

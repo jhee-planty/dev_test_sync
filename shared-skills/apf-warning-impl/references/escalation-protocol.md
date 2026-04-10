@@ -26,12 +26,24 @@
   ↓ 구조적 실패 또는 2회 소진
 ③ JS injection (content script 방식) — 최대 2회
   ↓ 구조적 실패 또는 2회 소진
-④ BLOCKED_ONLY 판정 → 다음 서비스로 이동
+④ 대안 접근법 전환 (apf-technical-limitations.md 참조) — 별도 5회 예산
+  - 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML 반환)
+  - HTTP Upgrade 인터셉트 (WS 서비스)
+  - REST API 단계 차단
+  - WS 프레임 인젝션 (APF 기능 확장)
+  - DNS/리다이렉트 방식
+  ↓ 대안 방법 5회 모두 소진
+⑤ PENDING_INFRA → 인프라 확장 대기 (정기 재검토, 분기별)
 ```
+
+> **BLOCKED_ONLY 판정은 존재하지 않는다.**
+> 모든 서비스에 대해 가능한 모든 방법을 시도한다. ⑤에 도달해도 서비스는
+> 폐기가 아닌 "인프라 확장 대기" 상태이며, 새로운 기술적 가능성이 생기면 재시도한다.
 
 ## 현재 아키텍처 한계
 
-6개 서비스가 에스컬레이션 ① 단계의 한계에 도달했다.
+6개 서비스가 에스컬레이션 ① 단계의 한계에 도달하여 ④ 대안 접근법 단계로 전환 대상이다.
 ②③ 단계는 Etap의 현재 C++ 아키텍처에서 약 400줄 규모의 구조 변경이 필요하다.
+④ 대안 접근법의 구체적인 서비스별 방법은 `../../docs/apf-technical-limitations.md` 참조.
 
 → See `references/escalation-architecture-limits.md` for 구조적 한계 상세.

@@ -53,7 +53,15 @@
 2. NDJSON 시도 (#100-103): fake UUID → syncRecordValue 타임아웃
 3. WebSocket 프레임 인터셉션은 APF 아키텍처 범위 밖
 
-**VERDICT: BLOCKED_ONLY** — Escalation ① 한계 도달
+**VERDICT (수정됨, 2026-04-10):** ~~BLOCKED_ONLY~~ → **NEEDS_ALTERNATIVE**
 - 도메인 레벨 차단으로 AI 요청 자체는 방지 가능 (blocked=1)
 - 경고 텍스트 전달은 WebSocket 아키텍처 제약으로 불가
 - Escalation ②③ 또는 WebSocket 프레임 인터셉션 필요
+
+### 대안 접근법 (2026-04-10)
+WebSocket 기반 서비스 — `apf-technical-limitations.md` §1 참조:
+1. HTTP Upgrade 응답 단계 인터셉트 (101 대신 403 + 경고 HTML)
+2. 초기 페이지 로드 시 경고 페이지 주입 (Accept: text/html)
+3. WS 프레임 레벨 인젝션 (APF 기능 확장 시)
+4. REST API 병행 차단 (초기화 단계)
+5. DNS/리다이렉트 방식

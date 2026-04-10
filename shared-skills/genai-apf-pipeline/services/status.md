@@ -44,27 +44,36 @@
 | Claude | claude | Done | DONE | yes | Rescan PASS |
 | Genspark | genspark | Done | VERIFIED | yes | Build 260402 재검증 PASS |
 | Gemini | gemini3 | 3 | TESTING | conditional | code_bug 재분류, B14 준비. DPDK IPv6 필요 |
-| Perplexity | perfle | 3 | BLOCKED_ONLY | yes | is_http2=2(Strategy B), SSE payload 검증으로 경고 불가 |
+| Perplexity | perfle | 3 | NEEDS_ALTERNATIVE | yes | SSE payload 검증 → 대안: Thread API 차단, 페이지 로드 인터셉트 |
 | Mistral | mistral | 2 | NEEDS_STRATEGY_D | conditional | 403→silent reset |
-| Grok | grok | 3 | BLOCKED_ONLY | no | B1-B7 7빌드 소진, NDJSON 구조적 한계 |
-| Notion AI | notion | 3 | BLOCKED_ONLY | no | WebSocket 전용, HTTP 주입 불가 |
-| GitHub Copilot | github_copilot | 3 | BLOCKED_ONLY | conditional | 422 전달, 프론트엔드 generic error |
-| Gamma | gamma | 3 | BLOCKED_ONLY | yes | EventSource 파싱 실패 |
-| M365 Copilot | m365_copilot | - | EXCLUDED | no | 자동화 불가 |
-| DeepSeek | deepseek | - | LOGIN_REQUIRED | no | 로그인 없이 불가 |
+| Grok | grok | 3 | NEEDS_ALTERNATIVE | no | B1-B7 소진 → 대안: NDJSON 재시도, 페이지 로드 인터셉트 |
+| Notion AI | notion | 3 | NEEDS_ALTERNATIVE | no | WS 전용 → 대안: HTTP Upgrade 인터셉트, 페이지 로드 인터셉트 |
+| GitHub Copilot | github_copilot | 3 | NEEDS_ALTERNATIVE | conditional | SPA generic error → 대안: 페이지 로드 인터셉트, REST API 차단 |
+| Gamma | gamma | 3 | NEEDS_ALTERNATIVE | yes | EventSource 실패 → 대안: ES 호환 에러, 페이지 로드 인터셉트 |
+| M365 Copilot | m365_copilot | - | NEEDS_USER_SESSION | no | 로그인 필요 → 사용자 협업 세션 대기 |
+| DeepSeek | deepseek | - | NEEDS_USER_SESSION | no | 로그인 필요 → 사용자 협업 세션 대기 |
 | Copilot | copilot | - | INPUT_FAILED | no | 입력 자동화 불가 |
 
 ## 서비스 우선순위
 
 | 우선순위 | 서비스 | 현재 상태 | 난이도 | 근거 |
 |---------|--------|----------|--------|------|
-| 1 | Gemini | NEEDS_STRATEGY_D | 중간 | silent reset, Strategy D 설계 |
-| 2 | Perplexity | NEEDS_STRATEGY_D | 중간 | silent reset, Strategy D 설계 |
-| 3 | Mistral | NEEDS_STRATEGY_D | 중간 | 403→silent reset |
-| 4 | Grok | BLOCKED_REDIRECT_FAIL | 중간 | redirect 재설계 |
+| 1 | Gemini | TESTING | 중간 | code_bug 재분류, B14 준비 |
+| 2 | Perplexity | NEEDS_ALTERNATIVE | 중간 | Thread API 차단 / 페이지 로드 인터셉트 |
+| 3 | Mistral | NEEDS_STRATEGY_D | 중간 | 403→silent reset, tRPC 호환 에러 |
+| 4 | Grok | NEEDS_ALTERNATIVE | 중간 | NDJSON 재시도, 페이지 로드 인터셉트 |
 | 5 | DuckDuckGo | UNTESTED | 낮음 | 로그인 불필요, 팝업만 해결 |
-| 6 | DeepSeek | LOGIN_REQUIRED | 높음 | 인증 자동화 필요 |
-| 7+ | 기타 미테스트 | UNTESTED | 높음 | 로그인/중국서비스/자동화 |
+| 6 | Gamma | NEEDS_ALTERNATIVE | 중간 | EventSource 호환 에러, 페이지 로드 인터셉트 |
+| 7 | Notion | NEEDS_ALTERNATIVE | 높음 | WS → HTTP Upgrade / 페이지 로드 인터셉트 |
+| 8 | GitHub Copilot | NEEDS_ALTERNATIVE | 높음 | SPA → 페이지 로드 인터셉트 |
+
+### 사용자 협업 대기
+
+| 서비스 | 상태 | 필요 조건 |
+|--------|------|----------|
+| M365 Copilot | NEEDS_USER_SESSION | Microsoft 계정 로그인 |
+| DeepSeek | NEEDS_USER_SESSION | DeepSeek 계정 로그인 |
+| 기타 로그인 필요 | NEEDS_USER_SESSION | 서비스별 계정 |
 
 ---
 

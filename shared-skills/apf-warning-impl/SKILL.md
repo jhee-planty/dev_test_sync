@@ -280,9 +280,10 @@ Record the iteration in `services/{service_id}_impl.md` (test PC 결과 포함).
 ### 시도 횟수 제한 및 에스컬레이션
 
 서비스당 전체 상한: **유효 7회** 빌드-테스트 사이클.
-유효 5회 소진 시 사용자 승인 게이트, 7회 도달 시 BLOCKED_ONLY 확정.
+유효 5회 소진 시 사용자 승인 게이트, 7회 도달 시 대안 접근법 전환 (apf-technical-limitations.md 참조).
+대안 방법 5회 소진 시 PENDING_INFRA (인프라 확장 대기).
 
-→ See `references/escalation-protocol.md` for 유효 카운트 규칙(유형별 차등: tweakable/structural/code_bug/infra_issue/external_change), 면제 조건, 강제 승인 게이트, BLOCKED_ONLY 처리 절차, 3-Strike Rule 상세.
+→ See `references/escalation-protocol.md` for 유효 카운트 규칙(유형별 차등: tweakable/structural/code_bug/infra_issue/external_change), 면제 조건, 강제 승인 게이트, 대안 접근법 전환 절차, PENDING_INFRA 처리, 3-Strike Rule 상세.
 
 **3-Strike Rule 요약:** 3회 연속 실패 시 (1) 서버 로그 확인, (2) HAR 재캡처, (3) 접근법 재검토를 강제. 이 단계 없이 4번째 미세 조정 빌드를 하지 않는다.
 

@@ -41,8 +41,8 @@ HTML이 아닌 응답(SSE, JSON)에 script를 삽입할 수 없다.
 
 다음 조건 중 하나에 해당하면 ②③ 구현을 검토한다:
 
-- BLOCKED_ONLY 서비스가 전체의 50% 이상
-- 주요 서비스(사용자 수 기준)가 BLOCKED_ONLY 판정
+- NEEDS_ALTERNATIVE 서비스가 전체의 50% 이상
+- 주요 서비스(사용자 수 기준)가 NEEDS_ALTERNATIVE 상태
 - 경영진이 특정 서비스의 경고 표시를 명시적으로 요청
 
 ## 관련 파일

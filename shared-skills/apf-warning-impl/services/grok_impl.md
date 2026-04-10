@@ -9,7 +9,7 @@
   - ERR_CERT_COMMON_NAME_INVALID on cdn.grok.com (proxy cert mismatch)
   - retry_count: 5, all failed
 - 결론: 자동화 불가. 수동 테스트 또는 CDP 접근 필요
-- Status: EXCLUDED (automation impossible, per operational lesson "확인 불가 서비스는 즉시 제외")
+- Status: **NEEDS_ALTERNATIVE** (이전: EXCLUDED)
 
 ### Build Phase3-B6 (#124) — NDJSON + newline delimiter (2026-04-01)
 - 변경: chunk 간 \n 구분자 추가 (NDJSON = Newline-Delimited JSON)
@@ -54,3 +54,9 @@
   - conversation chunk 포함 → redirect → 백엔드 검증 실패 (fake ID)
   - conversation chunk 제거 → 렌더링 타겟 없음
 - B6에서 NDJSON 파싱 성공은 주요 기술적 성과 (줄바꿈 구분자 핵심)
+
+### 대안 접근법 (2026-04-10)
+상태를 NEEDS_ALTERNATIVE로 전환. 자동화 불가(봇 탐지)는 HAR 수동 캡처로 우회.
+1. NDJSON 대안 시도 계속
+2. 페이지 로드 인터셉트 (Accept: text/html → 경고 HTML 반환)
+참조: `apf-technical-limitations.md` §공통 전략

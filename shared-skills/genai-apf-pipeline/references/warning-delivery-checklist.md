@@ -10,6 +10,11 @@ Phase 2 전용. 프론트엔드 프로파일(Phase 1 산출물)을 입력으로 
 
 ## 사용 방법
 
+**원칙: 어떤 조건 조합에서도 BLOCKED_ONLY 판정은 내리지 않는다.**
+모든 서비스에 대해 가능한 모든 방법을 시도한다. 표준 전달이 불가능하면
+PAGE_LOAD_INTERCEPT(범용 대안)가 항상 존재하며, 서비스별 추가 대안은
+`../../docs/apf-technical-limitations.md`를 참조한다.
+
 1. 새 서비스의 design doc 작성 시 이 체크리스트를 순서대로 채운다.
 2. 각 항목에 대해 **확인 결과**를 YES / NO / N/A / 불명으로 기록한다.
    - **N/A**: 해당 서비스의 통신 유형에 적용되지 않는 항목 (예: 비-SSE 서비스의 SSE 관련 항목)
@@ -47,7 +52,8 @@ Phase 2 전용. 프론트엔드 프로파일(Phase 1 산출물)을 입력으로 
 | 1-2 | 프로토콜은 HTTP/1.1인가 HTTP/2인가? | frontend-profile의 protocol 필드 확인 | H2라도 Strategy C 가능 (Etap이 H1→H2 변환). 3.1 매트릭스에서 최종 결정 |
 | 1-3 | 동일 H2 연결에 여러 스트림을 다중화하는가? | frontend-profile 또는 HAR에서 동시 스트림 수 확인 | 다중화 YES → GOAWAY 시 cascade failure 위험 → Strategy D 후보 |
 | 1-4 | SSE 구분자는 `\n\n`인가 `\r\n\r\n`인가? (SSE인 경우에만) | HAR 원본 데이터에서 실제 바이트 확인 | 잘못된 구분자 → JSON.parse 실패 (Genspark 사례). 비-SSE → N/A |
-| 1-5 | WebSocket을 AI 응답 전달에 사용하는가? | frontend-profile의 WebSocket 필드 확인 | WS 사용 → HTTP 응답 주입 불가 → 별도 아키텍처 필요 또는 BLOCKED_ONLY |
+| 1-5 | WebSocket을 AI 응답 전달에 사용하는가? | frontend-profile의 WebSocket 필드 확인 | WS 사용 → HTTP 응답 주입 불가 → NEEDS_ALTERNATIVE (`apf-technical-limitations.md` §1: HTTP Upgrade 인터셉트, 페이지 로드 인터셉트, WS 프레임 인젝션, REST API 차단, DNS 리다이렉트 순차 시도) |
+| 1-6 | 서비스 이용에 인증이 필요한가? | 비로그인 상태에서 서비스 접속 테스트 | Full-function (로그인 불필요) / Partial-function (AI 기능만 인증 필요) / No-function (즉시 로그인 리다이렉트) → No-function이면 NEEDS_USER_SESSION, Partial이면 비인증 기능 먼저 테스트 |
 
 ### 1.2 프론트엔드 렌더링
 
@@ -65,7 +71,7 @@ Phase 2 전용. 프론트엔드 프로파일(Phase 1 산출물)을 입력으로 
 | # | 체크 항목 | 확인 방법 | 판정 기준 |
 |---|----------|----------|----------|
 | 3-1 | 에러 핸들러가 fetch/SSE 전체를 감싸는가? (try-catch, error boundary) | frontend-profile의 에러 핸들러 분석 | 전체 감싸기 → 커스텀 경고 전달 자체가 불가능할 수 있음 |
-| 3-2 | 에러 시 사용자에게 보이는 UI는? (커스텀 메시지 vs generic error) | frontend-profile의 에러 UI 분석 | generic error만 표시 → 경고 문구 전달 불가 → BLOCKED_ONLY 조기 판정 후보 |
+| 3-2 | 에러 시 사용자에게 보이는 UI는? (커스텀 메시지 vs generic error) | frontend-profile의 에러 UI 분석 | generic error만 표시 → SSE/JSON 미믹 방식 불가 → 대안 방법 트리거 (페이지 로드 인터셉트 등) |
 | 3-3 | 에러 UI가 경고 역할을 대체할 수 있는가? | 에러 UI에 서버 메시지가 포함되는지 확인 | YES → 에러 코드(403/422 등) + body에 경고 삽입 전략 가능 |
 | 3-4 | 특정 HTTP 상태 코드를 프론트엔드가 무시하는가? (silent failure) | frontend-profile 또는 기존 서비스 경험 | 403 무시 → 해당 코드 사용 불가 (Gemini 사례) |
 
@@ -82,7 +88,7 @@ Section 1 결과를 기반으로, 경고 텍스트가 실제로 사용자에게 
 | 4-3 | 응답 필드 중 수정 가능한 것이 렌더링에 사용되는가? | HAR 응답 구조에서 렌더링 필드 식별 | 수정 가능 필드 없음 → 경고 텍스트 삽입 불가 |
 | 4-4 | 프론트엔드가 비표준 프로토콜을 사용하는가? | frontend-profile의 comm_type 분석 | 비표준(webchannel, 커스텀 WS 등) → 프로토콜별 맞춤 응답 필요 |
 | 4-5 | 수정한 필드가 다른 기능을 깨뜨리는가? (스레드 깨짐, 상태 불일치) | 동일 통신 유형 서비스의 design doc Notes에서 필드 수정 부작용 기록 확인. 해당 없으면 불명으로 기록 | 부작용 있음 → 해당 필드 사용 불가 (Perplexity answer 필드 사례) |
-| 4-6 | 대안 전달 방식이 존재하는가? (HTML error page, JSON error, redirect) | 에러 핸들러 구조(3-1~3-4) 결과 종합 | 대안 없음 + SSE 미믹 실패 → BLOCKED_ONLY 판정 |
+| 4-6 | 대안 전달 방식이 존재하는가? (HTML error page, JSON error, redirect) | 에러 핸들러 구조(3-1~3-4) 결과 종합 | SSE 미믹 실패 → 페이지 로드 인터셉트(공통 전략) 시도 → `apf-technical-limitations.md` §공통 전략 참조. BLOCKED_ONLY 판정 없음 |
 
 ---
 
@@ -114,23 +120,28 @@ Section 1, 2의 결과 조합으로 전략을 선택한다.
 |----------|-----------|----------|
 | SSE + payload 검증 없음 + 필수 키 파악됨 | 가능 | **SSE_STREAM_WARNING** |
 | SSE + (4-1(전달)=YES 또는 4-2(전달)=YES) + 3-3(에러처리)=YES (에러 UI가 서버 메시지 표시) | SSE 미믹 불가 → 에러 응답으로 전환 | **JSON_SINGLE_WARNING** (에러 코드 + body) |
-| SSE + (4-1(전달)=YES 또는 4-2(전달)=YES) + 3-3(에러처리)=NO (에러 UI가 generic) | SSE 미믹 불가 + 대안 없음 | **BLOCKED_ONLY** |
+| SSE + (4-1(전달)=YES 또는 4-2(전달)=YES) + 3-3(에러처리)=NO (에러 UI가 generic) | SSE 미믹 불가 → 대안 전환 | **NEEDS_ALTERNATIVE** (페이지 로드 인터셉트 또는 서비스별 대안 — `apf-technical-limitations.md` 참조) |
 | batchexecute / webchannel | 프로토콜 맞춤 가능 | **CUSTOM** (프로토콜별 설계) |
 | NDJSON | JSON Patch 구조 파악됨 | **CUSTOM: NDJSON_WARNING** |
-| WebSocket (AI 응답 전달용) | HTTP 주입 불가 | **BLOCKED_ONLY** 또는 아키텍처 확장 요청 |
+| WebSocket (AI 응답 전달용) | HTTP 주입 불가 → 대안 전환 | **NEEDS_ALTERNATIVE** (`apf-technical-limitations.md` §1: 5가지 대안 순차 시도) |
 | REST JSON (비스트리밍) | JSON 키 파악됨 | **JSON_SINGLE_WARNING** |
+| 모든 통신 유형 (범용 대안) | 표준 전달 불가 시 | **PAGE_LOAD_INTERCEPT** (`Accept: text/html` 요청 인터셉트 → 경고 HTML 반환. 브라우저 접근 서비스에 적용) |
 
-### 3.3 조기 판정 조건 (Section 2에서 하나라도 해당 시)
+### 3.3 대안 방법 트리거 조건 (Section 2에서 하나라도 해당 시)
 
-아래 조건 중 하나라도 해당하면 Phase 3 진입 전에 판정을 내린다.
+아래 조건 중 하나라도 해당하면 표준 경고 전달이 불가능하므로 **대안 방법으로 전환**한다.
+BLOCKED_ONLY 판정은 존재하지 않는다 — 모든 서비스에 대해 가능한 모든 방법을 시도한다.
 
-| 조건 | 판정 | 근거 |
-|------|------|------|
-| 3-1 = 전체 감싸기 AND 3-2 = generic error AND 3-3 = NO | **BLOCKED_ONLY** | 경고 전달 경로 자체가 없음 |
-| 1-5 = YES (WS 사용) AND 별도 아키텍처 불가 | **BLOCKED_ONLY** | HTTP 응답 주입 불가 |
-| 4-1 = YES (payload 검증) AND 4-6 = NO (대안 없음) | **BLOCKED_ONLY** | 모든 미믹 시도가 실패할 것으로 예측 |
-| 4-5 = YES (필드 수정 → 부작용) AND 수정 가능 필드가 해당 필드뿐 | **BLOCKED_ONLY** | 유일한 경로가 부작용으로 차단됨 |
-| 2-5 = 비채팅 소비 AND 경고가 콘텐츠로 흡수되는 구조 | **BLOCKED_ONLY** | 경고를 사용자가 인지할 수 없음 (Gamma 사례) |
+| 조건 | 차단 사유 | 첫 번째 대안 | 범용 대안 |
+|------|----------|------------|----------|
+| 3-1 = 전체 감싸기 AND 3-2 = generic error AND 3-3 = NO | 표준 경고 전달 경로 없음 | 에러 코드 기반 전달 재시도 (다른 HTTP 상태 코드 테스트) | PAGE_LOAD_INTERCEPT |
+| 1-5 = YES (WS 사용) | HTTP 응답 주입 불가 | HTTP Upgrade 인터셉트 (`apf-technical-limitations.md` §1) | PAGE_LOAD_INTERCEPT |
+| 4-1 = YES (payload 검증) AND 4-6 기존 대안 없음 | SSE 미믹 시도 실패 예측 | Thread/REST API 단계 차단 (`apf-technical-limitations.md` §2) | PAGE_LOAD_INTERCEPT |
+| 4-5 = YES (필드 수정 → 부작용) AND 수정 가능 필드가 해당 필드뿐 | 유일한 경로가 부작용으로 차단 | 다른 필드/이벤트 타입 탐색 또는 에러 응답 전환 | PAGE_LOAD_INTERCEPT |
+| 2-5 = 비채팅 소비 AND 경고가 콘텐츠로 흡수되는 구조 | 경고가 콘텐츠로 소비됨 (Gamma 사례) | EventSource 호환 에러 이벤트 (`apf-technical-limitations.md` §5) | PAGE_LOAD_INTERCEPT |
+
+> **참고:** NEEDS_ALTERNATIVE 판정 시, 대안 방법에 따라 Phase 1 재캡처(추가 HAR 데이터 수집)가 필요할 수 있다.
+> 예: WS 서비스의 REST API 엔드포인트 조사, 비인증 기능 테스트 등.
 
 ---
 
@@ -159,3 +170,4 @@ Section 1, 2의 결과 조합으로 전략을 선택한다.
 | 2026-03-31 | 초안 작성. 10개 서비스 경험에서 추출. |
 | 2026-03-31 | 5회 리뷰(기술/PM/컨설턴트/PM재검/작업담당자) 반영. 주요: 재검증 트리거 추가, 우선순위 매트릭스 도입, N/A·불명 처리, 조기 판정 분기 명시, 섹션 태그 병기. |
 | 2026-04-01 | 5자 통합 리뷰(개발/PM/컨설턴트/테스터/스킬전문가) 반영. 주요: escalation 구조 한계 외부 참조 추가, "불명" 용어 일관성 확인. |
+| 2026-04-10 | BLOCKED_ONLY 개념 완전 제거. "조기 판정 조건"→"대안 방법 트리거 조건" 전환. PAGE_LOAD_INTERCEPT 범용 대안 추가. 로그인 분류 항목(1-6) 추가. apf-technical-limitations.md 연동. |
