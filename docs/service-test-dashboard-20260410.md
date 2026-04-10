@@ -126,6 +126,17 @@
   - you: ⚠️ INPUT_FAILED (DPI 좌표 불일치)
   - perplexity: ⚠️ PARTIAL_BLOCK (차단 성공, "스레드 없음" 에러)
 
+## 테스트 결과 (#353 — CRITICAL)
+- **#353**: Tier 3 batch (consensus, dola, blackbox, v0, baidu) — **5/5 FAIL**
+  - 전 서비스 ERR_HTTP2_PROTOCOL_ERROR로 JS 리소스 로딩 실패
+  - 공통점: h2_hold=1, h2_mode=2 서비스
+  - **분석**: etap.log에 test 시간대(15:36) 로그 0건 → 트래픽이 Etap을 경유하지 않았거나 VTS 하위 레이어에서 실패
+  - **가설 A**: VTS H2 proxy의 h2_mode=2 핸들링 버그
+  - **가설 B**: SetCertificate 실패 (8917건) 관련 TLS/H2 손상
+  - **가설 C**: test PC 네트워크/브라우저 설정 이슈
+  - **진단**: #359 diagnostic test 생성 (consensus vs claude 비교, 인증서 체인 확인)
+  - **NOTE**: APF hold 코드는 POST만 적용 (line 648), GET 요청에 영향 없음 확인
+
 ## 대기 중인 테스트
 - **#351**: openai_compat_sse batch (kimi, huggingface, cohere)
 - **#352**: Gemini Strategy D 검증
