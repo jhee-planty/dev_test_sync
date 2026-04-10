@@ -1,0 +1,45 @@
+{
+  "id": "343",
+  "command": "run-scenario",
+  "service": "batch_page_load_intercept",
+  "created": "2026-04-10T11:15:00+09:00",
+  "notes": "페이지 로드 인터셉트 테스트. 새로 배포된 Accept: text/html 감지 코드가 동작하는지 확인. 각 서비스 URL을 브라우저에서 직접 접속하여 (1) APF가 HTML 경고 페이지를 반환하는지, (2) 원래 서비스 페이지 대신 경고가 표시되는지 확인. 프롬프트 입력 불필요 — 페이지 접속만으로 테스트.",
+  "steps": [
+    {
+      "action": "check-page-load",
+      "service": "wrtn",
+      "url": "https://wrtn.ai",
+      "check": ["page_load_intercepted", "html_warning_displayed", "original_page_blocked"]
+    },
+    {
+      "action": "check-page-load",
+      "service": "phind",
+      "url": "https://phind.com",
+      "check": ["page_load_intercepted", "html_warning_displayed", "original_page_blocked"]
+    },
+    {
+      "action": "check-page-load",
+      "service": "v0",
+      "url": "https://v0.dev",
+      "check": ["page_load_intercepted", "html_warning_displayed", "original_page_blocked"]
+    },
+    {
+      "action": "check-page-load",
+      "service": "character",
+      "url": "https://character.ai",
+      "check": ["page_load_intercepted", "html_warning_displayed", "websocket_upgrade_blocked"]
+    },
+    {
+      "action": "check-page-load",
+      "service": "poe",
+      "url": "https://poe.com",
+      "check": ["page_load_intercepted", "html_warning_displayed", "websocket_upgrade_blocked"]
+    },
+    {
+      "action": "check-page-load",
+      "service": "huggingface",
+      "url": "https://huggingface.co/chat",
+      "check": ["page_load_intercepted", "html_warning_displayed", "original_page_blocked"]
+    }
+  ]
+}
