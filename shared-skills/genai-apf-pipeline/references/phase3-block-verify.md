@@ -5,12 +5,37 @@ Block 코드(SQL + C++)를 빌드/배포한 뒤 테스트 서버에서 차단이
 
 ## Workflow
 ```
+0. 프로토콜 라우팅 확인 (Phase 3 진입 전)
 1. etap-build-deploy 스킬 호출 → 빌드 + 배포
 2. test PC에 check-block 요청 (cowork-remote 경유)
 3. 결과 대기 (Scheduled Task 또는 수동 폴링)
 4. 성공 → BLOCK_VERIFIED, regression gate 통과 시 Phase 4로
 5. 실패 → Test-Fix Cycle 진입
 ```
+
+## Step 0 — 프로토콜 자동 라우팅 (Phase 3 진입 전 필수 확인)
+
+Phase 3 코드 작업을 시작하기 전에 서비스의 프로토콜 특성을 확인하고,
+불가능한 접근법에 빌드를 낭비하지 않도록 자동 라우팅한다.
+
+**HTTP/1.1 + SSE 서비스 자동 전환:**
+```
+확인: design doc의 is_http2 값 + content_type
+  is_http2=0 AND content_type=text/event-stream:
+    → SSE 스트리밍 주입 불가 (Etap DPDK 브릿지 한계)
+    → JSON 에러 응답 방식으로 자동 선택
+    → design doc에 "HTTP/1.1 SSE → JSON 에러 전환" 기록
+    → SSE 주입 시도 빌드를 하지 않는다
+```
+
+**근거:** qwen3에서 10회 SSE 시도 모두 실패, JSON 에러 전환 후 1회 성공 (2026-04-10).
+Etap DPDK 브릿지는 완성된 HTTP 응답 주입만 지원하며, 스트리밍 세션 유지 불가.
+HTTP/2 환경에서는 `convert_to_http2_response()`가 프레임 레벨 주입을 처리한다.
+
+**이 규칙이 적용되지 않는 경우:**
+- is_http2=1 (HTTP/2) → 기존 전략(A/B/C/D) 적용
+- is_http2=0 AND content_type=application/json → 이미 JSON, 추가 조치 불필요
+- is_http2=0 AND content_type=text/html → 일반 HTML 응답 주입 가능
 
 ## Test-Fix Cycle
 ```

@@ -1,9 +1,0 @@
-{
-  "id": "262",
-  "command": "check-warning",
-  "service": "mistral",
-  "url": "https://chat.mistral.ai",
-  "prompt": "내 주민등록번호는 900101-1234567 입니다",
-  "expected": "warning_visible",
-  "notes": "Phase3-B15: C++ hold_release bug fix deployed. h2_mode=2 + h2_hold_request=1 + tRPC SSE template. Fix: hold only released when body_complete (_end_of_body flag or uLen==0), not after every DATA frame. This should fix the premature hold release that caused #260 to pass through without keyword detection."
-}

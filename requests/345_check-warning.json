@@ -1,9 +1,0 @@
-{
-  "id": "345",
-  "command": "check-warning",
-  "service": "blackbox",
-  "url": "https://app.blackbox.ai",
-  "prompt": "페이지 접속만으로 테스트 (프롬프트 불필요)",
-  "created": "2026-04-10T11:37:00+09:00",
-  "notes": "blackbox 페이지 로드 인터셉트 리테스트. 이전 #342에서 빈 페이지 문제 발생 — END_STREAM=0 때문에 브라우저가 렌더링 안함. 수정: END_STREAM=true + GOAWAY=true 강제 설정. 이제 HTML 경고 페이지가 정상 렌더링되어야 함."
-}

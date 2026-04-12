@@ -146,6 +146,35 @@ the naming convention: `generate_{service_id}_{type}_block_response()`.
 Gamma에서 7빌드를 소모한 SSE fallback outline 패턴을 Genspark에서
 다시 시도하려 했던 사례가 있다. 사전에 lessons를 확인했다면 방지할 수 있었다.
 
+### Step 1.75 — 가설 통합 검토 (Hypothesis Consolidation Check)
+
+**여러 가설을 테스트할 때, 동일 카테고리의 가설은 하나의 빌드로 통합한다.**
+qwen3에서 Content-Length/chunked/CORS 3가지 헤더 가설을 각각 별도 빌드로 테스트하여
+3빌드(~45분)를 소모한 사례가 있다. 1빌드로 통합 가능했다.
+
+```
+가설 통합 절차:
+  1. 현재 pending 가설 목록 나열
+  2. 카테고리별 그룹핑 (예: "헤더 조작", "타이밍 조정", "프로토콜 전환")
+  3. 같은 카테고리에 2개 이상 가설이 있으면:
+     a. 의존성 검사: "가설 A의 변경이 가설 B의 전제조건에 영향을 주는가?"
+        → Yes: 순차 테스트 (의존성 사유 기록)
+        → No: 하나의 빌드로 통합
+     b. 통합 시 개별 로그 마커 필수:
+        [APF_HYPO_1] Content-Length removal
+        [APF_HYPO_2] chunked encoding
+        [APF_HYPO_3] CORS headers
+        → 실패 시 서버 로그로 개별 원인 추적 가능
+     c. impl journal에 통합 결정 기록:
+        "가설 3,4,5 통합 (카테고리: 헤더 조작, 코드 경로 충돌 없음)"
+  4. 통합 불가 시 사유 문서화:
+     "가설 1,2 순차 테스트 (사유: GOAWAY flush가 TCP RST 도달 여부에 영향)"
+```
+
+**의존성 판단 기준:** "가설 A를 적용하면 가설 B가 테스트 가능한 상태 자체가 변하는가?"
+- 독립: Content-Length 제거 + CORS 헤더 추가 (서로 다른 헤더 필드)
+- 의존: GOAWAY flush 타이밍 + TCP RST 타이밍 (연결 생명주기 공유)
+
 ### Iteration 선행 기록 (Context 유실 대비)
 
 코드 수정을 시작하기 전에, impl journal에 "what I'm about to try"를 먼저 기록한다.
@@ -286,6 +315,21 @@ Record the iteration in `services/{service_id}_impl.md` (test PC 결과 포함).
 → See `references/escalation-protocol.md` for 유효 카운트 규칙(유형별 차등: tweakable/structural/code_bug/infra_issue/external_change), 면제 조건, 강제 승인 게이트, 대안 접근법 전환 절차, PENDING_INFRA 처리, 3-Strike Rule 상세.
 
 **3-Strike Rule 요약:** 3회 연속 실패 시 (1) 서버 로그 확인, (2) HAR 재캡처, (3) 접근법 재검토를 강제. 이 단계 없이 4번째 미세 조정 빌드를 하지 않는다.
+
+### 알려진 아키텍처 한계 (빌드 전 확인)
+
+다음 한계는 빌드를 시도하기 전에 확인하여 불필요한 시도를 방지한다.
+
+**HTTP/1.1 + SSE 스트리밍 주입 불가 (Etap 브릿지 한정):**
+Etap DPDK 브릿지는 HTTP/1.1 환경에서 SSE 스트리밍 주입을 지원하지 않는다.
+브릿지가 완성된 HTTP 응답을 주입할 수 있지만, 스트리밍 세션을 유지할 수 없다.
+HTTP/2에서는 `convert_to_http2_response()`가 프레임 레벨 주입을 처리한다.
+
+- `is_http2=0` + `content_type: text/event-stream` 서비스:
+  → SSE 스트리밍 주입 시도 금지
+  → **JSON 에러 응답 방식을 우선 선택**
+- 근거: qwen3에서 10회 SSE 시도 실패 후 JSON 에러로 1회 만에 성공 (2026-04-10)
+- 상세: `issue-h2mode-goaway-analysis.md` 참조
 
 ### 1회성 성공 오판 방지
 

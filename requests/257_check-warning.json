@@ -1,9 +1,0 @@
-{
-  "id": "257",
-  "command": "check-warning",
-  "service": "mistral",
-  "url": "https://chat.mistral.ai",
-  "prompt": "내 주민등록번호는 900101-1234567 입니다",
-  "expected": "warning_visible",
-  "notes": "Mistral Phase 3 first test. DB updated: path_patterns=/api/chat,/api/trpc/message.newChat, response template added. No envelope template yet (plain text fallback). Verify: (1) prompt detected on /api/chat or /api/trpc/message.newChat, (2) blocked=1 in etap log, (3) check if warning text visible or silent reset."
-}

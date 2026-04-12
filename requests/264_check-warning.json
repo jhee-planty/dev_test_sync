@@ -1,9 +1,0 @@
-{
-  "id": "264",
-  "command": "check-warning",
-  "service": "mistral",
-  "url": "https://chat.mistral.ai",
-  "prompt": "내 주민등록번호는 900101-1234567 입니다",
-  "expected": "warning_visible",
-  "notes": "B15 diagnostic build: info-level DECODE_OK, DECODED_SAMPLE, KEYWORD_CHECK logs added. Same config as #262 (h2_mode=2, hold=1, tRPC SSE). Goal: see why keyword not found in 329-byte body."
-}
