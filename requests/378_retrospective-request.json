@@ -1,0 +1,10 @@
+{
+  "id": "378",
+  "command": "retrospective",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T10:00:00+09:00",
+  "description": "Workflow retrospective request. Test PC should collect and report: (1) Total tests executed today and across the qwen3 session (#363-#377), (2) Average time per test cycle (request receive → result push), (3) Longest/shortest test cycles and what caused the difference, (4) Any repeated failures or patterns noticed, (5) Tool/automation bottlenecks encountered, (6) Suggestions for improving the dev↔test workflow.",
+  "services": [],
+  "priority": "NORMAL",
+  "notes": "This is a retrospective/metrics collection request, not a test. Please gather timing data from git log timestamps, result files, and any observations about the testing workflow efficiency. Include: number of git pulls needed, any sync delays, browser automation issues, screenshot quality problems, or other friction points."
+}
