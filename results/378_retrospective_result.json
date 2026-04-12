@@ -1,0 +1,114 @@
+{
+  "id": "378",
+  "command": "retrospective",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-13T10:15:00+09:00",
+  "scope": "#363 ~ #377 (qwen3 session, 2026-04-10 16:39 ~ 19:15 KST)",
+  "summary": {
+    "total_tests_in_scope": 15,
+    "total_result_files": 13,
+    "batched_results": 2,
+    "note": "#370+#371 batched into 1 result, #372+#373 batched into 1 result"
+  },
+  "timing_analysis": {
+    "per_cycle_minutes": {
+      "363": { "req": "16:39", "res": "16:55", "delta_min": 16, "type": "keyword-test", "services": "qwen3+you.com" },
+      "364": { "req": "16:47", "res": "17:01", "delta_min": 14, "type": "keyword-test", "services": "v0" },
+      "365": { "req": "16:59", "res": "17:10", "delta_min": 11, "type": "retest", "services": "qwen3" },
+      "366": { "req": "17:04", "res": "17:15", "delta_min": 11, "type": "retest", "services": "v0" },
+      "367": { "req": "17:29", "res": "17:40", "delta_min": 11, "type": "h2-goaway-test", "services": "v0" },
+      "368": { "req": "17:40", "res": "17:46", "delta_min": 6, "type": "phase3-deploy-test", "services": "qwen3+v0" },
+      "369": { "req": "17:43", "res": "17:59", "delta_min": 16, "type": "full-tier1-test", "services": "v0" },
+      "370_371": { "req": "17:51", "res": "18:12", "delta_min": 21, "type": "HAR-capture+delay-test", "services": "qwen3" },
+      "372_373": { "req": "18:20", "res": "18:33", "delta_min": 13, "type": "SSE-diagnostic", "services": "qwen3" },
+      "374": { "req": "18:39", "res": "18:48", "delta_min": 9, "type": "chunked-SSE", "services": "qwen3" },
+      "375": { "req": "18:51", "res": "18:59", "delta_min": 8, "type": "CORS-fix", "services": "qwen3" },
+      "376": { "req": "19:01", "res": "19:06", "delta_min": 5, "type": "JSON-error-BREAKTHROUGH", "services": "qwen3" },
+      "377": { "req": "19:08", "res": "19:15", "delta_min": 7, "type": "HTTP-422-opt", "services": "qwen3" }
+    },    "average_cycle_min": 11.4,
+    "shortest_cycle": { "id": "376", "minutes": 5, "reason": "Simple single-service JSON error test, familiar workflow by this point" },
+    "longest_cycle": { "id": "370_371", "minutes": 21, "reason": "HAR capture required manual DevTools Network tab export + separate delay test" },
+    "total_session_duration_min": 156,
+    "effective_test_time_min": 148,
+    "idle_gaps": "Minimal — dev PC pushed new requests within 1-5 min of receiving results"
+  },
+  "pattern_analysis": {
+    "repeated_failures": [
+      {
+        "pattern": "qwen3 STILL_STUCK_ON_THINKING",
+        "occurrences": 10,
+        "requests": ["363", "365", "366", "368", "370", "371", "372", "373", "374", "375"],
+        "root_cause": "SSE streaming responses require browser to process event-stream; HTTP/1.1 block response with Content-Type text/event-stream caused perpetual thinking spinner",
+        "resolution": "#376 switched to Content-Type application/json — BREAKTHROUGH, WARNING_VISIBLE"
+      },
+      {
+        "pattern": "v0 ERR_CONNECTION_CLOSED / NOT_BLOCKED",
+        "occurrences": 3,
+        "requests": ["367", "368", "369"],
+        "root_cause": "h2_goaway=1 kills HTTP/2 connection before warning content delivered; domain pattern mismatch in earlier tests",
+        "resolution": "v0 confirmed NOT_BLOCKED even with full Tier 1 settings (#369)"
+      }
+    ],
+    "success_breakthrough": {
+      "request": "376",
+      "description": "After 10 consecutive SSE failures, switching qwen3 to JSON error response (Content-Type: application/json) immediately showed WARNING_VISIBLE on first try",
+      "lesson": "For SSE/streaming services, do NOT mimic the streaming format — use a simple JSON error response instead"
+    }
+  },  "automation_bottlenecks": [
+    {
+      "issue": "Git shell quoting on Windows",
+      "severity": "MEDIUM",
+      "description": "Korean username path (최장희) and cmd shell quote/redirect issues required .cmd batch files with chcp 65001 and %USERPROFILE% expansion. Commit messages via -m flag frequently broke; workaround was write_file to C:\\temp\\cmNNN.txt then git commit -F",
+      "frequency": "Every commit operation"
+    },
+    {
+      "issue": "MCP 60s timeout on ping delay",
+      "severity": "LOW",
+      "description": "ping -n 61 always hits MCP timeout — this is EXPECTED and used as the 60s polling delay. Not a real error.",
+      "frequency": "Every polling cycle"
+    },
+    {
+      "issue": "Snapshot label invalidation",
+      "severity": "MEDIUM",
+      "description": "windows-mcp Snapshot labels expire between tool calls. Must re-Snapshot before every Click/Type. Forgetting this causes clicks on wrong elements.",
+      "frequency": "Every browser interaction sequence"
+    },
+    {
+      "issue": "React state mismatch with Type tool",
+      "severity": "HIGH",
+      "description": "Direct Type tool input doesn't trigger React onChange handlers in some services. Required Clipboard set + Ctrl+V paste approach, especially for Korean text.",
+      "frequency": "Intermittent — depends on service framework"
+    },
+    {
+      "issue": "DPI scaling coordinate mismatch",
+      "severity": "LOW",
+      "description": "125% DPI scaling means physical 1920x1080 maps to logical 1536x864. SetCursorPos uses logical coords. Resolved early, no recurring issues.",
+      "frequency": "One-time resolution"
+    }
+  ],  "workflow_efficiency": {
+    "git_pulls_per_session": "~50+ (continuous 60s polling across multiple context windows)",
+    "sync_delays": "Minimal — git pull latency <3s, push latency <5s typically",
+    "dev_turnaround": "Dev PC typically pushed new requests within 1-5 min of test result, showing tight iteration loop",
+    "batch_efficiency": "Batching 2 requests into 1 test cycle (#370+371, #372+373) saved ~10 min each",
+    "context_window_compaction": "Session hit context limit ~3 times requiring continuation with summary. No data loss but adds ~2-3 min restart overhead each time."
+  },
+  "cross_service_status_summary": {
+    "WARNING_SUCCESS_Tier1": ["DuckDuckGo (#348)", "Grok (#349)", "ChatGPT (#349)", "Claude (#349)"],
+    "PAGE_LOAD_FIXED_Tier1": ["Gemini (#355, 400 status)"],
+    "BLOCK_CONFIRMED_Tier1.5": ["Consensus (#360)"],
+    "WARNING_VISIBLE_Tier1.5": ["qwen3 (#376, JSON error approach)"],
+    "NOT_BLOCKED": ["v0 (#369, full Tier 1 settings)", "you.com (#361, #363, GET bypass)"],
+    "LOGIN_REQUIRED": ["wrtn (#362)"],
+    "BLANK_PAGE": ["Blackbox (#360, #362)"]
+  },
+  "suggestions_for_improvement": [
+    "1. PRE-CLASSIFY service response type (SSE/JSON/WebSocket) BEFORE writing block templates — would have saved 10 failed SSE iterations on qwen3",
+    "2. Create reusable .cmd scripts for common git operations upfront (poll, commit, push) — already done mid-session, should be standard from session start",
+    "3. Batch multiple single-service tests when possible — the 2-in-1 batches saved significant time",
+    "4. For streaming services, always try JSON error response FIRST before attempting to mimic the streaming format",
+    "5. Add a pre-flight check: before testing a warning, verify the block is actually working by checking browser DevTools Network tab for the blocked response",
+    "6. Consider longer polling intervals (120s) during known idle periods to reduce git operation overhead",
+    "7. Maintain a persistent 'lessons learned' file in the repo that carries across sessions to avoid re-discovering the same issues"
+  ],
+  "overall_assessment": "The #363-#377 session was highly productive despite the 10 consecutive SSE failures on qwen3. The tight dev↔test iteration loop (avg 11.4 min/cycle) enabled rapid hypothesis testing. The critical breakthrough (#376) came from abandoning the SSE approach entirely and switching to JSON — a lesson that should be applied proactively to other streaming services. Total: 15 requests processed, 13 result files delivered, 1 major breakthrough (qwen3 WARNING_VISIBLE), session duration 2h36m."
+}
