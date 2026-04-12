@@ -19,6 +19,8 @@ description: >
 
 # Etap Testbed
 
+> ⚠️ **내부 테스트 환경 전용** — 서버 주소·포트·계정 정보는 `references/server-config.md` 참조. 외부 공개 금지.
+
 Dell 3대로 구성된 폐쇄 테스트 망에서 Etap 모듈 기능을 검증하는 가이드.
 
 ---
