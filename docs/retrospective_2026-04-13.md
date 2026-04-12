@@ -255,10 +255,72 @@ Content-Length, chunked, CORS 모든 조합 실패. JSON 에러 응답이 유일
 - **전환 권장**: 메트릭 건수 부족으로 **아직 방안 2 전환 시기상조**.
   dev_metrics.py 스크립트(개선안 #5) 적용 후 30건 이상 확보 시 전환.
 
-## test PC 회고 데이터
+## test PC 회고 데이터 (#378 응답 수신)
 
-> ⏳ test PC에 회고 요청 전송 완료 (#378). 응답 대기 중.
-> 응답 도착 시 이 섹션에 test PC 측 메트릭과 관찰 사항을 보충 예정.
+### test PC 타이밍 분석 (#363~#377, 2h36m 세션)
+
+| 테스트 | 요청 | 결과 | 소요(분) | 유형 |
+|--------|------|------|---------|------|
+| #363 | 16:39 | 16:55 | 16 | keyword-test (qwen3+you.com) |
+| #364 | 16:47 | 17:01 | 14 | keyword-test (v0) |
+| #365 | 16:59 | 17:10 | 11 | retest (qwen3) |
+| #366 | 17:04 | 17:15 | 11 | retest (v0) |
+| #367 | 17:29 | 17:40 | 11 | h2-goaway-test (v0) |
+| #368 | 17:40 | 17:46 | 6 | phase3-deploy-test |
+| #369 | 17:43 | 17:59 | 16 | full-tier1-test (v0) |
+| #370+371 | 17:51 | 18:12 | 21 | HAR-capture+delay |
+| #372+373 | 18:20 | 18:33 | 13 | SSE-diagnostic |
+| #374 | 18:39 | 18:48 | 9 | chunked-SSE |
+| #375 | 18:51 | 18:59 | 8 | CORS-fix |
+| **#376** | **19:01** | **19:06** | **5** | **JSON-error BREAKTHROUGH** |
+| #377 | 19:08 | 19:15 | 7 | HTTP-422-opt |
+
+- **평균 사이클**: 11.4분
+- **최단**: #376 (5분) — JSON 에러 단일 서비스, 익숙한 워크플로우
+- **최장**: #370+371 (21분) — HAR 캡처에 DevTools Network 수동 내보내기 필요
+- **유휴 gap**: 최소 — dev PC가 결과 수신 후 1~5분 내 새 요청 push
+
+### test PC 자동화 병목
+
+| 이슈 | 심각도 | 설명 |
+|------|--------|------|
+| Git shell quoting (Windows) | MEDIUM | 한글 사용자 경로 + cmd 인용 부호 문제. .cmd 배치 파일 + chcp 65001 우회 |
+| Snapshot label 만료 | MEDIUM | windows-mcp Snapshot 라벨이 tool call 사이 만료. 매번 재캡처 필요 |
+| React state vs Type tool | HIGH | 직접 Type 입력이 React onChange 미트리거. Clipboard+Ctrl+V 방식 필요 (특히 한글) |
+| MCP 60s timeout on ping | LOW | 폴링 지연용 ping -n 61이 항상 timeout — 의도된 동작 |
+| DPI 125% 좌표 불일치 | LOW | 물리 1920x1080 → 논리 1536x864. 초기 해결, 재발 없음 |
+
+### test PC 워크플로우 효율
+
+- **git pull 횟수**: ~50+ (60초 연속 폴링 × 다수 context window)
+- **sync 지연**: git pull <3s, push <5s
+- **배치 효율**: 2-in-1 배치(#370+371, #372+373)가 각 ~10분 절약
+- **context window 압축**: 세션 중 ~3회 context limit 도달. 재시작 오버헤드 각 2~3분
+
+### test PC 개선 제안
+
+1. **서비스 응답 유형(SSE/JSON/WebSocket) 사전 분류** — qwen3 10회 SSE 실패 방지 가능
+2. **git 공통 .cmd 스크립트 사전 생성** — 세션 시작 시 poll/commit/push 스크립트 준비
+3. **단일 서비스 배치 테스트 적극 활용** — 2-in-1 배치가 유의미한 시간 절약
+4. **스트리밍 서비스는 JSON 에러 응답 먼저 시도** — SSE 모방보다 우선
+5. **경고 테스트 전 차단 동작 사전 검증** — DevTools Network에서 차단 응답 확인
+6. **유휴 기간 폴링 간격 120초로 연장** — git 오버헤드 감소
+7. **lessons learned 영구 파일 유지** — 세션 간 동일 이슈 재발견 방지
+
+### test PC 종합 평가
+
+> "10회 연속 SSE 실패에도 불구하고 #363~#377 세션은 매우 생산적이었다.
+> 평균 11.4분/사이클의 밀접한 dev↔test 반복이 빠른 가설 검증을 가능하게 했다.
+> 핵심 돌파구(#376)는 SSE 접근을 완전히 포기하고 JSON으로 전환한 데서 나왔다.
+> 총 15건 요청 처리, 13건 결과 파일, 1건 주요 돌파구(qwen3 WARNING_VISIBLE), 세션 총 2시간 36분."
+
+### dev+test 통합 인사이트
+
+1. **dev 측 추정 turnaround (33.5분) vs test 측 실측 (11.4분)**: 차이의 원인은 dev 측에서
+   빌드/배포/코드수정 시간이 포함되기 때문. test PC의 순수 테스트 사이클은 매우 효율적.
+2. **React Type tool 이슈**는 개선안 #3(page-load 검증)과 연관 — 자동화 테스트 시 한글 입력 안정성 필요.
+3. **test PC의 "JSON 먼저" 제안**은 개선안 #4(HTTP/1.1 JSON 자동 전환)와 정확히 일치 — 양측 독립적으로 동일 결론.
+4. **배치 테스트 효율**: test PC가 확인한 2-in-1 배치의 10분 절약은 개선안 #1(가설 통합)의 근거를 강화.
 
 ## 다음 회고 체크포인트
 
