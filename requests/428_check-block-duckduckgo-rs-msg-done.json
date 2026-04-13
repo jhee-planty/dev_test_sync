@@ -1,0 +1,30 @@
+{
+  "id": "428",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T05:00:00+09:00",
+  "description": "#427 RAW 캡처 기반 정확한 DuckDuckGo 서버 형식: rs_(response start) + msg_(message) + [DONE]. 이전 테스트는 rs_ 이벤트가 없어서 ERR_INVALID_ACTION 발생. 이번에는 완전한 이벤트 시퀀스.",
+  "template_format": "data: {rs_ JSON} + data: {msg_ JSON} + data: [DONE]",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. DevTools Network + Console 열기",
+        "3. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. Network: chat 요청 status, time, size",
+        "6. EventStream: 이벤트 수 + 각 data 내용 (기대: 3 events — rs_ + msg_ + [DONE])",
+        "7. Response Headers 전체 캡처",
+        "8. UI: 경고 문구 표시 여부 — WARNING_DISPLAYED?",
+        "9. UI: generic error '일시적으로 사용할 수 없습니다' 여부",
+        "10. Console 에러: ERR_INVALID_ACTION vs ERR_RESPONSE_PARSING vs 기타",
+        "11. wide event tracking 값",
+        "12. 스크린샷"
+      ],
+      "expected_output": "rs_ + msg_ + [DONE] 완전한 시퀀스로 action validation 통과 → WARNING_DISPLAYED. 또는 에러 타입 변화 확인."
+    }
+  ]
+}
