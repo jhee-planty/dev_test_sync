@@ -1,0 +1,42 @@
+{
+  "id": "395",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T18:00:00+09:00",
+  "description": "DeepSeek 차단 재테스트 (deepseek_sse 200 OK SSE 변경) + Qwen3 regression (WARNING_DISPLAYED 확인된 서비스).",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 UI 로드 완료 대기",
+        "3. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. 확인 사항:",
+        "   - 이전처럼 '전송 실패 (400)' 에러가 나오는지",
+        "   - 또는 경고 메시지가 채팅 UI에 표시되는지",
+        "   - 또는 다른 반응이 있는지",
+        "6. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "200 OK SSE 응답 후 경고 문구 표시 여부"
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.qwen.ai 접속",
+        "2. 채팅 UI 로드 완료 대기",
+        "3. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. 경고 문구 표시 확인 (이전 #388과 동일한 경고가 나오는지)",
+        "6. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "Qwen3 WARNING_DISPLAYED 재확인 (regression)"
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "DB 변경: deepseek_sse 400→200 OK + SSE format (OpenAI-compat delta). qwen3는 #388에서 WARNING_DISPLAYED 확인됨 — regression 확인."
+}
