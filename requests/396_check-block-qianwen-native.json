@@ -1,0 +1,30 @@
+{
+  "id": "396",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T18:20:00+09:00",
+  "description": "Qianwen 차단 재테스트 — 네이티브 SSE 형식 템플릿. #393 HAR에서 파악한 실제 형식으로 재작성. CORS origin도 수정(www.qianwen.com).",
+  "services": [
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://tongyi.aliyun.com/qianwen 접속",
+        "2. 채팅 UI 로드 완료 대기",
+        "3. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. 확인 사항:",
+        "   - 이전처럼 '消息生成失败' 에러가 나오는지",
+        "   - 또는 경고 메시지가 채팅 버블에 표시되는지 (multi_load/iframe 형식)",
+        "   - 또는 다른 반응이 있는지",
+        "6. DevTools Console에서 CORS 에러 확인",
+        "7. DevTools Network에서 chat2.qianwen.com 응답 상태 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "네이티브 SSE 형식 + 올바른 CORS origin으로 경고 표시 여부 확인"
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "DB 변경: qianwen_sse 완전 재작성. CORS: tongyi.aliyun.com → www.qianwen.com. JSON: OpenAI delta → native qianwen multi_load/iframe. 종료: data:[DONE] → event:complete. #393 HAR 기반."
+}
