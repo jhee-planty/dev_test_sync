@@ -1,0 +1,77 @@
+{
+  "id": "406",
+  "request_id": "406_check-block-triple-sse-dechunk-fix",
+  "status": "PARTIAL_FAIL",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T14:45:00+09:00",
+  "description": "De-chunk fix 적용 후 3개 서비스 일괄 테스트. SSE 템플릿 2개 실패, JSON 템플릿 1개 전송 성공(UI timeout).",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "template": "deepseek_sse",
+      "test_type": "SSE warning after de-chunk fix",
+      "result": {
+        "status": "FAILED_ERR_HTTP2_COMPRESSION_ERROR",
+        "warning_displayed": false,
+        "http_status": "(failed)",
+        "ui_display": "네트워크를 확인하고 다시 시도하세요",        "console_errors": ["ERR_HTTP2_COMPRESSION_ERROR"],
+        "request_headers": {"accept": "*/*"},
+        "response_headers": "NONE - connection failed before response",
+        "network_requests": 1,
+        "all_requests_failed": true
+      },
+      "analysis": "De-chunk fix did NOT resolve HPACK compression corruption. SSE response headers still corrupt H2 HPACK state. Same error as #405."
+    },
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "template": "duckduckgo_sse",
+      "test_type": "SSE warning after de-chunk fix",
+      "result": {
+        "status": "FAILED_ERR_HTTP2_COMPRESSION_ERROR",
+        "warning_displayed": false,
+        "http_status": "(failed)",
+        "ui_display": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "console_errors": ["POST https://duck.ai/duckchat/v1/chat net::ERR_HTTP2_COMPRESSION_ERROR (x4)"],
+        "request_headers": {"accept": "text/event-stream", "origin": "https://duck.ai"},
+        "response_headers": "NONE - connection failed before response",
+        "network_requests": 4,
+        "all_requests_failed": true
+      },      "analysis": "4 retries all failed with ERR_HTTP2_COMPRESSION_ERROR. De-chunk fix had zero effect. Identical to #405 result."
+    },
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "template": "qianwen_json",
+      "test_type": "JSON warning (baseline comparison)",
+      "result": {
+        "status": "TRANSPORT_OK_UI_TIMEOUT",
+        "warning_displayed": false,
+        "http_status": "200 OK",
+        "protocol": "h2",
+        "ui_display": "抱歉，系统超时，请稍后重试。",
+        "console_errors": [],
+        "console_warnings": 37,
+        "request_headers": {"accept": "application/json, text/event-stream"},
+        "response_size": "0.5 kB",
+        "network_requests_all_200": true,
+        "cors_status": "OK (no CORS errors)",
+        "redirect": "tongyi.aliyun.com → qianwen.com"
+      },      "analysis": "JSON template transport works perfectly — 200 OK, h2, no H2 errors, no CORS errors. But frontend shows '系统超时' because it expects SSE streaming, not a single JSON response. Warning text is not displayed to user."
+    }
+  ],
+  "overall_analysis": {
+    "dechunk_fix_effective": false,
+    "root_cause_confirmed": "NOT chunked encoding. The SSE response Content-Type and headers themselves corrupt H2 HPACK compression state in Etap proxy.",
+    "sse_templates_status": "BROKEN — ERR_HTTP2_COMPRESSION_ERROR on all SSE templates (deepseek, duckduckgo)",
+    "json_templates_status": "Transport OK but UI shows timeout — frontend expects SSE streaming",
+    "key_finding": "Problem is at H2 HPACK header serialization layer, not at body encoding layer. De-chunking the body has no effect because the corruption happens during header compression.",
+    "next_steps": [
+      "1. Fix H2 HPACK header serialization in Etap proxy for SSE content-type",
+      "2. Or: make JSON response mimic SSE streaming format that frontend expects",
+      "3. Or: investigate if content-type: text/event-stream triggers different HPACK path"
+    ]
+  },
+  "recommendation": "SSE injection remains fundamentally broken at H2 transport layer. JSON works for transport but needs frontend-compatible format. Focus on fixing HPACK serialization or finding a content-type that both works with H2 and is accepted by frontends."
+}
