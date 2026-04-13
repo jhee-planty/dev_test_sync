@@ -1,0 +1,42 @@
+{
+  "id": "418",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T23:05:00+09:00",
+  "description": "DeepSeek SSE + GOAWAY. h2_goaway=1 추가로 블록 응답 후 즉시 GOAWAY 전송 → ERR_HTTP2_PROTOCOL_ERROR 방지 + EventStream 파싱 개선 확인.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. DevTools Network에서 completion 응답 확인",
+        "5. Content-Type: text/event-stream 확인",
+        "6. EventStream 탭: 이벤트 수 (0 이상이면 GOAWAY 효과 확인)",
+        "7. chat_session/create에서 ERR_HTTP2_PROTOCOL_ERROR 여전히 발생하는지 확인 (GOAWAY로 해결 기대)",
+        "8. Console 에러 확인",
+        "9. 경고 문구 표시 여부",
+        "10. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "GOAWAY → 연결 정상 종료 → ERR_HTTP2_PROTOCOL_ERROR 해결. EventStream events > 0이면 돌파구."
+    },
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 현재 duckduckgo_json 템플릿 상태에서 응답 확인",
+        "5. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "DuckDuckGo 현 상태 확인"
+    }
+  ],
+  "priority": "CRITICAL",
+  "notes": "변경사항 누적: B29(Content-Length 제거) + charset 제거 + event: message prefix + h2_goaway=1. #415에서 chat_session/create ERR_HTTP2_PROTOCOL_ERROR 발생 — GOAWAY가 이를 해결하면 연결 상태 정리되어 EventStream 파싱에도 긍정적 영향 가능. DuckDuckGo는 현재 duckduckgo_json 상태."
+}
