@@ -1,0 +1,83 @@
+{
+  "id": "429",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T05:15:00+09:00",
+  "description": "미테스트 서비스 배치 차단 테스트: grok, mistral, perplexity, wrtn, notion. 로그인 불필요한 서비스 우선.",
+  "services": [
+    {
+      "service_name": "grok",
+      "url": "https://grok.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://grok.com 접속",
+        "2. DevTools Network 열기",
+        "3. 채팅 가능하면 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. Network: API 요청 확인 (status, type, body)",
+        "6. UI: 경고 표시 여부 (WARNING_DISPLAYED)",
+        "7. Console 에러 확인",
+        "8. 스크린샷"
+      ],
+      "expected_output": "grok_ndjson 템플릿 응답 확인. WARNING_DISPLAYED 여부."
+    },
+    {
+      "service_name": "mistral",
+      "url": "https://chat.mistral.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.mistral.ai 접속",
+        "2. DevTools Network 열기",
+        "3. 채팅 가능하면 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. Network 확인",
+        "6. WARNING_DISPLAYED 여부",
+        "7. 스크린샷"
+      ],
+      "expected_output": "mistral_trpc_sse 차단 확인."
+    },
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://www.perplexity.ai 접속",
+        "2. DevTools Network 열기",
+        "3. 검색/채팅에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. Network 확인",
+        "6. WARNING_DISPLAYED 여부",
+        "7. 스크린샷"
+      ],
+      "expected_output": "perplexity_sse 차단 확인."
+    },
+    {
+      "service_name": "wrtn",
+      "url": "https://wrtn.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://wrtn.ai 접속",
+        "2. DevTools Network 열기",
+        "3. 채팅에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 15초 대기",
+        "5. Network 확인 — API 요청이 차단되었는지",
+        "6. WARNING_DISPLAYED 여부",
+        "7. 스크린샷"
+      ],
+      "expected_output": "openai_compat_sse 차단 확인."
+    },
+    {
+      "service_name": "notion",
+      "url": "https://www.notion.so",
+      "login_required": true,
+      "steps": [
+        "1. Chrome에서 https://www.notion.so 접속",
+        "2. 로그인 상태 확인",
+        "3. 로그인 안 되어 있으면 LOGIN_REQUIRED 보고",
+        "4. AI 기능 사용 가능하면 테스트",
+        "5. 스크린샷"
+      ],
+      "expected_output": "로그인 상태에 따라 차단 테스트 또는 LOGIN_REQUIRED."
+    }
+  ]
+}
