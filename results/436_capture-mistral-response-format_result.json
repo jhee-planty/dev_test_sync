@@ -1,0 +1,71 @@
+{
+  "id": "436",
+  "request_file": "436_capture-mistral-response-format.json",
+  "executed_at": "2026-04-14T08:35:00+09:00",
+  "executor": "test-pc-worker",
+  "overall_status": "SUCCESS",
+  "summary": "Mistral normal response format captured. Two separate endpoints used: (1) /api/trpc/message.newChat?batch=1 (tRPC mutation, application/json) and (2) /api/chat (text/event-stream, actual streaming). Body format is tRPC httpBatchStreamLink indexed format: '{index}:{json}\\n' per line — NOT standard SSE 'data: {json}\\n\\n'.",
+  "services": [
+    {
+      "service_name": "mistral",
+      "url": "https://chat.mistral.ai/chat",
+      "test_type": "capture-response",
+      "status": "SUCCESS",
+      "endpoints": {
+        "mutation_endpoint": {
+          "url": "/api/trpc/message.newChat?batch=1",
+          "method": "POST",
+          "content_type": "application/json",
+          "has_eventstream_tab": false,
+          "description": "tRPC mutation that initiates chat. Returns application/json. No SSE streaming on this endpoint."
+        },
+        "streaming_endpoint": {
+          "url": "/api/chat",
+          "method": "POST",
+          "content_type": "text/event-stream",
+          "has_eventstream_tab": true,
+          "description": "Actual streaming endpoint. Content-Type: text/event-stream. Uses tRPC httpBatchStreamLink indexed format."
+        }
+      },
+      "response_format": {
+        "content_type": "text/event-stream",
+        "eventstream_tab_exists": true,
+        "line_format": "index:json (tRPC httpBatchStreamLink format)",
+        "NOT_standard_sse": true,
+        "first_3_lines_raw": [
+          "16:{\"json\":{\"disclaimers\":[]}}",
+          "15:{\"json\":{\"type\":\"message\",\"messageId\":\"6f2662ff-...\",\"messageVersion\":0,\"patches\":[{\"op\":\"replace\",\"path\":\"/\",\"value\":{\"role\":\"assistant\",\"content\":\"\",\"generationStatus\":\"in-progress\",...}}]}}",
+          "15:{\"json\":{\"type\":\"message\",\"messageId\":\"6f2662ff-...\",\"messageVersion\":0,\"patches\":[{\"op\":\"replace\",\"path\":\"/contentChunks\",\"value\":[{\"type\":\"text\",\"text\":\"Hello\",\"_context\":null}]}]}}"
+        ],
+        "full_streaming_sequence": [
+          "16:{\"json\":{\"disclaimers\":[]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"replace\",\"path\":\"/\",\"value\":{...initial message...}}]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"replace\",\"path\":\"/contentChunks\",\"value\":[{\"type\":\"text\",\"text\":\"Hello\"}]}]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"append\",\"path\":\"/contentChunks/0/text\",\"value\":\"! How\"}]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"append\",\"path\":\"/contentChunks/0/text\",\"value\":\" are\"}]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"append\",\"path\":\"/contentChunks/0/text\",\"value\":\" you doing\"}]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"append\",\"path\":\"/contentChunks/0/text\",\"value\":\" today?\"}]}}",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"replace\",\"path\":\"/generationStatus\",\"value\":\"success\"}]}}",
+          "8:null",
+          "15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"replace\",\"path\":\"/moderationCategory\",\"value\":\"safe\"}]}}"
+        ],
+        "index_meanings": {
+          "15": "message subscription - streaming text content via JSON patches",
+          "16": "disclaimers channel",
+          "8": "null terminator / completion signal"
+        }
+      },
+      "critical_findings": {
+        "apf_was_targeting_wrong_endpoint": "APF blocks /api/trpc/message.newChat?batch=1 and returns fake response there. But the ACTUAL streaming happens on /api/chat which is a SEPARATE endpoint.",
+        "format_mismatch": "APF tried standard SSE format (data: {json}\\n\\n) but Mistral uses tRPC indexed format ({index}:{json}\\n). This is why EventStream tab showed 0 parsed events in tests #434 and #435.",
+        "correct_format_for_apf": "If APF intercepts /api/chat, the response must use tRPC httpBatchStreamLink format: each line as '{index}:{json}\\n' where index is a number (like 15 for message data)",
+        "two_endpoint_architecture": "message.newChat creates the chat (returns JSON), then /api/chat streams the content (returns text/event-stream with indexed format)"
+      },
+      "recommendation": {
+        "option_1": "Intercept /api/chat instead of message.newChat. Format: '16:{\"json\":{\"disclaimers\":[]}}\\n15:{\"json\":{\"type\":\"message\",...,\"patches\":[{\"op\":\"replace\",\"path\":\"/contentChunks\",\"value\":[{\"type\":\"text\",\"text\":\"WARNING_MESSAGE\"}]}]}}\\n15:{\"json\":{...\"generationStatus\":\"success\"...}}\\n8:null\\n'",
+        "option_2": "Block at message.newChat level with proper tRPC batch response format (JSON array, not SSE)",
+        "note": "Option 1 matches the real streaming architecture and is more likely to display correctly in the chat UI"
+      }
+    }
+  ]
+}
