@@ -1,0 +1,32 @@
+{
+  "id": "397",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T13:33:00+09:00",
+  "description": "DuckDuckGo 차단 재테스트 — 네이티브 SSE 형식 (msg_ ID, [DONE])",
+  "results": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "status": "BLOCKED_ERROR_UNAVAILABLE",
+      "details": "네이티브 SSE 형식 변경 후에도 동일한 에러. '이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.' 표시. 경고 문구 미표시.",
+      "observations": [
+        "채팅 입력 후 전송 — GPT-5 모델 (빠른 모드)",
+        "UI에 빨간 에러: '이런... Duck.ai를 일시적으로 사용할 수 없습니다.'",
+        "'다시 시도' 링크 표시",
+        "경고 문구 미표시 — warning injection 미작동",
+        "Console: CORS 에러 없음, iframe sandbox 경고만 존재",
+        "Console: 'An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing'",
+        "Console: working version serp_20260410_130311_ET",
+        "이전 #381, #389와 동일한 에러 패턴"
+      ],
+      "console_errors": "CORS 에러 없음. iframe sandbox 경고만 1건.",
+      "screenshot": "not_saved",
+      "root_cause": "DuckDuckGo는 HTTP/1.1 서비스이므로 HTTP/2 프레이밍 문제는 아님. SSE 응답 형식이 프론트엔드 파서와 맞지 않거나, 응답이 너무 일찍 종료되어 프론트엔드가 에러로 처리하는 것으로 추정.",
+      "recommendation": "프론트엔드 JS의 SSE 파싱 로직을 더 분석 필요. X-Vqd-Hash-1 헤더 누락 여부 확인. 또는 응답 타이밍/순서 문제."
+    }
+  ],
+  "summary": "DuckDuckGo 네이티브 SSE 형식 변경 후에도 '일시적으로 사용 불가' 에러. CORS는 정상. SSE 파싱 또는 헤더 불일치 추정.",
+  "priority": "HIGH",
+  "notes": "CORS 통과 확인. 문제는 SSE 응답 본문 또는 필수 헤더(X-Vqd-Hash-1) 누락. 프론트엔드가 응답을 정상 SSE로 인식하지 못하는 상황."
+}
