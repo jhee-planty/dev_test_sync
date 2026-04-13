@@ -1,0 +1,25 @@
+{
+  "id": "398",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T19:00:00+09:00",
+  "description": "DeepSeek 재테스트. #395에서 200 OK 미반영 — reload 다시 수행 후 재시도. DB에 200 OK SSE 확인됨.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 확인: 400 에러인지 경고 표시인지",
+        "5. DevTools Network에서 응답 status code 확인",
+        "6. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "200 OK SSE → 경고 문구 표시 여부"
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "DB 확인: deepseek_sse = HTTP/1.1 200 OK + SSE delta. reload_services 재수행 완료. #395에서 400은 reload 타이밍 이슈 가능."
+}
