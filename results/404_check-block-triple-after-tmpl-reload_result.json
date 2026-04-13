@@ -1,0 +1,81 @@
+{
+  "id": "404",
+  "request_id": "404_check-block-triple-after-tmpl-reload",
+  "status": "MIXED_RESULTS_AFTER_RELOAD_TEMPLATES",
+  "timestamp": "2026-04-13T14:15:00+09:00",
+  "services": {
+    "deepseek": {
+      "status": "FAILED_COMPLETELY",
+      "url": "https://chat.deepseek.com",
+      "http_status": "(failed)",
+      "protocol": "h2",
+      "response_size": "0 kB",
+      "response_time": "47 ms",
+      "details": {
+        "session_create": "200 OK (create endpoint succeeded)",
+        "completion_request": "FAILED — no response headers, status (failed), 0 kB, 47ms",
+        "ui_error": "네트워크를 확인하고 다시 시도하세요",
+        "console_errors": 1,
+        "warning_displayed": false
+      },
+      "analysis": "WORSE than previous 400 Bad Request. After reload_templates, deepseek_sse template now applied but proxy generates invalid SSE response that crashes H2 connection entirely. Session creation works but completion fails completely."
+    },
+    "qianwen": {
+      "status": "JSON_RECEIVED_NO_H2_ERROR_BUT_TIMEOUT_UI",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "http_status": 200,
+      "protocol": "h2",
+      "remote_address": "[2408:4001:f00::1212]:443",
+      "content_type": "application/json; charset=utf-8",
+      "cors_origin": "https://www.qianwen.com",
+      "cors_errors_present": false,
+      "h2_protocol_error": false,
+      "details": {
+        "response_body": {
+          "code": "content_filtered",
+          "message": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.",
+          "request_id": "705dd735-d2d2-4e86-8bd8-1aaa8f852681"
+        },
+        "ui_error": "抱歉，系统超时，请稍后重试。",
+        "warning_displayed": false,
+        "console_errors": "None (only general warnings — permissions policy, deprecations)"
+      },
+      "analysis": "MAJOR IMPROVEMENT vs #402. CORS fix confirmed working (www.qianwen.com). ERR_HTTP2_PROTOCOL_ERROR ELIMINATED by switching to JSON template. JSON response received correctly with warning content. But frontend expects SSE streaming — interprets unexpected JSON as timeout. reload_templates confirmed working."
+    },
+    "duckduckgo": {
+      "status": "JSON_RECEIVED_NO_ERRORS_BUT_UNAVAILABLE_UI",
+      "url": "https://duck.ai",
+      "http_status": 200,
+      "protocol": "h2",
+      "remote_address": "20.43.161.105:443",
+      "content_type": "application/json; charset=utf-8",
+      "cors_origin": "https://duck.ai",
+      "cors_errors_present": false,
+      "h2_protocol_error": false,
+      "details": {
+        "response_body": {
+          "code": "content_filtered",
+          "message": "⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+          "request_id": "b21c1d81-e140-4667-85c4-373e410fb1b5"
+        },
+        "ui_error": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "frontend_accept_header": "text/event-stream",
+        "warning_displayed": false,
+        "console_warnings": 1
+      },
+      "analysis": "Consistent with #403 diagnostic. JSON template eliminates ERR_RESPONSE_PARSING and H2 errors. JSON body received cleanly (200 OK, application/json, no console errors). But frontend expects SSE (Accept: text/event-stream) and shows 'temporarily unavailable' when it gets JSON. reload_templates confirmed working."
+    }
+  },
+  "overall_analysis": {
+    "reload_templates_effect": "CONFIRMED WORKING — all template changes now actually applied for the first time",
+    "key_findings": [
+      "1. DeepSeek (SSE template): WORSE — proxy crashes H2 connection when injecting SSE response, complete failure",
+      "2. Qianwen (JSON template): FIXED H2 error — JSON avoids H2 framing issue entirely, CORS correct, but frontend shows timeout",
+      "3. DuckDuckGo (JSON template): FIXED parsing error — JSON resolves ERR_RESPONSE_PARSING, clean delivery, but frontend shows unavailable",
+      "4. JSON templates work for transport (no H2/CORS/parsing errors) but warnings not displayed because frontends expect SSE",
+      "5. SSE templates crash H2 connections — proxy cannot properly inject SSE into HTTP/2 DATA frames",
+      "6. Next step: Need SSE-compatible warning injection OR frontend-side warning display mechanism"
+    ],
+    "conclusion": "reload_templates was the missing step. JSON templates solve transport issues but warning display requires matching the expected response format (SSE) or using a different delivery mechanism."
+  }
+}
