@@ -1,0 +1,56 @@
+{
+  "id": "407",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T21:00:00+09:00",
+  "description": "핵심 버그 수정 후 재테스트. convert_to_http2_response의 header-body separator 검색을 LF와 CRLF 중 더 앞에 있는 것을 사용하도록 수정. SSE chunked body의 \\r\\n\\r\\n이 header-body separator로 잘못 인식되던 문제 해결.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. ERR_HTTP2_COMPRESSION_ERROR 해소 여부 확인",
+        "5. 200 OK SSE 응답 수신 여부",
+        "6. 경고 문구 표시 여부",
+        "7. DevTools Network + Console 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "separator 수정 → HPACK 정상 → SSE over H2 작동 → 경고 표시"
+    },
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. ERR_HTTP2_COMPRESSION_ERROR 해소 여부",
+        "5. SSE EventStream 탭 이벤트 수신 여부",
+        "6. 경고 문구 표시 여부",
+        "7. Console 에러 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "separator 수정 → SSE 이벤트 정상 수신 → 경고 표시 또는 최소 H2 에러 해소"
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.qwen.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. WARNING_DISPLAYED 여전히 정상인지 regression 확인",
+        "5. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "qwen3 WARNING_DISPLAYED regression 없음 확인"
+    }
+  ],
+  "priority": "CRITICAL",
+  "notes": "Phase3-B27 수정: convert_to_http2_response에서 \\n\\n과 \\r\\n\\r\\n 중 더 앞에 있는 것을 header-body separator로 사용. 이전에는 \\r\\n\\r\\n을 먼저 찾아 SSE chunked body 내부를 separator로 잘못 사용 → SSE 데이터가 헤더로 파싱 → HPACK 오염."
+}
