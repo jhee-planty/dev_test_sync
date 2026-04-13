@@ -1,0 +1,29 @@
+{
+  "id": "386",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T16:20:00+09:00",
+  "description": "Kimi Frontend Inspect (Phase 4). BLOCK_VERIFIED 확인됨 (8건+ 차단). 정상 프롬프트로 프론트엔드 구조 파악. 차단 키워드 사용 금지.",
+  "services": [
+    {
+      "service_name": "kimi",
+      "url": "https://kimi.moonshot.cn",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://kimi.moonshot.cn 접속 (kimi.com으로 리다이렉트)",
+        "2. 페이지 로드 완료 후 baseline 스크린샷 캡처",
+        "3. 채팅 입력창에 'Hello, how are you?' 입력 후 전송",
+        "4. 응답 렌더링 완료 대기 (10-15초)",
+        "5. 응답 상태 스크린샷 캡처",
+        "6. DevTools Network 탭에서 chat API 요청 확인:",
+        "   - 실제 chat POST의 URL과 도메인",
+        "   - Content-Type (text/event-stream? application/json?)",
+        "   - WebSocket 연결 여부",
+        "7. 결과 보고: API 도메인, URL 경로, 응답 형식"
+      ],
+      "expected_output": "baseline 스크린샷, response 스크린샷, chat API 도메인/경로, Content-Type, 응답 형식"
+    }
+  ],
+  "priority": "MEDIUM",
+  "notes": "Etap 로그에서 kimi 차단 8건+ 확인 (10:15~10:27). chat API는 kimi.com의 POST를 사용하며, Cloudflare IPv6로 라우팅됨. Frontend inspect는 정상 프롬프트로만 수행 — 차단 키워드 사용 금지."
+}
