@@ -1,0 +1,80 @@
+{
+  "id": "431",
+  "request_file": "431_check-block-remaining-batch2.json",
+  "command": "run-scenario",
+  "processed_by": "test-pc",
+  "timestamp": "2026-04-14T21:05:00+09:00",
+  "description": "미테스트 서비스 배치 2: copilot, gamma, v0, github_copilot 차단 테스트",
+  "results": [
+    {
+      "service_name": "copilot",
+      "url": "https://copilot.microsoft.com",
+      "status": "NOT_BLOCKED",
+      "warning_displayed": false,
+      "blocked": false,
+      "details": {
+        "protocol": "WebSocket (Azure WebPubSub)",
+        "websocket_url": "wss://wps-picasso-prod-kors.webpubsub.azure.com",
+        "behavior": "Copilot responded normally via WebSocket. APF does not intercept WebSocket traffic.",
+        "copilot_response": "Copilot returned its own privacy warning about not sharing sensitive info - this is Copilot's built-in response, NOT APF.",
+        "apf_template": "N/A - WebSocket bypass"
+      },
+      "conclusion": "WebSocket bypass. APF cannot block copilot.microsoft.com."
+    },
+    {
+      "service_name": "gamma",
+      "url": "https://gamma.app",
+      "status": "BLOCKED",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "protocol": "SSE (Server-Sent Events)",
+        "endpoint": "api.gamma.app generation endpoint",
+        "http_status": "400 Bad Request",
+        "behavior": "APF gamma_sse template returned 400 Bad Request on AI generation endpoint. Outline generation failed.",
+        "editor_type": "TipTap ProseMirror (contenteditable)",
+        "input_method": "document.execCommand('insertText') on .tiptap.ProseMirror",
+        "apf_template": "gamma_sse"
+      },
+      "conclusion": "APF gamma_sse 차단 확인. 400 Bad Request."
+    },
+    {
+      "service_name": "v0",
+      "url": "https://v0.dev",
+      "status": "PARTIAL",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "protocol": "HTTP/2",
+        "errors": ["ERR_HTTP2_PROTOCOL_ERROR on API requests", "401 Unauthorized on some endpoints"],
+        "behavior": "Chat created and message sent, but stuck on 'Thinking'. Multiple ERR_HTTP2_PROTOCOL_ERROR (APF blocking) and 401 Unauthorized (not logged in).",
+        "apf_template": "v0_json (likely)",
+        "login_note": "Some features require login"
+      },
+      "conclusion": "APF blocking confirmed via ERR_HTTP2_PROTOCOL_ERROR. Also partially LOGIN_REQUIRED for full functionality."
+    },
+    {
+      "service_name": "github_copilot",
+      "url": "https://github.com/copilot",
+      "status": "BLOCKED",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "protocol": "HTTP/2",
+        "endpoint": "api.individual.github.com",
+        "http_status": "403 Forbidden",
+        "behavior": "APF copilot_403 template returned 403 Forbidden. GitHub Copilot displayed 'Access denied. You do not have permission to view this.' error message. Loading spinner persisted.",
+        "login_status": "Logged in as jhee-planty (Copilot Free)",
+        "console_errors": ["Matched leaf route does not have element or Component", "Failed to load resource: 403"],
+        "apf_template": "copilot_403"
+      },
+      "conclusion": "APF copilot_403 차단 확인. 403 Forbidden."
+    }
+  ],
+  "summary": {
+    "total_services": 4,
+    "blocked": 3,
+    "not_blocked": 1,
+    "details": "copilot.microsoft.com은 WebSocket 통신으로 APF 우회. gamma/v0/github_copilot은 차단 확인."
+  }
+}
