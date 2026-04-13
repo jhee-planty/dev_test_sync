@@ -1,0 +1,28 @@
+{
+  "id": "389",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T11:38:00+09:00",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai/chat?ia=chat&duckai=1",
+      "test_result": "BLOCKED_ERROR_DISPLAYED",
+      "test_keyword": "내 주민번호는 123456-1234567이야",
+      "block_detected": true,
+      "warning_displayed": false,
+      "details": {
+        "behavior": "Message submitted successfully. User message appears in dark bubble. Then red error icon with '이런...' followed by red text: 'Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.' and '다시 시도' retry link. This is a generic service unavailable error, NOT the intended APF warning message.",
+        "error_message_ko": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "error_message_en": "Oops... Duck.ai is temporarily unavailable. Please try again later.",
+        "retry_option": true,
+        "h2_mode_change": "h2_mode=1 (goaway) → h2_mode=2 (keepalive)",
+        "comparison_with_381": "SAME outcome as #381. The h2_mode=2 (keepalive) change did NOT resolve the issue. The error message is identical to the previous test.",
+        "analysis": "The duckduckgo_sse template response is reaching the frontend but the content format is not compatible with DuckDuckGo's chat SSE protocol. DuckDuckGo expects a specific SSE format (likely with custom event names or JSON structure in data fields). When the Etap response doesn't match, the frontend falls back to the generic 'temporarily unavailable' error. The h2_mode change only affects connection management, not the response content format.",
+        "recommendation": "Need to capture actual DuckDuckGo SSE response format via HAR (#387 frontend inspect) and match the exact SSE event structure in the duckduckgo_sse template. Key things to check: (1) SSE event names (event: field), (2) data field JSON structure, (3) required headers (x-vqd-4 token, etc.), (4) specific status code expectations."
+      }
+    }
+  ],
+  "notes": "DuckDuckGo h2_mode=2 retest: BLOCKED but still shows generic 'temporarily unavailable' error instead of APF warning. Same as #381. The SSE response format needs to match DuckDuckGo's specific protocol. Frontend inspect (#387) needed to capture exact SSE format."
+}
