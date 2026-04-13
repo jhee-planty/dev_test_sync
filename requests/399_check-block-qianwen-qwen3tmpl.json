@@ -1,0 +1,27 @@
+{
+  "id": "399",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T19:10:00+09:00",
+  "description": "Qianwen 진단 테스트 — qwen3에서 작동하는 qwen3_json 템플릿으로 변경. ERR_HTTP2_PROTOCOL_ERROR가 템플릿 문제인지 연결 문제인지 구분.",
+  "services": [
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://tongyi.aliyun.com/qianwen 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. ERR_HTTP2_PROTOCOL_ERROR가 여전히 발생하는지 확인 (Console)",
+        "5. 이번에는 JSON 에러가 표시되는지 확인 (qwen3에서 보이는 경고 형식)",
+        "6. 또는 여전히 '消息生成失败' 에러인지",
+        "7. DevTools Network에서 응답 status 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "qwen3_json 템플릿 사용 시 H2 에러 해소 여부. 해소 → 템플릿 문제. 미해소 → 연결 특성 문제."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "진단 목적. qianwen response_type: qianwen_sse → qwen3_json 변경. qwen3_json은 chat.qwen.ai에서 WARNING_DISPLAYED 성공한 동일 템플릿."
+}
