@@ -1,0 +1,86 @@
+{
+  "id": "429",
+  "command": "run-scenario",
+  "request_file": "429_check-block-remaining-batch.json",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T20:04:00+09:00",
+  "overall_result": "MIXED",
+  "summary": "5개 서비스 배치 테스트. grok SUCCESS(WARNING_DISPLAYED), mistral PARTIAL(tRPC rejection), perplexity FAILURE(400), wrtn PARTIAL(ERR_HTTP2), notion PARTIAL(ERR_HTTP2+404)",
+  "services": [
+    {
+      "service_name": "grok",
+      "result": "SUCCESS",
+      "warning_displayed": true,
+      "url_tested": "https://grok.com",
+      "details": {
+        "url_after": "https://grok.com/?rid=00000000-apf0-warn-0000-000000000002",
+        "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "template": "grok_ndjson",
+        "note": "WARNING_DISPLAYED confirmed via URL redirect with APF rid parameter"
+      }
+    },
+    {
+      "service_name": "mistral",
+      "result": "PARTIAL_SUCCESS",
+      "warning_displayed": false,
+      "url_tested": "https://chat.mistral.ai",
+      "details": {
+        "template": "mistral_trpc_sse",
+        "response_body": "tRPC JSON with warning text correctly formatted in result.data.json",
+        "console_error": "<< mutation #7 — client tRPC mutation handler rejected the response",
+        "ui_behavior": "Page returned to empty state, no warning shown to user",
+        "root_cause": "Mistral client validates tRPC batch response structure; APF response passed SSE but failed tRPC mutation validation",
+        "recommendation": "Need to match exact tRPC batch mutation response schema including id/jsonrpc fields"
+      }
+    },
+    {
+      "service_name": "perplexity",
+      "result": "FAILURE",
+      "warning_displayed": false,
+      "url_tested": "https://www.perplexity.ai",
+      "details": {
+        "template": "perplexity_sse",
+        "network_key_request": "blocked-a795ad76-f8f5-4b19-9213-21d3a8c809fd",
+        "network_status": 400,
+        "console_errors": ["ERR_HTTP2_PROTOCOL_ERROR", "400 Bad Request"],
+        "ui_behavior": "No warning displayed, generic error",
+        "root_cause": "APF created fake thread with 'blocked-' prefix UUID; server rejected with 400. Perplexity validates thread UUID server-side",
+        "recommendation": "Perplexity SSE interception needs different approach — cannot fake thread ID"
+      }
+    },
+    {
+      "service_name": "wrtn",
+      "result": "PARTIAL_BLOCK",
+      "warning_displayed": false,
+      "url_tested": "https://wrtn.ai",
+      "details": {
+        "template": "openai_compat_sse",
+        "url_after": "https://wrtn.ai/c/69dc3c24b0669b5bdcfff866",
+        "network_requests": 178,
+        "console_errors": ["ERR_HTTP2_PROTOCOL_ERROR", "CORS error"],
+        "ui_behavior": "Generic error: '⚠ 일시적인 오류가 발생했어요' with '다시 시도' button",
+        "apf_intercept": true,
+        "root_cause": "APF intercepted and caused ERR_HTTP2_PROTOCOL_ERROR + CORS violation. Client showed generic error instead of warning",
+        "recommendation": "Need CORS headers in APF response or match wrtn's expected SSE format exactly"
+      }
+    },
+    {
+      "service_name": "notion",
+      "result": "PARTIAL_BLOCK",
+      "warning_displayed": false,
+      "url_tested": "https://www.notion.so",
+      "login_required": true,
+      "login_status": "LOGGED_IN",
+      "details": {
+        "user_confirmed": "장희 최의 Notion",
+        "ai_panel": "Opened successfully, message sent",
+        "network_requests": "51/74",
+        "console_errors": ["ERR_HTTP2_PROTOCOL_ERROR", "runInferenceTranscriptApiError", "markInfere... 404 Not Found", "HttpRequestError"],
+        "ui_behavior": "AI panel stuck in initial state after send, no warning displayed",
+        "apf_intercept": true,
+        "root_cause": "APF caused ERR_HTTP2_PROTOCOL_ERROR on AI inference request. Notion client then tried markInferenceTranscript API which returned 404 (inference never completed on server). AI panel froze.",
+        "recommendation": "Notion AI uses complex inference pipeline; simple SSE replacement insufficient. Need to handle inference lifecycle APIs."
+      }
+    }
+  ]
+}
