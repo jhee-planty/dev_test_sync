@@ -1,0 +1,88 @@
+{
+  "request_id": 379,
+  "request_type": "check-block-tier3-batch",
+  "test_keyword": "내 주민번호는 123456-1234567이야",
+  "tested_at": "2026-04-13T09:35-09:47+09:00",
+  "results": {
+    "phind": {
+      "url": "https://www.phind.com",
+      "status": "SERVICE_DOWN",
+      "detail": "404 DEPLOYMENT_NOT_FOUND — Vercel deployment gone. Page shows Vercel 404 error."
+    },
+    "cohere": {
+      "url": "https://coral.cohere.com",
+      "status": "LOGIN_REQUIRED",
+      "detail": "Redirected to Google OAuth → dashboard.cohere.com account setup 'About You' page. Cannot test without account completion."
+    },
+    "huggingface": {
+      "url": "https://huggingface.co/chat",
+      "status": "LOGIN_REQUIRED",
+      "detail": "Redirected to huggingface.co/join signup page. Chat requires login."
+    },
+    "you": {
+      "url": "https://you.com",
+      "status": "NOT_BLOCKED",
+      "detail": "Keyword submitted via GET search (you.com/search?q=...). AI responded with full content about 주민등록번호 structure, verification method, and protection advice. No block. Consistent with previous GET bypass finding."
+    },
+    "blackbox": {
+      "url": "https://www.blackbox.ai",
+      "redirected_to": "app.blackbox.ai",
+      "status": "BLOCKED",
+      "block_type": "SERVICE_LEVEL",
+      "detail": "Service returned JSON: {response:'⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\nThis request has been blocked due to sensitive information detected.',status:'blocked'}. This is blackbox's own content filter, not APF."
+    },
+    "chatglm": {
+      "url": "https://chatglm.cn",
+      "status": "INACCESSIBLE",
+      "detail": "Page loaded title '智谱清言' but content remained blank white for 20+ seconds. Likely geo-restricted Chinese service inaccessible from Korea."
+    },
+    "kimi": {
+      "url": "https://kimi.moonshot.cn",
+      "redirected_to": "kimi.com",
+      "status": "NOT_BLOCKED",
+      "detail": "Keyword submitted without login. Kimi acknowledged 주민번호 as sensitive personal info, offered to store in 'memory space', warned about privacy. No block — full response rendered. Tab title changed to '주민등록번호 공개'."
+    },
+    "qianwen": {
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "redirected_to": "qianwen.com",
+      "status": "GENERATION_FAILED",
+      "detail": "Keyword submitted without login (Qwen3.5-千问 model). Response: '消息生成失败，请重试' (Message generation failed, please retry). Likely content filter triggered at service level."
+    },
+    "wrtn": {
+      "url": "https://wrtn.ai",
+      "status": "NOT_BLOCKED",
+      "detail": "Keyword submitted without login. 뤼튼 responded with privacy warning ('주민등록번호는 개인정보라서 절대 인터넷에 공개하면 안 돼!') but processed normally. No block. Suggested signup for continued use."
+    },
+    "baidu": {
+      "url": "https://yiyan.baidu.com",
+      "status": "LOGIN_REQUIRED",
+      "detail": "ERNIE 4.5 Turbo interface loaded. Input field accessible and keyword typed, but send button could not be activated without login. Shows 'Not logged in' at bottom."
+    },
+    "character": {
+      "url": "https://character.ai",
+      "status": "LOGIN_REQUIRED",
+      "detail": "Redirected to login/signup page with Google/Apple/Email options. '천만 개 이상의 캐릭터를 이용하세요' signup prompt. Google OAuth popup also appeared."
+    },
+    "poe": {
+      "url": "https://poe.com",
+      "status": "LOGIN_REQUIRED",
+      "detail": "Redirected to poe.com/login with Google/Apple/Email/Phone login options. Chat requires authentication."
+    }
+  },
+  "summary": {
+    "total": 12,
+    "NOT_BLOCKED": 3,
+    "BLOCKED_SERVICE_LEVEL": 1,
+    "GENERATION_FAILED": 1,
+    "LOGIN_REQUIRED": 5,
+    "SERVICE_DOWN": 1,
+    "INACCESSIBLE": 1,
+    "services_not_blocked": ["you", "kimi", "wrtn"],
+    "services_blocked_by_service": ["blackbox"],
+    "services_generation_failed": ["qianwen"],
+    "services_login_required": ["cohere", "huggingface", "baidu", "character", "poe"],
+    "services_down": ["phind"],
+    "services_inaccessible": ["chatglm"]
+  },
+  "notes": "Of 12 tier-3 services, only 3 were testable without login and did NOT block the 주민번호 keyword (you.com, kimi, wrtn). Blackbox blocked at service level with its own content filter. Qianwen's generation failed (possible content filter). 5 services required login. Phind is completely down. ChatGLM is inaccessible from Korea."
+}
