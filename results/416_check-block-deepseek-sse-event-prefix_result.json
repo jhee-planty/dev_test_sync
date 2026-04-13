@@ -1,0 +1,57 @@
+{
+  "request_id": "416",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T16:47:00+09:00",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "status": "FAILED",
+      "verdict": "EVENTSTREAM_TAB_VISIBLE_BUT_0_EVENTS",
+      "warning_displayed": false,
+      "details": {
+        "completion_request": {
+          "url": "https://chat.deepseek.com/api/v0/chat/completion",
+          "method": "POST",
+          "status_code": 200,
+          "protocol": "h2",
+          "remote_address": "3.173.21.63:443",
+          "size": "0.5 kB",
+          "time": "4 ms"
+        },
+        "response_headers": {
+          "Access-Control-Allow-Origin": "https://chat.deepseek.com",
+          "Cache-Control": "no-cache",
+          "Content-Type": "text/event-stream",
+          "Content-Length": "NOT_PRESENT (B29)"
+        },
+        "eventstream_tab": {
+          "visible": true,
+          "events_count": 0,
+          "note": "EventStream tab visible (same as #415) but still 0 events. event: message prefix did NOT help."
+        },
+        "create_request_error": {
+          "url": "https://chat.deepseek.com/api/v0/chat_session/create",
+          "error": "net::ERR_HTTP2_PROTOCOL_ERROR (same as #415)"
+        },
+        "console_errors": ["POST chat_session/create net::ERR_HTTP2_PROTOCOL_ERROR"],
+        "ui_result": "네트워크를 확인하고 다시 시도하세요.. (network error, same as #415)"
+      },
+      "analysis": {
+        "event_prefix_effect": "NO_EFFECT — adding event: message prefix did not produce EventStream events. The issue is NOT in SSE event format.",
+        "root_cause_hypothesis": "The 0-events problem is likely in H2 DATA frame delivery. The response completes in 4ms with 0.5kB — this suggests APF sends the entire SSE body as a single non-streaming response, not as chunked streaming data. Chrome's EventStream parser needs the response to be delivered as a stream (chunked), not as a single completed response.",
+        "key_evidence": "Response time 4ms + size 0.5kB = entire body sent at once, then connection closed. SSE requires the response to remain open (streaming). APF appears to send the SSE body and immediately close the H2 stream.",
+        "comparison_with_duckduckgo": "#409 DuckDuckGo had 4 EventStream events because duck.ai's real SSE stream was ongoing when APF injected. DeepSeek's completion API also expects streaming but APF replaces the entire response.",
+        "next_steps": [
+          "1. APF needs to send SSE data as H2 DATA frames WITHOUT END_STREAM on the first frame",
+          "2. Send the SSE events as separate H2 DATA frames with delays between them",
+          "3. Only set END_STREAM on the final DATA frame (after data: [DONE])",
+          "4. This requires modifying the H2 response sending logic in APF to support chunked/streaming mode"
+        ]
+      }
+    }
+  ],
+  "summary": "B31 event:message prefix 추가 효과 없음. EventStream 탭 표시되나 0 이벤트(#415와 동일). 근본 원인 분석: APF가 SSE body를 단일 완료 응답으로 전송(4ms/0.5kB), 스트리밍이 아님. Chrome EventStream 파서는 청크 스트리밍 필요. H2 DATA 프레임 분할 전송 + END_STREAM 지연이 필요.",
+  "priority": "CRITICAL"
+}
