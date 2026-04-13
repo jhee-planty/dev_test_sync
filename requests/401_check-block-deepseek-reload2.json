@@ -1,0 +1,26 @@
+{
+  "id": "401",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T19:40:00+09:00",
+  "description": "DeepSeek 재테스트 — reload_services 재실행 완료. DB 확인: 200 OK SSE 템플릿 정상 저장. 이번엔 반드시 반영되었을 것.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 확인: 400 에러인지 200 OK 경고 표시인지",
+        "5. DevTools Network에서 응답 status code 확인 (200 vs 400)",
+        "6. 경고 문구 표시 여부 확인",
+        "7. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "200 OK SSE → 경고 문구 표시. 여전히 400이면 etapd restart 필요."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "DB 확인 완료: deepseek_sse = HTTP/1.1 200 OK. reload_services 직전 재실행 확인. 4번째 테스트."
+}
