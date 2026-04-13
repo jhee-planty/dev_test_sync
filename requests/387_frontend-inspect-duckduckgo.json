@@ -1,0 +1,30 @@
+{
+  "id": "387",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T16:45:00+09:00",
+  "description": "DuckDuckGo AI Chat Frontend Inspect (Phase 4). BLOCK_VERIFIED 확인됨 (4건 차단). 정상 프롬프트로 프론트엔드 구조 파악. 차단 키워드 사용 금지.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1 접속",
+        "2. DuckDuckGo AI Chat 인터페이스 로드 대기",
+        "3. 페이지 로드 완료 후 baseline 스크린샷 캡처",
+        "4. 채팅 입력창에 'Hello, how are you?' 입력 후 전송",
+        "5. 응답 렌더링 완료 대기 (10-15초)",
+        "6. 응답 상태 스크린샷 캡처",
+        "7. DevTools Network 탭에서 duckchat API 요청 확인:",
+        "   - POST /duckchat/v1/chat 등 실제 chat endpoint URL",
+        "   - Content-Type (text/event-stream? application/json?)",
+        "   - 응답 스트리밍 방식 (SSE chunks)",
+        "8. 결과 보고: API endpoint, Content-Type, 응답 형식, 채팅 UI 구조"
+      ],
+      "expected_output": "baseline 스크린샷, response 스크린샷, chat API endpoint, Content-Type, 응답 형식, UI 구조 분석"
+    }
+  ],
+  "priority": "MEDIUM",
+  "notes": "Etap 로그에서 duckduckgo 차단 4건 확인 (10:13:40~10:13:45). duckduckgo_sse 415B, h2_mode=1 goaway. Frontend inspect는 정상 프롬프트로만 수행 — 차단 키워드 사용 금지."
+}
