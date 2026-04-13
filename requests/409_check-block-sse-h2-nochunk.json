@@ -1,0 +1,56 @@
+{
+  "id": "409",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T21:16:00+09:00",
+  "description": "Phase3-B28 핵심 테스트. recalculate_content_length에 is_h2 플래그 추가 — H2 SSE 응답에서 chunked encoding 완전 제거. SSE body가 그대로 H2 DATA frame으로 전달되어 브라우저 EventStream 파서가 정상 파싱하는지 확인.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 경고 문구 표시 여부 확인 (WARNING_DISPLAYED 목표)",
+        "5. DevTools Network: status code + content-type (text/event-stream 기대)",
+        "6. DevTools EventStream 탭: SSE 이벤트 수신 여부",
+        "7. Console 에러 확인 (H2 에러 없어야 함)",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "B28: chunked 제거 → SSE body 정상 → EventStream 파싱 → 경고 표시"
+    },
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 경고 문구 표시 여부 확인",
+        "5. DevTools Network: content-type text/event-stream 확인",
+        "6. DevTools EventStream 탭: SSE 이벤트 수신 여부",
+        "7. Console 에러 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "B28: chunked 제거 → SSE over H2 정상 → EventStream 이벤트 수신 → 경고 표시"
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.qwen.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. WARNING_DISPLAYED 여전히 정상인지 regression 확인",
+        "5. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "qwen3 WARNING_DISPLAYED regression 없음 확인"
+    }
+  ],
+  "priority": "CRITICAL",
+  "notes": "Phase3-B28: recalculate_content_length(http_response, is_h2) — is_h2=true이면 SSE도 chunked 미적용, Content-Length 설정. convert_to_http2_response의 de-chunk(B26)은 안전망으로 유지. deepseek=deepseek_sse, duckduckgo=duckduckgo_sse로 복원 후 테스트."
+}
