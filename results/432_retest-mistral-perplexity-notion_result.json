@@ -1,0 +1,84 @@
+{
+  "id": "432",
+  "request_file": "432_retest-mistral-perplexity-notion.json",
+  "command": "run-scenario",
+  "processed_by": "test-pc",
+  "timestamp": "2026-04-14T21:18:00+09:00",
+  "description": "mistral(tRPC id/type), perplexity(h2_end_stream=2), notion(h2_end_stream=2) 재테스트",
+  "results": [
+    {
+      "service_name": "mistral",
+      "url": "https://chat.mistral.ai",
+      "status": "PARTIAL_SUCCESS",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "protocol": "HTTP/2",
+        "endpoint": "chat.mistral.ai/api/trpc/message.newChat?batch=1",
+        "http_status": "200",
+        "response_format": "tRPC JSON batch",
+        "apf_response": {
+          "id": null,
+          "result_type": "data",
+          "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+          "chatId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+          "generationStatus": "success"
+        },
+        "console_error": "<< mutation #5 message.newChat — tRPC client rejected response",
+        "issue": "id=null causes tRPC client to treat response as error. Client expects matching batch id.",
+        "apf_template": "mistral_trpc_sse"
+      },
+      "conclusion": "APF 차단 성공 (200+tRPC warning). 하지만 id=null로 클라이언트가 mutation error로 처리. UI에 경고 미표시. id 필드를 요청의 batch id와 매칭 필요."
+    },
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "status": "SUCCESS",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "protocol": "HTTP/2",
+        "h2_end_stream": 2,
+        "http_status": "400 Bad Request (blocked-98...) + cancelled requests",
+        "err_http2_protocol_error": false,
+        "behavior": "h2_end_stream=2 적용으로 ERR_HTTP2_PROTOCOL_ERROR 해소. 400 Bad Request로 정상 차단 응답 반환. 검색 결과 미표시.",
+        "console_errors": ["CORS policy block", "WebSocket connection failed", "400 (Bad Request)"],
+        "network_requests": "blocked-98... (cancelled) + blocked-98... (400 h2)",
+        "apf_template": "perplexity_sse"
+      },
+      "conclusion": "h2_end_stream=2 적용 성공. ERR_HTTP2 에러 해소. 400 Bad Request로 깔끔한 차단."
+    },
+    {
+      "service_name": "notion",
+      "url": "https://www.notion.so",
+      "status": "FAILURE",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "protocol": "HTTP/2",
+        "h2_end_stream": 2,
+        "login_status": "Logged in (장희 최의 Notion)",
+        "ai_panel": "Notion AI chat panel opened, message sent",
+        "err_http2_protocol_error": true,
+        "http_status": "404 (markInference API)",
+        "console_errors": [
+          "net::ERR_HTTP2_PROTOCOL_ERROR on notion.so",
+          "runInferenceTranscriptApiError",
+          "POST https://www.notion.so/... 404 (Not Found)",
+          "HttpRequestError: Received HTTP 404"
+        ],
+        "behavior": "h2_end_stream=2 적용에도 ERR_HTTP2_PROTOCOL_ERROR 여전히 발생. markInference API 404 반환. AI 응답 없음.",
+        "apf_template": "notion (h2_end_stream=2 미작동)"
+      },
+      "conclusion": "h2_end_stream=2 적용 실패. ERR_HTTP2_PROTOCOL_ERROR 해소 안 됨. Notion은 다른 접근 필요."
+    }
+  ],
+  "summary": {
+    "total_services": 3,
+    "h2_end_stream_2_results": {
+      "perplexity": "SUCCESS — ERR_HTTP2 해소, 400 Bad Request 정상 차단",
+      "notion": "FAILURE — ERR_HTTP2 여전히 발생, 추가 조사 필요"
+    },
+    "mistral_trpc_fix": "PARTIAL — tRPC 응답 형식 작동하나 id=null로 클라이언트 거부"
+  }
+}
