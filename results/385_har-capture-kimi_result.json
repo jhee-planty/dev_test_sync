@@ -1,0 +1,60 @@
+{
+  "id": "385",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T11:14:00+09:00",
+  "services": [
+    {
+      "service_name": "kimi",
+      "url": "https://kimi.moonshot.cn",
+      "test_result": "SUCCESS",
+      "findings": {
+        "chat_api_domain": "www.kimi.com",
+        "chat_api_url": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat",
+        "chat_api_path": "/apiv2/kimi.gateway.chat.v1.ChatService/Chat",
+        "http_method": "POST",
+        "request_content_type": "application/connect+json",
+        "response_content_type": "application/connect+json",
+        "protocol": "h2 (HTTP/2)",
+        "remote_address": "[2606:4700::6812:15f6]:443",
+        "server": "cloudflare",
+        "cf_ray": "9eb6ee610837ea25-ICN",
+        "websocket_used": false,
+        "streaming_protocol": "Connect RPC (gRPC-compatible) over HTTP/2",
+        "request_body_contains_user_message": true,
+        "request_body_format": "JSON with message.blocks[].text.content containing user prompt",
+        "request_body_sample_structure": {
+          "scenario": "SCENARIO_K2D5",
+          "tools": [{"type": "TOOL_TYPE_SEARCH", "search": {}}],
+          "message": {
+            "role": "user",
+            "blocks": [{"message_id": "", "text": {"content": "Hello, how are you today?"}}]
+          },
+          "options": {"thinking": false}
+        },
+        "response_format": "Streaming newline-delimited JSON objects with op/mask/eventOffset/message structure",
+        "response_size": "7.3 kB",
+        "response_time": "4.77s",
+        "status_code": 200,
+        "other_api_endpoints_observed": [
+          "www.kimi.com/apiv2/kimi.chat.v1.ChatService/ListChats",
+          "www.kimi.com/apiv2/kimi.gateway.membership.v2.MembershipService/GetSubscription"
+        ],
+        "telemetry_domains": [
+          "gator.volces.com (ping/xhr)",
+          "apmplus.volces.com (APM monitoring)",
+          "www.google-analytics.com",
+          "googleads.g.doubleclick.net"
+        ]
+      },
+      "analysis": {
+        "apf_implications": "Kimi uses Connect RPC protocol (application/connect+json) over HTTP/2 POST to www.kimi.com. User message is in request body JSON at message.blocks[].text.content. This is NOT WebSocket — standard HTTP POST inspection should work. The domain_patterns in DB should target: kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat",
+        "etap_log_explanation": "Previous Etap logs showed small POST bodies (2-934B) because those were ListChats/GetSubscription calls, not the actual Chat request. The Chat POST is ~7.3 kB and contains the full user message.",
+        "classification": "INSPECTABLE — standard HTTP/2 POST with JSON body containing user message. Similar to chatgpt/claude pattern but uses Connect RPC instead of SSE.",
+        "recommended_domain_pattern": "kimi.com AND path contains /apiv2/kimi.gateway.chat.v1.ChatService/Chat"
+      }
+    }
+  ],
+  "notes": "Kimi chat API fully identified. Connect RPC protocol (gRPC-Web compatible) on www.kimi.com via Cloudflare IPv6 (ICN). No WebSocket. User message clearly present in POST body. Etap can inspect this traffic for APF filtering."
+}
