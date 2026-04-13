@@ -1,0 +1,84 @@
+{
+  "id": "409",
+  "request_id": "409_check-block-sse-h2-nochunk",
+  "command": "run-scenario",
+  "status": "PARTIAL_SUCCESS",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T15:27:00+09:00",
+  "description": "Phase3-B28 테스트: recalculate_content_length is_h2 플래그 — H2 SSE chunked 완전 제거",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "template": "deepseek_sse",
+      "url": "https://chat.deepseek.com",
+      "result": {
+        "status": "TRANSPORT_OK_SSE_PARSE_FAIL",
+        "http_status": "200 OK",
+        "protocol": "h2",
+        "content_type": "text/event-stream; charset=utf-8",
+        "cors_origin": "https://chat.deepseek.com",
+        "h2_compression_error": false,
+        "warning_displayed": false,
+        "eventstream_events": 0,
+        "ui_display": "네트워크를 확인하고 다시 시도하세요",
+        "retry_count": 0
+      },
+      "analysis": "B28 chunked 제거 후 200 OK h2 전송 성공. Content-Type text/event-stream 정상. 그러나 EventStream 탭 비어있음 — 브라우저 EventSource 파서가 SSE 이벤트를 수신하지 못함. Content-Length 설정으로 인해 스트리밍이 아닌 일괄 전송으로 인식되었을 가능성. DeepSeek 프론트엔드는 SSE 스트리밍을 기대하여 네트워크 에러로 처리."
+    },
+    {
+      "service_name": "duckduckgo",
+      "template": "duckduckgo_sse",
+      "url": "https://duck.ai",
+      "result": {
+        "status": "SSE_PARSED_UI_ERROR",
+        "http_status": "200 OK",
+        "protocol": "h2",
+        "content_type": "text/event-stream",
+        "cors_origin": "*",
+        "x_vqd_hash_1": "blocked",
+        "h2_compression_error": false,
+        "warning_displayed": false,
+        "eventstream_events": 4,
+        "eventstream_data": [
+          "CHAT_TITLE:blocked",
+          "{\"id\":\"rs_blocked_001\",\"created\":1712649600,...}",
+          "{\"id\":\"msg_blocked_001\",\"message\":\"⚠️ 이 요...\"}",
+          "[DONE]"
+        ],
+        "tab_title": "blocked",
+        "ui_display": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "retry_count": 0
+      },
+      "analysis": "★★★ B28 핵심 돌파구! DuckDuckGo에서 SSE over H2 EventStream 파싱 성공! 4개 이벤트 수신: CHAT_TITLE → rs_blocked → msg_blocked → DONE. 탭 제목 'blocked'로 변경 확인 = CHAT_TITLE 이벤트 프론트엔드 처리됨. 그러나 msg_blocked 이벤트의 JSON 형식이 DuckDuckGo 프론트엔드가 기대하는 형식과 불일치하여 에러로 표시. SSE 전송 계층은 완벽 — 이제 이벤트 내용 형식만 맞추면 됨."
+    },
+    {
+      "service_name": "qwen3",
+      "template": "qwen3_json",
+      "url": "https://chat.qwen.ai",
+      "result": {
+        "status": "WARNING_DISPLAYED",
+        "http_status": "200 OK",
+        "protocol": "http/1.1",
+        "content_type": "application/json",
+        "warning_displayed": true,
+        "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+        "cors_origin": "https://chat.qwen.ai"
+      },
+      "analysis": "Regression check PASS. qwen3_json 템플릿 B28 변경 후에도 완벽 작동. 경고 문구 정상 표시."
+    }
+  ],
+  "overall_analysis": {
+    "b28_chunked_removal_effective": true,
+    "h2_compression_error": false,
+    "deepseek_sse_transport": "200 OK h2 — EventStream 비어있음. Content-Length 때문에 브라우저가 SSE 스트림이 아닌 완료된 응답으로 처리",
+    "duckduckgo_sse_breakthrough": "★ SSE over H2 EventStream 파싱 성공! 4개 이벤트 수신. CHAT_TITLE 프론트엔드 처리됨. 이벤트 내용 형식만 수정하면 경고 표시 가능",
+    "qwen3_regression": "PASS — JSON 템플릿 정상",
+    "deepseek_vs_duckduckgo_difference": "DeepSeek는 EventStream 0개, DuckDuckGo는 4개 — 두 서비스의 SSE 파서 구현 차이 또는 Etap 템플릿의 Content-Length 처리 차이일 수 있음",
+    "next_steps": [
+      "1. DuckDuckGo: msg_blocked 이벤트의 JSON 형식을 DuckDuckGo 프론트엔드가 기대하는 형식으로 수정 → 경고 표시 가능",
+      "2. DeepSeek: Content-Length 제거하고 chunked-like 전송 또는 H2 DATA frame 스트리밍 방식 검토",
+      "3. DuckDuckGo SSE 성공 원인 분석: DeepSeek와 차이점 파악"
+    ],
+    "conclusion": "B28 is_h2 플래그가 DuckDuckGo SSE에서 돌파구 달성. chunked 제거 + Content-Length 설정이 DuckDuckGo에서는 SSE 파싱 성공. DeepSeek에서는 추가 조사 필요."
+  }
+}
