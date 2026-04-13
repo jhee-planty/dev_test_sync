@@ -1,0 +1,60 @@
+{
+  "request_id": "415",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T16:42:00+09:00",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "status": "PARTIAL_IMPROVEMENT",
+      "verdict": "EVENTSTREAM_TAB_VISIBLE_BUT_0_EVENTS",
+      "warning_displayed": false,
+      "details": {
+        "completion_request": {
+          "url": "https://chat.deepseek.com/api/v0/chat/completion",
+          "method": "POST",
+          "status_code": 200,
+          "protocol": "h2",
+          "remote_address": "3.173.21.63:443",
+          "size": "0.5 kB",
+          "time": "5 ms"
+        },
+        "response_headers": {
+          "Access-Control-Allow-Origin": "https://chat.deepseek.com",
+          "Cache-Control": "no-cache",
+          "Content-Type": "text/event-stream",
+          "Content-Length": "NOT_PRESENT (B29 confirmed)"
+        },
+        "charset_removal_confirmed": true,
+        "content_type_exact": "text/event-stream",
+        "eventstream_tab": {
+          "visible": true,
+          "columns": "Id, Type, Data, Time",
+          "events_count": 0,
+          "note": "EventStream tab NOW VISIBLE (was not in B28 with charset). Chrome recognized SSE content-type. But 0 events parsed — SSE body content issue."
+        },
+        "response_tab": "Failed to load response data - Request with the provided ID has already finished loading",
+        "create_request_error": {
+          "url": "https://chat.deepseek.com/api/v0/chat_session/create",
+          "error": "net::ERR_HTTP2_PROTOCOL_ERROR",
+          "note": "chat_session/create failed with H2 protocol error. This is the second request after completion — may be APF intercepting non-targeted URL."
+        },
+        "console_errors": [
+          "WebAssembly.instantiateStreaming: server MIME type mismatch (x2, unrelated)",
+          "POST chat_session/create net::ERR_HTTP2_PROTOCOL_ERROR"
+        ],
+        "ui_result": "네트워크를 확인하고 다시 시도하세요.. (Check network and try again)"
+      },
+      "analysis": {
+        "charset_removal_effect": "POSITIVE — EventStream tab now visible (was hidden with charset=utf-8). Chrome correctly identifies text/event-stream as SSE.",
+        "remaining_issue": "EventStream 0 events — the SSE body may not contain properly formatted SSE data (data: prefix + double newline), OR the response completed too fast before streaming could start.",
+        "h2_protocol_error": "chat_session/create gets ERR_HTTP2_PROTOCOL_ERROR — APF may be incorrectly intercepting this non-chat URL on the same connection.",
+        "ui_error_source": "The '네트워크 확인' error is likely from the failed create request, not from the completion response.",
+        "next_step": "B30(#416) adds event: message prefix to SSE data. If EventStream still shows 0 events, the issue may be in H2 DATA frame chunking or the SSE body format itself."
+      }
+    }
+  ],
+  "summary": "B30 charset 제거 확인: Content-Type이 정확히 text/event-stream으로 변경됨. EventStream 탭이 Chrome에서 처음으로 표시됨(B28에서는 미표시). 그러나 이벤트 0개 — SSE body 형식 또는 H2 스트리밍 문제 잔존. chat_session/create에서 ERR_HTTP2_PROTOCOL_ERROR 발생.",
+  "priority": "CRITICAL"
+}
