@@ -1,0 +1,61 @@
+{
+  "request_id": "418_check-block-deepseek-sse-goaway",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-13T17:08:00+09:00",
+  "summary": "DeepSeek GOAWAY: ERR_HTTP2_PROTOCOL_ERROR 해결 확인, but EventStream 여전히 0 events. DuckDuckGo: duckduckgo_json 템플릿 → generic error (Vercel AI SDK 형식 불일치).",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "test_input": "내 주민번호는 123456-1234567이야",
+      "results": {
+        "completion_status": "200 OK",
+        "protocol": "h2",
+        "remote_address": "3.173.21.63:443",
+        "content_type": "text/event-stream",
+        "content_length_header": "absent (B29 effective)",
+        "charset": "absent (removed per #415)",
+        "eventstream_events": 0,
+        "eventstream_tab_visible": true,
+        "response_body": "Failed to load response data — Request with the provided ID has already finished loading",
+        "warning_displayed": false,
+        "ui_message": "네트워크를 확인하고 다시 시도하세요..",
+        "console_errors": "WebAssembly MIME type warnings only (unrelated to SSE)",
+        "err_http2_protocol_error": "NOT PRESENT — GOAWAY fixed this",
+        "create_request_status": "200 OK (no error)",
+        "goaway_effect": {
+          "err_http2_fixed": true,
+          "eventstream_improved": false,
+          "response_body_captured": false,
+          "warning_displayed": false
+        },
+        "root_cause_analysis": "GOAWAY successfully terminates H2 connection cleanly, preventing ERR_HTTP2_PROTOCOL_ERROR on subsequent requests (create). However, EventStream still 0 events because APF sends SSE body as single completed H2 DATA frame with END_STREAM, not as streaming chunks. Chrome EventStream parser requires incremental DATA frames to parse SSE events in real-time."
+      },
+      "verdict": "PARTIAL_SUCCESS"
+    },
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "test_input": "내 주민번호는 123456-1234567이야",
+      "results": {
+        "chat_status": "200 OK",
+        "protocol": "h2",
+        "remote_address": "20.43.161.105:443",
+        "content_type": "text/event-stream",
+        "response_body": "Nothing to preview — This request has no response data available",
+        "warning_displayed": false,
+        "ui_message": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "template_used": "duckduckgo_json",
+        "root_cause": "duckduckgo_json template sends OpenAI-format JSON response. DuckDuckGo frontend expects Vercel AI SDK stream format (text-delta with r.text field). Format mismatch causes generic error."
+      },
+      "verdict": "BLOCK_CONFIRMED_BUT_WARNING_FAILED"
+    }
+  ],
+  "key_findings": {
+    "deepseek_goaway": "h2_goaway=1 successfully prevents ERR_HTTP2_PROTOCOL_ERROR. Connection terminates cleanly. But does NOT fix EventStream 0 events — root cause is non-streaming H2 response.",
+    "deepseek_next_step": "Need true H2 streaming: send DATA frames without END_STREAM flag, with delays between events, to simulate real SSE streaming.",
+    "duckduckgo_next_step": "Need new template using Vercel AI SDK stream format. text-delta type with {text:'warning message'} field instead of OpenAI choices/delta format.",
+    "cumulative_changes_tested": "B29(Content-Length removal) + charset removal + event:message prefix + h2_goaway=1"
+  },
+  "overall_verdict": "PARTIAL_SUCCESS — GOAWAY solves ERR_HTTP2_PROTOCOL_ERROR but core SSE/warning delivery still unsolved for both services"
+}
