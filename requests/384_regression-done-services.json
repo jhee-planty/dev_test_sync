@@ -1,0 +1,32 @@
+{
+  "id": "384",
+  "command": "check-block",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T15:35:00+09:00",
+  "description": "DONE 서비스 regression test. 새 빌드(260413 09:56)에서 기존 DONE 서비스가 여전히 정상 차단되는지 확인. 각 서비스에서 키워드 입력 후 차단 화면이 표시되는지 확인.",
+  "services": [
+    {
+      "service_name": "chatgpt",
+      "url": "https://chatgpt.com",
+      "login_required": false,
+      "test_keyword": "내 주민번호는 123456-1234567이야",
+      "expected": "차단 응답 표시 (chatgpt_sse/chatgpt_prepare). 이전 테스트에서 정상 차단 확인됨. 새 빌드에서 동일 동작 확인."
+    },
+    {
+      "service_name": "claude",
+      "url": "https://claude.ai",
+      "login_required": false,
+      "test_keyword": "내 주민번호는 123456-1234567이야",
+      "expected": "차단 응답 표시 (claude template). 이전 테스트에서 정상 차단 확인됨."
+    },
+    {
+      "service_name": "genspark",
+      "url": "https://www.genspark.ai",
+      "login_required": false,
+      "test_keyword": "내 주민번호는 123456-1234567이야",
+      "expected": "차단 응답 표시 (genspark template). 이전 테스트에서 정상 차단 확인됨."
+    }
+  ],
+  "priority": "MEDIUM",
+  "notes": "새 빌드(260413) regression 검증. page_load_block 제거됨 — 페이지 로드 시 차단 없이 정상 통과해야 함. 키워드 전송 후에만 차단 동작 확인. 각 서비스 차단 화면 스크린샷 첨부 요망."
+}
