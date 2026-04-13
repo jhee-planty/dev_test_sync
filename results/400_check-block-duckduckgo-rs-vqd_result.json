@@ -1,0 +1,45 @@
+{
+  "id": "400",
+  "request_id": "400_check-block-duckduckgo-rs-vqd",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T13:48:00+09:00",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "test_input": "내 주민번호는 123456-1234567이야",
+      "status": "BLOCKED_ERROR_RESPONSE_PARSING",
+      "details": {
+        "http_status": 200,
+        "protocol": "h2",
+        "remote_address": "20.43.161.x",
+        "error_type": "ERR_RESPONSE_PARSING",
+        "ui_error_message": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "retry_link_present": true,
+        "auto_retry_count": 4,
+        "auto_retry_origins": ["new", "auto_retry", "auto_retry", "auto_retry"],
+        "model": "gpt-5-mini",
+        "total_requests": 29,
+        "transferred": "16.7 kB",
+        "console_errors": "1 warning (iframe sandbox)",
+        "cors_errors": false,
+        "x_vqd_hash_1_header": "NOT_VERIFIED_DUE_TO_PARSING_ERROR",
+        "rs_event_effect": "NOT_VERIFIED_DUE_TO_PARSING_ERROR",
+        "telemetry_pings": [
+          "dc_error_free: ERR_RESPONSE_PARSING",
+          "dc_messageErrorImpression: ERR_RESPONSE_PARSING",
+          "wide_event_duck-chat-interaction_complete: FAILURE/ERR_RESPONSE_PARSING x4"
+        ]
+      },
+      "analysis": {
+        "previous_test": "#397 — same BLOCKED_ERROR_UNAVAILABLE result",
+        "rs_event_impact": "rs_ response start event + X-Vqd-Hash-1: blocked header 추가했으나 효과 없음",
+        "root_cause": "ERR_RESPONSE_PARSING — 프록시가 200 OK를 반환하지만 SSE 스트림 본문의 형식이 프론트엔드 파서와 불일치. 헤더 추가만으로는 해결 불가. SSE body parsing logic 자체가 기대하는 형식과 다름.",
+        "compared_to_397": "동일한 결과. rs_ event와 X-Vqd-Hash-1 헤더는 파싱 에러를 해결하지 못함.",
+        "next_steps": "1) HAR에서 실제 정상 SSE 응답 body를 덤프하여 정확한 바이트 수준 비교 필요. 2) Content-Encoding 차이 확인 (원본은 gzip/br 사용 가능). 3) Transfer-Encoding: chunked vs h2 DATA frame 차이 검토."
+      }
+    }
+  ],
+  "summary": "DuckDuckGo rs_+X-Vqd-Hash-1 템플릿 테스트: 실패. 프록시 200 OK 반환하나 ERR_RESPONSE_PARSING. 프론트엔드 SSE 파서가 응답 본문을 파싱하지 못함. 4회 자동 재시도 모두 동일 실패. #397과 동일한 결과 — 헤더 추가는 효과 없음."
+}
