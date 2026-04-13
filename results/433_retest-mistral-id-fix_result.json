@@ -1,0 +1,31 @@
+{
+  "id": "433",
+  "request_file": "433_retest-mistral-id-fix.json",
+  "executed_at": "2026-04-14T08:06:00+09:00",
+  "executor": "test-pc-worker",
+  "overall_status": "PARTIAL_FAILURE",
+  "summary": "id=null→0 fix confirmed in response, but tRPC client still rejects. Warning NOT displayed in chat.",
+  "services": [
+    {
+      "service_name": "mistral",
+      "url": "https://chat.mistral.ai/chat",
+      "test_type": "check-block",
+      "template": "mistral_trpc_sse",
+      "status": "PARTIAL_FAILURE",
+      "http_status": 200,
+      "protocol": "h2",
+      "details": {
+        "id_field_value": 0,
+        "id_fix_applied": true,
+        "warning_in_response_body": true,
+        "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "warning_displayed_in_chat": false,
+        "console_error": "<< mutation #9 message.newChat",
+        "trpc_mutation_rejected": true,
+        "root_cause": "id=0 fix alone is insufficient. tRPC client expects SSE mutation response format (started→data→stopped sequence), not a single JSON response. The client validates response type/format beyond just the id field.",
+        "response_body_excerpt": "[{\"id\":0,\"result\":{\"type\":\"data\",\"data\":{\"json\":[{\"chatId\":\"a1b2c3d4-...\",\"messages\":[{\"role\":\"assistant\",\"content\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\"}],\"generationStatus\":\"success\",\"status\":\"active\"}],\"meta\":{\"values\":{}}}}}]"
+      },
+      "recommendation": "Need to return response as SSE stream format matching tRPC httpBatchStreamLink protocol: 1) Send proper SSE headers (text/event-stream), 2) Emit tRPC SSE sequence: {id:0,result:{type:'started'}} → {id:0,result:{type:'data',data:{...}}} → {id:0,result:{type:'stopped'}}. The single JSON batch response format is not compatible with Mistral's tRPC SSE mutation handler."
+    }
+  ]
+}
