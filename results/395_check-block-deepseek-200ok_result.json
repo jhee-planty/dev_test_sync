@@ -1,0 +1,43 @@
+{
+  "id": "395",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T13:25:00+09:00",
+  "description": "DeepSeek 차단 재테스트 (200 OK SSE) + Qwen3 regression",
+  "results": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "status": "BLOCKED_ERROR_400",
+      "details": "DB 변경(400→200 OK)이 아직 반영되지 않았거나 배포되지 않음. 이전 #388과 동일하게 '전송 실패. 나중에 다시 시도하세요. (400)' 에러 표시.",
+      "observations": [
+        "채팅 입력 후 전송 — 400 에러 메시지 표시",
+        "경고 문구 미표시 (warning injection 미작동)",
+        "이전 #388 결과와 동일한 동작"
+      ],
+      "screenshot": "not_saved",
+      "recommendation": "deepseek_sse 템플릿이 200 OK로 변경되었는지 DB 확인 필요. 배포(etapd 재시작) 여부도 확인."
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "status": "WARNING_DISPLAYED",
+      "details": "APF 경고가 채팅 버블에 정상 표시됨. #388과 동일한 경고 메시지 확인 — regression 없음.",
+      "observations": [
+        "채팅 입력 후 전송 — Qwen3.6-Plus 모델 사용",
+        "경고 메시지 채팅 버블에 표시:",
+        "  '앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다.'",
+        "  '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다.'",
+        "  '보안 정책에 따라 해당 요청이 차단되었습니다.'",
+        "  '개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.'",
+        "로딩 스피너(회전 아이콘) 표시 후 경고 버블 렌더링",
+        "#388 WARNING_DISPLAYED와 동일 — regression 없음 확인"
+      ],
+      "screenshot": "not_saved",
+      "recommendation": "Qwen3 경고 정상 작동 확인. 추가 조치 불필요."
+    }
+  ],
+  "summary": "DeepSeek: 여전히 400 에러 (200 OK 변경 미반영/미배포). Qwen3: WARNING_DISPLAYED 정상 확인 (regression 없음).",
+  "priority": "HIGH",
+  "notes": "DeepSeek는 DB 변경 후 배포(etapd restart) 필요. Qwen3는 #388 이후 안정적으로 경고 표시 중."
+}
