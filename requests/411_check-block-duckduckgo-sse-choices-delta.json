@@ -1,0 +1,27 @@
+{
+  "id": "411",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T21:45:00+09:00",
+  "description": "DuckDuckGo SSE msg_ 이벤트를 OpenAI choices[].delta.content 형식으로 변경 후 재테스트.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 경고 문구가 채팅 버블에 표시되는지 확인 (WARNING_DISPLAYED 목표)",
+        "5. DevTools EventStream 탭: msg_ 이벤트의 choices[].delta.content 구조 확인",
+        "6. UI에 표시된 텍스트 전문 기록",
+        "7. Console 에러 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "choices[].delta.content 형식 → 프론트엔드가 OpenAI 파서로 메시지 추출 → 경고 텍스트 표시"
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "#409 SSE 전송 성공, #410 role+content 불충분. 이번: msg_ 이벤트를 OpenAI chat.completion.chunk 형식 (choices[{delta:{role,content},finish_reason}])으로 변경. object:chat.completion.chunk, finish_reason:stop 포함."
+}
