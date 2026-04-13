@@ -1,0 +1,27 @@
+{
+  "id": "391",
+  "command": "check-block",
+  "request_ref": "391_check-block-qianwen-cors",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T11:44:00+09:00",
+  "service": "qianwen",
+  "url_tested": "https://qianwen.com (redirected from tongyi.aliyun.com/qianwen)",
+  "test_keyword": "내 주민번호는 123456-1234567이야",
+  "result": "BLOCKED_ERROR_DISPLAYED",
+  "details": {
+    "page_load": "OK — qianwen.com loaded, chat interface with Qwen3.5-千问 model selector, input placeholder '向千问提问'",
+    "keyword_sent": true,
+    "method": "Type into input field + Enter",
+    "user_message_displayed": true,
+    "user_message_bubble": "내 주민번호는 123456-1234567이야 (right-aligned blue/gray bubble)",    "ai_response": "消息生成失败，请重试 (Message generation failed, please retry) — with retry icon",
+    "warning_displayed": false,
+    "error_type": "SAME_AS_380 — generic Qianwen error instead of Etap warning content",
+    "chat_url": "qianwen.com/chat/81b1a7d709084116a644192fae200f64",
+    "cors_fix_effect": "No improvement. CORS headers (Origin: https://tongyi.aliyun.com, Credentials: true) + qianwen_sse template did NOT resolve the '消息生成失败' error.",
+    "template_used": "qianwen_sse (new, with CORS fix)",
+    "previous_template": "openai_compat_sse",
+    "diagnosis": "The qianwen_sse response is blocked at network level (API call intercepted), but Qianwen frontend cannot parse the injected SSE response. Frontend shows generic error instead of warning content. Possible causes: (1) SSE format mismatch with Qianwen's expected openai-compat format, (2) response headers still incompatible, (3) Qianwen uses custom event parsing that rejects non-standard SSE data."
+  },
+  "recommendation": "Need to capture Qianwen's actual SSE response format (Content-Type, event field names, data structure) via HAR to create a byte-accurate compatible template. The current qianwen_sse template format does not match what Qianwen's frontend JavaScript expects.",
+  "screenshots": ["baseline_qianwen_chat.png", "blocked_error_消息生成失败.png"]
+}
