@@ -1,0 +1,29 @@
+{
+  "id": "415",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T22:30:00+09:00",
+  "description": "DeepSeek SSE: Content-Type에서 charset=utf-8 제거 후 재테스트. DuckDuckGo는 text/event-stream만 사용하여 4 events 성공, DeepSeek은 charset 포함하여 0 events. charset 차이가 원인인지 확인.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. DevTools Network에서 chat API 응답 확인",
+        "5. Response Headers에서 Content-Type이 정확히 'text/event-stream'인지 확인 (charset=utf-8 없어야 함 — 핵심!)",
+        "6. Content-Length 헤더가 없는지 확인 (B29)",
+        "7. EventStream 탭: SSE 이벤트 수신 여부 + 이벤트 개수",
+        "8. 경고 문구 표시 여부 확인",
+        "9. Console 에러 확인",
+        "10. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "text/event-stream (no charset) → Chrome이 SSE로 인식 → EventStream 이벤트 파싱"
+    }
+  ],
+  "priority": "CRITICAL",
+  "notes": "#413에서 Content-Length 제거만으로는 효과 없음 (EventStream 0 events). #409 비교: DuckDuckGo(4 events)는 Content-Type: text/event-stream, DeepSeek(0 events)는 text/event-stream; charset=utf-8. 이번 테스트에서 deepseek_sse 템플릿의 Content-Type을 text/event-stream으로 변경(charset 제거) 후 재테스트. reload_templates 완료됨."
+}
