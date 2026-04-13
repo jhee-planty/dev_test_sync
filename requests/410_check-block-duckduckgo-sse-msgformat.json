@@ -1,0 +1,27 @@
+{
+  "id": "410",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T21:35:00+09:00",
+  "description": "DuckDuckGo SSE msg_ 이벤트 JSON 형식 수정 후 재테스트. role+content+message 필드 추가, model을 gpt-5-mini로 변경.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 경고 문구가 채팅 버블에 표시되는지 확인 (WARNING_DISPLAYED 목표)",
+        "5. DevTools EventStream 탭: SSE 이벤트 수신 + msg_ 이벤트 JSON 구조 확인",
+        "6. UI에 표시된 텍스트 전문 기록",
+        "7. Console 에러 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "role+content 추가 → 프론트엔드가 msg_ 이벤트 파싱 → 경고 텍스트 채팅 버블에 표시"
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "B28 후속: #409에서 SSE EventStream 파싱 성공(4 이벤트). msg_ JSON에 role:assistant + content + message 추가, model을 gpt-5-mini로 변경. CHAT_TITLE 이벤트는 이미 동작 확인(탭 제목 변경). 이번엔 msg_ 이벤트의 content가 채팅 UI에 표시되는지 확인."
+}
