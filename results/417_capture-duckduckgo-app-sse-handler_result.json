@@ -1,0 +1,66 @@
+{
+  "request_id": "417_capture-duckduckgo-app-sse-handler",
+  "test_timestamp": "2026-04-13T16:56:00+09:00",
+  "status": "COMPLETED",
+  "service": "duckduckgo",
+  "url": "https://duck.ai",
+  "summary": "DuckDuckGo entry.duckai.js SSE data handler 역공학 완료. Vercel AI SDK 스트림 형식 사용 확인 — OpenAI choices/delta 형식이 아님.",
+  "findings": {
+    "sse_data_flow": [
+      "1. fetch() with accept:'text/event-stream' header → response stream",
+      "2. eventsource-parser (vendor bundle) parses SSE format → calls onmessage callback",
+      "3. onmessage(e) → passes e.data as streamData to D() function",
+      "4. D() parses streamData → handles types: text-delta, reasoning, source, refusal, instant-answer, ui-component, partial-image",
+      "5. case 'text-delta' → reads r.text, appends to chunk → UI renders"
+    ],
+    "onmessage_handler": {
+      "matches": 2,
+      "key_code": "onmessage(e){const t=D({signal:j,streamData:e.data,onError:A,onGeneratedChatTitle:O,onMessage:f,onWindowIDUpdate:b,onConversationLimitWarning:R,wideEvent:J,hasContent:q,reportPromptResult:P,...})",
+      "note": "SSE event e.data is passed as streamData to function D()"
+    },
+    "D_function": {
+      "matches": 3,
+      "key_code": "const y=['source','refusal','instant-answer','ui-component','partial-image'];function D({signal:e,streamData:t,onError:r,onGeneratedChatTitle:n,onMessage:o,onWindowIDUpdate:s,onConversationLimitWarning:i,wideEvent:l,hasContent:c,reportPromptResult:d,...})",
+      "data_types": ["source", "refusal", "instant-answer", "ui-component", "partial-image", "text-delta", "reasoning"],
+      "callbacks": ["onError", "onGeneratedChatTitle", "onMessage", "onWindowIDUpdate", "onConversationLimitWarning", "wideEvent", "hasContent", "reportPromptResult"]
+    },
+    "text_delta_handler": {
+      "matches": 1,
+      "key_code": "case'text-delta':{const e=r.partIndex,a=je(t,n,e);a&&!a.chunk.complete&&a.index===t.length-1?t[a.index]=ce(ce({},a.chunk),{},{text:a.chunk.text+r.text}):t.push({type...})",
+      "fields_used": ["r.text", "r.partIndex"],
+      "behavior": "Reads r.text and appends to existing chunk text (a.chunk.text + r.text). Uses partIndex for multi-part responses."
+    },
+    "content_type_validation": {
+      "matches": 2,
+      "fetch_header": "accept:'text/event-stream'",
+      "onopen_check": "if(!e.ok||'text/event-stream'!==e.headers.get('content-type'))return void(await async fu..."
+    },
+    "search_results_summary": {
+      "onParse": {"count": 0, "note": "Not in entry.duckai — lives in vendor bundle eventsource-parser"},
+      "onEvent": {"count": 0, "note": "Not in entry.duckai"},
+      "CHAT_TITLE": {"count": 14, "note": "Mostly UI labels (DUCKCHAT_VOICE_CHAT_TITLE, DUCKCHAT_DELETE_CHAT_TITLE, etc). onGeneratedChatTitle callback in D() handles chat title from stream."},
+      "DONE": {"count": 0, "note": "Stream termination likely handled in vendor eventsource-parser or via complete flag"},
+      "onmessage": {"count": 2, "note": "1=BroadcastChannel auth (irrelevant), 1=SSE handler (KEY)"},
+      "streamData": {"count": 3, "note": "D() function definition + 2 call sites"},
+      "text-delta": {"count": 1, "note": "KEY handler for text content rendering"},
+      "getReader": {"count": 0, "note": "Not in entry.duckai — stream reading is in vendor bundle"},
+      "EventSource": {"count": 0, "note": "Native EventSource API NOT used"},
+      "text/event-stream": {"count": 2, "note": "fetch header + content-type validation"},
+      "choices": {"count": 1, "note": "Only in translation prompt template — NOT in SSE parsing"},
+      "delta": {"count": 3, "note": "text-delta case + math symbols + event tracking — NOT OpenAI delta format"}
+    }
+  },
+  "critical_implication_for_apf": {
+    "stream_format": "Vercel AI SDK stream protocol — NOT OpenAI SSE format",
+    "not_openai": "DuckDuckGo does NOT use {choices:[{delta:{content:'...'}}]} format",
+    "correct_format": "AI SDK uses typed stream parts: 0:text-delta with {text:'...'} field",
+    "apf_action_required": "APF warning template for DuckDuckGo must send data in AI SDK stream format, not OpenAI format. Each SSE event data should be a typed stream part that D() function can parse.",
+    "example_sse_data": "The streamData passed to D() is parsed into objects with type='text-delta' and text='warning message'. The exact wire format needs further investigation of D() parser, but it follows Vercel AI SDK stream protocol.",
+    "reasoning_support": "Also supports type='reasoning' with similar text field for reasoning/thinking content"
+  },
+  "files_searched": [
+    "entry.duckai.e7afac0ca6fbc4197b28.js (app bundle — SSE handler, D() function, text-delta case)",
+    "entry.vendors.3ec0cbcb43f926ca5747.js (vendor bundle — eventsource-parser, onParse, getReader)"
+  ],
+  "next_steps": "Investigate exact wire format of AI SDK stream protocol. The D() function in entry.duckai parses streamData from eventsource-parser. Need to determine if streamData is JSON or has specific prefix format (e.g., '0:\"text chunk\"' for text-delta)."
+}
