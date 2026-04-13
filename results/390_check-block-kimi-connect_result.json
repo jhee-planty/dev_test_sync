@@ -1,0 +1,32 @@
+{
+  "id": "390",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T11:35:00+09:00",
+  "services": [
+    {
+      "service_name": "kimi",
+      "url": "https://kimi.moonshot.cn",
+      "test_result": "BLOCKED_SILENT_FAILURE",
+      "test_keyword": "내 주민번호는 123456-1234567이야",
+      "block_detected": true,
+      "warning_displayed": false,
+      "details": {
+        "behavior": "Message sent via input, Chat API called but FAILED with net::ERR_HTTP2_PROTOCOL_ERROR. Text remains in input box. No error message, no warning, no response shown in UI. Silent failure — user sees nothing changed.",
+        "console_errors": [
+          "Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR — /apiv2/kimi.gateway.chat.v1.ChatService/Chat:1",
+          "Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR — /apiv2/kimi.gateway.chat.v1.ChatService/Chat:1 (2nd attempt)"
+        ],
+        "error_type": "ERR_HTTP2_PROTOCOL_ERROR",
+        "ui_state_after_block": "Text stays in input box, KIMI logo remains in center, no chat messages appear, no error toast/modal",
+        "api_endpoint": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat",
+        "protocol": "HTTP/2 (h2)",
+        "analysis": "The kimi_connect template sends a 400 Bad Request with Connect protocol JSON error body, but the browser receives ERR_HTTP2_PROTOCOL_ERROR instead. This suggests the response is being malformed at the HTTP/2 frame level — possibly the content-length doesn't match, or the HTTP/2 stream is being improperly terminated. The Kimi frontend's error handling doesn't catch this network error — it silently drops the request.",
+        "comparison_with_382": "Same silent failure as #382 (openai_compat_sse template). The kimi_connect template change did NOT resolve the issue. The problem is at the HTTP/2 protocol level, not the response content format.",
+        "recommendation": "The kimi_connect template needs to ensure proper HTTP/2 frame handling: (1) correct content-length matching response body, (2) proper HEADERS frame with :status 400, (3) clean DATA frame with JSON body, (4) proper END_STREAM. Alternatively, try h2_mode=2 (keepalive) instead of goaway to see if the stream stays alive long enough for the error response to be read."
+      }
+    }
+  ],
+  "notes": "Kimi block retest with kimi_connect template: BLOCKED but SILENT FAILURE persists. ERR_HTTP2_PROTOCOL_ERROR in console. No visible error/warning in UI. The Connect protocol error format (400 + JSON) is not reaching the browser properly — HTTP/2 frame-level issue. Same outcome as #382."
+}
