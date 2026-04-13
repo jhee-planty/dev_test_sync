@@ -1,0 +1,27 @@
+{
+  "id": "403",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T20:00:00+09:00",
+  "description": "DuckDuckGo 진단 — JSON 템플릿으로 변경. SSE가 아닌 JSON 200 OK로 H2 프레이밍 문제인지 SSE 파싱 문제인지 구분.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. 확인: ERR_RESPONSE_PARSING 여전히 발생하는지",
+        "5. 또는 다른 에러/경고 표시되는지",
+        "6. DevTools Network에서 응답 status + content-type 확인",
+        "7. Console 에러 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "JSON 200 OK → ERR_RESPONSE_PARSING 해소 시 SSE 형식이 문제. 미해소 시 H2 프레이밍 자체 문제."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "진단 목적. duckduckgo_json = qwen3_json 복사 + CORS origin: duck.ai. SSE→JSON 변경으로 H2 프레이밍 vs SSE 파싱 원인 구분."
+}
