@@ -1,0 +1,29 @@
+{
+  "id": "423",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T02:30:00+09:00",
+  "description": "Phase3 block test: baidu (yiyan.baidu.com). h2_mode=2, h2_end_stream=1, response_type=baidu_sse. OpenAI compat SSE with is_end=true.",
+  "services": [
+    {
+      "service_name": "baidu",
+      "url": "https://yiyan.baidu.com",
+      "login_required": true,
+      "steps": [
+        "1. Chrome에서 https://yiyan.baidu.com 접속",
+        "2. 로그인 필요 — 이미 로그인된 상태면 진행, 아니면 login_required=true 보고",
+        "3. DevTools Network 탭 열기 (F12)",
+        "4. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "5. 15초 대기",
+        "6. DevTools Network에서 chat 관련 XHR/fetch 요청 확인",
+        "7. Response 확인: status code, content-type, body",
+        "8. EventStream 탭이 있으면: 이벤트 수 확인",
+        "9. 경고 문구가 채팅 UI에 표시되는지 확인 (WARNING_DISPLAYED)",
+        "10. Console 에러 확인",
+        "11. 응답 시간 기록",
+        "12. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "baidu_sse 템플릿 응답 전달 확인. EventStream events + WARNING_DISPLAYED 여부."
+    }
+  ]
+}
