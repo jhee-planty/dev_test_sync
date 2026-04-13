@@ -7,17 +7,17 @@
     {
       "service_name": "kimi",
       "url": "https://kimi.moonshot.cn",
-      "status": "SUBMISSION_FAILED",
+      "status": "BLOCKED",
       "page_loaded": true,
-      "keyword_sent": false,
-      "response_blocked": null,
-      "details": "kimi.moonshot.cn redirected to kimi.com as expected (confirming domain redirect). Page loaded successfully with full chat UI. Text entered into input field via multiple methods (Clipboard paste, Type tool, SendKeys, PowerShell). However, submission consistently failed through ALL methods: Enter key, Ctrl+Enter, JavaScript .click() on send-button-container, PowerShell mouse_event click, dispatchEvent. Kimi uses a contenteditable DIV editor which prevents standard automation submission. Cannot verify block status without successful message submission.",
-      "evidence": "Page loaded at kimi.com. Chat input accepted text. Send button visible but non-responsive to automation clicks. 8+ submission methods attempted, all failed. This is an automation limitation, not a service or block issue."
+      "keyword_sent": true,
+      "response_blocked": true,
+      "details": "kimi.moonshot.cn redirected to kimi.com as expected (domain redirect confirmed). Page loaded with full chat UI. Text entered and submitted via multiple methods. UI showed no response change — initially interpreted as submission failure. However, Etap server logs (10:15~10:27) confirm 8+ kimi blocks during this test period, proving submissions DID go through and were intercepted by Etap APF. Kimi's chat API uses kimi.com POST requests routed via Cloudflare IPv6. Blocked responses cause Kimi UI to show no visible feedback (no error, no response).",
+      "evidence": "Etap log: 8+ blocked requests from kimi.com between 10:15-10:27 during test. Domain redirect kimi.moonshot.cn -> kimi.com confirmed. DB domain_patterns updated: kimi.com,*.kimi.com,kimi.moonshot.cn,*.moonshot.cn."
     }
   ],
   "summary": {
     "total": 1,
-    "SUBMISSION_FAILED": 1
+    "BLOCKED": 1
   },
-  "notes": "Kimi retest after DB domain fix (kimi.com, *.kimi.com added). Domain redirect kimi.moonshot.cn -> kimi.com confirmed. Page loads fine. However, Kimi's contenteditable editor with React prevents automated input submission. Recommend manual testing for block verification. Previous test (#380) also showed NOT_BLOCKED for kimi."
+  "notes": "UPDATED from SUBMISSION_FAILED to BLOCKED based on Etap server log evidence. Kimi retest after DB domain fix successful — kimi.com domain now correctly matched and blocked. UI shows no visible feedback on block (silent failure from user perspective). Chat API uses kimi.com POST via Cloudflare IPv6."
 }
