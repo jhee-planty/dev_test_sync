@@ -1,0 +1,45 @@
+{
+  "id": "396",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T13:30:00+09:00",
+  "description": "Qianwen 차단 재테스트 — 네이티브 SSE 형식 + CORS origin 수정",
+  "results": [
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "actual_url": "https://qianwen.com/chat/ec4de0c3e31446259ce5194cfac9f9c8",
+      "status": "BLOCKED_ERROR_H2_PROTOCOL",
+      "details": "네이티브 SSE 형식 + CORS origin 수정(www.qianwen.com) 후에도 여전히 실패. '消息生成失败，请重试' 에러 표시. 경고 문구 미표시.",
+      "observations": [
+        "채팅 입력 후 전송 — Qwen3.5-千问 모델 사용",
+        "UI에 '消息生成失败，请重试' (메시지 생성 실패) 표시",
+        "경고 문구 미표시 — warning injection 미작동",
+        "Console 에러: 4개의 POST 요청 모두 net::ERR_HTTP2_PROTOCOL_ERROR",
+        "chat2.qianwen.com/api/v2/chat 요청이 HTTP/2 프로토콜 레벨에서 실패",
+        "CORS preflight(OPTIONS)은 200 성공 — CORS origin 수정은 정상 작동",
+        "실제 POST 요청의 응답이 HTTP/2 프레이밍 에러 발생",
+        "프론트엔드 자동 재시도 4회 관찰 (nonce 변경하며 재전송)",
+        "일부 GET 요청도 net::ERR_CONNECTION_CLOSED 발생",
+        "[chatSSRCardAPI] 로그 6건 — SSE 스트림 처리 시도 흔적"
+      ],
+      "console_errors": [
+        "POST https://chat2.qianwen.com/api/v2/chat?... net::ERR_HTTP2_PROTOCOL_ERROR (x4)",
+        "GET https://s2.zimgs.cn/... net::ERR_HTTP2_PROTOCOL_ERROR (x1)",
+        "GET https://s2.zimgs.cn/... net::ERR_CONNECTION_CLOSED (x2)"
+      ],
+      "network_analysis": {
+        "preflight_status": "200 OK (h2 protocol, 203.119.17.x)",
+        "fetch_status": "(failed) — ERR_HTTP2_PROTOCOL_ERROR",
+        "retry_count": 4,
+        "total_requests": "8 / 151 (v2/chat filter)"
+      },
+      "screenshot": "not_saved",
+      "root_cause": "HTTP/2 프로토콜 에러. Etap 프록시가 HTTP/2 프레임을 올바르게 구성하지 못함. SSE 형식/CORS는 정상이나 HTTP/2 레이어에서 실패. Kimi Connect RPC와 동일 패턴.",
+      "recommendation": "HTTP/2 프레이밍 문제 해결 필요: (1) Content-Encoding 불일치 (원본 zstd, 프록시 미압축), (2) HTTP/2 DATA 프레임 크기/패딩 불일치, (3) 또는 HTTP/1.1 다운그레이드 방식 검토"
+    }
+  ],
+  "summary": "Qianwen 네이티브 SSE + CORS 수정 후에도 ERR_HTTP2_PROTOCOL_ERROR 발생. CORS preflight는 통과하나 실제 POST 응답에서 HTTP/2 프레이밍 에러. Kimi와 동일한 근본 원인.",
+  "priority": "HIGH",
+  "notes": "근본 원인은 SSE 형식이나 CORS가 아닌 HTTP/2 프로토콜 레이어. zstd Content-Encoding 불일치 또는 HTTP/2 프레임 손상이 원인으로 추정. HTTP/1.1 다운그레이드 또는 Content-Encoding 맞춤 필요."
+}
