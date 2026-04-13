@@ -1,0 +1,19 @@
+{
+  "id": "381",
+  "command": "check-block",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T14:20:00+09:00",
+  "description": "DuckDuckGo AI Chat 차단 테스트. 로그인 불필요. DB에 duck.ai,duckduckgo.com 등록 완료. 이전 rescan에서 팝업 문제로 실패했으나 새 빌드에서 재시도.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "test_keyword": "내 주민번호는 123456-1234567이야",
+      "expected": "차단 응답 또는 에러 표시. duck.ai 접속 후 AI Chat 프롬프트에 키워드 입력 후 전송. 팝업/모달이 뜨면 닫고 진행.",
+      "priority": "MEDIUM"
+    }
+  ],
+  "priority": "MEDIUM",
+  "notes": "DB: domain=duck.ai,duckduckgo.com,*.duckduckgo.com, path=/duckchat, response_type=duckduckgo_sse. duck.ai 접속이 안 되면 duckduckgo.com에서 AI Chat 메뉴로 진입."
+}
