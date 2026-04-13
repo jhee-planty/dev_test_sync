@@ -1,0 +1,60 @@
+{
+  "id": "424",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T02:35:00+09:00",
+  "description": "Phase3 block test batch: you.com (you_json), consensus (generic_sse), dola (generic_sse). 미테스트 서비스 일괄 차단 확인.",
+  "services": [
+    {
+      "service_name": "you.com",
+      "url": "https://you.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://you.com 접속",
+        "2. AI chat 기능 찾기 (You Chat)",
+        "3. DevTools Network 탭 열기",
+        "4. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "5. 15초 대기",
+        "6. Network 탭: chat API 응답 status, content-type, body 확인",
+        "7. 경고 문구 UI 표시 여부 (WARNING_DISPLAYED)",
+        "8. Console 에러 확인",
+        "9. 스크린샷"
+      ],
+      "expected_output": "you_json 응답 전달. WARNING_DISPLAYED 여부 확인."
+    },
+    {
+      "service_name": "consensus",
+      "url": "https://consensus.app",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://consensus.app 접속",
+        "2. 검색/채팅 기능 찾기",
+        "3. DevTools Network 탭 열기",
+        "4. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "5. 15초 대기",
+        "6. Network: API 응답 확인",
+        "7. WARNING_DISPLAYED 여부",
+        "8. Console 에러",
+        "9. 스크린샷"
+      ],
+      "expected_output": "generic_sse 응답 전달. WARNING_DISPLAYED 여부 확인."
+    },
+    {
+      "service_name": "dola",
+      "url": "https://www.dola.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://www.dola.com 접속",
+        "2. AI 채팅 기능 찾기",
+        "3. DevTools Network 탭 열기",
+        "4. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "5. 15초 대기",
+        "6. Network: API 응답 확인",
+        "7. WARNING_DISPLAYED 여부",
+        "8. Console 에러",
+        "9. 스크린샷"
+      ],
+      "expected_output": "generic_sse 응답 전달. WARNING_DISPLAYED 여부 확인."
+    }
+  ]
+}
