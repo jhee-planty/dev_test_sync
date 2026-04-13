@@ -1,0 +1,52 @@
+{
+  "request_id": "414",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T22:45:00+09:00",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "status": "COMPLETED",
+      "verdict": "JS_SOURCE_CAPTURED",
+      "details": {
+        "js_files_found": [
+          "entry.duckai.e7afac0ca6fbc4197b28.js (main app bundle)",
+          "entry.vendors.3ec0cbcb43f926ca5747.js (vendor bundle - SSE parser here)",
+          "lib.91d392df195d4371dfcff8dd.js (no SSE code)"
+        ],
+        "msg_search_result": "NOT_FOUND in any JS file. 'msg_' string does not exist in DuckDuckGo frontend code.",
+        "sse_architecture": {
+          "api_type": "fetch() + getReader() streaming (NOT native EventSource)",
+          "request_headers": "Content-Type: application/json, accept: text/event-stream, x-vqd-accept: 1",
+          "stream_reading": "response.body.getReader() in vendor bundle (@1453)",
+          "sse_parser": "eventsource-parser library embedded in vendor bundle (@1971)",
+          "parser_location": "entry.vendors.3ec0cbcb43f926ca5747.js around char offset 1971"
+        },
+        "sse_parser_logic": {
+          "event_structure": "{data:\"\", event:\"\", id:\"\", retry:void 0}",
+          "parsed_fields": ["data", "event", "id", "retry"],
+          "data_accumulation": "r.data = r.data ? r.data + '\\n' + a : a (newline-separated multi-line data)",
+          "event_dispatch": "Empty line triggers event dispatch and resets structure",
+          "content_type_validation": "Checks content-type starts with 'text/event-stream', throws error if mismatch"
+        },
+        "key_code_snippets": {
+          "fetch_call": "const b=3,O=async e=>{var t;const{r,n,a,o}=e,s=await a(),i=v({'Cache-Control':'no-store'},n?{'x-vqd-accept':'1'}:{}),s),l=await fetch(r,{headers:i})",
+          "stream_reader": "await C(n,await async function(e,t){const n=e.getReader();let r;for(;!(r=await n.read()).done;)...",
+          "field_parser": "switch(n){case'data':r.data=r.data?r.data+'\\n'+a:a;break;case'event':r.event=a;break;case'id':r.id=a;break;case'retry':...parseInt(a,10)...}",
+          "content_type_check": "function a(e){const t=e.headers.get('content-type');if(!(null!==t?void 0:t.startsWith(u)))throw new Error(`Expected content-type to be ${u}, Actual: ${t}`)}"
+        },
+        "implications_for_apf": {
+          "msg_not_relevant": "msg_ is NOT a frontend keyword — it's a backend SSE event type name sent by DuckDuckGo servers. Frontend parser doesn't filter by event name for data extraction.",
+          "required_format": "Standard SSE: 'data: {warning_json}\\n\\n' — the data field is what gets accumulated and dispatched",
+          "content_type_required": "Response MUST have content-type: text/event-stream or parser throws error",
+          "event_field_optional": "event: field is optional. Parser reads it but app logic may not filter by it",
+          "multi_event_support": "Parser supports multiple SSE events separated by blank lines",
+          "recommended_template": "data: {\"message\":\"warning text\",\"role\":\"assistant\"}\\n\\n with content-type: text/event-stream"
+        }
+      }
+    }
+  ],
+  "summary": "DuckDuckGo JS 소스 캡처 완료. 3개 JS 파일 분석 결과: (1) msg_ 문자열은 프론트엔드에 존재하지 않음 — 백엔드 SSE 이벤트 타입명. (2) SSE 파서는 vendor 번들의 eventsource-parser 라이브러리. (3) 표준 SSE data/event/id/retry 필드 파싱. (4) content-type: text/event-stream 필수. (5) APF 경고 템플릿은 표준 SSE data: 필드 형식 사용 필요.",
+  "priority": "HIGH"
+}
