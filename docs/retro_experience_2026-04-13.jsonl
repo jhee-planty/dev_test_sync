@@ -1,1 +1,0 @@
-{"type":"retrospective","date":"2026-04-13","period":"2026-04-06 ~ 2026-04-10","tasks_analyzed":34,"issues_found":5,"improvements_proposed":5,"improvements_applied":0,"summary":"qwen3 Tier 1.5 달성(12회 테스트 후 JSON 에러 전환). 핵심 비효율: 직렬 가설 테스트(3시간), 폴링 대기(5시간+), page-load 오차단. 이전 회고 적용률 40%(하락). 폴링 타임아웃 4회 연속 미적용."}

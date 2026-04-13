@@ -1,1 +1,0 @@
-{"type":"retrospective","date":"2026-04-10","period":"2026-04-09 ~ 2026-04-10","tasks_analyzed":40,"issues_found":5,"improvements_proposed":5,"improvements_applied":0,"summary":"Mistral 10회 반복(#317-#326)으로 NDJSON 배열+h2_mode=2=Error 6002 확정. 폴링 14h 대기가 최대 병목(3회 연속 미적용). DuckDuckGo/Grok 신규 성공. 경고 성공률 40%→50%."}

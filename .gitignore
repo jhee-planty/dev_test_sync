@@ -1,5 +1,15 @@
-# 로컬 아카이브 (오래된 파일 보관, Git 미공유)
+# === Git 공유 대상 ===
+# requests/    — dev→test 작업 요청
+# results/     — test→dev 결과
+# scripts/     — 양쪽 자동화 스크립트
+# shared-skills/ — 스킬 배포 (test PC 참조)
+# .gitignore
+
+# === 로컬 전용 (Git 미공유) ===
+archive/
 local_archive/
+docs/
+sql/
 
 # OS files
 .DS_Store
