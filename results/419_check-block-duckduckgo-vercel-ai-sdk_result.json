@@ -1,0 +1,54 @@
+{
+  "request_id": "419_check-block-duckduckgo-vercel-ai-sdk",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-13T17:18:00+09:00",
+  "summary": "DuckDuckGo Vercel AI SDK: EventStream 3 events 정상 파싱! 하지만 UI는 여전히 generic error. wide event 중복 전송 경고 발생.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "template_used": "duckduckgo_sse (Vercel AI SDK Data Stream Protocol)",
+      "results": {
+        "chat_status": "200 OK",
+        "protocol": "h2",
+        "content_type": "text/event-stream",
+        "response_size": "0.4kB",
+        "response_time": "190ms",
+        "eventstream_events": 3,
+        "eventstream_detail": [
+          {"type": "message", "data": "0:\"⚠ 이 요청은 보안 정책에 의해 차단되었습...\" (text-delta)"},
+          {"type": "message", "data": "d:{\"finishReason\":\"stop\",\"usage\":{\"promptToke...\"}} (finish)"},
+          {"type": "message", "data": "[DONE] (stream end)"}
+        ],        "response_body": "Nothing to preview - This request has no response data available",
+        "warning_displayed": false,
+        "ui_message": "이런... Duck.ai를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도하세요.",
+        "console_errors": "NONE (no red errors)",
+        "console_warning": "Attempted to send a wide event that has already been sent duck-chat-session complete (entry.duckai.e7afac0...js:2)",
+        "js_debug_analysis": {
+          "onmessage_handlers_in_code": 2,
+          "streamData_refs_in_code": 3,
+          "text_delta_handlers_in_code": 1,
+          "chat_title_strings_in_code": 14,
+          "done_handlers_in_code": 0,
+          "onparse_handlers_in_code": 0
+        },        "root_cause_analysis": {
+          "sse_format": "CORRECT — Vercel AI SDK format (0:text, d:finish, [DONE]) produces 3 EventStream events",
+          "chrome_devtools_parsing": "SUCCESS — Chrome EventStream tab correctly parses all 3 events",
+          "app_js_parsing": "FAILURE — DuckDuckGo frontend still shows generic error despite correct SSE format",
+          "wide_event_clue": "duck-chat-session complete event sent twice — suggests session lifecycle anomaly",
+          "h2_non_streaming": "APF sends entire SSE body as single completed H2 DATA frame with END_STREAM. Chrome DevTools can parse it retrospectively, but the app's fetch() ReadableStream reader receives all data at once instead of incremental chunks. This breaks the streaming assumption of eventsource-parser.",
+          "comparison_with_418": "#418 duckduckgo_json had 0 EventStream events. #419 duckduckgo_sse has 3 events — format is correct but delivery mechanism (non-streaming H2) is the blocker"
+        }
+      },
+      "verdict": "BLOCK_CONFIRMED_BUT_WARNING_FAILED"
+    }
+  ],  "overall_verdict": "BLOCK_CONFIRMED_BUT_WARNING_FAILED — Vercel AI SDK format is CORRECT (3 events parsed) but non-streaming H2 delivery prevents frontend JS from processing the stream",
+  "key_findings": [
+    "BREAKTHROUGH: Vercel AI SDK format produces 3 EventStream events (vs 0 with old formats for DeepSeek)",
+    "SSE body format is no longer the problem — the H2 non-streaming delivery is the sole remaining blocker",
+    "The wide event duplicate warning suggests the session completion logic fires before stream processing completes",
+    "Response body still shows 'Nothing to preview' — consistent with H2 DATA+END_STREAM single-frame delivery",
+    "No red JS errors in Console — the generic error is from application-level error handling, not a JS crash"
+  ],
+  "recommendation": "APF C++ needs to implement true H2 streaming: send multiple DATA frames without END_STREAM, then final DATA frame with END_STREAM. This is the ONLY way to make browser fetch() ReadableStream deliver data incrementally to eventsource-parser."
+}
