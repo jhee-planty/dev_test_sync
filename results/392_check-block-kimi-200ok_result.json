@@ -1,0 +1,36 @@
+{
+  "id": "392",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T12:08:00+09:00",
+  "description": "Kimi block retest — 200 OK + CORS change verification",
+  "results": [
+    {
+      "service_name": "kimi",
+      "url": "https://kimi.moonshot.cn",
+      "redirected_to": "https://kimi.com",
+      "status": "BLOCKED_SILENT_FAILURE",
+      "login_required": false,
+      "details": {
+        "test_action": "Typed keyword '내 주민번호는 123456-1234567이야' and sent via Ctrl+Enter",
+        "console_errors": [
+          "Failed to load resource: /apiv2/kimi.gateway.chat.v1.ChatService/Chat:1 — net::ERR_HTTP2_PROTOCOL_ERROR",
+          "Failed to load resource: /apiv2/kimi.gateway.chat.v1.ChatService/Chat:1 — net::ERR_HTTP2_PROTOCOL_ERROR (duplicate)"
+        ],        "api_endpoint": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat",
+        "protocol": "Connect RPC over HTTP/2",
+        "response_status": "ERR_HTTP2_PROTOCOL_ERROR (browser could not parse response)",
+        "ui_behavior": "SILENT FAILURE — no error message, no warning, no AI response shown. Chat area shows only user message.",
+        "200ok_fix_result": "FAILED — changing kimi_connect template from 400 to 200 OK did NOT resolve ERR_HTTP2_PROTOCOL_ERROR",
+        "cors_fix_result": "FAILED — CORS origin change to https://www.kimi.com + Credentials:true did NOT help"
+      },
+      "recommendation": "ERR_HTTP2_PROTOCOL_ERROR persists regardless of status code or CORS. Root cause: Etap's response does not conform to Connect RPC protocol spec. The kimi_connect template must return valid Connect RPC framing (length-prefixed binary envelope with 5-byte header: flags byte + 4-byte big-endian length). Without proper framing, Chrome's HTTP/2 stack rejects the response. Consider: (1) study Connect RPC wire format and replicate it, or (2) classify Kimi as NEEDS_ALTERNATIVE and use page-level injection instead of response replacement."
+    }
+  ],
+  "summary": {
+    "status_code_change": "400 → 200 OK: NO EFFECT on ERR_HTTP2_PROTOCOL_ERROR",
+    "cors_change": "* → https://www.kimi.com + Credentials:true: NO EFFECT",
+    "same_as_390": true,
+    "conclusion": "Kimi Connect RPC requires proper protocol-level response framing. Simple HTTP header changes are insufficient. Recommend NEEDS_ALTERNATIVE classification or Connect RPC wire format implementation."
+  }
+}
