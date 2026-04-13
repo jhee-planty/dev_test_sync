@@ -1,0 +1,93 @@
+{
+  "id": "430",
+  "command": "run-scenario",
+  "request_file": "430_hpack-fix-retest-batch.json",
+  "processed_by": "test-pc",
+  "timestamp": "2026-04-14T08:48:00+09:00",
+  "summary": "HPACK fix retest batch: 5 services tested. grok SUCCESS, duckduckgo FAILURE (ERR_INVALID_ACTION persists), mistral PARTIAL (client mutation error), perplexity PARTIAL (blocked-thread 400), qianwen LOGIN_REQUIRED.",
+  "results": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "status": "FAILURE",
+      "warning_displayed": false,
+      "blocked": false,
+      "details": {
+        "endpoint": "duckchat/v1/chat",
+        "response_status": null,
+        "response_data": "No response data captured - generic error displayed",
+        "ui_message": "일시적으로 사용할 수 없습니다 (generic error)",
+        "console_error": "ERR_INVALID_ACTION - client-side action validation failure persists after HPACK fix",
+        "hpack_fix_result": "HPACK fix did NOT resolve ERR_INVALID_ACTION. Root cause is client-side action validation, not header encoding.",
+        "x_vqd_hash_1": "Not observable - response failed before headers could be checked"
+      },
+      "notes": "DuckDuckGo client validates response 'actions' at application level. HPACK integer encoding fix is unrelated to this error."
+    },
+    {
+      "service_name": "grok",
+      "url": "https://grok.com",
+      "status": "SUCCESS",
+      "warning_displayed": true,
+      "blocked": true,
+      "details": {
+        "endpoint": "grok.com",
+        "response_url": "grok.com/?rid=00000000-apf0-warn-0000-000000000002",
+        "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "template": "grok_ndjson",
+        "ui_behavior": "Warning message displayed correctly in chat area"
+      },
+      "notes": "Grok APF block+warning working perfectly. NDJSON template confirmed."
+    },
+    {
+      "service_name": "mistral",
+      "url": "https://chat.mistral.ai",
+      "status": "PARTIAL_SUCCESS",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "endpoint": "message.newChat?batch=1",
+        "response_status": 200,
+        "response_type": "tRPC JSON",
+        "response_body_contains_warning": true,
+        "warning_in_response": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+        "warning_location": "result.data.json[0].messages[0].content",
+        "client_error": "mutation #5 error - client detects malformed tRPC response (dummy chatId, missing fields)",
+        "ui_behavior": "Chat reverts to empty state after mutation error. Warning text NOT visible to user."
+      },
+      "notes": "APF template correctly injects warning into tRPC response body, but client-side validation rejects it. Need to match actual chatId/session fields for client acceptance."
+    },
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "status": "PARTIAL_SUCCESS",
+      "warning_displayed": false,
+      "blocked": true,
+      "details": {
+        "endpoint": "rest/sse/perplexity_ask",
+        "response_type": "SSE stream",
+        "blocked_thread_id": "blocked-0cb1783a-0289-430e-ab46-8911029febca",
+        "error": "ERR_HTTP2_PROTOCOL_ERROR on SSE stream",
+        "thread_load_error": "400 Bad Request when loading blocked thread",
+        "ui_behavior": "Thread created with blocked ID, then fails to load. Warning not displayed."
+      },
+      "notes": "APF blocks the SSE stream but fake thread UUID causes 400 on reload. Need valid thread structure or different block approach."
+    },
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "status": "LOGIN_REQUIRED",
+      "warning_displayed": false,
+      "blocked": false,
+      "details": {
+        "page_accessible": true,
+        "text_input_method": "Slate.js editor with document.execCommand('insertText')",
+        "text_input_success": true,
+        "send_button_state": "HTML disabled (disabled=true, cursor-not-allowed)",
+        "send_button_class": "inline-flex size-8 shrink-0 items-center-center rounded-full border-0 p-0 cursor-not-allowed bg-[--ty-text-disabled]",
+        "login_prompt": "登录可同步历史对话，解锁更多功能",
+        "ui_behavior": "Send button is HTML-disabled for non-logged-in users. Cannot submit messages without login."
+      },
+      "notes": "Qianwen requires login to send chat messages. Send button is disabled for anonymous users. SSE template change cannot be verified without login."
+    }
+  ]
+}
