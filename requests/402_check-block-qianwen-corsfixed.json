@@ -1,0 +1,27 @@
+{
+  "id": "402",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T19:50:00+09:00",
+  "description": "Qianwen 재테스트 — qianwen_json 전용 템플릿 (CORS: www.qianwen.com). 200 OK JSON + 올바른 CORS origin.",
+  "services": [
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.aliyun.com/qianwen",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://tongyi.aliyun.com/qianwen 접속",
+        "2. 채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "3. 15초 대기",
+        "4. CORS 에러 여부 확인 (Console)",
+        "5. 경고 문구 표시 여부 확인",
+        "6. ERR_HTTP2_PROTOCOL_ERROR 발생 여부 확인",
+        "7. DevTools Network에서 응답 status + headers 확인",
+        "8. 스크린샷 + 상세 보고"
+      ],
+      "expected_output": "CORS origin 수정(www.qianwen.com) → CORS 에러 해소 → 경고 표시 또는 H2 에러만 남음"
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "qianwen_json 신규 템플릿: qwen3_json 복사 + CORS origin → www.qianwen.com. #399 진단에서 CORS 불일치가 주 원인으로 확인됨. H2 에러는 간헐적."
+}
