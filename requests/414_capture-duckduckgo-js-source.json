@@ -1,0 +1,27 @@
+{
+  "id": "414",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T22:15:00+09:00",
+  "description": "DuckDuckGo 프론트엔드 JS 소스 캡처. msg_ SSE 이벤트 파싱 로직 역공학을 위해 entry JS 파일 내용 수집.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://duck.ai 접속",
+        "2. DevTools > Sources 탭 열기",
+        "3. duck.ai 도메인 하위의 JS 파일 목록 확인 (특히 entry*.js, main*.js, app*.js, chunk*.js 등)",
+        "4. 가장 큰 JS 파일(메인 번들)을 찾아서 Pretty-print (하단 {} 버튼)",
+        "5. Ctrl+F로 'msg_' 검색 → 관련 코드 블록 캡처 (앞뒤 30줄)",
+        "6. 'msg_' 없으면 'event-stream' 또는 'EventSource' 또는 'onmessage' 검색",
+        "7. SSE 파싱 관련 코드 블록 전체를 텍스트로 복사",
+        "8. 찾은 JS 파일명과 SSE 파싱 코드를 결과에 포함"
+      ],
+      "expected_output": "DuckDuckGo 프론트엔드의 SSE msg_ 이벤트 파싱 로직 코드 캡처. 어떤 JSON 필드를 읽어서 채팅 UI에 표시하는지 확인."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "3회 SSE 시도(#409,#410,#411) 모두 msg_ 형식 불일치로 generic error. 프론트엔드가 msg_ JSON에서 어떤 필드를 읽는지 정확히 알아야 올바른 템플릿을 만들 수 있다. 검색 키워드 우선순위: msg_ > content > delta > choices > message > EventSource > onmessage > text/event-stream"
+}
