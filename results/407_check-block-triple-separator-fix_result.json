@@ -1,0 +1,78 @@
+{
+  "id": "407",
+  "request_id": "407_check-block-triple-separator-fix",
+  "status": "PARTIAL_SUCCESS",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T14:56:00+09:00",
+  "description": "Header-body separator fix 후 3개 서비스 테스트. HPACK 오류 완전 해소! SSE 전송 성공하나 프론트엔드 파싱 미완. JSON 템플릿은 경고 표시 성공.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "template": "deepseek_sse",
+      "url": "https://chat.deepseek.com",
+      "result": {
+        "status": "TRANSPORT_OK_UI_ERROR",
+        "http_status": "200 OK",
+        "protocol": "h2",
+        "warning_displayed": false,
+        "ui_display": "네트워크를 확인하고 다시 시도하세요",
+        "console_warnings": 1,
+        "h2_compression_error": false
+      },
+      "analysis": "Header-body separator fix RESOLVED ERR_HTTP2_COMPRESSION_ERROR. 200 OK h2 전송 성공. 그러나 프론트엔드가 SSE 응답을 파싱하지 못해 네트워크 에러 표시. SSE content-type/format 조정 필요."
+    },
+    {
+      "service_name": "duckduckgo",
+      "template": "duckduckgo_sse",
+      "url": "https://duck.ai",
+      "result": {
+        "status": "TRANSPORT_OK_UI_ERROR",
+        "http_status": "200 OK",
+        "protocol": "h2",
+        "warning_displayed": false,
+        "ui_display": "이런... Duck.ai를 일시적으로 사용할 수 없습니다.",
+        "tab_title": "blocked",
+        "console_warnings": 1,
+        "h2_compression_error": false,
+        "retry_count": 0,
+        "network_requests": 1
+      },
+      "analysis": "HPACK 오류 완전 해소. 이전 x4 재시도 → 이제 1회 요청만. 200 OK h2 전송 성공. 프론트엔드가 SSE 파싱 실패하여 일시적 사용불가 표시."
+    },
+    {
+      "service_name": "qwen3",
+      "template": "qwen3_json",
+      "url": "https://chat.qwen.ai",
+      "result": {
+        "status": "WARNING_DISPLAYED",
+        "http_status": "200 OK",
+        "protocol": "http/1.1",
+        "warning_displayed": true,
+        "ui_display": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다.",
+        "content_type": "application/json; charset=utf-8",
+        "content_length": 338,
+        "cors_origin": "https://chat.qwen.ai",
+        "response_body": {
+          "code": "content_filtered",
+          "message": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+          "request_id": "1d708333-535b-46d1-971d-662d7d25a2bc"
+        }
+      },
+      "analysis": "Regression check PASS. JSON 템플릿 완벽 작동. 200 OK + CORS 통과 + 경고 메시지 정상 표시."
+    }
+  ],
+  "overall_analysis": {
+    "separator_fix_effective": true,
+    "h2_compression_error_resolved": true,
+    "root_cause_confirmed": "convert_to_http2_response에서 \\r\\n\\r\\n을 먼저 찾아 SSE chunked body 내부의 \\r\\n\\r\\n을 header-body separator로 잘못 사용 → SSE 데이터가 헤더로 파싱 → HPACK 오염. Fix: \\n\\n과 \\r\\n\\r\\n 중 더 앞에 있는 것을 separator로 사용.",
+    "sse_transport_ok": true,
+    "sse_frontend_parsing": false,
+    "json_template_working": true,
+    "summary": "H2 전송 레이어 문제 완전 해결. SSE 템플릿은 200 OK h2로 전달되나 프론트엔드가 파싱 실패. JSON 템플릿(qwen3)은 경고 표시 완벽 작동. 다음 단계: SSE 프론트엔드 파싱 문제 해결 또는 JSON 기반 warning 전략으로 전환.",
+    "next_steps": [
+      "SSE 응답의 Content-Type/format을 프론트엔드가 기대하는 형식으로 조정",
+      "또는 모든 서비스를 JSON 기반 warning으로 전환 검토",
+      "deepseek/duckduckgo용 JSON 템플릿 제작 테스트"
+    ]
+  }
+}
