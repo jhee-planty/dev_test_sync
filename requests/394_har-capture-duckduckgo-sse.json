@@ -1,0 +1,32 @@
+{
+  "id": "394",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T12:55:00+09:00",
+  "description": "DuckDuckGo SSE 응답 본문 상세 캡처. #387에서 SSE 이벤트 구조 파악했으나, 정확한 JSON 필드가 필요. 각 SSE data: 줄의 완전한 JSON 내용을 캡처.",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai/chat?ia=chat&duckai=1",
+      "login_required": false,
+      "steps": [
+        "1. Chrome DevTools Network 탭 열기 (Preserve log 켜기)",
+        "2. https://duck.ai 접속",
+        "3. 채팅 입력창에 정상 프롬프트: 'What is 2+2?' (차단 키워드 없이!)",
+        "4. 전송 후 AI 응답 완료까지 대기",
+        "5. DevTools Network에서 'duckchat/v1/chat' 요청 찾기",
+        "6. EventStream 탭 또는 Response 탭에서 전체 SSE 응답 본문 복사",
+        "7. 반드시 캡처할 내용:",
+        "   a. 첫 번째 data: 줄 전체 (rs_ 이벤트)",
+        "   b. 마지막 msg_ 이벤트의 data: 줄 전체",
+        "   c. [DONE] 이전의 마지막 data: 줄 전체",
+        "   d. Response Headers 전체 (특히 x-vqd-4, x-vqd-hash 등 커스텀 헤더)",
+        "8. Request Headers에서 x-vqd-4 토큰이 있는지 확인",
+        "9. 가능하면 SSE 응답 전체 본문을 결과에 포함 (500자 이내로 축약 가능하나, JSON 키와 값의 구조는 보존)"
+      ],
+      "expected_output": "DuckDuckGo SSE 응답의 정확한 data: 줄 JSON 구조 (각 이벤트 타입별: rs_, msg_, [DONE]). Response headers. x-vqd 토큰 존재 여부."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "현재 duckduckgo_sse 템플릿: data: {\"message\":\"...\",\"action\":\"success\",...} 형식. 실제 DuckDuckGo 형식과 다를 수 있음. 정확한 JSON 키(message/content/text/role 등)와 필수 필드를 알아야 템플릿 수정 가능."
+}
