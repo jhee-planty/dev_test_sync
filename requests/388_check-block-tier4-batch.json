@@ -1,0 +1,71 @@
+{
+  "id": "388",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-13T17:00:00+09:00",
+  "description": "Tier 4 Batch Block Test. 미테스트 서비스 중 로그인 불필요(추정) 서비스 5개. 키워드 프롬프트로 차단 테스트.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.deepseek.com 접속",
+        "2. 로그인 요구 시 → 'LOGIN_REQUIRED' 보고 후 다음 서비스로",
+        "3. 채팅 가능 시 → '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 10초 대기 후 결과 스크린샷"
+      ],
+      "expected_output": "차단 여부, 화면 스크린샷"
+    },
+    {
+      "service_name": "meta",
+      "url": "https://www.meta.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://www.meta.ai 접속",
+        "2. 지역 제한 또는 로그인 요구 시 → 상태 보고 후 다음 서비스로",
+        "3. 채팅 가능 시 → '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 10초 대기 후 결과 스크린샷"
+      ],
+      "expected_output": "차단 여부, 화면 스크린샷"
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://chat.qwen.ai 접속",
+        "2. 로그인 요구 시 → 'LOGIN_REQUIRED' 보고 후 다음 서비스로",
+        "3. 채팅 가능 시 → '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 10초 대기 후 결과 스크린샷"
+      ],
+      "expected_output": "차단 여부, 화면 스크린샷"
+    },
+    {
+      "service_name": "consensus",
+      "url": "https://consensus.app",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://consensus.app 접속",
+        "2. 로그인 요구 시 → 'LOGIN_REQUIRED' 보고 후 다음 서비스로",
+        "3. 검색/채팅 가능 시 → '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 10초 대기 후 결과 스크린샷"
+      ],
+      "expected_output": "차단 여부, 화면 스크린샷"
+    },
+    {
+      "service_name": "dola",
+      "url": "https://www.dola.com",
+      "login_required": false,
+      "steps": [
+        "1. Chrome에서 https://www.dola.com 접속",
+        "2. 로그인 요구 시 → 'LOGIN_REQUIRED' 보고 후 다음 서비스로",
+        "3. 채팅 가능 시 → '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 10초 대기 후 결과 스크린샷"
+      ],
+      "expected_output": "차단 여부, 화면 스크린샷"
+    }
+  ],
+  "priority": "LOW",
+  "notes": "Tier 4 미테스트 서비스. 로그인 필요 시 LOGIN_REQUIRED로 보고하고 skip. 성공 서비스만 상세 보고."
+}
