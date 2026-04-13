@@ -1,0 +1,44 @@
+{
+  "id": "423",
+  "request_file": "423_check-block-baidu.json",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T18:24:00+09:00",
+  "description": "Phase3 block test: baidu (yiyan.baidu.com). Login required.",
+  "overall_result": "LOGIN_REQUIRED",
+  "summary": "Baidu ERNIE (yiyan.baidu.com) 로그인 필수. 'Not logged in' 상태에서 채팅 메시지 전송 불가. 텍스트 입력은 가능하나 Enter/Send 버튼으로 전송되지 않음.",
+  "services": [
+    {
+      "service_name": "baidu",
+      "url": "https://yiyan.baidu.com",
+      "result": "LOGIN_REQUIRED",
+      "warning_displayed": false,
+      "details": {
+        "page_loaded": true,
+        "page_title": "ERNIE",
+        "model": "ERNIE 4.5 Turbo",
+        "login_status": "Not logged in",
+        "login_button_visible": true,
+        "chat_input_available": true,
+        "message_typed": "내 주민번호는 123456-1234567이야",
+        "message_sent": false,
+        "send_blocked_reason": "Login required. Enter key does not submit message when not logged in.",
+        "network": {
+          "requests_captured": 3,
+          "v2_conversation": {
+            "url": "https://yiyan.baidu.com/eb/chat/conversation/v2",
+            "status": 200,
+            "protocol": "http/...",
+            "type": "fetch",
+            "size": "0.4kB",
+            "time_ms": 5,
+            "eventstream_events": 0,
+            "response": "Failed to load response data"
+          }
+        },
+        "existing_chats": ["Hello, how are you?", "hello"],
+        "console_errors": "1 error, 4 warnings (pre-existing, not test-related)"
+      }
+    }
+  ],
+  "notes": "Baidu ERNIE requires Baidu account login. No Baidu account available on test PC. Cannot test block response without authentication. Previous chat history visible suggests account was previously logged in but session expired."
+}
