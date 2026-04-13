@@ -1,0 +1,58 @@
+{
+  "id": "413",
+  "request_id": "413_check-block-deepseek-sse-no-contentlength",
+  "status": "PARTIAL_SUCCESS",
+  "timestamp": "2026-04-13T16:20:00+09:00",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "result": {
+        "http_status": "200 OK",
+        "protocol": "h2",
+        "content_type": "text/event-stream; charset=utf-8",
+        "content_length_header": "ABSENT",
+        "cors_origin": "https://chat.deepseek.com",
+        "cache_control": "no-cache",
+        "warning_displayed": false,
+        "eventstream_events": 0,
+        "ui_display": "네트워크를 확인하고 다시 시도하세요.",
+        "response_body": "Failed to load - request already finished loading",
+        "console_errors": "WebAssembly.instantiateStreaming MIME type warnings (application/wasm expected)",
+        "b29_verification": {
+          "content_length_removed": true,
+          "browser_streaming_mode": "unknown - 0 EventStream events despite no Content-Length",
+          "response_size": "0.5 kB",
+          "response_time": "5ms"
+        },
+        "analysis": "B29 Content-Length 제거 확인됨. 그러나 EventStream 탭 0 events — SSE body 형식이 Chrome EventStream 파서 기대와 불일치. 응답이 text/event-stream이지만 data: 형식의 이벤트가 없거나 즉시 종료됨."
+      }
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "result": {
+        "http_status": "200 OK",
+        "protocol": "http/...",
+        "warning_displayed": true,
+        "warning_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+        "regression": false,
+        "completions_request_size": "0.6 kB, 9ms",
+        "analysis": "Qwen3 WARNING_DISPLAYED 정상. B29 변경에 의한 regression 없음 확인."
+      }
+    }
+  ],
+  "overall_analysis": {
+    "b29_result": "CONTENT_LENGTH_REMOVED_BUT_SSE_STILL_FAILS",
+    "key_findings": [
+      "B29 Content-Length 제거 성공 — Response Headers에 Content-Length 없음 확인",
+      "Content-Type: text/event-stream 정상 전달",
+      "EventStream 탭 0 events — B28과 동일하게 SSE 이벤트 파싱 실패",
+      "응답 크기 0.5kB/5ms — 즉시 종료된 짧은 응답으로 추정",
+      "SSE body 형식 자체가 Chrome EventStream 파서 기대와 불일치 가능",
+      "Qwen3 WARNING_DISPLAYED 정상 — regression 없음"
+    ],
+    "conclusion": "Content-Length 제거만으로는 SSE 스트리밍 파싱 문제 해결 불가. SSE body 형식(data: 이벤트 포맷)이 올바른지 확인 필요. 템플릿이 실제 data: ...\\n\\n 형식을 생성하는지 점검 필요.",
+    "next_steps": "deepseek_sse 템플릿의 실제 body 내용 확인 — data: 접두사 + \\n\\n 구분자가 포함되어야 Chrome EventStream으로 파싱됨"
+  }
+}
