@@ -1,0 +1,52 @@
+{
+  "request_id": "420_check-block-deepseek-sse-no-endstream",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-13T17:24:00+09:00",
+  "summary": "BREAKTHROUGH! h2_end_stream=0 → DeepSeek EventStream 2 events 파싱 성공! (이전 0 events). GOAWAY가 스트림을 끊어 네트워크 에러 발생하지만 SSE 파싱 자체는 작동.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "results": {
+        "completion_status": "200 OK",
+        "protocol": "h2",
+        "response_time": "10.06s (vs 190ms with END_STREAM=1 — streaming mode confirmed!)",
+        "response_size": "0.5kB",
+        "eventstream_events": 2,
+        "eventstream_detail": [
+          {"type": "message", "data": "{\"choices\":[{\"delta\":{\"content\":\"이 서비스는 회...\"}} (warning text in OpenAI format)"},
+          {"type": "message", "data": "[DONE]"}
+        ],        "response_body": "Nothing to preview (GOAWAY terminates before body capture)",
+        "warning_displayed": false,
+        "ui_message": "네트워크를 확인하고 다시 시도하세요.",
+        "console_errors": "NO red errors. NO ERR_HTTP2_PROTOCOL_ERROR.",
+        "console_warnings": "WebAssembly.instantiateStreaming MIME type warnings x4 (Etap MITM — unrelated to SSE)",
+        "streaming_evidence": {
+          "response_time_10s": "h2_end_stream=0 keeps stream open — browser enters streaming mode",
+          "eventstream_2_events": "FIRST TIME DeepSeek has EventStream events > 0!",
+          "no_protocol_error": "GOAWAY prevents ERR_HTTP2_PROTOCOL_ERROR"
+        },        "root_cause_analysis": {
+          "h2_end_stream_0_effect": "SUCCESS — without END_STREAM flag, browser treats response as streaming and starts incremental SSE parsing. 10.06s response time proves stream was held open.",
+          "goaway_conflict": "GOAWAY sends connection-level shutdown WHILE the stream is still open (no END_STREAM). Browser interprets this as abnormal termination → fetch() ReadableStream throws network error → frontend shows '네트워크를 확인하고 다시 시도하세요'",
+          "events_parsed_before_goaway": "2 events (data + [DONE]) were received and parsed by Chrome BEFORE GOAWAY killed the connection",
+          "next_step": "Replace GOAWAY with proper stream termination: send DATA with END_STREAM flag AFTER the SSE data. Sequence: HEADERS(no ES) → DATA(SSE body, no ES) → DATA(empty, ES=1). Or use RST_STREAM with NO_ERROR after a delay."
+        }
+      },
+      "verdict": "MAJOR_BREAKTHROUGH — SSE parsing works, needs proper stream termination"
+    }
+  ],  "overall_verdict": "MAJOR_BREAKTHROUGH — h2_end_stream=0 enables SSE streaming. EventStream 2 events parsed (FIRST TIME for DeepSeek). GOAWAY causes network error but SSE parsing itself works.",
+  "key_findings": [
+    "h2_end_stream=0 is THE key to SSE streaming — browser enters streaming mode and parses events incrementally",
+    "DeepSeek EventStream: 2 events (data + [DONE]) — previously ALWAYS 0 events with END_STREAM=1",
+    "Response time 10.06s (vs 190ms) confirms streaming mode — browser waited for stream to complete",
+    "GOAWAY successfully prevents ERR_HTTP2_PROTOCOL_ERROR but conflicts with open stream",
+    "Warning text is in correct OpenAI choices/delta/content format",
+    "No red JS errors in Console — only WebAssembly MIME warnings (unrelated)"
+  ],
+  "recommendation": "Remove GOAWAY. Instead: HEADERS(200, no END_STREAM) → DATA(SSE body, no END_STREAM) → small delay → DATA(empty, END_STREAM=1). This properly terminates the H2 stream without connection-level disruption. The browser will finish processing the stream normally.",
+  "progress_summary": {
+    "phase_1_end_stream_1": "EventStream 0 events (all tests #413-#418)",
+    "phase_2_end_stream_0_goaway": "EventStream 2 events but network error (#420 — THIS TEST)",
+    "phase_3_needed": "END_STREAM=0 → DATA → delayed END_STREAM=1 (no GOAWAY)"
+  }
+}
