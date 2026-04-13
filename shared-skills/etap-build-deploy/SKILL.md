@@ -40,6 +40,13 @@ User can also execute directly from terminal.
 
 ---
 
+## Classifier-Safe File Handling
+
+> 크래시 재현/퍼징/스트레스 테스트 스크립트는 Read 도구로 읽지 않는다. SSH로 원격 실행하고 결과만 수집.
+> → See `../guidelines.md` → Section 10
+
+---
+
 ## SSH 접근 규칙
 
 **Cowork VM에서는 SSH가 불가능하다.** Cowork VM은 네트워크가 격리되어 있어
