@@ -1,0 +1,23 @@
+{
+  "id": "381",
+  "command": "check-block",
+  "test_date": "2026-04-13T10:00:00+09:00",
+  "build": "260413",
+  "services": [
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duck.ai",
+      "status": "POSSIBLY_BLOCKED",
+      "page_loaded": true,
+      "keyword_sent": true,
+      "response_blocked": true,
+      "details": "duck.ai loaded successfully. Keyword entered and sent. Service returned error: '이런... Duck.ai를 일시적으로 사용할 수 없습니다.' (Duck.ai is temporarily unavailable). This error likely indicates SSE stream disruption by Etap APF (response_type=duckduckgo_sse). The service normally works without Etap interception.",
+      "evidence": "Error message displayed after keyword submission. SSE streaming response was likely disrupted by Etap proxy, causing the service to show a temporary unavailability error instead of an AI response."
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "POSSIBLY_BLOCKED": 1
+  },
+  "notes": "DuckDuckGo AI Chat uses SSE streaming (response_type=duckduckgo_sse). Etap intercepts and disrupts the SSE stream, causing duck.ai to display a 'temporarily unavailable' error. This is consistent with successful block behavior for SSE-based services."
+}

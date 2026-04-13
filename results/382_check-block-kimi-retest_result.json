@@ -1,0 +1,23 @@
+{
+  "id": "382",
+  "command": "check-block",
+  "test_date": "2026-04-13T10:30:00+09:00",
+  "build": "260413",
+  "services": [
+    {
+      "service_name": "kimi",
+      "url": "https://kimi.moonshot.cn",
+      "status": "SUBMISSION_FAILED",
+      "page_loaded": true,
+      "keyword_sent": false,
+      "response_blocked": null,
+      "details": "kimi.moonshot.cn redirected to kimi.com as expected (confirming domain redirect). Page loaded successfully with full chat UI. Text entered into input field via multiple methods (Clipboard paste, Type tool, SendKeys, PowerShell). However, submission consistently failed through ALL methods: Enter key, Ctrl+Enter, JavaScript .click() on send-button-container, PowerShell mouse_event click, dispatchEvent. Kimi uses a contenteditable DIV editor which prevents standard automation submission. Cannot verify block status without successful message submission.",
+      "evidence": "Page loaded at kimi.com. Chat input accepted text. Send button visible but non-responsive to automation clicks. 8+ submission methods attempted, all failed. This is an automation limitation, not a service or block issue."
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "SUBMISSION_FAILED": 1
+  },
+  "notes": "Kimi retest after DB domain fix (kimi.com, *.kimi.com added). Domain redirect kimi.moonshot.cn -> kimi.com confirmed. Page loads fine. However, Kimi's contenteditable editor with React prevents automated input submission. Recommend manual testing for block verification. Previous test (#380) also showed NOT_BLOCKED for kimi."
+}
