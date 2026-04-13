@@ -1,0 +1,108 @@
+{
+  "id": "394",
+  "command": "run-scenario",
+  "request_ref": "394_har-capture-duckduckgo-sse",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-13T13:15:00+09:00",
+  "status": "COMPLETED",
+  "results": [
+    {
+      "service_name": "duckduckgo",
+      "url_tested": "https://duck.ai",
+      "result": "HAR_CAPTURED",
+      "api_details": {
+        "endpoint": "https://duck.ai/duckchat/v1/chat",
+        "method": "POST",
+        "protocol": "h2",
+        "status": "200 OK",
+        "remote_address": "20.43.161.105:443",
+        "size": "6.5 kB",
+        "time": "3.74s"
+      },
+      "response_headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache, no-store",
+        "Content-Type": "text/event-stream",
+        "Expect-Ct": "max-age=0",
+        "Expires": "Mon, 13 Apr 2026 03:19:39 GMT",
+        "Nel": "{\"report_to\":\"nel\",\"max_age\":86400,\"failure_fraction\":0.01}",
+        "Permissions-Policy": "interest-cohort=()",
+        "Referrer-Policy": "origin",
+        "Server": "nginx",
+        "Strict-Transport-Security": "max-age=0",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Vqd-Hash-1": "PRESENT (long hash string starting with KGFzeW5jIGZ1bmN0aW9u...)",
+        "note": "X-Vqd-Hash-1 header is present in response. x-vqd-4 was NOT observed as a separate response header."
+      },
+      "request_headers_note": "Request likely includes x-vqd-4 token in request headers (standard DuckDuckGo AI Chat auth). DevTools showed Referrer-Policy: origin in general section.",
+      "sse_format": {
+        "event_type_field": "All events use SSE 'event:' field with type 'message' (shown as 'm...' in DevTools)",
+        "data_line_format": "data: <content>",
+        "stream_termination": "data: [DONE]",
+        "total_events_observed": 5,
+        "event_sequence": [
+          {
+            "order": 1,
+            "data": "[CHAT_TITLE:math basics]",
+            "description": "Chat title assignment. Format: [CHAT_TITLE:<title>]. Not JSON."
+          },
+          {
+            "order": 2,
+            "data_prefix": "rs_",
+            "data_sample": "{\"id\":\"rs_0c19304ba3d3a9020169dc60ce66dc8...\"}",
+            "description": "Response start event. JSON with 'id' field prefixed with 'rs_'. May contain: id, created, model, object fields."
+          },
+          {
+            "order": 3,
+            "data_prefix": "msg_",
+            "data_sample": "{\"id\":\"msg_0c19304ba3d3a9020169dc60ceecc...\"}",
+            "description": "Message content event. JSON with 'id' field prefixed with 'msg_'. Contains the actual AI response text. Key fields likely: id, role, content, model, message (the actual response text '4')."
+          },
+          {
+            "order": 4,
+            "data": "[PING]",
+            "description": "Keep-alive ping. Not JSON."
+          },
+          {
+            "order": 5,
+            "data": "[DONE]",
+            "description": "Stream termination signal. Not JSON. Same pattern as OpenAI SSE."
+          }
+        ]
+      },
+      "template_implications": {
+        "content_carrier_event": "msg_ event (order 3) - contains the actual AI response text",
+        "rs_event_purpose": "Response metadata/start signal with unique response ID",
+        "chat_title_event": "Optional first event, assigns conversation title",
+        "ping_event": "Keep-alive, can be ignored by parser",
+        "done_signal": "data: [DONE] — same as OpenAI convention",
+        "all_events_type_message": "SSE event type is 'message' for all events",
+        "current_template_mismatch": "Current template uses {\"message\":\"...\",\"action\":\"success\"} which does NOT match. Real format uses rs_/msg_ ID-prefixed JSON objects + control signals ([CHAT_TITLE:], [PING], [DONE])."
+      },
+      "analytics_ping_data": {
+        "source": "wide_event_duck-chat-interaction_complete ping URL params",
+        "model": "gpt-5-mini",
+        "user_tier": "FREE",
+        "time_to_first_token_ms": 1162,
+        "time_to_last_token_ms": 3167,
+        "has_images": false,
+        "user_requested_web_search": false,
+        "tools_invoked": "",
+        "app_name": "DUCKCHAT",
+        "form_factor": "desktop"
+      },
+      "session_ping_data": {
+        "mode": "chat",
+        "prompts_sent": 1,
+        "prompts_successful": 1,
+        "prompts_failed": 0,
+        "duration_ms": 3215696
+      },
+      "additional_endpoints_observed": [
+        "https://duck.ai/duckchat/v1/status (periodic status check, h2, 200 OK)"
+      ],
+      "notes": "Response tab showed 'Nothing to preview' for raw response data (common for SSE streams in Chrome DevTools). EventStream tab successfully showed all 5 events. X-Vqd-Hash-1 header present in response (authentication token for next request). CORS is wildcard (*), no credentials required. Simple SSE format similar to OpenAI pattern."
+    }
+  ]
+}
