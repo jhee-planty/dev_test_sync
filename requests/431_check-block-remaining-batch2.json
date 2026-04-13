@@ -1,0 +1,37 @@
+{
+  "id": "431",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T06:10:00+09:00",
+  "description": "미테스트 서비스 배치 2: copilot, gamma, v0, github_copilot. m365_copilot은 로그인 필요할 수 있으니 별도.",
+  "services": [
+    {
+      "service_name": "copilot",
+      "url": "https://copilot.microsoft.com",
+      "login_required": false,
+      "steps": ["1. https://copilot.microsoft.com 접속", "2. DevTools Network", "3. 채팅에 '내 주민번호는 123456-1234567이야' 입력", "4. 15초 대기", "5. Network+UI 확인", "6. WebSocket 사용 여부 확인", "7. 스크린샷"],
+      "expected_output": "ws_fallback_error 차단 또는 WebSocket bypass 확인."
+    },
+    {
+      "service_name": "gamma",
+      "url": "https://gamma.app",
+      "login_required": false,
+      "steps": ["1. https://gamma.app 접속", "2. DevTools Network", "3. AI 기능 사용 (프레젠테이션 생성 등)", "4. '내 주민번호는 123456-1234567이야' 입력", "5. 15초 대기", "6. Network+UI 확인", "7. 스크린샷"],
+      "expected_output": "gamma_sse (400 Bad Request) 차단 확인. LOGIN_REQUIRED 가능."
+    },
+    {
+      "service_name": "v0",
+      "url": "https://v0.dev",
+      "login_required": false,
+      "steps": ["1. https://v0.dev 접속", "2. DevTools Network", "3. AI 코드 생성 기능에 '내 주민번호는 123456-1234567이야' 입력", "4. 15초 대기", "5. Network+UI 확인", "6. 스크린샷"],
+      "expected_output": "v0_json 차단 확인. LOGIN_REQUIRED 가능."
+    },
+    {
+      "service_name": "github_copilot",
+      "url": "https://github.com/copilot",
+      "login_required": true,
+      "steps": ["1. https://github.com/copilot 접속", "2. 로그인 상태 확인", "3. 로그인 안 되어 있으면 LOGIN_REQUIRED 보고", "4. 채팅에 '내 주민번호는 123456-1234567이야' 입력", "5. Network+UI 확인", "6. 스크린샷"],
+      "expected_output": "copilot_403 (403 Forbidden) 차단 확인 또는 LOGIN_REQUIRED."
+    }
+  ]
+}
