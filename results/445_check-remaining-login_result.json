@@ -1,0 +1,77 @@
+{
+  "id": "445",
+  "command": "run-scenario",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-14T10:23:00+09:00",
+  "status": "COMPLETED",
+  "summary": "3 LOGIN_REQUIRED services tested: baidu ACCESSIBLE+BLOCKED, character.ai ACCESSIBLE+NOT_BLOCKED(WebSocket), poe ACCESSIBLE+BLOCKED(site crash)",
+  "results": [
+    {
+      "service_name": "baidu",
+      "url": "https://yiyan.baidu.com",
+      "login_required": false,
+      "status": "BLOCKED_NO_WARNING",
+      "findings": {
+        "accessible_without_login": true,
+        "tab_title": "ERNIE (문심일언 / ERNIE 4.5 Turbo)",
+        "chat_api": "yiyan.baidu.com/eb/chat/conversation/v2",
+        "chat_protocol": "SSE (EventStream)",
+        "apf_blocked": true,
+        "apf_method": "SSE stream injection with {id: 'apf-blocked', object: 'chat.completion'} containing warning text",
+        "warning_displayed_in_ui": false,
+        "ui_behavior": "Chat shows no visible error or warning text. APF injection visible only in DevTools console/network.",
+        "warning_text_in_stream": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. 개인정보(주민등록번호, 전화번호 등)를 AI 서비스에 입력하지 마세요.",
+        "redirects": "yiyan.baidu.com loads directly, no redirect"
+      }
+    },
+    {
+      "service_name": "character",
+      "url": "https://character.ai",
+      "login_required": false,
+      "status": "NOT_BLOCKED",
+      "findings": {
+        "accessible_without_login": true,
+        "auto_assigned_username": "ElatedChicken2112 (anonymous session)",
+        "chat_api": "neo.character.ai",
+        "chat_protocol": "WebSocket (wss://neo.character.ai/ws/)",
+        "uses_websocket": true,
+        "apf_blocked": false,
+        "apf_bypass_reason": "Chat delivered entirely via WebSocket — APF's HTTP-based domain matching cannot intercept WebSocket frames",
+        "test_input_sent": true,
+        "test_input": "내 주민번호는 123456-1234567이야",
+        "character_responded": true,
+        "response_summary": "Character 'Рип' responded normally in Russian roleplay context",
+        "console_events": "create_chat, create_and_generate_turn, WS Message Received, add_turn, FirstChunkLatency, streaming completed",
+        "warning_displayed": false
+      }
+    },
+    {
+      "service_name": "poe",
+      "url": "https://poe.com",
+      "login_required": true,
+      "status": "BLOCKED_SITE_CRASH",
+      "findings": {
+        "accessible_without_login": false,
+        "login_method": "Google account session (장희 최) — profile setup dialog appeared on first visit",
+        "chat_accessible_after_login": false,
+        "chat_api": "poe.com/api/gql_POST (GraphQL), poe.com/api/receive_POST (SSE)",
+        "chat_protocol": "GraphQL + SSE",
+        "uses_websocket": false,
+        "apf_blocked": true,
+        "apf_method": "ERR_HTTP2_PROTOCOL_ERROR on both gql_POST and receive_POST endpoints",
+        "site_crashed": true,
+        "error_message": "오류 — 예기치 않은 오류가 발생했습니다. 페이지를 다시 로드해 주세요.",
+        "error_id": "4befcc17-e489-4405-bcd8-9caf0a071da9",
+        "console_errors": "35 errors: net::ERR_HTTP2_PROTOCOL_ERROR (multiple), FetchAPI Failed to fetch, TypeError: Failed to fetch at fetchQuery/fetchQueryJSON",
+        "warning_displayed": false,
+        "note": "APF blocks Poe's entire API infrastructure (both GraphQL and SSE), causing complete site crash. No chat possible."
+      }
+    }
+  ],
+  "key_insights": {
+    "websocket_bypass": "character.ai uses WebSocket (wss://neo.character.ai/ws/) for chat delivery, completely bypassing HTTP-based APF. Same pattern as m365_copilot (#443).",
+    "baidu_warning_gap": "Baidu/ERNIE APF injection works at protocol level but warning text doesn't render in UI — same as #443 qianwen finding.",
+    "poe_total_block": "Poe's HTTP-based API (GraphQL + SSE on poe.com domain) is fully blocked by APF, but this causes site crash rather than graceful warning.",
+    "login_summary": "baidu: no login needed | character.ai: no login needed (anonymous) | poe: login required (Google account)"
+  }
+}
