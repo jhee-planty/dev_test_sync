@@ -1,0 +1,43 @@
+{
+  "id": "439",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T09:35:00+09:00",
+  "description": "deepseek(h2_end_stream=2 적용, 로그인 필요), gemini3(path=/ 전체매칭 테스트, 페이지 로드 차단 여부 확인) 테스트",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": true,
+      "steps": [
+        "1. https://chat.deepseek.com 접속",
+        "2. 로그인 필요 — Google 또는 이메일 로그인",
+        "3. DevTools Network 탭 + Console 열기",
+        "4. 새 채팅에서 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "5. 20초 대기",
+        "6. Network 탭에서 API 응답 확인 — SSE 이벤트 수신 여부",
+        "7. ERR_HTTP2_PROTOCOL_ERROR 발생 여부 (h2_end_stream=2 적용됨)",
+        "8. UI에 경고 메시지 표시 여부 — '민감정보' 경고 텍스트",
+        "9. 스크린샷 (UI 전체 + Network 탭)"
+      ],
+      "expected_output": "h2_end_stream=2 적용 상태. 로그인 후 SSE 차단 응답이 정상 전달되는지, WARNING_DISPLAYED 여부 확인."
+    },
+    {
+      "service_name": "gemini3",
+      "url": "https://gemini.google.com",
+      "login_required": false,
+      "steps": [
+        "1. https://gemini.google.com 접속 — 페이지가 정상 로드되는지 확인 (페이지 로드 차단 여부)",
+        "2. 페이지 로드 성공 시 DevTools Network 탭 + Console 열기",
+        "3. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 20초 대기",
+        "5. Network 탭에서 API 요청/응답 확인 — 어떤 엔드포인트로 전송되는지, 응답 형식",
+        "6. 차단 여부 확인 — 응답이 APF에 의해 변조되었는지",
+        "7. UI 반응 확인 — 에러 표시, 경고 텍스트, 또는 정상 응답",
+        "8. Console 에러 확인",
+        "9. 스크린샷 (페이지 로드 상태 + AI 응답 결과)"
+      ],
+      "expected_output": "1) 페이지 로드가 차단되지 않는지 확인 (path=/ 이지만 GET은 통과해야 함). 2) AI 프롬프트 전송 시 차단 여부. 3) gemini의 스트리밍 프로토콜 형식 캡처."
+    }
+  ]
+}
