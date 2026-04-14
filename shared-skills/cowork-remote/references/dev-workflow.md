@@ -35,28 +35,52 @@ ls "$GIT_SYNC_REPO"/requests/*.json "$GIT_SYNC_REPO"/local_archive/**/*.json 2>/
 
 없으면 "001"부터 시작.
 
-### Step 1.5 — Rate Limit Gate (2026-04-14 도입)
+### Step 1.5 — Rate Limit Gate (2026-04-14 도입, 2026-04-14 재개정)
 
 **새 request를 생성하기 전에 현재 pending 건수를 확인한다.**
 
+**Authority 순서:** filesystem (requests/ ∖ results/) → queue.json (secondary cross-check).
+queue.json은 과거 stale 된 전력이 있으므로 **filesystem이 권위 있는 소스**이다.
+queue.json 업데이트는 감사 추적용으로만 유지한다.
+
 ```python
-import json, os
+import json, os, re
 GIT_SYNC_REPO = os.environ.get('GIT_SYNC_REPO', '/path/to/cowork')
-queue_path = os.path.join(GIT_SYNC_REPO, 'queue.json')
 
-with open(queue_path, 'r') as f:
-    queue = json.load(f)
+def _extract_id(name):
+    m = re.match(r'^(\d+)_', name)
+    return m.group(1) if m else None
 
-pending_count = sum(1 for t in queue.get('tasks', [])
-                    if t.get('to') == 'test' and t.get('status') == 'pending')
+req_ids = {_extract_id(f) for f in os.listdir(os.path.join(GIT_SYNC_REPO, 'requests'))
+           if f.endswith('.json') and _extract_id(f)}
+res_ids = {_extract_id(f) for f in os.listdir(os.path.join(GIT_SYNC_REPO, 'results'))
+           if f.endswith('_result.json') and _extract_id(f)}
+
+# Real pending = requests without a matching result file.
+fs_pending = req_ids - res_ids
+pending_count = len(fs_pending)
 
 MAX_PENDING = 2  # hard limit per 2026-04-14 retrospective
 if pending_count >= MAX_PENDING:
     # do NOT create new request — halt and notify user
     raise RuntimeError(
-        f"Pending queue full ({pending_count}/{MAX_PENDING}). "
+        f"Pending queue full ({pending_count}/{MAX_PENDING}, ids={sorted(fs_pending)}). "
         "Wait for existing requests to complete before adding more."
     )
+
+# Optional secondary cross-check — if queue.json disagrees, filesystem wins
+# but log the discrepancy so we can clean up queue.json later.
+queue_path = os.path.join(GIT_SYNC_REPO, 'queue.json')
+try:
+    with open(queue_path, 'r') as f:
+        queue = json.load(f)
+    qjson_count = sum(1 for t in queue.get('tasks', [])
+                      if t.get('to') == 'test' and t.get('status') == 'pending')
+    if qjson_count != pending_count:
+        print(f"[WARN] queue.json pending={qjson_count} disagrees with filesystem={pending_count}. "
+              f"Filesystem is authoritative. Clean up queue.json at next opportunity.")
+except FileNotFoundError:
+    pass  # queue.json optional
 ```
 
 **규칙:**

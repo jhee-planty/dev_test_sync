@@ -197,9 +197,11 @@
       "id": "108",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-03-31T16:48:00+09:00",
-      "summary": "Gemini Phase3-B6 — is_http2=1 + GOAWAY=true (서버 disconnect로 H2 충돌 방지)"
+      "summary": "Gemini Phase3-B6 — is_http2=1 + GOAWAY=true (서버 disconnect로 H2 충돌 방지)",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "109",
@@ -221,149 +223,174 @@
       "id": "150",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "ChatGPT Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "ChatGPT Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "151",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Claude Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Claude Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "152",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Perplexity Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Perplexity Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "153",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Gemini Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Gemini Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "154",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Grok Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Grok Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "155",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Genspark Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Genspark Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "156",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Notion AI Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Notion AI Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "157",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "GitHub Copilot Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "GitHub Copilot Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "158",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "Gamma Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Gamma Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "159",
       "command": "run-scenario",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-02T11:42:35.648561",
-      "updated": "2026-04-02T11:42:35.648561",
-      "summary": "M365 Copilot Phase 1 Frontend Inspect"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "M365 Copilot Phase 1 Frontend Inspect",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "160",
       "command": "check-warning",
       "service": "chatgpt",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "161",
       "command": "check-warning",
       "service": "claude",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "162",
       "command": "check-warning",
       "service": "genspark",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "163",
       "command": "check-warning",
       "service": "notion",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "164",
       "command": "check-warning",
       "service": "github_copilot",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "165",
       "command": "check-warning",
       "service": "gemini",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "166",
       "command": "check-warning",
       "service": "m365_copilot",
-      "status": "pending",
-      "created": "2026-04-02T15:00:00+09:00"
+      "status": "abandoned",
+      "created": "2026-04-02T15:00:00+09:00",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "189",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "abandoned",
       "created": "2026-04-03T15:55:06.318809",
-      "updated": "2026-04-03T15:55:06.318819",
-      "summary": "Phase3-B15: gemini3 check-warning — write_visible_data direct SSL_write path"
+      "updated": "2026-04-14T13:13:18",
+      "summary": "Phase3-B15: gemini3 check-warning — write_visible_data direct SSL_write path",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "200",
@@ -450,55 +477,73 @@
       "id": "209",
       "command": "check-warning",
       "service": "chatgpt",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "210",
       "command": "check-warning",
       "service": "claude",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "211",
       "command": "check-warning",
       "service": "perplexity",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "212",
       "command": "check-warning",
       "service": "genspark",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "213",
       "command": "check-block",
       "service": "grok",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "214",
       "command": "check-block",
       "service": "notion",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "215",
       "command": "check-block",
       "service": "github_copilot",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "216",
       "command": "check-block",
       "service": "gamma",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "217",
       "command": "check-warning",
       "service": "gemini",
-      "status": "pending"
+      "status": "abandoned",
+      "updated": "2026-04-14T13:13:18",
+      "notes": "Abandoned 2026-04-14: orphaned from pre-file-based workflow (#379+ never tracked in queue.json). No real work associated."
     },
     {
       "id": "447",
@@ -510,7 +555,7 @@
       "summary": "v0.dev Phase 4 frontend-inspect — Warning Delivery Options 5항목 탐색 (autonomous)"
     }
   ],
-  "last_updated": "2026-04-14T11:00:00+09:00",
+  "last_updated": "2026-04-14T13:13:18",
   "archived": [
     "058",
     "059",
