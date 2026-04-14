@@ -53,6 +53,20 @@ bypassing the SPA entirely. No need to understand v0's internal SSE envelope.
 3. `ai_prompt_filter_db_config_loader.cpp:72 domain_matcher::match()` supports exact,
    `[*.]root.com`, `*.root.com`, `root.*` forms. `domain_patterns` column is
    comma/pipe/newline-delimited (parsed at `:459`).
+4. **Dispatcher is pure DB lookup — no whitelist.**
+   `ai_prompt_filter.cpp:1254-1263` selects `lookup_key = sd->response_type`
+   (or `prepare_response_type` for prepare API), then
+   `_config_loader->get_envelope_template(lookup_key)` returns the envelope as plain
+   DB-loaded string. No switch/case, no registered-generator check.
+   `ai_prompt_filter_db_config_loader.cpp:640-678 db_loader::load()` builds the
+   `_envelopes` map keyed by `response_type` column from
+   `ai_prompt_response_templates` directly — a new key like `v0_html_block_page`
+   becomes available on the next `reload_services` with zero C++ awareness.
+5. **v0 existing row state (inferred, confirm via pre-check).** v0 is currently
+   BLOCK_ONLY serving plain error JSON — meaning a row in
+   `ai_prompt_response_templates WHERE service_name='v0'` already exists with
+   `envelope_template=NULL, response_type=''`. The `UPDATE` below sets the new
+   columns in place. If pre-check returns 0 rows, use the INSERT fallback.
 
 ### Migration SQL
 
@@ -104,6 +118,39 @@ UPDATE etap.etap_APF_sync_info SET revision_cnt = revision_cnt + 1
  WHERE table_name = 'ai_prompt_response_templates';
 
 COMMIT;
+```
+
+### INSERT fallback (only if pre-check SELECT returns 0 rows)
+
+If step 0 SELECT on `ai_prompt_response_templates` returns no row for v0, the
+UPDATE in step 2 silently does nothing. In that case, swap step 2 for an INSERT
+(mirror of chatgpt_sse pattern in `apf_db_driven_migration.sql:91-111`):
+
+```sql
+INSERT INTO etap.ai_prompt_response_templates
+  (service_name, http_response, response_type, envelope_template, priority, enabled)
+VALUES (
+  'v0',
+  '',  -- plain-template fallback unused when envelope_template is set
+  'v0_html_block_page',
+  CONCAT(
+    'HTTP/1.1 200 OK\r\n',
+    'Content-Type: text/html; charset=utf-8\r\n',
+    'Cache-Control: no-store\r\n',
+    'Content-Length: 0\r\n',
+    '\r\n',
+    '<!doctype html><title>차단</title>',
+    '<meta charset=utf-8>',
+    '<body style="font:1rem system-ui;max-width:40em;margin:3em auto;padding:1em">',
+    '<h2 style="color:#b00">⚠ 보안 정책 안내</h2>',
+    '<p>{{MESSAGE}}</p></body>'
+  ),
+  90,
+  1
+)
+ON DUPLICATE KEY UPDATE
+  response_type = VALUES(response_type),
+  envelope_template = VALUES(envelope_template);
 ```
 
 ### Size estimate
@@ -158,5 +205,8 @@ in-page error UI, top-level document navigation hook. Re-evaluate candidates:
 - `results/447_frontend-inspect-v0_result.json`
 - `shared-skills/genai-apf-pipeline/services/v0_frontend.md`
 - `functions/ai_prompt_filter/ai_prompt_filter.cpp:974` (render_envelope_template)
+- `functions/ai_prompt_filter/ai_prompt_filter.cpp:1254-1270` (dispatcher = pure DB lookup)
 - `functions/ai_prompt_filter/ai_prompt_filter_db_config_loader.cpp:72,146` (matchers)
+- `functions/ai_prompt_filter/ai_prompt_filter_db_config_loader.cpp:640-678` (envelope map load)
+- `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql` (column schema + chatgpt_sse INSERT pattern ref)
 - `local_archive/apf_infra_scoping_2026-04-14.md` (500B ceiling analysis)
