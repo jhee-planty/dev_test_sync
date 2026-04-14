@@ -1,0 +1,25 @@
+{
+  "id": "444",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T12:10:00+09:00",
+  "description": "Perplexity v3: thread_url_slug를 빈 문자열로 설정. v2에서 가짜 UUID가 403 '비공개 답변' 유발 → 빈 문자열로 thread fetch 회피 시도.",
+  "services": [
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "steps": [
+        "1. https://www.perplexity.ai 접속",
+        "2. DevTools Network + Console 열기",
+        "3. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 20초 대기",
+        "5. ERR_HTTP2 발생 여부 (예상: 없음)",
+        "6. STREAM_FAILED_FIRST_CHUNK_ERROR 발생 여부",
+        "7. 403 '비공개 답변' 다이얼로그 발생 여부 (예상: 없음)",
+        "8. UI에 경고 텍스트 표시 여부 확인",
+        "9. 페이지 URL 변화 확인",
+        "10. 스크린샷"
+      ]
+    }
+  ]
+}
