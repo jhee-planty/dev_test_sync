@@ -1,0 +1,94 @@
+{
+  "id": "439",
+  "request_file": "439_retest-deepseek-gemini3.json",
+  "executed_at": "2026-04-14T09:29:00+09:00",
+  "executor": "test-pc-worker",
+  "overall_status": "SUCCESS",
+  "summary": "deepseek: h2_end_stream=2 fix CONFIRMED (no ERR_HTTP2_PROTOCOL_ERROR). SSE stream terminated by APF, UI shows generic network error. BLOCK_ONLY. gemini3: page load NOT blocked (path=/ GET passes through). StreamGenerate POST blocked with 400 Bad Request. UI shows no error/warning. BLOCK_ONLY.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "test_type": "retest-block",
+      "status": "BLOCK_ONLY",
+      "login_required": true,
+      "login_method": "Google OAuth (account chooser)",
+      "endpoints": {
+        "completion": {
+          "url": "/api/v0/chat/completion",
+          "method": "POST",
+          "status_code": 200,
+          "content_type": "text/event-stream",
+          "protocol": "h2",
+          "sse_events_parsed": 0,
+          "response_body": "Failed to load response data: No data found for resource with given identifier",
+          "description": "SSE stream terminated by APF before any events delivered"
+        },
+        "create": {
+          "url": "/api/v0/chat_session/create",
+          "method": "POST",
+          "status": "(failed)",
+          "description": "Session creation also failed — APF intercepted"
+        }
+      },
+      "h2_end_stream_fix": {
+        "applied": true,
+        "value": 2,
+        "err_http2_protocol_error": false,
+        "confirmed_working": true
+      },
+      "ui_response": "네트워크를 확인하고 다시 시도하세요 (generic network error)",
+      "warning_displayed": false,
+      "warning_text_visible": false,
+      "verdict": "BLOCK_ONLY",
+      "notes": "h2_end_stream=2 successfully resolved ERR_HTTP2_PROTOCOL_ERROR. Stream is now properly terminated. However, no custom warning text is displayed — only generic network error."
+    },
+    {
+      "service_name": "gemini3",
+      "url": "https://gemini.google.com",
+      "test_type": "retest-block",
+      "status": "BLOCK_ONLY",
+      "login_required": false,
+      "page_load": {
+        "url": "https://gemini.google.com/app",
+        "status": "SUCCESS",
+        "blocked": false,
+        "description": "Page loaded fully with chat interface. path=/ rule does NOT block GET page load (expected behavior)."
+      },
+      "endpoints": {
+        "batchexecute": {
+          "url": "/_/BardChatUi/data/batchexecute?rpcids=ESY5D",
+          "method": "POST",
+          "status_code": 200,
+          "protocol": "h2",
+          "content_type": "xhr",
+          "description": "Initial RPC call succeeded"
+        },
+        "stream_generate": {
+          "url": "/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+          "method": "POST",
+          "status_code": 400,
+          "protocol": "h2",
+          "content_type": "application/json; charset=utf-8",
+          "remote_address": "[2404:6800:4005:80a::200e]:44",
+          "size": "0.3 kB",
+          "time": "9 ms",
+          "response_body": {
+            "error": {
+              "code": 400,
+              "message": "Request blocked by security policy",
+              "status": "INVALID_ARGUMENT"
+            }
+          },
+          "description": "APF blocked StreamGenerate with 400 Bad Request. Response is JSON error object."
+        }
+      },
+      "ui_response": "No visible error or warning. Welcome screen still displayed. Message text remains in input field. Suggestion buttons still visible.",
+      "warning_displayed": false,
+      "warning_text_visible": false,
+      "verdict": "BLOCK_ONLY",
+      "console_errors": "7 errors, 1 warning (from DevTools badge)",
+      "notes": "Gemini frontend silently swallowed the 400 error. No chat thread created. No user-facing error message or dialog. The APF block is effective but invisible to the user."
+    }
+  ]
+}
