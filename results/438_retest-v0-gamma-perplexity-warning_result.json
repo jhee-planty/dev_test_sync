@@ -1,0 +1,96 @@
+{
+  "id": "438",
+  "request_file": "438_retest-v0-gamma-perplexity-warning.json",
+  "executed_at": "2026-04-14T09:16:00+09:00",
+  "executor": "test-pc-worker",
+  "overall_status": "SUCCESS",
+  "summary": "4 services tested. v0: h2_end_stream=2 resolved ERR_HTTP2, block message received but UI stuck on Thinking (BLOCK_ONLY). gamma: 400 Bad Request confirmed, no visible warning (BLOCK_ONLY). perplexity: ERR_HTTP2_PROTOCOL_ERROR on SSE, page returned to home with no warning (BLOCK_ONLY). github_copilot: 403 confirmed, Access denied page shown but custom message NOT displayed (BLOCK_ONLY).",
+  "services": [
+    {
+      "service_name": "v0",
+      "url": "https://v0.dev",
+      "test_type": "retest-warning",
+      "status": "BLOCK_ONLY",
+      "endpoint": {
+        "url": "v0.dev chat API",
+        "method": "POST",
+        "status_code": 200
+      },
+      "findings": {
+        "h2_end_stream_fix": "CONFIRMED — h2_end_stream=2 resolved ERR_HTTP2_PROTOCOL_ERROR. Status 200 returned instead of protocol error.",
+        "response_body": "{\"error\": true, \"message\": \"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다...\"}",
+        "ui_display": "UI remains stuck on 'Thinking' spinner. The v0_json template error message is in the response body but v0 frontend does not render it as visible text to the user.",
+        "warning_visible": false,
+        "console_errors": "No ERR_HTTP2_PROTOCOL_ERROR (fix confirmed). Response received as application/json with block message."
+      },
+      "verdict": "BLOCK_ONLY — APF block works (h2_end_stream=2 fix confirmed), but warning text is NOT displayed in the UI. v0 frontend ignores the error JSON and shows infinite Thinking state."
+    },
+    {
+      "service_name": "gamma",
+      "url": "https://gamma.app",
+      "test_type": "retest-warning",
+      "status": "BLOCK_ONLY",
+      "endpoint": {
+        "url": "https://ai.api.gamma.app/ai/v2/generation",
+        "method": "POST",
+        "status_code": 400
+      },
+      "findings": {
+        "block_confirmed": "400 Bad Request returned by APF gamma_sse template",
+        "response_body": "Failed to load response data — connection terminated by APF before response body could be captured",
+        "ui_display": "Gamma outline editor shown with prompt text, but generation did not occur. No visible error message or warning text displayed to user.",
+        "console_errors": "POST 400 (Bad Request) for ai.api.gamma.app/ai/v2/generation. StreamOnOpenError: Unable to complete request.",
+        "warning_visible": false
+      },
+      "verdict": "BLOCK_ONLY — APF blocks the generation request with 400, but gamma frontend shows no error/warning to the user. Generation silently fails."
+    },
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "test_type": "retest-warning",
+      "status": "BLOCK_ONLY",
+      "endpoint": {
+        "url": "https://www.perplexity.ai/rest/sse/perplexity_ask",
+        "method": "POST",
+        "status_code": "ERR_HTTP2_PROTOCOL_ERROR"
+      },
+      "findings": {
+        "block_confirmed": "APF intercepted the SSE stream. ERR_HTTP2_PROTOCOL_ERROR occurred on perplexity_ask endpoint.",
+        "thread_url": "blocked-f5576094-5530-46f2-b2f8-6b8c52300fdd",
+        "blocked_thread_status": "400 Bad Request when Perplexity tried to fetch the blocked thread data",
+        "ui_display": "Page returned to home (perplexity.ai/?). No visible warning text shown to user. Query was silently consumed.",
+        "console_errors": "POST net::ERR_HTTP2_PROTOCOL_ERROR on perplexity_ask. GET 400 (Bad Request) on blocked thread fetch.",
+        "warning_visible": false,
+        "h2_end_stream_note": "ERR_HTTP2_PROTOCOL_ERROR still occurs on perplexity — the h2_end_stream=2 fix may not be applied to perplexity_sse template, or perplexity handles h2 differently."
+      },
+      "verdict": "BLOCK_ONLY — APF blocks the SSE stream but warning text is NOT displayed. Perplexity returns to home page with no indication of what happened. ERR_HTTP2 still present."
+    },
+    {
+      "service_name": "github_copilot",
+      "url": "https://github.com/copilot",
+      "test_type": "retest-warning",
+      "status": "BLOCK_ONLY",
+      "endpoint": {
+        "url": "https://api.individual.githubcopilot.com/github/chat/threads/{id}/messages",
+        "method": "POST",
+        "status_code": 403
+      },
+      "findings": {
+        "block_confirmed": "403 Forbidden returned by APF copilot_403 template",
+        "ui_display": "GitHub shows 'Access denied. You do not have permission to view this.' with Terms of Service link. This is GitHub's default 403 error page, NOT the APF custom message.",
+        "custom_message_displayed": false,
+        "retry_button": "Retry button shown in chat UI",
+        "console_errors": "Failed to load resource: the server responded with a status of 403 ()",
+        "warning_visible": false,
+        "note": "GitHub Copilot renders its own Access Denied page for 403 responses. The APF copilot_403 template message field content is NOT rendered in the UI."
+      },
+      "verdict": "BLOCK_ONLY — APF 403 block works, but GitHub shows its own 'Access denied' page. Custom warning text from APF template is not displayed."
+    }
+  ],
+  "overall_conclusion": {
+    "all_blocks_working": true,
+    "any_warning_displayed": false,
+    "services_needing_warning_redesign": ["v0", "gamma", "perplexity", "github_copilot"],
+    "recommendation": "All 4 services show BLOCK_ONLY behavior. None display the APF custom warning text to users. Warning implementation requires service-specific frontend injection strategies (chat bubble injection, error message interception, etc.) rather than relying on response body content being rendered by the service frontend."
+  }
+}
