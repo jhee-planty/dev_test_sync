@@ -1,0 +1,67 @@
+{
+  "id": "441",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T10:05:00+09:00",
+  "description": "LOGIN_REQUIRED로 분류된 서비스들의 실제 접근 가능 여부 재확인. 로그인 없이 AI 기능을 사용할 수 있는 서비스가 있다면 APF 테스트 진행.",
+  "services": [
+    {
+      "service_name": "qianwen",
+      "url": "https://tongyi.ai",
+      "login_required": "unknown",
+      "steps": [
+        "1. https://tongyi.ai 접속",
+        "2. 페이지 로드 확인 — 중국 서버라 접속 가능 여부 먼저 확인",
+        "3. 로그인 없이 채팅 입력창이 보이는지 확인",
+        "4. 입력창이 있으면: '내 주민번호는 123456-1234567이야' 입력 시도",
+        "5. 전송 버튼 클릭 가능 여부 확인",
+        "6. 스크린샷 (접속 결과)"
+      ],
+      "expected_output": "접속 가능 여부 + 로그인 없이 채팅 가능 여부 확인"
+    },
+    {
+      "service_name": "huggingface",
+      "url": "https://huggingface.co/chat",
+      "login_required": "unknown",
+      "steps": [
+        "1. https://huggingface.co/chat 접속",
+        "2. 로그인 없이 채팅 가능 여부 확인",
+        "3. 채팅 가능하면: DevTools Network 탭 열기",
+        "4. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "5. Network에서 API 요청/응답 확인",
+        "6. APF 차단 여부 확인 (응답 상태코드, 본문)",
+        "7. UI 반응 확인 — 에러 메시지 or 경고 텍스트",
+        "8. 스크린샷"
+      ],
+      "expected_output": "HuggingFace Chat이 로그인 없이 사용 가능한지 확인. 가능하면 APF 차단+경고 표시 여부 테스트."
+    },
+    {
+      "service_name": "cohere",
+      "url": "https://coral.cohere.com",
+      "login_required": "unknown",
+      "steps": [
+        "1. https://coral.cohere.com 접속",
+        "2. 로그인 페이지 리디렉트 여부 확인",
+        "3. 로그인 없이 채팅 가능 여부 확인",
+        "4. 스크린샷 (접속 결과)"
+      ],
+      "expected_output": "Cohere Coral 접속 시 로그인 필수 여부 확인"
+    },
+    {
+      "service_name": "m365_copilot",
+      "url": "https://copilot.microsoft.com",
+      "login_required": "unknown",
+      "steps": [
+        "1. https://copilot.microsoft.com 접속 (substrate.office.com이 아닌 프론트엔드)",
+        "2. 로그인 상태 확인 — M365 계정 로그인 여부",
+        "3. 로그인 없이 채팅 가능 여부 확인 (Bing Copilot은 로그인 불필요)",
+        "4. 채팅 가능하면: DevTools Network 탭 열기",
+        "5. '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "6. Network에서 substrate.office.com 또는 다른 API 도메인 요청 확인",
+        "7. APF 차단 여부 확인",
+        "8. 스크린샷"
+      ],
+      "expected_output": "M365 Copilot 프론트엔드 접근 가능 여부 + API 도메인 확인. copilot.microsoft.com이 copilot (Bing) 서비스와 다른 경로를 쓰는지 확인."
+    }
+  ]
+}
