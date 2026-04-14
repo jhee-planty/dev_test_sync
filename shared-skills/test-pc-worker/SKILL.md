@@ -235,6 +235,13 @@ dev 측 판독 정확도를 높이기 위해, 작업 중 화면 상태를 예측
 
 각 단계는 `[System.Diagnostics.Stopwatch]::StartNew()`로 측정한다.
 
+**메트릭 기록 검증 (2026-04-14 회고 반영):**
+4/6 이후 메트릭 미기록 67건 누락이 확인되었다. 매 작업 완료 후 다음을 확인:
+1. `results/metrics/metrics_{date}.jsonl` 파일이 존재하는지 확인
+2. 마지막 라인의 `id`가 현재 request id와 일치하는지 확인
+3. 불일치 시 → 수동으로 메트릭 라인 추가 (duration_seconds는 추정값 사용 가능)
+PowerShell Stopwatch가 초기화되지 않은 경우가 주 원인이므로, Step 2 시작 시 Stopwatch 생성을 확인한다.
+
 → See `references/metrics-collection.md` for PowerShell 코드, 수집 상세, 분석 연동.
 → See `references/phase-definitions.md` for command별 측정 단계 정의.
 

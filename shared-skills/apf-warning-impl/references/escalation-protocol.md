@@ -17,6 +17,17 @@
 **code_bug 면제 조건:** (1) 원인 코드 수준 특정, (2) 수정 방안 구체적 기술, (3) 빌드 전 사전 분류 + impl journal 기록.
 **infra_issue 3회 반복:** warning pipeline 범위 초과 → 인프라 팀 에스컬레이션.
 
+### Same-Category Failure Tracking (2026-04-14 회고 반영)
+
+기존 3-Strike는 "연속 실패 횟수"만 카운트하여, 같은 카테고리(예: 템플릿 포맷 변경)를
+반복하는 패턴을 감지하지 못했다. duckduckgo 17회, deepseek 10회가 이 맹점의 실측 사례.
+
+**규칙:**
+- 실패 시 `{category, sub_category, attempt_count}` 기록. sub_category는 변경 내용의 종류 (예: "sse_separator", "json_key", "content_type").
+- **같은 sub_category 3회 실패** → 해당 접근법은 근본적으로 부적합. 자동으로 frontend-inspect(Phase 4) 전환하여 프론트엔드 구조를 재확인.
+- **총 5회 실패** (sub_category 무관) → NEEDS_ALTERNATIVE로 분류. C++ 코드 수준 검토로 에스컬레이션.
+- 이 규칙은 기존 에스컬레이션 순서(①→②→③→④→⑤)와 병행 적용.
+
 ## 에스컬레이션 순서
 
 ```

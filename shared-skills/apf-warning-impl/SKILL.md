@@ -11,7 +11,7 @@ description: >
 ## Quick Reference (매 iteration 확인)
 - **성공 기준:** 경고 문구가 브라우저에 표시되면 PASS (방식 무관)
 - **유효 빌드 상한:** 7회. 5회 시 사용자 승인 게이트.
-- **3-Strike:** 3회 연속 실패 → 로그확인 → HAR재캡처 → 접근법 재검토
+- **3-Strike:** 3회 연속 실패 → 로그확인 → HAR재캡처 → 접근법 재검토. 같은 카테고리(템플릿 포맷) 3회 → frontend-inspect 전환. 5회 → NEEDS_ALTERNATIVE
 - **서버 로그 필수:** 첫 빌드부터 `[APF_WARNING_TEST]` 포함
 - **Phase 3 Entry Check:** design doc strategy ↔ impl is_http2 일치 확인
 
@@ -316,6 +316,11 @@ Record the iteration in `services/{service_id}_impl.md` (test PC 결과 포함).
 
 **3-Strike Rule 요약:** 3회 연속 실패 시 (1) 서버 로그 확인, (2) HAR 재캡처, (3) 접근법 재검토를 강제. 이 단계 없이 4번째 미세 조정 빌드를 하지 않는다.
 
+**Same-Category Escalation (2026-04-14 회고 반영):**
+- 같은 카테고리(예: 템플릿 포맷 변경) 3회 실패 → 자동으로 frontend-inspect(Phase 4) 전환. 미세 조정 반복은 근본 원인이 다른 곳에 있다는 신호.
+- 총 5회 실패 (카테고리 무관) → NEEDS_ALTERNATIVE로 분류, C++ 코드 수준 검토로 에스컬레이션.
+- 근거: duckduckgo 17회, deepseek 10회 — 포맷 변경 반복이 기존 Strike 카운트에 잡히지 않았음.
+
 ### 알려진 아키텍처 한계 (빌드 전 확인)
 
 다음 한계는 빌드를 시도하기 전에 확인하여 불필요한 시도를 방지한다.
@@ -419,6 +424,8 @@ guard가 없으면 flush 효과를 확인할 수 없었다. 한 빌드로 합쳤
   2. 해당 서비스만 코드 수정 → 빌드 → 테스트
   3. 성공 → regression test → Phase 4 → 다음 서비스로
   4. 3회 연속 실패 → 3-Strike Rule 적용 (위 섹션 참조)
+  4a. 같은 카테고리 3회 실패 → frontend-inspect 전환 (Same-Category Escalation)
+  4b. 총 5회 실패 → NEEDS_ALTERNATIVE + C++ 코드 수준 검토
   5. 진전 없으면 보류, 다음 서비스로 이동
 ```
 

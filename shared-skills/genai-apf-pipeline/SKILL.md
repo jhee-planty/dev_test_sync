@@ -210,6 +210,8 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
   2. 해당 서비스만 Phase 3 진행 (코드 수정 → 빌드 → 테스트)
   3. 성공 → regression test → Phase 4 → 다음 서비스로
   4. 3회 연속 실패 → 3-Strike Rule 적용 (apf-warning-impl 참조)
+  4a. 같은 카테고리 3회 실패 → frontend-inspect 전환 (Same-Category Escalation)
+  4b. 총 5회 실패 → NEEDS_ALTERNATIVE + C++ 코드 수준 검토
   5. 3-Strike 후에도 진전 없으면 → 대안 접근법 전환 (apf-technical-limitations.md 참조)
   6. 대안 방법 모두 소진 → PENDING_INFRA (인프라 확장 대기, 정기 재검토)
   7. NEEDS_USER_SESSION 서비스 → 사용자 협업 세션에서 일괄 처리 (아래 프로토콜 참조)

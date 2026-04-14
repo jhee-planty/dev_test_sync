@@ -76,6 +76,25 @@ Key files:
 
 ---
 
+## Step 0 — Communication Method Pre-Classification (2026-04-14 회고 반영)
+
+HAR 분석에 들어가기 전에 서비스의 통신 방식을 먼저 확인한다.
+WebSocket/gRPC 기반 서비스는 HTTP 응답 주입이 불가능하므로 조기 분류하여 불필요한 분석 시간을 절약한다.
+
+**확인 방법:**
+1. `websocket.json` 파일 존재 여부 확인 (AI 응답이 WS로 전달되는지)
+2. HAR에서 `Upgrade: websocket` 또는 gRPC 관련 헤더 검색
+3. `sse_streams.json`이 비어있고 `websocket.json`에 AI 응답 데이터가 있으면 → WS 기반 서비스
+
+**판정:**
+- WebSocket으로 AI 응답 전달 확인 → 즉시 **NEEDS_ALTERNATIVE** 분류. Step 1-4 분석 스킵.
+- gRPC 사용 확인 → 즉시 **NEEDS_ALTERNATIVE** 분류.
+- SSE/REST/batchexecute 확인 → Step 1로 진행 (정상 플로우).
+
+→ See `../references/warning-delivery-checklist.md` § 1-5 for WebSocket 판정 기준.
+
+---
+
 ## Step 1 — Analyze HAR Capture: Request Endpoints
 
 Read all `*.req.txt` files in `genAI_har_files/{service_id}_{stamp}/raw/`.
