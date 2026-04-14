@@ -1,11 +1,10 @@
 {
-  "timestamp": "2026-04-14T14:19:09",
+  "timestamp": "2026-04-14T14:45:09",
   "status": "alive",
   "mode": "polling",
-  "stage": 2,
-  "stage2_cycle": 1,
-  "cycle": 11,
-  "last_processed_id": 447,
+  "stage": 1,
+  "cycle": 20,
+  "last_processed_id": 448,
   "error_streak": 0,
   "loop_engine": "dynamic /loop"
 }
