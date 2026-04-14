@@ -1,0 +1,40 @@
+{
+  "id": "444",
+  "request_id": "444",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc",
+  "timestamp": "2026-04-14T10:10:00+09:00",
+  "description": "Perplexity v3: empty string thread_url_slug test",
+  "results": [
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "verdict": "EMPTY_SLUG_FAILED",
+      "details": {
+        "test_input": "내 주민번호는 123456-1234567이야",
+        "page_url_after": "perplexity.ai/search/new/d2ea98c8-e146-480a-a020-6d26d68e82b0",
+        "err_http2": false,
+        "err_http2_note": "208-byte template continues to work — no ERR_HTTP2_PROTOCOL_ERROR",
+        "stream_failed_first_chunk_error": true,
+        "stream_failed_error_message": "PplxStreamError: [STREAM_FAILED_FIRST_CHUNK_ERROR] thread_url_slug is required on first message",
+        "stream_failed_note": "Empty string slug is treated as 'not provided'. Perplexity client explicitly requires a non-empty thread_url_slug on the first SSE message.",
+        "private_answer_dialog_403": false,
+        "private_answer_note": "No '비공개 답변' dialog appeared. URL uses real UUID from Perplexity (d2ea98c8-...), not fake APF-generated UUID like in v2.",
+        "warning_displayed": false,
+        "warning_note": "No APF warning text visible. Page shows partial content '시고' but no structured warning message.",
+        "ui_behavior": "답변 tab visible with minimal content. Page rendered but answer area mostly empty due to stream failure.",
+        "network_summary": "202 requests total. JS/CSS chunk loading, Fetch API calls (free-queries, collections, accounts), WebSocket to suggest.perplexity.ai. No perplexity_ask EventStream request visible in current view.",
+        "console_errors": "STREAM_FAILED_FIRST_CHUNK_ERROR with full stack trace through pplx-stream and platform-core modules",
+        "protocol": "h2"
+      },
+      "recommendation": "Empty string slug does NOT work — Perplexity requires a valid non-empty thread_url_slug. Options: (1) Generate a real-looking slug (e.g. lowercase-words-format like 'security-policy-blocked'), (2) Omit thread_url_slug entirely and accept STREAM_FAILED error but find another way to display warning, (3) Intercept the Perplexity client's thread creation to get the real slug before injecting APF response."
+    }
+  ],
+  "summary": {
+    "v3_empty_slug_result": "FAILED — empty string treated as missing",
+    "v2_comparison": "v2 used fake UUID → caused 403 private answer dialog. v3 empty string → still causes STREAM_FAILED_FIRST_CHUNK_ERROR.",
+    "208_byte_template": "CONFIRMED WORKING — no ERR_HTTP2 in v2 or v3",
+    "remaining_problem": "thread_url_slug is the key blocker for clean Perplexity warning display. Need valid slug or alternative approach."
+  }
+}
