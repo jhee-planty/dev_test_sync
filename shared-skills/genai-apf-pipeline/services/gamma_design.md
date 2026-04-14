@@ -1,5 +1,14 @@
 ## Gamma — Warning Design
 
+> **⚠️ STALE — pending rewrite (2026-04-14 14:55, post-#449).**
+> Probe #449 revealed gamma.app/create/generate renders as a **blank white page** for the test PC.
+> Test PC theorized "APF blocks `_ssgManifest.js` / `_buildManifest.js`" but L2 SSH check found:
+> - **Zero gamma traffic in etap.log during the #449 window** — APF saw nothing from gamma.app.
+> - **Burst of `SetCertificate failed` errors in `visible_tls/tls_proxy.cpp:900`** at 14:34:36–47 (38 errors, 11s). Confirms the "cert error 가능성" note below.
+> Working hypothesis: TLS interception drops the connection at the visible_tls layer; Chrome surfaces this as ERR_HTTP2_PROTOCOL_ERROR for the static manifest URLs, never reaching APF prompt-filter logic. The page never bootstraps, so the warning channel design (gamma_sse envelope, etc.) is irrelevant until the TLS path is fixed.
+> #158's "SendKeys can't paste into textarea" was retroactively the same blank-page failure, mis-diagnosed.
+> Action items before resuming Phase 5: (1) HAR capture probe #450 to confirm response source for `_ssgManifest.js`; (2) investigate `visible_tls/tls_proxy.cpp:900 SetCertificate failed` root cause for gamma.app cert chain; (3) once gamma actually loads, re-test the existing `gamma_sse` envelope path.
+
 ### Strategy
 - Pattern: H2_DATA_WARNING (attempted) → **NEEDS_ALTERNATIVE**
 - HTTP/2 strategy: B (keep-alive, is_http2=2)

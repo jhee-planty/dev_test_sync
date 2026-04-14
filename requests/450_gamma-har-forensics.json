@@ -1,0 +1,44 @@
+{
+  "id": "450",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T14:58:00+09:00",
+  "description": "gamma.app blank-page forensics. #449 revealed gamma.app/create/generate renders blank with ERR_HTTP2_PROTOCOL_ERROR on _ssgManifest.js / _buildManifest.js. Test PC theorized APF block, but dev-side L2 SSH check found ZERO gamma traffic in etap.log during the #449 window AND a burst of 38 'SetCertificate failed' errors in visible_tls/tls_proxy.cpp:900 at 14:34:36–47 KST. Working hypothesis: TLS interception fails at the cert chain layer for gamma.app, dropping the connection before APF prompt-filter ever sees it. This probe collects DEFINITIVE network-layer evidence via HAR capture so we can distinguish (a) APF rule misfire (b) TLS proxy cert failure (c) Cloudflare/Kasada bot detection (d) gamma upstream issue. NO prompt submission, NO blocked keywords, NO JS bypass — pure passive observation.",
+  "services": [
+    {
+      "service_name": "gamma",
+      "url": "https://gamma.app/create/generate",
+      "login_required": true,
+      "login_note": "이미 로그인된 상태로 #449 결과가 확인됨. 다시 로그인 화면이 뜨면 즉시 중단하고 login_state=session_lost로 보고.",
+      "steps": [
+        "1. Chrome 새 창 (incognito 아님, 기존 프로필 그대로)으로 https://gamma.app/create/generate 직접 접속.",
+        "2. DevTools F12 즉시 열기. Network 탭, Preserve log ON, **Disable cache ON**, 필터 All. Console 탭은 두 번째 패널로 분할 표시.",
+        "3. 페이지 로드를 그대로 두고 10초 대기. 아무것도 클릭하지 말 것. JS 입력 시도하지 말 것.",
+        "4. 로드 완료 후 화면 스크린샷 1장 (전체 — Network 패널 포함). 페이지가 빈 화면인지, 일부라도 렌더되는지 확인.",
+        "5. Network 패널에서 _ssgManifest.js 행을 찾아 클릭 → Headers 탭 + Response 탭 + Timing 탭 각각 스크린샷 (총 3장). 특히 다음을 명시적으로 확인:",
+        "   - Status code (실제 숫자 — 0? 500? 200이지만 빈 body? cancelled?)",
+        "   - Response Headers의 server, cf-ray, content-type 헤더",
+        "   - Response body가 있는지 / 길이는?",
+        "   - Timing: SSL handshake 시간, TTFB",
+        "6. _buildManifest.js도 같은 방식으로 3장 스크린샷.",
+        "7. Network 패널 우클릭 → 'Save all as HAR with content' 선택 → 파일명 gamma_blank_page.har 로 저장. 저장 위치는 test PC 작업 디렉토리(요청 결과 첨부 폴더)로.",
+        "8. Console 탭 전체 스크롤 캡처 (스크린샷). 특히 ERR_HTTP2_PROTOCOL_ERROR 메시지의 정확한 텍스트 + 어떤 URL에 대해 발생했는지.",
+        "9. 추가 검증 (선택): Chrome 주소창에 chrome://net-export/ 열고 Start Logging → 다시 https://gamma.app/create/generate 새로고침 → 10초 후 Stop Logging → 결과 .json 파일을 결과 폴더로 저장. (시간이 부족하면 생략 가능.)",
+        "10. 결과 보고:",
+        "    - login_state: still_logged_in|session_lost",
+        "    - page_render_state: blank|partial|normal",
+        "    - ssg_manifest: { status_code, headers_summary, body_length, timing_ssl_ms, timing_ttfb_ms }",
+        "    - build_manifest: 같은 형식",
+        "    - har_file: 첨부된 HAR 파일 경로 (results/files/450/gamma_blank_page.har)",
+        "    - console_error_samples: ERR_HTTP2_PROTOCOL_ERROR가 정확히 어떤 URL에 대해 떴는지 raw text",
+        "    - net_export_log: (선택) chrome://net-export 결과 파일 경로",
+        "    - first_failure_url: 가장 먼저 실패한 요청 URL과 시각",
+        "    - failure_classification: ssl_handshake_failed|tcp_reset|http2_rst_stream|empty_200|status_5xx|other_describe",
+        "    - notes: 첫 인상 + 시각적 단서"
+      ],
+      "expected_output": "1장 페이지 + 6장 manifest 헤더/응답/타이밍 + 1장 console = 8장 + HAR 파일 1개 + (선택) net-export json. 핵심: HAR 안에 _ssgManifest.js의 actual response status/body가 들어있어야 함. APF block(envelope 333B), TLS handshake fail, Cloudflare/Kasada challenge, 빈 200 응답 — 어느 쪽인지 단정 가능해야 함."
+    }
+  ],
+  "priority": "HIGH",
+  "notes": "이 probe는 gamma의 blank page 원인이 APF인지, TLS proxy cert 실패인지, Cloudflare bot 차단인지, gamma 자체 문제인지를 단정하기 위한 forensic 검사다. 절대 프롬프트 제출하지 말 것 — 빈 화면을 그대로 관찰만 한다. 작업 시간 약 5~7분 예상. 차단 키워드 사용 금지 (의도적으로). HAR 파일은 results/files/450/gamma_blank_page.har 경로로 저장 후 git에 함께 커밋."
+}
