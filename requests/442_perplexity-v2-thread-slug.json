@@ -1,0 +1,27 @@
+{
+  "id": "442",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-14T10:15:00+09:00",
+  "description": "Perplexity v2 템플릿 테스트. thread_url_slug 포함 + 208바이트 SSE. #440에서 ERR_HTTP2 SIZE 문제 확인 → 간소화 후 ERR_HTTP2 해소됨. 이번에는 thread_url_slug 추가로 STREAM_FAILED_FIRST_CHUNK_ERROR 해소 여부 확인.",
+  "services": [
+    {
+      "service_name": "perplexity",
+      "url": "https://www.perplexity.ai",
+      "login_required": false,
+      "steps": [
+        "1. https://www.perplexity.ai 접속",
+        "2. DevTools Network 탭 + Console 열기",
+        "3. 검색창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "4. 20초 대기",
+        "5. Network 탭에서 perplexity_ask 요청 확인 — 200 OK, EventStream 응답",
+        "6. ERR_HTTP2_PROTOCOL_ERROR 발생 여부 확인 (208바이트 템플릿, 발생하면 안 됨)",
+        "7. Console에서 STREAM_FAILED_FIRST_CHUNK_ERROR 발생 여부 확인 (thread_url_slug 추가됨)",
+        "8. UI에 경고 텍스트 '민감정보가 포함된 요청은 보안 정책에 의해 차단' 표시 여부 확인",
+        "9. 페이지 URL 확인 — thread URL 정상 전환 여부",
+        "10. 스크린샷 (UI 전체 + Network EventStream + Console)"
+      ],
+      "expected_output": "thread_url_slug 추가로 STREAM_FAILED_FIRST_CHUNK_ERROR 해소 확인. 경고 텍스트가 AI 응답 영역에 표시되면 WARNING_DISPLAYED. ERR_HTTP2 재발 안 해야 함 (208바이트)."
+    }
+  ]
+}
