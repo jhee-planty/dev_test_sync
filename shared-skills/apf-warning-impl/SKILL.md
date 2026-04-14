@@ -9,6 +9,7 @@ description: "Use this skill when the user is in hands-on implementation mode fo
 - **성공 기준:** 경고 문구가 브라우저에 표시되면 PASS (방식 무관)
 - **유효 빌드 상한:** 7회. 5회 시 사용자 승인 게이트.
 - **3-Strike:** 3회 연속 실패 → 로그확인 → HAR재캡처 → 접근법 재검토. 같은 카테고리(템플릿 포맷) 3회 → frontend-inspect 전환. 5회 → NEEDS_ALTERNATIVE
+- **Pre-retest Gate (2026-04-14 도입):** 재시도 요청 전송 전 반드시 impl journal에서 시도 카운트 조회. 총 5회 또는 같은 sub_category 3회 도달 시 재시도 금지. `references/escalation-protocol.md` Pre-Retest Enforcement Gate 참조
 - **서버 로그 필수:** 첫 빌드부터 `[APF_WARNING_TEST]` 포함
 - **Phase 3 Entry Check:** design doc strategy ↔ impl is_http2 일치 확인
 

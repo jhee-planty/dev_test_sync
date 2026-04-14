@@ -35,6 +35,44 @@ ls "$GIT_SYNC_REPO"/requests/*.json "$GIT_SYNC_REPO"/local_archive/**/*.json 2>/
 
 없으면 "001"부터 시작.
 
+### Step 1.5 — Rate Limit Gate (2026-04-14 도입)
+
+**새 request를 생성하기 전에 현재 pending 건수를 확인한다.**
+
+```python
+import json, os
+GIT_SYNC_REPO = os.environ.get('GIT_SYNC_REPO', '/path/to/cowork')
+queue_path = os.path.join(GIT_SYNC_REPO, 'queue.json')
+
+with open(queue_path, 'r') as f:
+    queue = json.load(f)
+
+pending_count = sum(1 for t in queue.get('tasks', [])
+                    if t.get('to') == 'test' and t.get('status') == 'pending')
+
+MAX_PENDING = 2  # hard limit per 2026-04-14 retrospective
+if pending_count >= MAX_PENDING:
+    # do NOT create new request — halt and notify user
+    raise RuntimeError(
+        f"Pending queue full ({pending_count}/{MAX_PENDING}). "
+        "Wait for existing requests to complete before adding more."
+    )
+```
+
+**규칙:**
+- **최대 동시 pending: 2건.** 초과 시 새 request 생성 금지.
+- 이 상한에 도달하면 사용자에게 대기 안내 후, 기존 요청이 `done`/`error`로 전환되기를 기다린다.
+- 폴링 재개 시 results/ 처리 후 자동으로 빈 자리 확보 → 다음 request 생성 가능.
+
+**근거 (2026-04-14 retrospective):** 4/13 오전 11분 동안 8건을 동시에 push하여
+큐 적체가 발생, 평균 터어라운드 58.4분 (중앙값 대비 3.4배). test PC는 순차 처리이므로
+동시 push는 대기 시간을 기하급수적으로 증가시킨다. pending ≤ 2 규칙으로
+큐 적체 시나리오를 원천 차단한다.
+
+**예외:** 서로 다른 서비스에 대한 **batch 테스트** 요청은 **하나의 request 파일**에
+여러 서비스를 포함하여 전송 (batch 1건 = 1 pending). 이는 test PC가 순차 실행하므로
+rate limit 원칙과 충돌하지 않는다.
+
 ### Step 2 — Write request JSON
 
 `requests/{id}_{command}.json` 에 작성.

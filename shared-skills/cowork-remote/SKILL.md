@@ -400,6 +400,11 @@ dev updates queue.json                test executes task
 
 **⚠ 핵심 규칙: "Already up to date" ≠ 결과 없음**
 git pull은 전송 수단이다. 결과 탐지는 반드시 `scan_results.sh` (filesystem 스캔)로 수행한다.
+
+**⚠ Rate Limit 규칙 (2026-04-14 도입):**
+새 request 생성 전 queue.json의 pending 건수 확인. **최대 2건 초과 시 생성 금지.**
+4/13 오전 8건 동시 push로 평균 터어라운드 58.4분 발생 (정상 대비 3.4배).
+→ 상세: `references/dev-workflow.md` Step 1.5 — Rate Limit Gate
 git pull 출력을 결과 유무 판단에 사용하지 않는다. → See dev-workflow.md § 폴링 루프.
 
 ---

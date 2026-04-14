@@ -4,6 +4,36 @@
 
 ---
 
+## Pre-Retest Enforcement Gate (2026-04-14 도입)
+
+> **회고 증거:** 2026-04-14 retrospective에서 duckduckgo가 17회, deepseek가 10회 반복
+> 테스트된 것이 확인되었다. 3-strike rule은 이미 존재했으나 **사전 체크가 없어 따라지지 않았다**.
+> 이 게이트는 재시도 전 강제 카운트 확인을 요구하여 반복 낭비를 차단한다.
+
+**재시도 요청을 전송하기 전에 반드시 다음을 수행한다:**
+
+1. **Retry ledger 조회** — impl journal에서 해당 서비스의 과거 시도 이력 스캔.
+   ```
+   grep -c "verdict:" services/{service_id}_impl.md  # 총 시도 횟수
+   grep "sub_category:" services/{service_id}_impl.md  # 카테고리별 분포
+   ```
+2. **임계치 판정:**
+   - **총 시도 ≥ 5회** → 재시도 금지. NEEDS_ALTERNATIVE로 분류하고 C++ 코드 레벨 검토 또는
+     PENDING_INFRA 전환. 예외: 외부 서비스 변경(`external_change`)으로 카운트가 리셋된 경우만 허용.
+   - **같은 sub_category ≥ 3회** → 해당 접근법 금지. frontend-inspect(Phase 4)로 강제 전환.
+   - **위 둘 모두 아님** → 재시도 허용. impl journal에 다음 시도를 미리 기록 (sub_category 명시).
+3. **Ledger 갱신 기록** — 결과 수신 후 impl journal에 `{attempt_n, sub_category, verdict}` 추가.
+   기록 없는 시도는 다음 세션에서 카운트되지 않아 반복 위험 재발.
+
+**Anti-pattern (회고 실측):**
+- duckduckgo: SSE 포맷 변형만 17번 시도 (sub_category 동일) → #414에서 JS 소스 캡처 후 중단 가능했음
+- deepseek: SSE 포맷 반복 10번 → #408 JSON error 시도 후 2-3회 더 하고 멈췄어야 함
+
+두 사례 모두 "같은 sub_category 3회" 게이트에서 막혔어야 하는 패턴. Pre-retest 게이트를
+통과하지 않은 재시도는 파이프라인 위반으로 간주한다.
+
+---
+
 ## 실패 유형 분류 (5단계)
 
 | 유형 | 예시 | 대응 | 게이트 카운트 |
