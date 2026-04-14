@@ -1,14 +1,6 @@
 ---
 name: workflow-retrospective
-description: >
-  APF 테스트 자동화 워크플로우 회고 및 최적화 스킬 (dev PC 전용).
-  test-pc-worker가 수집한 메트릭 로그와 experience를 분석하여
-  비효율 패턴을 탐지하고, 스킬 개선안을 제시한다.
-  Use this skill whenever: "회고해줘", "비효율 분석", "워크플로우 개선",
-  "어디가 느려?", "뭐가 불필요해?", "최적화", "retrospective",
-  "메트릭 분석", "로그 분석", "작업 통계", "패턴 분석",
-  or any request to review and optimize the APF test automation workflow.
-  Also trigger when the user says "개선점 찾아줘" or "이거 왜 이렇게 오래 걸려?"
+description: "APF 테스트 자동화 워크플로우 회고 및 최적화 스킬 (dev PC 전용). test-pc-worker가 수집한 메트릭 로그와 experience를 분석하여 비효율 패턴을 탐지하고, 스킬 개선안을 제시한다. Use this skill whenever: \"회고해줘\", \"비효율 분석\", \"워크플로우 개선\", \"어디가 느려?\", \"뭐가 불필요해?\", \"최적화\", \"retrospective\", \"메트릭 분석\", \"로그 분석\", \"작업 통계\", \"패턴 분석\", or any request to review and optimize the APF test automation workflow. Also trigger when the user says \"개선점 찾아줘\" or \"이거 왜 이렇게 오래 걸려?\""
 ---
 
 # Workflow Retrospective Skill

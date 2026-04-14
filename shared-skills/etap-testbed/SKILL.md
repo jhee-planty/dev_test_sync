@@ -1,20 +1,6 @@
 ---
 name: etap-testbed
-description: >
-  Etap 모듈 기능 테스트를 위한 Dell 테스트베드 환경 가이드.
-  Dell-1(클라이언트) → Etap(MITM 브릿지) → Dell-2(서버) 3대 구성의
-  폐쇄 테스트 망에서 VT, APF, 브릿지, NIC 등 전체 Etap 모듈의
-  트래픽 처리를 검증한다. 빌드 패키지 배포, etapd 재시작, etapcomm 진단,
-  VT MITM 경유 HTTPS 테스트, 로그 검증까지의 전체 테스트 워크플로우를 안내한다.
-  Use this skill whenever: "테스트베드", "Dell 테스트", "테스트 망",
-  "HTTPS 차단 테스트", "MITM 테스트", "모듈 테스트", "etapd 테스트",
-  "etapcomm 테스트", "APF 테스트", "VT 테스트", "차단 테스트",
-  "배포 후 테스트", "기능 검증", "통합 테스트",
-  "브릿지 테스트", "NIC 테스트", "포트 상태", "module.xml",
-  "모듈 활성화", "VT bypass 테스트",
-  or any request related to testing Etap modules on the Dell testbed.
-  Do NOT trigger for: 소스 코드 수정(.cpp, .h 등), HAR analysis, DB schema design,
-  build-only tasks (use etap-build-deploy), or APF code development (use genai-apf-pipeline).
+description: "Etap 모듈 기능 테스트를 위한 Dell 테스트베드 환경 가이드. Dell-1(클라이언트) → Etap(MITM 브릿지) → Dell-2(서버) 3대 구성의 폐쇄 테스트 망에서 VT, APF, 브릿지, NIC 등 전체 Etap 모듈의 트래픽 처리를 검증한다. 빌드 패키지 배포, etapd 재시작, etapcomm 진단, VT MITM 경유 HTTPS 테스트, 로그 검증까지의 전체 테스트 워크플로우를 안내한다. Use this skill whenever: \"테스트베드\", \"Dell 테스트\", \"테스트 망\", \"HTTPS 차단 테스트\", \"MITM 테스트\", \"모듈 테스트\", \"etapd 테스트\", \"etapcomm 테스트\", \"APF 테스트\", \"VT 테스트\", \"차단 테스트\", \"배포 후 테스트\", \"기능 검증\", \"통합 테스트\", \"브릿지 테스트\", \"NIC 테스트\", \"포트 상태\", \"module.xml\", \"모듈 활성화\", \"VT bypass 테스트\", or any request related to testing Etap modules on the Dell testbed. Do NOT trigger for: 소스 코드 수정(.cpp, .h 등), HAR analysis, DB schema design, build-only tasks (use etap-build-deploy), or APF code development (use genai-apf-pipeline)."
 ---
 
 # Etap Testbed

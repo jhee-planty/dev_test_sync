@@ -1,14 +1,6 @@
 ---
 name: test-pc-worker
-description: >
-  Test PC 전용 작업 실행 스킬. dev PC가 Git 저장소(dev_test_sync)의 requests/에 보낸 요청을
-  읽고, desktop-commander(Windows MCP)를 통해 PowerShell + 브라우저 자동화로
-  웹 테스트를 수행하고, 결과를 보고한다.
-  실망(실제 망) 환경에서 Etap 클라이언트로 동작하는 Windows PC에서 사용.
-  AI 서비스 차단/경고 확인, 인증서 확인, 페이지 동작 확인 등 웹 테스트 전반을 담당.
-  Use this skill whenever: "새 요청 확인", "작업 처리", "폴링 시작",
-  "자동으로 확인", "dev에서 요청 왔어?", "check-block", "check-warning",
-  "테스트 실행", or any request to process dev PC tasks.
+description: "Test PC 전용 작업 실행 스킬. dev PC가 Git 저장소(dev_test_sync)의 requests/에 보낸 요청을 읽고, desktop-commander(Windows MCP)를 통해 PowerShell + 브라우저 자동화로 웹 테스트를 수행하고, 결과를 보고한다. 실망(실제 망) 환경에서 Etap 클라이언트로 동작하는 Windows PC에서 사용. AI 서비스 차단/경고 확인, 인증서 확인, 페이지 동작 확인 등 웹 테스트 전반을 담당. Use this skill whenever: \"새 요청 확인\", \"작업 처리\", \"폴링 시작\", \"자동으로 확인\", \"dev에서 요청 왔어?\", \"check-block\", \"check-warning\", \"테스트 실행\", or any request to process dev PC tasks."
 ---
 
 # Test PC Worker Skill
@@ -235,13 +227,6 @@ dev 측 판독 정확도를 높이기 위해, 작업 중 화면 상태를 예측
 
 각 단계는 `[System.Diagnostics.Stopwatch]::StartNew()`로 측정한다.
 
-**메트릭 기록 검증 (2026-04-14 회고 반영):**
-4/6 이후 메트릭 미기록 67건 누락이 확인되었다. 매 작업 완료 후 다음을 확인:
-1. `results/metrics/metrics_{date}.jsonl` 파일이 존재하는지 확인
-2. 마지막 라인의 `id`가 현재 request id와 일치하는지 확인
-3. 불일치 시 → 수동으로 메트릭 라인 추가 (duration_seconds는 추정값 사용 가능)
-PowerShell Stopwatch가 초기화되지 않은 경우가 주 원인이므로, Step 2 시작 시 Stopwatch 생성을 확인한다.
-
 → See `references/metrics-collection.md` for PowerShell 코드, 수집 상세, 분석 연동.
 → See `references/phase-definitions.md` for command별 측정 단계 정의.
 
@@ -297,29 +282,6 @@ APF 차단/경고 테스트에 사용하는 민감 키워드: **`한글날`**
 | 차단이 발생하지 않음 | Etap 설정 미적용 | 정확히 기록, dev가 서버 설정 확인 |
 
 → See `references/error-patterns.md` for 에러 패턴별 상세 원인 및 대응 방법.
-
----
-
-## Page-Load 사전 검증 (check-block/check-warning 실행 전 필수)
-
-**키워드 테스트 전에 서비스 페이지가 정상 로드되는지 반드시 먼저 확인한다.**
-
-```
-check-block 또는 check-warning 실행 전:
-  1. [필수] 서비스 URL에 키워드 없이 접속 → 페이지 정상 로드 확인
-     - 스크린샷 촬영하여 결과에 포함
-     - 정상 로드 실패 시: result에 "PAGE_LOAD_BLOCKED" 기록, 키워드 테스트 중단
-  2. [이후] 키워드 포함 프롬프트로 차단/경고 테스트 진행
-```
-
-**PAGE_LOAD_BLOCKED 발생 시:**
-- result 파일에 `"verdict": "PAGE_LOAD_BLOCKED"` 기록
-- 스크린샷 첨부 (정상 페이지가 아닌 에러/차단 페이지)
-- 키워드 테스트를 진행하지 않는다 (근본 원인 해결이 먼저)
-
-> **근거:** APF는 프롬프트 기반 필터로, 키워드 감지 후 API 응답 레벨에서 동작한다.
-> 페이지 접속 자체의 차단은 APF의 범위가 아니며, 발생하면 빌드 결함이다.
-> 2026-04-10 deepseek/gemini에서 page-load 즉시 차단이 발생한 사례 있음.
 
 ---
 

@@ -1,17 +1,6 @@
 ---
 name: genai-apf-pipeline
-description: >
-  Master orchestrator for GenAI APF (ai_prompt_filter) pipeline — full lifecycle
-  from HAR capture through block verification to warning implementation.
-  7-phase workflow: capture → analysis → block verify → frontend inspect →
-  warning design → warning impl → release.
-  Use for any APF service work: adding services, HAR capture/analysis,
-  checking status, advancing phases, debugging block/warning issues,
-  build/deploy, or reviewing cross-service progress.
-  Trigger on: "APF", "서비스 추가", "HAR", "capture", "차단", "block",
-  "경고", "warning", "pipeline", "phase", "전체 현황", "다음 phase",
-  "SQL", "C++", "registration".
-  Do NOT use for hands-on warning code debugging — that belongs to apf-warning-impl.
+description: "Master orchestrator for GenAI APF (ai_prompt_filter) pipeline — full lifecycle from HAR capture through block verification to warning implementation. 7-phase workflow: capture → analysis → block verify → frontend inspect → warning design → warning impl → release. Use for any APF service work: adding services, HAR capture/analysis, checking status, advancing phases, debugging block/warning issues, build/deploy, or reviewing cross-service progress. Trigger on: \"APF\", \"서비스 추가\", \"HAR\", \"capture\", \"차단\", \"block\", \"경고\", \"warning\", \"pipeline\", \"phase\", \"전체 현황\", \"다음 phase\", \"SQL\", \"C++\", \"registration\". Do NOT use for hands-on warning code debugging — that belongs to apf-warning-impl."
 ---
 
 # GenAI APF Pipeline — Master Orchestrator

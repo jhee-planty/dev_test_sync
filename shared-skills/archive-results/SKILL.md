@@ -1,16 +1,6 @@
 ---
 name: archive-results
-description: >
-  테스트 결과를 자동 분류(성공/실패)하고, 실패 케이스에서 lessons를 추출하며,
-  성공 케이스를 압축 보관하는 아카이브 스킬.
-  매 실행마다 메트릭을 누적하여 판정 품질을 추적하고,
-  lessons를 warning pipeline 스킬에 환류한다.
-  Use this skill whenever: "결과 정리", "아카이브", "archive", "테스트 정리",
-  "lessons 추출", "실패 분석 정리", "결과 압축", "메트릭 확인",
-  "archive results", "결과물 정리해줘", or any request to classify and
-  organize test results from dev_test_sync.
-  Do NOT use for: 실시간 테스트 실행(test-pc-worker), 워크플로우 회고 분석
-  (workflow-retrospective), 스킬 품질 리뷰(skill-review-deploy).
+description: "테스트 결과를 자동 분류(성공/실패)하고, 실패 케이스에서 lessons를 추출하며, 성공 케이스를 압축 보관하는 아카이브 스킬. 매 실행마다 메트릭을 누적하여 판정 품질을 추적하고, lessons를 warning pipeline 스킬에 환류한다. Use this skill whenever: \"결과 정리\", \"아카이브\", \"archive\", \"테스트 정리\", \"lessons 추출\", \"실패 분석 정리\", \"결과 압축\", \"메트릭 확인\", \"archive results\", \"결과물 정리해줘\", or any request to classify and organize test results from dev_test_sync. Do NOT use for: 실시간 테스트 실행(test-pc-worker), 워크플로우 회고 분석 (workflow-retrospective), 스킬 품질 리뷰(skill-review-deploy)."
 ---
 
 # Archive Results Skill

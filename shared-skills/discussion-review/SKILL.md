@@ -1,21 +1,6 @@
 ---
 name: discussion-review
-description: >
-  구조화된 다자간 토론을 통해 문제를 다각도로 분석하고 합의된 결론을 도출하는 범용 토론 프레임워크.
-  기술 설계, 프로세스 개선, 리스크 평가, 전략 결정, 스킬 점검 등
-  모든 문제 도메인에 적용 가능하다.
-  토론 전문가(DF)가 구조화된 진행과 품질 점검을 수행하고, 외부 컨설턴트(EC)가 비판적 질문을 던지며,
-  도메인 전문가들이 역할별 고유 관점으로 충분한 의견 교환을 거쳐 결론을 산출한다.
-  토론 본문은 영문으로 진행하여 토큰 효율과 추론 품질을 극대화한다.
-  Use this skill whenever: "토론 진행해줘", "토론으로 점검", "다각도로 검토",
-  "discussion review", "충분히 논의해줘", "이것에 대해 토론해줘",
-  "structured discussion", "비판적으로 검토해줘",
-  or any request for multi-perspective deliberation on any topic.
-  Also trigger on: "성급하게 결론 내리지 말고", "충분한 토론 후 결론",
-  "모든 관점에서 검토", "스킬 토론", "스킬 리뷰 토론".
-  Do NOT trigger for: simple skill creation (skill-creator), automated
-  quality checks without discussion (skill-review-deploy), or runtime
-  skill execution.
+description: "구조화된 다자간 토론을 통해 문제를 다각도로 분석하고 합의된 결론을 도출하는 범용 토론 프레임워크. 기술 설계, 프로세스 개선, 리스크 평가, 전략 결정, 스킬 점검 등 모든 문제 도메인에 적용 가능하다. 토론 전문가(DF)가 구조화된 진행과 품질 점검을 수행하고, 외부 컨설턴트(EC)가 비판적 질문을 던지며, 도메인 전문가들이 역할별 고유 관점으로 충분한 의견 교환을 거쳐 결론을 산출한다. 토론 본문은 영문으로 진행하여 토큰 효율과 추론 품질을 극대화한다. Use this skill whenever: \"토론 진행해줘\", \"토론으로 점검\", \"다각도로 검토\", \"discussion review\", \"충분히 논의해줘\", \"이것에 대해 토론해줘\", \"structured discussion\", \"비판적으로 검토해줘\", or any request for multi-perspective deliberation on any topic. Also trigger on: \"성급하게 결론 내리지 말고\", \"충분한 토론 후 결론\", \"모든 관점에서 검토\", \"스킬 토론\", \"스킬 리뷰 토론\". Do NOT trigger for: simple skill creation (skill-creator), automated quality checks without discussion (skill-review-deploy), or runtime skill execution."
 ---
 
 # Structured Discussion Review

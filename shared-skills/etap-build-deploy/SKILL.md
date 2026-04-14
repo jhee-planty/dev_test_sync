@@ -1,12 +1,9 @@
 ---
 name: etap-build-deploy
-description: >
-  EtapV3 build and test server deployment skill. Syncs locally modified source to the compile server, builds, and deploys to the test server. Used for all EtapV3 module changes, not just APF. Make sure to use this skill whenever the user mentions building, deploying, compiling, or pushing code to the test server. Even short requests like "build it", "deploy", "ninja", "scp to server", or "send to test" should trigger this skill. It contains the server addresses, path mappings, scp commands, build verification, and the incremental rebuild workflow for fixing failed services after testing.
+description: "EtapV3 build and test server deployment skill. Syncs locally modified source to the compile server, builds, and deploys to the test server. Used for all EtapV3 module changes, not just APF. Make sure to use this skill whenever the user mentions building, deploying, compiling, or pushing code to the test server. Even short requests like \"build it\", \"deploy\", \"ninja\", \"scp to server\", or \"send to test\" should trigger this skill. It contains the server addresses, path mappings, scp commands, build verification, and the incremental rebuild workflow for fixing failed services after testing."
 ---
 
 # EtapV3 Build & Deploy Skill
-
-> ⚠️ **내부 테스트 환경 전용** — 서버 주소·포트·계정 정보는 `references/server-config.md` 참조. 외부 공개 금지.
 
 ## Purpose
 
@@ -37,13 +34,6 @@ User can also execute directly from terminal.
 **터미널 누적 방지:** 작업이 반복되면서 열린 터미널이 계속 늘어나는 문제가 있다.
 새 터미널을 열기 전에 기존 터미널이 유휴 상태인지 확인하고, 유휴 상태면 재사용한다.
 불가피하게 새 터미널을 열었으면 작업 완료 후 정리한다.
-
----
-
-## Classifier-Safe File Handling
-
-> 크래시 재현/퍼징/스트레스 테스트 스크립트는 Read 도구로 읽지 않는다. SSH로 원격 실행하고 결과만 수집.
-> → See `../guidelines.md` → Section 10
 
 ---
 
@@ -440,7 +430,36 @@ Extract filename and line number from build error messages to locate the source 
 
 ### System Symlink Recovery (심볼릭 링크 복구 런북)
 
-→ See `references/symlink-recovery.md` for 전체 복구 절차 (2026-04-06 실제 사고 검증, 원인 분석 포함).
+`tar xzf` 배포로 `/bin`, `/lib` 심볼릭 링크가 일반 디렉토리로 교체된 경우의 복구 절차.
+**2026-04-06 실제 사고에서 검증된 절차.**
+
+```bash
+# 대상 서버에 SSH 접속 후 실행 (test 서버 또는 compile 서버)
+
+# 1. 파괴된 디렉토리 백업
+sudo mv /bin /bin.bak.$(date +%Y%m%d)
+sudo mv /lib /lib.bak.$(date +%Y%m%d)
+
+# 2. 심볼릭 링크 재생성
+sudo ln -s usr/bin /bin
+sudo ln -s usr/lib /lib
+
+# 3. 시스템 명령 동작 확인
+ps aux | head -3
+basename /usr/local/bin/etap
+ls /usr/local/bin/etap
+
+# 4. 백업 디렉토리 확인 및 정리
+# /bin.bak에는 etap, etapcomm, etaprpc 등 etap 바이너리만 있음
+# 이들은 /usr/local/bin/에 이미 설치되어 있으므로 확인 후 삭제 가능
+ls /bin.bak.*/
+ls /lib.bak.*/
+# sudo rm -rf /bin.bak.* /lib.bak.*  # 확인 후 실행
+```
+
+**원인:** etap 패키지의 tarball 내부 경로가 `bin/etap` (상대경로)으로 되어 있어
+`tar xzf -C /usr/local` 시 `/bin` 심볼릭 링크(→ usr/bin)가 일반 디렉토리로 교체됨.
+**근본 수정:** CMakeLists.txt의 install 경로를 `usr/local/bin/`으로 수정 필요 (별도 작업).
 
 ---
 
