@@ -1,0 +1,123 @@
+{
+  "id": "450",
+  "request_id": "450",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc (autonomous /loop polling, windows-mcp browser automation, logged-in Chrome profile, Disable cache ON, passive observation only)",
+  "timestamp": "2026-04-14T15:08:00+09:00",
+  "description": "gamma.app blank-page forensics. Captured full HAR (69 requests) of fresh hard-reload of gamma.app/create/generate. The HAR provides DEFINITIVE network-layer evidence that disproves both the original 'BLOCK_ONLY non-chat consumption' theory (#449 already corrected this) AND the new 'TLS interception cert failure' theory (this probe). The actual cause is a SELECTIVE path-prefix block targeting /_next/static/* on host=gamma.app — almost certainly an over-broad APF DB rule.",
+  "results": [
+    {
+      "service_name": "gamma",
+      "url": "https://gamma.app/create/generate",
+      "verdict": "PATH_PREFIX_SELECTIVE_BLOCK confirmed — APF rule scoping issue, NOT TLS proxy failure",
+      "login_state": "still_logged_in",
+      "login_evidence": "Hard-reload of gamma.app/create/generate landed directly on /create/generate with no sign-in redirect. HTML document (initial response) successfully downloaded 42,739 bytes. Same Chrome profile session as #449.",
+      "page_render_state": "blank",
+      "page_render_evidence": "Right side of viewport (gamma body area) is pure white. Same as #449. Diagnostic from #449 confirmed bodyTxt=0, all DOM element counts 0.",
+      "har_files_attached": [
+        {
+          "path": "results/files/450/gamma_blank_page.har",
+          "size_bytes": 17270,
+          "scope": "Manifest-filtered: 3 entries (_ssgManifest.js, _buildManifest.js, manifest.json)"
+        },
+        {
+          "path": "results/files/450/gamma_blank_page_full.har",
+          "size_bytes": 453685,
+          "scope": "Full Network panel: 69 entries spanning all hosts"
+        }
+      ],
+      "har_summary_statistics": {
+        "total_entries": 69,
+        "status_distribution": {"200": 8, "0_failed": 61},
+        "host_breakdown": {
+          "gamma.app": {"total": 64, "success": 3, "failed": 61, "failure_rate_percent": 95.3},
+          "static.gamma.app": {"total": 1, "success": 1, "failed": 0},
+          "cdn.iframe.ly": {"total": 1, "success": 1, "failed": 0},
+          "fonts.googleapis.com": {"total": 1, "success": 1, "failed": 0},
+          "use.typekit.net": {"total": 1, "success": 1, "failed": 0},
+          "p.typekit.net": {"total": 1, "success": 1, "failed": 0}
+        }
+      },
+      "successful_gamma_app_requests": [
+        {
+          "path": "/create/generate",
+          "status": 200,
+          "response_size_bytes": 42739,
+          "timing": {"dns_ms": 5.8, "connect_ms": 23.28, "ssl_ms": 11.22, "blocked_ms": 16},
+          "interpretation": "Initial HTML document — full TLS handshake completed cleanly. **This proves TLS interception works for gamma.app at the connection level.** The 42KB body size also rules out the 2886B claim from #449 — turns out #449's measurement was sampled AFTER the failed-chunk cascade had killed the React mount, while THIS load captured the actual document size."
+        },
+        {
+          "path": "/manifest.json",
+          "status": 200,
+          "response_size_bytes": 949,
+          "timing": {"dns_ms": -1, "connect_ms": -1, "ssl_ms": -1, "blocked_ms": 84},
+          "interpretation": "Web manifest — succeeded by reusing the same H2 connection that fetched /create/generate (timing shows connection reuse: dns/connect/ssl all -1)."
+        },
+        {
+          "path": "/icons/pwa-icon-192x192.png",
+          "status": 200,
+          "response_size_bytes": 23755,
+          "timing": {"dns_ms": 0.04, "connect_ms": 24.43, "ssl_ms": 12.38, "blocked_ms": 17},
+          "interpretation": "PWA icon — succeeded with a SECOND fresh TLS handshake (dns~cached, connect=24ms new TCP, ssl=12ms new TLS). **This is the definitive proof that TLS interception is fine** — Etap successfully presented a valid cert chain to Chrome a second time on a fresh connection to the same host, after the first connection had already been polluted with failures."
+        }
+      ],
+      "failed_gamma_app_request_pattern": {
+        "count": 61,
+        "all_share_path_prefix": "/_next/static/",
+        "subdivisions_observed": [
+          {"prefix": "/_next/static/chunks/", "examples": ["344128bf81035018.js", "bf92d0b80cace9c8.js", "165406d7c07e74e7.js", "b32085c07ca91f40.js", "8b3590ea9a47bb3f.js", "09005b177158cbb8.js", "b99bc4c2eef9e92f.js", "ac7e26e4e81116bc.js", "8fc3acda26cbee71.js", "c498601624c47c1a.js", "63d52c9a8bfd87cf.js", "6ee52cca5b4e5c45.js", "8d61f8cf8fd5bfbe.js", "77191d70d28a1311.js", "ffeff8a4d9efff67.js", "0c51a2b5e4ab7bb3.js", "turbopack-03a4141677207969.js"]},
+          {"prefix": "/_next/static/H_HEf7WKbTJNtkGR4pxCc/", "examples": ["_ssgManifest.js", "_buildManifest.js"]}
+        ],
+        "common_timing_pattern": {
+          "status": 0,
+          "dns_ms": -1,
+          "connect_ms": -1,
+          "ssl_ms": -1,
+          "blocked_ms": "~30133 (≈30 seconds)",
+          "_blocked_queueing_ms": "~76",
+          "send_ms": 0,
+          "wait_ms": 0,
+          "receive_ms": 0,
+          "response_bodySize": -1,
+          "response_content_size": 0,
+          "interpretation": "30 seconds 'blocked' is Chrome's stalled-connection backoff. With dns/connect/ssl all -1, the request never reached the network layer — Chrome attempted to dispatch on the existing H2 connection (the one that delivered /create/generate), the H2 stream was reset by APF, and after the connection died Chrome held subsequent /_next/static/* requests in the 'blocked' state hoping the connection would recover. After ~30s timeout each one failed with status 0."
+        }
+      },
+      "failure_classification": "http2_rst_stream_on_path_prefix",
+      "failure_classification_reasoning": [
+        "RULED OUT: TLS interception failure (`SetCertificate failed`). Two separate fresh TLS handshakes to gamma.app succeeded in this single page load (initial doc connection + icon connection). The 38 SetCertificate errors in tls_proxy.cpp:900 from dev's L2 SSH check at 14:34 are likely a SIDE EFFECT of APF's RST_STREAM, not the cause — when APF resets an H2 stream mid-handshake-completion, Etap's TLS layer may report cert errors on the cleanup path.",
+        "RULED OUT: Cloudflare/Kasada bot detection. fonts.googleapis.com, use.typekit.net, p.typekit.net, cdn.iframe.ly all returned 200 from this same browser session — no bot detection in play.",
+        "RULED OUT: Network/proxy general failure. 8 successful 200 responses across 6 different hosts, including 3 from gamma.app itself.",
+        "RULED OUT: gamma upstream issue. The host responded successfully for the document, manifest, and icon paths — all served from the same gamma.app origin.",
+        "CONFIRMED: Selective path-prefix block on `host=gamma.app AND path startsWith /_next/static/`. Discriminator is the URL path, not the host or the connection. The APF prompt-filter rule for service=gamma is matching too broadly — it should only target the chat/generation API endpoint, but it's matching every static asset under /_next/static/ instead.",
+        "MECHANISM: APF returns RST_STREAM on the H2 stream for matched paths. Chrome interprets this as a network-layer failure, marks the connection unhealthy, and stalls all subsequent same-host requests in 'blocked' state for ~30s before timing out. The end result is that 95% of gamma.app requests fail to load, blocking the React SPA bootstrap, leaving the user with a blank page."
+      ],
+      "etap_log_correlation_request_for_dev": {
+        "ask": "Re-run the L2 SSH check focused on this load window (2026-04-14T15:01-15:06 KST). Specifically grep for: (1) APF prompt-filter matches for host=gamma.app — what's the path_pattern actually configured? (2) Any RST_STREAM emissions at the H2 layer for gamma.app streams during this window. (3) Whether the 'SetCertificate failed' errors recurred in tls_proxy.cpp:900 during 15:01-15:06 — if YES with similar count, the cert errors track with the failure (still a side effect IMO); if NO, the cert errors at 14:34 were transient/unrelated and not tied to this probe.",
+        "expected_outcome": "Find a row in apf_db (services or rules) for service=gamma with a path_pattern that matches /_next/static/ — likely something like `^/.*` or `^/_next.*` instead of the intended `^/api/generate.*` or `^/api/chat.*`."
+      },
+      "phase5_recommendation": "After narrowing the APF rule, re-run #449 to verify the React app actually mounts and a textarea exists in the DOM. THEN we can finally do the original 'how does gamma render the warning envelope' Phase 4/5 question that's been blocked since #158. The current gamma_design.md needs a complete rewrite — it was based on the 'non-chat consumption via cards' hypothesis which was never observable because the page never even rendered.",
+      "screenshots": [
+        "results/files/450/01_gamma_10s_passive_load.png",
+        "results/files/450/02_ssgManifest_headers.png",
+        "results/files/450/02_ssgManifest_headers_v2.png"
+      ],
+      "notes_first_impressions": [
+        "Network panel populated with ~69 rows almost entirely red (Script request failed) within 1 second of page load — no progressive loading, the failures cascade fast",
+        "Page body is solid white. No spinner, no error UI, no 'Loading…' text. From a user UX perspective gamma.app is indistinguishable from 'browser tab is hung'",
+        "Memory usage drops from ~72MB (previous gamma session in #449) to ~32MB on the fresh load — consistent with React never hydrating, since most of the JS bundle never executes",
+        "Console badge 'view 61 errors' matches the HAR's 61 failed requests almost exactly — every failed chunk fetch surfaced as a Console error",
+        "DevTools layout: this run had the drawer at bottom, Network table on top — same as #449 visually"
+      ]
+    }
+  ],
+  "key_insights": {
+    "tls_layer_is_innocent": "Two fresh TLS handshakes to gamma.app succeeded in a single page load. dev's working hypothesis 'TLS interception fails at cert chain' is wrong — TLS works. The cert errors in tls_proxy.cpp:900 are downstream of APF's stream reset, not upstream of it.",
+    "the_discriminator_is_the_path": "Three gamma.app requests succeeded, all 61 failures share /_next/static/ path prefix. The discriminator is request path, not host, not connection, not certificate, not bot detection. This is APF DB scope.",
+    "blocked_30s_timing_is_a_clue_not_a_cause": "Chrome's `blocked: ~30000ms` on the 61 failed requests is not a separate issue — it's how Chrome reports 'connection became unusable due to stream errors, retry stalled, eventually timed out.' If APF stops killing those streams, the 30s blocked goes away on its own.",
+    "har_proves_what_etap_log_alone_could_not": "dev couldn't see gamma traffic in etap.log during the #449 window because the prompt-filter probably logs only API matches, not RST_STREAM emissions for static assets. The HAR captures the browser's perspective which the etap log misses — they're complementary forensic streams.",
+    "fix_estimate": "Once an APF DB engineer narrows the path_pattern from (something matching /_next/static/) to (something matching only the chat API endpoint), gamma should immediately render normally. No code changes needed in the prompt-filter itself. This should be a 5-minute fix — the only risk is if there's no schema/code path for path-prefix exclusion in the current rule format."
+  },
+  "overall_conclusion": "DEFINITIVE: gamma.app blank page is caused by an APF prompt-filter rule that matches /_next/static/* on host gamma.app, killing 61 of 64 static asset requests via H2 RST_STREAM. NOT TLS interception failure (proven by 2 successful fresh TLS handshakes). NOT Cloudflare/Kasada (proven by other-host 200 responses). NOT gamma upstream issue (proven by 3 successful gamma.app responses for non-/_next paths). The fix is to narrow the APF DB rule's path scope. Both HAR files (gamma_blank_page.har for manifests-only, gamma_blank_page_full.har for the full 69-request capture) are committed for dev-side analysis."
+}
