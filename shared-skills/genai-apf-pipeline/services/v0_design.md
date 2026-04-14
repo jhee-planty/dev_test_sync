@@ -1,8 +1,13 @@
-# v0 Phase 5 Design — Option E (Block Page Substitution)
+# v0 Phase 5 Design — Option E BLOCKED → Option F primary (303 redirect)
 
 > Phase 5 deliverable. Promoted from `local_archive/v0_design_skeleton_2026-04-14.md`
 > on 2026-04-14. Based on #447 frontend-inspect result (anonymous-only profile) and
 > direct code inspection of `ai_prompt_filter.cpp` + `ai_prompt_filter_db_config_loader.cpp`.
+>
+> **2026-04-14 14:30 update** — Option E BLOCKED. See "etap log verdict" section
+> below. Path forward pivoted to Option F (303 redirect on `/chat/api/send`) as a
+> cheap Phase 6 experiment; if fetch-follow semantics make Option F silent, v0
+> transitions to NEEDS_USER_SESSION for Option A (authenticated SSE envelope).
 
 ## Context
 
@@ -16,20 +21,55 @@
 | Rebrand | v0.dev → v0.app (current APF rule may be outdated) |
 | Size budget | ≤500B body (h2_end_stream=2 empirical ceiling) |
 
-## Final option verdicts (post-#447)
+## Final option verdicts (post-#447, post-etap-log-2026-04-14-14:30)
 
 | Option | Verdict | Notes |
 |--------|---------|-------|
-| a. SSE/stream injection | UNKNOWN (auth rerun needed) | Frontend ignores JSON bodies on `/chat/api/send` (proven by #438). Needs real SSE envelope. |
+| a. SSE/stream injection | **NEEDS_USER_SESSION** | Frontend ignores JSON bodies on `/chat/api/send` (proven by #438). Needs real SSE envelope — authenticated HAR only. |
 | b. HTTP body HTML on `/chat/api/send` | BLOCKED | `fetch()` parse error, not rendered. |
 | c. JS error UI activation | BLOCKED | v0 has **no** in-page error UI. All errors → Sentry → invisible. |
 | d. Direct DOM injection | BLOCKED | APF is network-layer. |
-| **e. Block page substitution** | **PRIMARY** | Intercept top-level document request for `/chat/<id>` → return `text/html` → browser renders as top-level page. |
-| f. 303 redirect | ALT | Fallback if `/chat/<id>` is CSR-only. |
+| e. Block page substitution | **BLOCKED (etap log verified 14:30)** | `/chat/<id>` is CSR pushState. Zero Page load request for `/chat/<id>` in etap log — SPA router handles navigation without top-level fetch. Nothing for APF to intercept. |
+| **f. 303 redirect on `/chat/api/send`** | **PRIMARY (cheap Phase 6 experiment)** | Uncertain: fetch() auto-follows 303 and delivers redirected body as Response. Worth trying — cheap DB migration, might trigger v0's error path or navigate via manual handler. |
 
-**Path order**: **e → f → a (contingent)**
+**Path order (revised)**: **f (Phase 6 experiment) → a (NEEDS_USER_SESSION contingency)**
 
-## Recovery Path E — Mechanism
+## etap log verdict (2026-04-14 14:30 KST)
+
+While #448 (anonymous DevTools probe) was in flight on the test PC, the APF dev
+side verified the SSR-vs-CSR question directly from `/var/log/etap.log` via SSH.
+`ai_prompt_filter.cpp:722 on_http2_request` logs every `Accept: text/html`
+top-level request as `[APF] Page load request`. Filtering for v0 across the
+entire available log history returned **only three distinct path shapes**:
+
+```
+2026-04-14 13:36:17.683  v0.dev/
+2026-04-14 13:36:17.915  v0.dev/
+2026-04-14 13:36:18.103  v0.app/
+2026-04-14 13:37:40.189  v0.app/149e9513-.../fp?x-kpsdk-v=j-1.2.308     ← Kasada bot probe iframe
+2026-04-14 13:37:46.065  v0.app/149e9513-.../fp?x-kpsdk-v=j-1.2.308     ← Kasada bot probe iframe
+2026-04-14 14:19:03.235  v0.dev/                                         ← #448 test PC session start
+2026-04-14 14:19:03.365  v0.app/                                         ← #448 (after v0.dev redirect)
+```
+
+During the same #448 session, XHR telemetry on `/chat/api/send-site` and
+`/_vercel/insights/view` logged `path="/chat/hJ35MSWtyWu"` at 14:20:04, proving
+that the SPA **did** navigate the URL to `/chat/hJ35MSWtyWu`. But **no matching
+`Page load request` for `/chat/hJ35MSWtyWu` (or any `/chat/<id>`) ever appears
+in the log** — neither during this session nor in the entire v0 log history.
+
+**Definitive verdict**:
+- `is_document_request: false`
+- Next.js router handles `/chat/<id>` via CSR `router.push()` / pushState.
+- The only top-level document requests v0 ever issues are the landing root `/`
+  and Kasada bot-challenge iframes (`/fp?x-kpsdk-v=...`).
+- **Option E has nothing to intercept and cannot work.**
+
+The #448 result, when it arrives, should confirm `is_document_request=false`.
+Its handling on arrival is post-hoc verification only — the design is already
+pivoted based on this code-ground-truth.
+
+## Recovery Path E — Mechanism (BLOCKED)
 
 v0's anonymous-submit flow reveals the exploit surface: on submit, the browser issues
 a top-level document request that navigates to `/chat/<newChatId>`. Next.js handles
@@ -68,7 +108,72 @@ bypassing the SPA entirely. No need to understand v0's internal SSE envelope.
    `envelope_template=NULL, response_type=''`. The `UPDATE` below sets the new
    columns in place. If pre-check returns 0 rows, use the INSERT fallback.
 
-### Migration SQL
+### Option E Migration SQL (archived — do not run)
+
+Original Option E migration was designed to intercept `/chat/<id>` top-level
+document requests with a `text/html` envelope. Archived because etap log verdict
+proved `/chat/<id>` is never a top-level document request. SQL preserved below
+for reference only.
+
+<details>
+<summary>Archived Option E SQL (click to expand)</summary>
+
+```sql
+-- DO NOT RUN — Option E is blocked per etap log verdict 2026-04-14 14:30
+BEGIN;
+UPDATE etap.ai_prompt_services
+   SET domain_patterns = 'v0.dev,v0.app', path_patterns = '/chat',
+       response_type = 'v0_html_block_page',
+       h2_mode = 1, h2_end_stream = 2, h2_goaway = 0, h2_hold_request = 0
+ WHERE service_name = 'v0';
+UPDATE etap.ai_prompt_response_templates
+   SET response_type = 'v0_html_block_page',
+       envelope_template = CONCAT(
+         'HTTP/1.1 200 OK\r\n',
+         'Content-Type: text/html; charset=utf-8\r\n',
+         'Cache-Control: no-store\r\n',
+         'Content-Length: 0\r\n',
+         '\r\n',
+         '<!doctype html><title>차단</title><meta charset=utf-8>',
+         '<body><h2>⚠ 보안 정책 안내</h2><p>{{MESSAGE}}</p></body>'
+       )
+ WHERE service_name = 'v0';
+COMMIT;
+```
+
+</details>
+
+## Recovery Path F — 303 redirect on `/chat/api/send` (Phase 6 PRIMARY experiment)
+
+### Mechanism
+
+Intercept v0's prompt submission endpoint `/chat/api/send` at the APF layer and
+return HTTP 303 with a `Location:` header pointing to an Etap-served warning URL.
+
+```
+POST /chat/api/send   (fetch, expected: SSE stream)
+      │
+      └──[APF intercepts]──> HTTP 303 See Other
+                              Location: https://etap.officeguard.local/apf-blocked?s=v0
+                              Content-Length: 0
+```
+
+### Open questions / uncertainty
+
+Option F's efficacy depends on how v0's JS handles the redirected response:
+
+1. **Default fetch behavior** — `redirect: 'follow'` (default): browser auto-issues
+   `GET Location`, delivers the HTML response body to the JS code. v0 expects an
+   SSE stream → parse failure → Sentry → invisible. **This path fails silently.**
+2. **If v0 uses `redirect: 'manual'`** — JS receives an opaque 0-status response
+   and may choose to navigate via `window.location.href`. Unknown without HAR.
+3. **If v0's error handler checks `response.redirected` or `response.url`** —
+   it might display a toast. Unknown without HAR.
+
+Only way to resolve: **run the experiment**. Cheap (pure DB migration) and
+reversible (restore original envelope via revision bump).
+
+### Option F Migration SQL
 
 ```sql
 BEGIN;
@@ -83,31 +188,26 @@ SELECT service_name, http_response, response_type, envelope_template
   FROM etap.ai_prompt_response_templates
  WHERE service_name = 'v0';
 
--- 1. Service attrs — cover v0.app rebrand + switch to HTML block page
+-- 1. Service attrs — cover v0.app rebrand + target /chat/api/send
 UPDATE etap.ai_prompt_services
    SET domain_patterns = 'v0.dev,v0.app',
-       path_patterns   = '/chat',
-       response_type   = 'v0_html_block_page',
-       h2_mode         = 1,
-       h2_end_stream   = 2,
+       path_patterns   = '/chat/api/send',   -- exact API endpoint, not /chat prefix
+       response_type   = 'v0_303_redirect',
+       h2_mode         = 1,                  -- cascade shutdown after redirect
+       h2_end_stream   = 2,                  -- 500B-class ceiling irrelevant (body empty)
        h2_goaway       = 0,
        h2_hold_request = 0
  WHERE service_name = 'v0';
 
--- 2. Envelope template — Content-Type header decides
+-- 2. Envelope — 303 See Other with warning URL
 UPDATE etap.ai_prompt_response_templates
-   SET response_type     = 'v0_html_block_page',
+   SET response_type     = 'v0_303_redirect',
        envelope_template = CONCAT(
-         'HTTP/1.1 200 OK\r\n',
-         'Content-Type: text/html; charset=utf-8\r\n',
+         'HTTP/1.1 303 See Other\r\n',
+         'Location: https://etap.officeguard.local/apf-blocked?s=v0\r\n',
          'Cache-Control: no-store\r\n',
          'Content-Length: 0\r\n',
-         '\r\n',
-         '<!doctype html><title>차단</title>',
-         '<meta charset=utf-8>',
-         '<body style="font:1rem system-ui;max-width:40em;margin:3em auto;padding:1em">',
-         '<h2 style="color:#b00">⚠ 보안 정책 안내</h2>',
-         '<p>{{MESSAGE}}</p></body>'
+         '\r\n'
        )
  WHERE service_name = 'v0';
 
@@ -122,72 +222,55 @@ COMMIT;
 
 ### INSERT fallback (only if pre-check SELECT returns 0 rows)
 
-If step 0 SELECT on `ai_prompt_response_templates` returns no row for v0, the
-UPDATE in step 2 silently does nothing. In that case, swap step 2 for an INSERT
-(mirror of chatgpt_sse pattern in `apf_db_driven_migration.sql:91-111`):
+Same defensive pattern as before — if no existing envelope row for v0, use
+`INSERT ... ON DUPLICATE KEY UPDATE` mirroring `apf_db_driven_migration.sql:91-111`.
 
-```sql
-INSERT INTO etap.ai_prompt_response_templates
-  (service_name, http_response, response_type, envelope_template, priority, enabled)
-VALUES (
-  'v0',
-  '',  -- plain-template fallback unused when envelope_template is set
-  'v0_html_block_page',
-  CONCAT(
-    'HTTP/1.1 200 OK\r\n',
-    'Content-Type: text/html; charset=utf-8\r\n',
-    'Cache-Control: no-store\r\n',
-    'Content-Length: 0\r\n',
-    '\r\n',
-    '<!doctype html><title>차단</title>',
-    '<meta charset=utf-8>',
-    '<body style="font:1rem system-ui;max-width:40em;margin:3em auto;padding:1em">',
-    '<h2 style="color:#b00">⚠ 보안 정책 안내</h2>',
-    '<p>{{MESSAGE}}</p></body>'
-  ),
-  90,
-  1
-)
-ON DUPLICATE KEY UPDATE
-  response_type = VALUES(response_type),
-  envelope_template = VALUES(envelope_template);
-```
+### Required supporting work (separate from APF)
+
+Option F requires **Etap to serve** `https://etap.officeguard.local/apf-blocked`
+outside the APF C++ path. This is a separate coordination item:
+- URL: `/apf-blocked?s=<service_id>`
+- Served by: Etap web tier (not APF)
+- Content: minimal HTML warning page, reads `s` query param to customize text
+- Size: unconstrained (no 500B ceiling since it's a normal Etap response)
+
+If Etap-served `/apf-blocked` does not yet exist, alternative targets:
+- Existing Etap warning page URL (if any) — preferred
+- A data URL in the `Location:` header → NOT SAFE: major browsers block `data:`
+  URLs from top-level navigation since 2017 for phishing prevention.
+
+### Phase 6 test criteria
+
+1. Pre-migration: capture state via pre-check SELECT
+2. Apply UPDATE + revision_cnt bump
+3. Verify reload: `grep 'Loaded.*services' /var/log/etap.log | tail -5`
+4. Test PC verification: load `https://v0.app/`, submit a sensitive prompt
+5. Observe:
+   - **Success**: browser navigates to `/apf-blocked` and shows warning page → DONE
+   - **Partial**: fetch() delivers HTML body to JS, v0 shows an inline error → investigate v0 error handler
+   - **Failure**: "Thinking..." spinner forever, no visible change → Option F dead
+     → transition v0 to **NEEDS_USER_SESSION** for Option A
 
 ### Size estimate
 
 Headers ~115B + trimmed inline HTML ~260B + `{{MESSAGE}}` (~60B) ≈ **435B total**.
 Under the 500B h2_end_stream=2 ceiling with ~65B margin.
 
-## Phase 6 handoff checklist
+## Phase 6 handoff checklist (Option F primary)
 
-1. Capture pre-migration state via the pre-check SELECT.
-2. Apply the DB UPDATE in transaction; verify revision_cnt bump.
-3. Observe APF reload: `ssh -p 12222 solution@218.232.120.58 "grep 'Loaded.*services' /var/log/etap.log | tail -5"`
-4. Test PC verification:
-   - Navigate to `https://v0.app/` as authenticated user.
+1. Confirm Etap `/apf-blocked` landing URL exists (or coordinate creation).
+2. Capture pre-migration state via the pre-check SELECT.
+3. Apply the Option F DB UPDATE in transaction; verify revision_cnt bump.
+4. Observe APF reload: `ssh -p 12222 solution@218.232.120.58 "grep 'Loaded.*services' /var/log/etap.log | tail -5"`
+5. Test PC verification:
+   - Navigate to `https://v0.app/` (anonymous is fine — #447 proved input works).
    - Submit a prompt containing a sensitive keyword registered for v0.
-   - Expect: HTML block page rendered as top-level document (not SPA chat).
-5. **Risk path**: if `/chat/<id>` turns out to be client-side-routed (SPA `router.push()`
-   without a real document fetch), Option E produces nothing. In that case:
-   - Fall back to Option F (303 redirect).
-   - OR request #448 authenticated HAR rerun to characterize the navigation hook.
+   - Observe whether browser navigates to `/apf-blocked` or stays on chat page.
+6. **Risk path**: if Option F produces no visible change (silent fetch-follow
+   with SSE parse error buried in Sentry), transition v0 to **NEEDS_USER_SESSION**
+   for Option A. User coordination required to capture authenticated HAR.
 
-## Recovery Path F — 303 redirect (fallback)
-
-If Option E fails the Phase 6 test, return HTTP 303 on `/chat/api/send` with
-`Location:` pointing to an Etap-served `/apf-blocked` page.
-
-```
-HTTP/1.1 303 See Other
-Location: https://etap.officeguard.local/apf-blocked?service=v0
-Content-Length: 0
-
-```
-
-**Caveats**: 302 is unsafe on POST — 303 required. Loses inline UX; user navigates away.
-Requires Etap to serve `/apf-blocked` outside the APF C++ path.
-
-## Recovery Path A — SSE injection (contingent fallback)
+## Recovery Path A — SSE injection (NEEDS_USER_SESSION contingency)
 
 Deferred. Requires a Vercel-authenticated HAR capture of a successful assistant reply
 to learn v0's real SSE/ndjson envelope. Would produce the cleanest UX (warning inside
