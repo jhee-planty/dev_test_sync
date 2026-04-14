@@ -30,9 +30,17 @@
 | c. JS error UI activation | BLOCKED | v0 has **no** in-page error UI. All errors → Sentry → invisible. |
 | d. Direct DOM injection | BLOCKED | APF is network-layer. |
 | e. Block page substitution | **BLOCKED (etap log verified 14:30)** | `/chat/<id>` is CSR pushState. Zero Page load request for `/chat/<id>` in etap log — SPA router handles navigation without top-level fetch. Nothing for APF to intercept. |
-| **f. 303 redirect on `/chat/api/send`** | **PRIMARY (cheap Phase 6 experiment)** | Uncertain: fetch() auto-follows 303 and delivers redirected body as Response. Worth trying — cheap DB migration, might trigger v0's error path or navigate via manual handler. |
+| **f. 303 redirect on `/chat/api/send`** | **Phase 6 experiment (low expected yield)** | fetch() auto-follows 303 → delivers HTML body as Response → JS can't navigate the window from fetch. Unlikely to show warning unless v0 has manual redirect handling. Still worth one cheap test. |
+| **g. 403 + meta-refresh body on `/chat/api/send`** | **Phase 6 experiment (speculative)** | Return `HTTP/1.1 403 Forbidden` with `Content-Type: text/html` body containing `<meta http-equiv="refresh" url="...">`. JS error path MAY call `location.assign()`. Depends on v0's unknown error recovery hook. |
+| **h. Block page on direct `/chat/<id>` document load (reload case)** | **Phase 6 safety net** | On page reload, browser issues a real GET document request to `/chat/<id>`. APF intercepts THAT and returns warning HTML. Does NOT help on initial block, but guarantees warning appears if user reloads. Pair with F/G as defense-in-depth. |
+| a. SSE injection (authenticated) | **NEEDS_USER_SESSION** | Cleanest UX but requires Vercel login session to reverse-engineer v0's SSE envelope. |
 
-**Path order (revised)**: **f (Phase 6 experiment) → a (NEEDS_USER_SESSION contingency)**
+**Path order (revised after #448)**: **f+h parallel → g experiment → NEEDS_USER_SESSION (Option A)**
+
+- f and h target different scenarios and don't conflict (f = initial block, h = reload).
+  Both can be migrated in one DB transaction by using different `path_patterns` wiring.
+- If f/g/h all fail in Phase 6 test, v0 transitions to NEEDS_USER_SESSION awaiting
+  authenticated HAR for Option A, or classified as PENDING_INFRA in the meantime.
 
 ## etap log verdict (2026-04-14 14:30 KST)
 
@@ -68,6 +76,24 @@ in the log** — neither during this session nor in the entire v0 log history.
 The #448 result, when it arrives, should confirm `is_document_request=false`.
 Its handling on arrival is post-hoc verification only — the design is already
 pivoted based on this code-ground-truth.
+
+**Update: #448 result arrived at 14:23 and confirmed `is_document_request: false`.**
+Chat ID observed: `hJ35MSWtyWu` (same as etap log evidence). Key additional
+insights from test PC DevTools inspection:
+- Doc filter on Network panel during submit→navigate window: essentially empty
+  (only the original v0.app landing doc from page open, already cleared).
+- The only RSC fetch during the flow is `/chats?project=draft&_rsc=l5937` —
+  this is the **sidebar chat list** (plural `/chats`), not the detail route.
+  Zero RSC fetches for `/chat/hJ35MSWtyWu?_rsc=...`.
+- v0 renders the new chat detail **entirely from already-loaded JS bundle**
+  via React state + `history.pushState()`. Classic Next.js App Router client
+  transition pattern.
+
+**Corollary from #448**: pure Option F (303 redirect) is ALSO unlikely to work
+because `/chat/api/send` is called via `fetch()`, not `<form submit>`. The
+browser will auto-follow the 303 as a GET (for fetch default redirect mode),
+deliver the redirected body to the JS code, and the page itself will NOT
+navigate. This matches the concern in the Option F uncertainty section below.
 
 ## Recovery Path E — Mechanism (BLOCKED)
 
