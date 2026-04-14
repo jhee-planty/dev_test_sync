@@ -2,7 +2,6 @@
 name: apf-warning-impl
 description: >
   Use this skill when the user is in hands-on implementation mode for an APF warning — actively writing, fixing, or testing code for a specific service. Trigger on: C++ generator function work, warning rendering problems, HTTP/2 block response behavior, is_http2 field values, test log management, false positives, or blocked=1 diagnostics. The user's goal is making a warning actually work or verifying it works, not deciding on an approach.
-
   Do NOT trigger for design documents, architecture/strategy comparisons, frontend DOM inspection, or HAR analysis — those belong to other skills.
 ---
 
