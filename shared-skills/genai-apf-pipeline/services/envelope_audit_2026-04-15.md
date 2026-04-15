@@ -598,3 +598,138 @@ Huggingface envelope has `Content-Type: text/event-stream; charset=utf-8` and `a
 - Cycle 49 code read: `ai_prompt_filter.cpp:1139-1247` (recalculate_content_length), cycle 49 also read cpp:1094-1226 (convert_to_http2_response) — the two-function audit completes the envelope → wire path.
 - Cycle 48 §11.5 item 3: the imprecise "always rewritten" claim this section corrects.
 - Build history tags: Phase3-B22 (header parse fix), B25d (HTTP/1.1 SSE chunked wrap), B28-B29 (H2 SSE strip both), B26 (de-chunk body on certain paths — see cpp:1412-1413 for a companion path).
+
+---
+
+## §13 Service detection + h2_mode ternary (cycle 51 finding)
+
+**TL;DR**: Cycle 49 and 50 described the huggingface profile as `h2_mode=1`. The live DB row has `h2_mode=2`. The distinction is at the VTS (virtual transport session) layer — H2 cascade shutdown vs H2 keep-alive — not at the `convert_to_http2_response` frame assembler (which is identical for both modes). Cycle 51 also captured the full `detect_service` priority algorithm + `domain_matcher` + `path_matcher` grammars.
+
+### 13.1 h2_mode ternary
+
+Documented at `ai_prompt_filter_db_config_loader.h:35`:
+
+```cpp
+u8  h2_mode = 1;  // 0=HTTP/1.1, 1=H2 cascade, 2=H2 keep-alive
+```
+
+Runtime use at `ai_prompt_filter.cpp:1058-1059`:
+
+```cpp
+tuple._session._ai_prompt_block_is_http2 =
+    sd->is_http2 ? sd->h2_mode : 0;
+```
+
+So `_ai_prompt_block_is_http2` is NOT a boolean — it's a ternary (0/1/2) passed to the VTS layer. The `convert_to_http2_response` function inside APF reads `stream_id`, `end_stream`, `send_goaway` flags but does NOT branch on h2_mode 1 vs 2 — those two modes produce identical HEADERS + DATA frames. The VTS layer downstream consumes the ternary to decide:
+
+- **mode=0**: HTTP/1.1 path, `convert_to_http2_response` is NOT called at all.
+- **mode=1 (cascade shutdown)**: after the block response frames leave APF, VTS tears down the connection (on_disconnected or GOAWAY). Client must reconnect for next request.
+- **mode=2 (keep-alive)**: after the block response frames leave APF, VTS keeps the H2 connection open. Client reuses it for subsequent requests (including navigation to post-block pages).
+
+### 13.2 Service h2_mode distribution from baseline + live DB
+
+From `apf_db_driven_migration.sql:39-50` (grepped cycle 51) + live DB (huggingface row captured cycle 51):
+
+| service | h2_mode | h2_end_stream | h2_goaway | h2_hold_request | Notes |
+|---------|---------|---------------|-----------|-----------------|-------|
+| chatgpt | 1 | 1 | 1 | 0 | cascade, GOAWAY |
+| claude | 1 | 1 | 1 | 0 | cascade, GOAWAY |
+| gemini | 1 | 1 | 0 | 0 | cascade, no GOAWAY |
+| gemini3 | 1 | 1 | 0 | 0 | cascade, no GOAWAY |
+| m365_copilot | 1 | 1 | 1 | 0 | cascade, GOAWAY |
+| perplexity | 2 | 0 | 0 | 1 | keep-alive, delayed END_STREAM, hold |
+| perfle | 2 | 0 | 0 | 1 | keep-alive, delayed END_STREAM, hold |
+| genspark | 2 | 1 | 0 | 1 | keep-alive, hold |
+| grok | 2 | 1 | 0 | 1 | keep-alive, hold |
+| github_copilot | 2 | 1 | 0 | 1 | keep-alive, hold |
+| gamma | 2 | 0 | 0 | 1 | keep-alive, delayed END_STREAM, hold |
+| notion | 2 | 1 | 0 | 0 | keep-alive, no hold |
+| **huggingface** (live DB) | **2** | **1** | **0** | **1** | **keep-alive, hold** |
+
+**Pattern**: `h2_mode=2` services virtually always have `h2_hold_request=1` (exception: notion). The pairing makes sense — if the connection survives the block, the request body forwarding must be held so the upstream doesn't receive the sensitive payload; a torn-down connection (mode 1) would drop any in-flight upstream traffic on its own.
+
+**Phase3-B30 caveat** (cpp:1062): `h2_end_stream=2` means "delayed END_STREAM — VTS가 지연 전송" (VTS delays the END_STREAM flag). Used by perplexity, perfle, gamma. Huggingface has `h2_end_stream=1` (normal END_STREAM), so this caveat does not apply.
+
+### 13.3 `detect_service` priority algorithm (cpp:199-298)
+
+1. For each service in `ai_services_list`:
+   a. Loop over `service.domains` (comma-split from `domain_patterns` column). **First** matching pattern wins (`break` at line 244).
+   b. If no domain matches: skip service.
+   c. Loop over `service.paths` (comma-split). First matching pattern wins.
+   d. If a path matches: push `{service_name, domain_priority, path_priority}` to candidates.
+2. Select the candidate with highest `total_priority = domain_priority + path_priority`.
+
+**Priority formulas** (line 239-267):
+
+| pattern kind | domain priority | path priority |
+|-------------|----------------|---------------|
+| literal (no `*`) | 1000 + length | 1000 + length |
+| wildcard (contains `*`) | 500 + length | 500 + length |
+| empty path | — | 100 |
+
+**Key insight (cycle 51)**: the "first match wins" loop means pattern order in `domain_patterns` matters when multiple patterns in the SAME service can match the same host. For huggingface with `huggingface.co,*.huggingface.co`:
+
+- Host `huggingface.co` (root): pattern 1 literal matches → priority 1014 → pattern 2 never tried.
+- Host `chat.huggingface.co`: pattern 1 literal fails (exact match only, see §13.5) → pattern 2 wildcard matches → priority 517.
+
+Both cases reach a candidate, priority only matters if another service also matches. Unlikely for huggingface since its domains are unique.
+
+### 13.4 Path pattern `/chat` semantics (path_matcher::match, cpp:146-193)
+
+Huggingface has `path_patterns = /chat` (no comma, one pattern).
+
+Since `/chat` has no `*`, the literal prefix path at line 177-193 applies:
+
+```cpp
+if (path == pattern) return true;                    // exact match: /chat
+if (path.length() > pattern.length() &&
+    path.compare(0, pattern.length(), pattern) == 0) {
+    size_t next_idx = pattern.length();
+    if (pattern.length() == 1 || pattern.back() == '/' ||
+        (next_idx < path.length() && path[next_idx] == '/')) {
+        return true;
+    }
+}
+```
+
+Test cases:
+- `/chat` → exact match → **match**
+- `/chat/` → length>5, prefix match, next_idx=5, path[5]='/' → **match** (wait: path length is 5 → fails `length > pattern.length` check, falls through to exact comparison above, which also fails because path="chat/" ≠ pattern="chat". Actually `/chat/` is length 6, not 5 — prefix matches, next_idx=5, path[5]='/' → match)
+- `/chat/abc` → length>5, prefix match, next_idx=5, path[5]='/' → **match**
+- `/chat/conversation/xxx/messages` → → **match**
+- `/chatting` → length 9, prefix 5 matches, next_idx=5, path[5]='t' (not '/'), pattern.back()='t' (not '/'), pattern.length()>1 → **no match** ✓
+- `/api/chat` → length 9, prefix check `/api/chat`.compare(0,5,"/chat") fails (first char '/' vs '/', second char 'a' vs 'c') → **no match** ✓
+
+So `/chat` pattern is safe and covers all expected HF chat-ui endpoints. However, **if HF chat-ui has an API endpoint at `/api/conversation/xxx` or similar** (not under `/chat`), the current path pattern would NOT match. Cycle 51 cannot verify this without the #454 result; flagged as a pre-apply verification item.
+
+### 13.5 `domain_matcher::match` grammar (cpp:72-124)
+
+Four supported pattern kinds (first-match-wins in checking order):
+
+1. `[*.]example.com` — matches `example.com` AND `*.example.com` (root + subdomains). Line 79-92.
+2. `*.example.com` — matches subdomains ONLY (root explicitly excluded at line 99-101). Line 95-110.
+3. `example.*` — matches `example.ANY` (trailing wildcard for TLD variance). Line 113-120.
+4. `example.com` — exact match, line 122-123 fallback.
+
+Huggingface has two patterns in its `domain_patterns` column: `huggingface.co` (kind 4, exact) and `*.huggingface.co` (kind 2, subdomains-only). Together they cover root + all subdomains, equivalent to `[*.]huggingface.co` in kind 1. Either form would work — the baseline file uses kind 1 notation heavily (e.g. `[*.]chatgpt.com`); huggingface's comma-split pair is a stylistic variant with identical runtime semantics.
+
+### 13.6 Verification items for Phase 6 apply (post-#454)
+
+Before the huggingface Phase 6 migration commits to DB:
+
+1. [ ] Confirm #454 frontend POST target path starts with `/chat/` (not `/api/` or another prefix). If not, PART 1B must also update `path_patterns`.
+2. [ ] Confirm #454 Content-Type response is `text/event-stream` or similar streaming variant (verifies `recalculate_content_length` branch B routing).
+3. [ ] Confirm HF chat-ui uses keep-alive (HF navigation reuses the same H2 connection — `h2_mode=2` is correct; if it actually reconnects, mode 1 would be equally fine).
+4. [ ] Confirm #454 request path is a POST with `h2_hold_request` viability (if HF uses WebSockets or a different protocol, the hold mechanism won't apply).
+
+### 13.7 Correction log
+
+- Cycle 49 huggingface_design.md §Code verification item 5 was corrected in cycle 51 from "`h2_mode=1`" to "`h2_mode=2`" with the ternary explanation inlined.
+- Cycles 49 and 50 code walkthrough conclusions (Build #20 2-frame strategy, forbidden header stripping, GOAWAY gate, HPACK ceiling, 3-branch recalculate_content_length) remain **unchanged** — they operate inside `convert_to_http2_response` and `recalculate_content_length` which do not branch on `h2_mode`.
+
+### 13.8 Cross-references
+
+- Cycle 51 live DB query: `ssh -p 12222 solution@218.232.120.58 "mysql -h ogsvm -u root -pPlantynet1! etap -e \"SELECT ... FROM ai_prompt_services WHERE service_name='huggingface'\G\""`
+- Cycle 51 code read: `ai_prompt_filter.cpp:870-918` (detect_and_mark_ai_service), cpp:1050-1067 (h2_mode → VTS propagation), cpp:199-298 (ai_services_list::detect_service), cpp:72-193 (domain_matcher + path_matcher).
+- Cycle 11 note (gamma): `ai.api.gamma.app` exact match — this was the same `detect_service` function verifying the domain pattern grammar already.
+- Baseline file grep: `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql:39-50` — h2_mode distribution table.
