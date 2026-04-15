@@ -1,13 +1,32 @@
 ## Gamma — Warning Design
 
-> **⚠️ STALE — pending rewrite (2026-04-14 14:55, post-#449).**
-> Probe #449 revealed gamma.app/create/generate renders as a **blank white page** for the test PC.
-> Test PC theorized "APF blocks `_ssgManifest.js` / `_buildManifest.js`" but L2 SSH check found:
-> - **Zero gamma traffic in etap.log during the #449 window** — APF saw nothing from gamma.app.
-> - **Burst of `SetCertificate failed` errors in `visible_tls/tls_proxy.cpp:900`** at 14:34:36–47 (38 errors, 11s). Confirms the "cert error 가능성" note below.
-> Working hypothesis: TLS interception drops the connection at the visible_tls layer; Chrome surfaces this as ERR_HTTP2_PROTOCOL_ERROR for the static manifest URLs, never reaching APF prompt-filter logic. The page never bootstraps, so the warning channel design (gamma_sse envelope, etc.) is irrelevant until the TLS path is fixed.
+> **⚠️ STALE — PENDING_INFRA (2026-04-14 15:20, post-#450).**
+> Three-cycle investigation of gamma blank-page failure concluded: **the cause is outside APF's observable code path.** Both the cycle 9 TLS-cert theory and the cycle 10 crt_manager RSA-forcing theory are REFUTED by the #450 HAR data.
+>
+> **What we know (from #450 HAR, 69 entries):**
+> - 8 requests succeeded (status 200), including 3 to gamma.app itself: `/create/generate` (42KB HTML), `/manifest.json`, `/icons/pwa-icon-192x192.png`.
+> - Two fresh TLS handshakes to gamma.app completed cleanly in the same page load → TLS interception works, `SetCertificate failed` is NOT the cause.
+> - 61 requests to `gamma.app/_next/static/chunks/*.{js,css}?dpl=…` stalled 30s then failed with `status=0, dns/connect/ssl=-1, blocked≈30000ms` — Chrome's "connection pool could not satisfy request" state, not a server response.
+> - `/manifest.json` succeeded ON THE SAME H2 connection while 61 /_next/static/* requests were mid-stall, proving the connection is healthy for some paths but not others.
+>
+> **What we verified (from DB + source):**
+> - `ai_prompt_services` has no rule whose domain_patterns matches host `gamma.app`. The gamma row is `domain_patterns=ai.api.gamma.app` (exact match per `domain_matcher::match` at `ai_prompt_filter_db_config_loader.cpp:72-124`).
+> - APF's service dispatcher should therefore ignore all `gamma.app` requests and leave the H2 stream untouched. APF cannot be the direct cause of the stalls.
+>
+> **What we couldn't verify (running-binary drift):**
+> - The production etap binary on the test server emits `[APF] Page load request (Accept: text/html)` from `ai_prompt_filter.cpp:697`. That string does not exist in ANY branch of this worktree (`git log --all -S` returns zero hits). The running binary is a different source tree than what we've been code-reading. Our code-reading cannot predict its behavior.
+> - etap.log on the test server stopped appending at 14:59:28.860 KST. Current time 15:20+. The process is alive but the logger is silent through both #449 and #450 windows. L2 SSH monitoring is currently a blind spot.
+>
+> **Candidate causes that remain open (not ruleable out from dev PC alone):**
+> 1. Running binary has hardcoded /_next/static handling not in our worktree.
+> 2. visible_tls layer has a concurrent-stream or connection-pool quota that stalls bursts of 61 parallel static fetches.
+> 3. Cloudflare-side rate limit or WAF rule firing against the TLS-intercepted client fingerprint.
+> 4. etap.log silence hints at a process-internal issue (logger stuck, or etap no longer in data path) that also explains why we can't observe the failure from L2.
+>
+> **Status: PENDING_INFRA.** gamma is not diagnosable with current dev-side tools and without touching production artifacts. Resume criteria: (a) user or infra engineer investigates production binary source + restarts etap to clear logger state, (b) after restart, re-run a minimal HAR probe to see if the stall pattern reproduces, (c) if it does, escalate to a Cloudflare/TLS fingerprint investigation.
+>
+> Full forensic record: `local_archive/gamma_blank_page_analysis_2026-04-14.md` (cycles 9/10/11 sections).
 > #158's "SendKeys can't paste into textarea" was retroactively the same blank-page failure, mis-diagnosed.
-> Action items before resuming Phase 5: (1) HAR capture probe #450 to confirm response source for `_ssgManifest.js`; (2) investigate `visible_tls/tls_proxy.cpp:900 SetCertificate failed` root cause for gamma.app cert chain; (3) once gamma actually loads, re-test the existing `gamma_sse` envelope path.
 
 ### Strategy
 - Pattern: H2_DATA_WARNING (attempted) → **NEEDS_ALTERNATIVE**
