@@ -1346,4 +1346,355 @@ HF Phase 6 migration audit coverage now spans 13 verification levels:
 - Cycle 51 §13: huggingface path `/chat` — no prepare variant
 - Cycle 52 §14: hold-set logic (cpp:691) confirmed prepare-agnostic
 
+---
+
+## 17. VTS-layer hold/release/block pipeline — full 3-module trace (cycle 55)
+
+Cycle 52 §14 traced the hold mechanism inside ai_prompt_filter.cpp (session
+flag setting). Cycle 55 extends the trace through the remaining two modules:
+`etap/core/network_loop.cpp` (session→packet flag translation) and
+`functions/visible_tls/visible_tls_session.cpp` (VTS-layer dispatcher that
+actually holds / releases / discards / emits block responses). This closes
+the "unseen half" of the h2_mode=2 keep-alive semantics.
+
+### 17.1 Three-module architecture
+
+```
+┌──────────────────────────┐
+│ ai_prompt_filter.cpp     │  Function layer — reads/writes session state
+│                          │
+│  on_http2_request        │  _apf_hold_for_inspection = 1    ← cpp:685-696
+│  on_http2_request_data   │  _apf_release_held = 1           ← cpp:824-835
+│                          │  _ai_prompt_blocked via block_session
+│  block_session           │  _ai_prompt_block_response/_is_http2/_stream_id
+│                          │  /_h2_end_stream                 ← cpp:1032-1066
+└──────────────────────────┘
+             ↓ session flags persist
+┌──────────────────────────┐
+│ etap/core/network_loop.cpp│ Etap core — translates session→packet
+│                          │
+│  network_loop::run       │  IF _ai_prompt_blocked:          ← cpp:1234-1246
+│    ← after on_packet     │    copy block metadata to pkt
+│                          │    clear session flags
+│                          │  IF _apf_hold_for_inspection:    ← cpp:1248-1251
+│                          │    pkt._apf_hold_client_write=1
+│                          │    (sticky — re-asserted per pkt)
+│                          │  IF _apf_release_held:           ← cpp:1253-1257
+│                          │    pkt._apf_release_held=1
+│                          │    clear session flag (one-shot)
+└──────────────────────────┘
+             ↓ packet flags set
+┌──────────────────────────┐
+│ visible_tls_session.cpp  │  VTS layer — dispatches per-packet
+│                          │
+│  visible_listener::      │  5-branch dispatcher (cpp:540-727):
+│    on_new_segment        │    (A) _apf_release_held+buffer  → flush to server
+│                          │    (B) new hold start            → activate + buffer
+│                          │    (C) continued hold            → buffer (<64KB)
+│                          │    (D) _block_response_string    → discard + emit
+│                          │    (E) default                    → forward normally
+└──────────────────────────┘
+```
+
+Each module sees a different abstraction level — this is why the Phase3-B13
+documentation has been scattered across three files and never fully traced in
+one place before cycle 55.
+
+### 17.2 Session flag lifetimes (lifetime table)
+
+| Flag | Set by | Cleared by | Lifetime |
+|------|--------|-----------|----------|
+| `_apf_hold_for_inspection` | ai_prompt_filter on_http2_request (cpp:692) | ai_prompt_filter on_http2_request_data body_complete (cpp:824) OR etap core at block time (cpp:1245) | Sticky across packets — re-asserted on every packet while hold active |
+| `_apf_release_held` | ai_prompt_filter on_http2_request_data clean (cpp:831) | etap core after packet conversion (cpp:1256) | One-shot — single packet |
+| `_ai_prompt_blocked` | ai_prompt_filter block_session (cpp:1069) | etap core after block conversion (cpp:1243) | One-shot — single packet |
+| `_ai_prompt_block_response` (string) | ai_prompt_filter block_session (cpp:1035) | Persists in session — cleared on disconnect/session teardown | Long-lived for pointer safety |
+
+**Why sticky vs one-shot matters:** the hold flag is set at HEADERS receipt
+and must keep the flag asserted on EVERY subsequent client→server packet in
+the same connection until release or block. Without stickiness, packet #2's
+DATA would bypass the hold buffer. The one-shot flags are explicit
+edge-triggered signals (release happened / block decision made) that
+dispatch a single action in VTS then reset.
+
+### 17.3 Etap core session→packet translation (network_loop.cpp:1234-1257)
+
+The critical "bridge" code:
+
+```cpp
+if (unlikely(tuple._session._ai_prompt_blocked))
+{
+    // 패킷 차단 - session이 소유한 응답 문자열의 포인터를 패킷에 전달
+    // session이 string을 소유하므로 apf_session_data::clear() 호출 후에도 안전
+    pkt._block_response_string = tuple._session._ai_prompt_block_response.c_str();
+    pkt._block_response_len = (u16)tuple._session._ai_prompt_block_response.size();
+    pkt._block_response_is_http2 = tuple._session._ai_prompt_block_is_http2;
+    pkt._block_response_stream_id = tuple._session._ai_prompt_block_stream_id;
+    pkt._block_response_h2_end_stream = tuple._session._ai_prompt_block_h2_end_stream;
+    tuple._session._ai_prompt_blocked = 0;
+    // 차단 시 hold 해제 (buffer는 on_new_segment에서 폐기)
+    tuple._session._apf_hold_for_inspection = 0;
+}
+// APF request buffering: 검사 대기 중이면 client→server 포워딩 보류
+if (unlikely(tuple._session._apf_hold_for_inspection))
+{
+    pkt._apf_hold_client_write = 1;
+}
+// APF 검사 완료 (clean): 보류 데이터 릴리스
+if (unlikely(tuple._session._apf_release_held))
+{
+    pkt._apf_release_held = 1;
+    tuple._session._apf_release_held = 0;
+}
+```
+
+**Block-first ordering observation:** the if-chain checks `_ai_prompt_blocked`
+BEFORE `_apf_hold_for_inspection`, and the block handler explicitly clears
+the hold flag. This guarantees that if both are set in the same packet
+(block decision happened), the block wins and the hold flag is NOT
+re-asserted on this packet. If the ordering were reversed, the packet would
+carry BOTH `_block_response_string` AND `_apf_hold_client_write`, and VTS
+branch order (§17.4) would still fire block first — but the ordering here
+makes the intent explicit.
+
+**Pointer safety**: the comment at cpp:1237-1238 addresses a Phase3 concern —
+`apf_session_data::clear()` may run between packet conversion and VTS dispatch
+(session cleanup in error paths). The session owns the string, so pointing
+packets at `.c_str()` is safe only if the session outlives the packet. The
+design keeps `_ai_prompt_block_response` in `_session`, not in
+`apf_session_data`, for exactly this reason.
+
+### 17.4 VTS 5-branch dispatcher (visible_tls_session.cpp:540-727)
+
+Full if-else cascade in `on_new_segment`:
+
+**Branch A — release held (cpp:547-566)**
+```cpp
+else if (seg->_pkt->_apf_release_held && !_vts._apf_held_buffer.empty())
+```
+Fires when etap core set `_apf_release_held=1` on an already-flowing packet
+AND the VTS has pending hold data. Flushes `_apf_held_buffer` to server via
+`write_visible_data(&_vts._sproxy, ...)`, clears buffer, sets
+`_apf_hold_active=false`, then forwards the current segment normally. This
+is the clean-path release for passed keyword scan.
+
+**Branch B — new hold activation (cpp:570-579)**
+```cpp
+else if (seg->_pkt->_apf_hold_client_write && socket._is_cside &&
+         !_vts._apf_hold_active && _vts._apf_held_buffer.empty())
+```
+Fires when the hold flag arrives on a packet for a VTS that wasn't
+previously holding. Sets `_apf_hold_active=true`, buffers the segment,
+returns `seg->_seg_len` (reports "processed" to caller so no forwarding).
+
+**Branch C — continued hold (cpp:583-611)**
+```cpp
+else if (seg->_pkt->_apf_hold_client_write && socket._is_cside && _vts._apf_hold_active)
+```
+Fires on subsequent packets while hold is active. Two sub-branches:
+
+- **Overflow path (cpp:587-603)**: if adding current segment would push the
+  held buffer over 64KB, give up — flush existing buffer to server + forward
+  current segment + `_apf_hold_active=false`. **Safety valve** for abnormally
+  large POST bodies.
+- **Normal path (cpp:604-611)**: append segment to buffer.
+
+**Branch D — block response emission (cpp:612-727)**
+```cpp
+else if (seg->_pkt->_block_response_string)
+```
+The terminal branch for blocked requests. Steps:
+
+1. **Discard held buffer** (cpp:622-627) if non-empty — server never sees
+   the sensitive POST body. Sets `_apf_hold_active=false`.
+2. **Direct SSL_write to client** (cpp:639-642) via
+   `write_visible_data(&_vts._cproxy, ...)`. Phase3-B15: bypasses visible
+   pipe to avoid interleaving with server→client H2 data that would corrupt
+   H2 frame boundaries.
+3. **Delayed END_STREAM** (cpp:653-670) if `h2_end_stream == 2`:
+   `usleep(10000)` (10ms), then emit raw 9-byte DATA frame with length=0,
+   flags=END_STREAM=1, stream_id=blocked stream. Confirms cycle 53 §15.7
+   finding that ternary differentiation happens at VTS, not in
+   ai_prompt_filter.
+4. **RST_STREAM decision** (cpp:680-710) for `is_http2 == 2` (keep-alive):
+   - `!was_held` → send RST_STREAM(CANCEL) to server (server has seen HEADERS
+     and will send response; we cancel the stream).
+   - `was_held` → skip RST_STREAM (server never saw the stream, sending
+     RST_STREAM with unknown stream ID would be protocol error).
+5. **Teardown** (cpp:712-725) for `is_http2 == 1` (cascade) or `is_http2 == 0`
+   (HTTP/1.1): call `on_disconnected(socket)`. Keep-alive path (`== 2`) does
+   NOT call on_disconnected — server and client connection stay alive.
+
+**Branch E — normal forward (cpp:728-731)**
+```cpp
+else { ret = forward_segment_to_proxy(_vts, proxy, seg); }
+```
+Default fallthrough for non-APF packets, non-hold traffic, server→client
+responses, etc.
+
+### 17.5 RST_STREAM decision semantics (Phase3-B24)
+
+The most subtle finding. At cpp:684:
+
+```cpp
+if (!was_held && seg->_pkt->_block_response_stream_id > 0)
+```
+
+Why only send RST_STREAM when NOT held?
+
+- **If the request was held**: client→server path was buffered, HEADERS never
+  reached the server. The server has no knowledge of the stream_id we're
+  trying to cancel. Sending RST_STREAM with that stream_id would be a
+  protocol violation — the server would respond with GOAWAY
+  (PROTOCOL_ERROR) and the whole connection dies. This is the opposite of
+  what h2_mode=2 wants.
+
+- **If the request was NOT held** (`h2_hold_request=0` services like chatgpt):
+  the client→server path was never buffered, so HEADERS + DATA reached the
+  server in real time. The server has seen the stream and is starting to
+  generate a response. We need to tell it "don't bother, we already
+  responded to the client" via RST_STREAM(CANCEL). Without this, the server's
+  response would arrive at the client-side proxy and need to be discarded —
+  wasting server compute.
+
+This conditional is the reason `h2_mode=2` (keep-alive) can be paired with
+EITHER `h2_hold_request=0` or `h2_hold_request=1`: the two column values
+select different behaviors within the same mode, and the RST_STREAM gate
+keeps the H2 connection protocol-valid in both cases.
+
+### 17.6 Huggingface path trace (end-to-end)
+
+HF profile from cycle 51: `h2_mode=2, h2_end_stream=1, h2_goaway=0,
+h2_hold_request=1`.
+
+Scenario: user types sensitive keyword in HF chat-ui, presses Enter.
+
+1. **Browser** fetch POST `/chat/conversation/{id}` → H2 HEADERS + DATA frames
+   flow to APF VTS.
+2. **ai_prompt_filter on_http2_request** (cpp:631-702): detects HF service,
+   sees `h2_hold_request=1`, sets `_session._apf_hold_for_inspection = 1`.
+3. **network_loop run loop** (cpp:1248-1251): sees the flag, sets
+   `pkt._apf_hold_client_write = 1` on the HEADERS packet.
+4. **VTS on_new_segment Branch B** (cpp:570-579): new hold starts. HEADERS
+   segment buffered. Returns `_seg_len` (tells caller "done"). **Server does
+   NOT yet receive HEADERS.**
+5. **Browser** sends DATA frame (JSON body with user's prompt text).
+6. **network_loop** (cpp:1248): flag is sticky (still set), re-asserts on
+   DATA packet.
+7. **VTS on_new_segment Branch C normal path** (cpp:604-610): DATA segment
+   appended to buffer. Still <64KB, still buffered.
+8. **ai_prompt_filter on_http2_request_data** (cpp:728-837): calls
+   `check_keywords`, detects sensitive keyword, calls `block_session`:
+   - `_session._ai_prompt_block_response` ← envelope rendered via path
+     traced in §15 (generate_block_response → render_envelope_template →
+     recalculate_content_length branch B → convert_to_http2_response →
+     HEADERS frame + 2-frame DATA strategy).
+   - `_session._ai_prompt_block_is_http2 = 2` (from cpp:1058).
+   - `_session._ai_prompt_block_stream_id` = current H2 stream.
+   - `_session._ai_prompt_block_h2_end_stream = 1` (HF value).
+   - `_session._ai_prompt_blocked = 1`.
+9. **network_loop run loop** (cpp:1234-1246): block detected. Copies all
+   block metadata to packet. Clears `_apf_hold_for_inspection` (line 1245).
+   `_ai_prompt_blocked = 0` (line 1243).
+10. **VTS on_new_segment Branch D** (cpp:612-727):
+    - `was_held = true` (buffer has HEADERS + DATA).
+    - Discards held buffer (cpp:622-627). **Server never sees the sensitive
+      POST body.** `_apf_hold_active = false`.
+    - `write_visible_data(&_cproxy, block_response_string, len)` — emits
+      HEADERS frame + DATA(body) + DATA(empty, END_STREAM=1) directly to
+      client via SSL_write.
+    - `h2_end_stream == 1` → no delayed-ES path (cpp:653 conditional fails).
+    - `is_http2 == 2` → keep-alive path. `was_held == true` → RST_STREAM
+      SKIPPED. Server has no stream to cancel.
+    - Neither `on_disconnected` nor GOAWAY — connection stays alive.
+11. **Browser** fetch reader receives the HEADERS + DATA(body) + DATA(ES).
+    ReadableStream sees `{value: <body>, done: false}` then `{value: null,
+    done: true}` — clean SSE stream termination (Build #20 rationale).
+12. **HF chat-ui** displays the warning text in the current chat bubble. H2
+    connection remains open, any other in-flight streams (heartbeats,
+    settings queries, etc.) continue.
+
+**Every step code-audited across cycles 41-55 — the entire HF Phase 6 wire
+pipeline is now mapped with line-level code references.**
+
+### 17.7 Test-log contamination — FULL SURFACE MAP
+
+Cycle 52 §14.10 flagged 2 log tags in ai_prompt_filter.cpp using the reserved
+`[APF_WARNING_TEST:...]` prefix. Cycle 55 grep of visible_tls_session.cpp
+reveals **13 MORE** tags using the reserved prefix in production hot paths:
+
+| File | Line | Tag | Fires on |
+|------|------|-----|----------|
+| ai_prompt_filter.cpp | 826 | `[APF_WARNING_TEST:hold_release]` | H2 clean release |
+| ai_prompt_filter.cpp | 834 | `[APF_WARNING_TEST:hold_continue]` | H2 body incomplete |
+| visible_tls_session.cpp | 549 | `[APF_WARNING_TEST:hold_flush]` | VTS release flush |
+| visible_tls_session.cpp | 555 | `[APF_WARNING_TEST:hold_flush_done]` | VTS flush success |
+| visible_tls_session.cpp | 559 | `[APF_WARNING_TEST:hold_flush_partial]` | VTS partial write |
+| visible_tls_session.cpp | 574 | `[APF_WARNING_TEST:hold_activate]` | VTS hold start |
+| visible_tls_session.cpp | 576 | `[APF_WARNING_TEST:hold_buffer]` | VTS new buffer |
+| visible_tls_session.cpp | 589 | `[APF_WARNING_TEST:hold_overflow]` | 64KB overflow |
+| visible_tls_session.cpp | 607 | `[APF_WARNING_TEST:hold_buffer]` | VTS continued buffer |
+| visible_tls_session.cpp | 625 | `[APF_WARNING_TEST:hold_discard]` | VTS block discard |
+| visible_tls_session.cpp | 630 | `[APF_WARNING_TEST:vts_pre]` | Block pre-write |
+| visible_tls_session.cpp | 643 | `[APF_WARNING_TEST:vts_post]` | Block post-write |
+| visible_tls_session.cpp | 682 | `[APF_WARNING_TEST:vts_keepalive]` | h2_mode=2 branch |
+| visible_tls_session.cpp | 701 | `[APF_WARNING_TEST:vts_rst_server]` | RST sent |
+| visible_tls_session.cpp | 708 | `[APF_WARNING_TEST:vts_no_rst]` | RST skipped |
+
+**Total: 15 production hot-path log tags** using the Test Log Protocol's
+reserved prefix. Every block event emits 5-8 of these depending on code path.
+
+**Correctly-named sibling** for comparison: `[APF:delayed_ES]` at
+visible_tls_session.cpp:668 uses the non-reserved prefix — proves the right
+pattern exists, it just wasn't applied consistently.
+
+**Phase 7 release-gate grep strategy is definitively broken.** The rule "if
+any `[APF_WARNING_TEST:...]` log appears, a test log was left in" would flag
+every production block event as a release-blocker. The cycle 52 side-task
+spawn needs to be expanded to cover all 15 tags, not just the 2 in
+ai_prompt_filter.cpp.
+
+**Action item**: expand the side-task scope. Rename all 15 tags to
+`[APF:hold_*]`, `[APF:vts_*]` etc. to free the reserved prefix for its
+intended Phase 7 gate use. Low urgency (no runtime impact) but the Phase 7
+detection mechanism is unusable until this is cleaned up.
+
+### 17.8 Verification level count
+
+HF Phase 6 migration audit coverage now spans 14 verification levels:
+
+- (a) DB schema ✓
+- (b) runtime envelope map ✓
+- (c) byte-level baseline ✓
+- (d) CLI completeness ✓
+- (e) SQL idempotency ✓
+- (f) http_response semantics ✓
+- (g) placeholder surface ✓
+- (h) H2 frame conversion ✓ (§9)
+- (i) Content-Length rewrite branches ✓ (§12)
+- (j) service detection + h2_mode ternary ✓ (§13)
+- (k) request hold-release mechanism, function layer ✓ (§14)
+- (l) B26 de-chunker defensive path ✓ (§15)
+- (m) prepare_response_type selection gate ✓ (§16)
+- (n) **VTS-layer 3-module pipeline end-to-end ✓** (§17 cycle 55)
+
+**The h2_mode=2 + h2_hold_request=1 + h2_end_stream=1 combined behavior is
+now fully traced across all three code layers.** No unknown boxes remain in
+the huggingface Phase 6 wire path.
+
+### 17.9 Cross-references
+
+- etap/core/tuple.h:743-744: session flag definitions (bit 20-21)
+- etap/core/etap_packet.h:1335-1341: packet-level block/hold field defs
+- etap/core/network_loop.cpp:1234-1257: session→packet translation
+- visible_tls_session.cpp:507-520: append_segment_to_buffer helper
+- visible_tls_session.cpp:540-727: on_new_segment 5-branch dispatcher
+- §14 cycle 52: ai_prompt_filter-internal hold set/release (5 call sites)
+- §9 cycle 49: convert_to_http2_response frame assembly
+- §15 cycle 53: B26 de-chunker + h2_end_stream ternary (VTS-layer usleep
+  confirmed at cpp:656)
+- Phase3 build tags: B13 (request buffering), B14 (VTS hold/release/discard),
+  B15 (direct SSL_write bypass), B16 (no RST when held), B24 (stream_id
+  tracking), B30 (delayed END_STREAM at VTS)
+
+
 
