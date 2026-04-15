@@ -338,6 +338,31 @@ ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.test_keyword '�
 
 ---
 
+## ⚠️ Table-specific INSERT idempotency (cycle 45)
+
+Before writing any Phase 6 migration SQL, know that the two APF tables behave differently under re-run:
+
+- **`ai_prompt_services`** has `UNIQUE KEY uk_service_name (service_name)` → `INSERT ... ON DUPLICATE KEY UPDATE` works correctly.
+- **`ai_prompt_response_templates`** has ONLY `PRIMARY KEY (id)` auto-increment (no composite unique) → `ON DUPLICATE KEY UPDATE` is a **no-op**. Every INSERT appends a new row silently. Use **DELETE-then-INSERT** for true idempotency.
+
+The live DB currently contains 3 identical `claude` rows, 5 identical `openai_compat_sse` rows, 2 identical `chatgpt_sse` rows, and 7 identical `generic_sse` rows — all re-run artifacts that nobody noticed because cycle 41's `_envelopes` map dedupes by `response_type` at runtime first-row-wins. This is harmless only as long as all duplicates have identical content; a future re-INSERT with updated content would be silently ignored (priority tie → InnoDB insertion order keeps the old row winning).
+
+See `references/phase2-analysis-registration.md` §"INSERT idempotency" and `services/envelope_audit_2026-04-15.md` §9 for the full rationale + canonical patterns.
+
+**Quick reference — canonical envelope INSERT**:
+
+```sql
+BEGIN;
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = '{service}' AND response_type = '{response_type}';
+INSERT INTO etap.ai_prompt_response_templates
+       (service_name, http_response, response_type, envelope_template, priority, enabled)
+VALUES ('{service}', 'BLOCK', '{response_type}', CONCAT(...), 50, 1);
+COMMIT;
+```
+
+---
+
 ## Command matrix for a full Phase 6 apply cycle
 
 When applying `phase6_combined_migration_2026-04-15.sql`, the full verification sequence should be:

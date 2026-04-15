@@ -205,6 +205,63 @@ VALUES ('{service_id}', '⚠️ This request has been blocked by security policy
 - `http_response` stores **message text only** — no HTML, no SSE structure
 - If a service has multiple conversation endpoints, add one row per endpoint
 
+### ⚠️ INSERT idempotency — table-specific patterns (cycle 45 finding)
+
+The two APF tables have **different unique-key shapes**, so INSERT idempotency patterns differ:
+
+| Table | Unique constraints | Idempotency pattern |
+|-------|-------------------|---------------------|
+| `ai_prompt_services` | `PRIMARY KEY (id)` + **`UNIQUE KEY uk_service_name (service_name)`** | `INSERT ... ON DUPLICATE KEY UPDATE` **works correctly** — keyed on `service_name` |
+| `ai_prompt_response_templates` | `PRIMARY KEY (id)` auto-increment **only** (no composite unique) | `INSERT ... ON DUPLICATE KEY UPDATE` is a **NO-OP** — use DELETE-then-INSERT instead |
+
+**Why the difference matters**: `ai_prompt_response_templates` has NO unique index on `(service_name, response_type)`. Every `INSERT` gets a fresh auto-increment `id`, so the duplicate-key check against `PRIMARY KEY` always fails and the ODKU `UPDATE` clause NEVER executes. The INSERT silently appends a new row every time.
+
+**Historical evidence in live DB** (cycle 45 snapshot):
+- 3 identical `(claude, claude, 1118B, MD5 022e27ac...)` rows — all re-run artifacts
+- 5 identical `(*, openai_compat_sse, 342B, MD5 79553698...)` rows — chatglm/huggingface/kimi/qianwen/wrtn
+- 2 identical `(*, chatgpt_sse, 1247B, MD5 aa64281b...)` rows — chatgpt/chatgpt2
+- 7 identical `(*, generic_sse, 239B, MD5 baeb6791...)` rows — character/clova/consensus/copilot/dola/phind/poe
+
+None of these break runtime behavior because cycle 41's `_envelopes` map dedupes by `response_type` and applies `ORDER BY priority DESC` first-row-wins — and the duplicates all have identical content so any winner is correct. BUT if you re-run an INSERT with an **updated** template (e.g., fixing a placeholder bug), the old row keeps winning via priority-tie + InnoDB insertion order, and your fix is **silently ignored**.
+
+**Canonical safe INSERT pattern for `ai_prompt_response_templates`**:
+
+```sql
+BEGIN;
+
+-- Idempotency guard: always DELETE the exact (service_name, response_type)
+-- tuple before inserting. This is safe because the tuple uniquely identifies
+-- the row you are creating — no other rows are touched.
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = '{service_id}'
+   AND response_type = '{response_type}';
+
+INSERT INTO etap.ai_prompt_response_templates
+       (service_name, http_response, response_type, envelope_template, priority, enabled)
+VALUES ('{service_id}', 'BLOCK', '{response_type}', CONCAT(
+         'HTTP/1.1 200 OK\r\n',
+         -- ...
+       ), 50, 1);
+
+COMMIT;
+```
+
+**DO NOT use** `INSERT ... ON DUPLICATE KEY UPDATE` on `ai_prompt_response_templates` even though it looks idiomatic — the baseline `apf_db_driven_migration.sql:91-111` chatgpt_sse example uses this pattern and it's **semantically dead code**. The apparent idempotency is an illusion; it has been accidentally correct only because re-runs shipped identical content.
+
+**For `ai_prompt_services`** — ODKU on `service_name` is still the right pattern:
+
+```sql
+INSERT INTO etap.ai_prompt_services
+       (service_name, display_name, domain_patterns, path_patterns, block_mode, enabled)
+VALUES ('{service_id}', '{Display Name}', '{domain}', '{path}', 1, 1)
+    ON DUPLICATE KEY UPDATE
+        display_name    = VALUES(display_name),
+        domain_patterns = VALUES(domain_patterns),
+        path_patterns   = VALUES(path_patterns);
+```
+
+See `services/envelope_audit_2026-04-15.md` §9 for full schema findings + 3 Phase 6 fix examples.
+
 ### ⚠️ service_name consistency check (required — established from experience)
 
 After applying SQL, always verify that the DB value exactly matches the C++ `_response_generators` key.

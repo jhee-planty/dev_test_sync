@@ -95,3 +95,26 @@ DB에 서비스 패턴을 추가/수정한 후, 실제로 detect가 동작하는
 ```
 
 reload_services 없이 check-warning을 보내면 이전 패턴으로 동작한다.
+
+## INSERT 멱등성 — 테이블별 패턴 (cycle 45 finding)
+
+APF 두 테이블의 unique key shape가 다르므로 INSERT 재실행 시 동작이 다르다.
+
+| 테이블 | Unique constraint | 멱등성 패턴 |
+|--------|-------------------|------------|
+| `ai_prompt_services` | `UNIQUE KEY uk_service_name (service_name)` | `INSERT ... ON DUPLICATE KEY UPDATE` 정상 동작 |
+| `ai_prompt_response_templates` | `PRIMARY KEY (id)` auto-increment만 존재 (composite unique 없음) | `ON DUPLICATE KEY UPDATE`는 **no-op** → **DELETE-then-INSERT** 사용 |
+
+`ai_prompt_response_templates`에 ODKU를 쓰면 매 INSERT마다 새 auto-increment id를 받아서 PK 중복 검사가 항상 통과되고, ODKU의 UPDATE 절은 영원히 실행되지 않는다. 재실행 시 **새 행이 조용히 append**된다. Live DB의 중복 행 (claude × 3, openai_compat_sse × 5, chatgpt_sse × 2, generic_sse × 7)이 그 증거이다. 같은 내용이라 런타임은 정상이었지만, 내용이 바뀐 재실행은 **조용히 무시**된다.
+
+**올바른 패턴** (canonical):
+
+```sql
+BEGIN;
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = '{svc}' AND response_type = '{rtype}';
+INSERT INTO etap.ai_prompt_response_templates (...) VALUES (...);
+COMMIT;
+```
+
+상세: `references/phase2-analysis-registration.md` §INSERT idempotency, `references/apf-cli-commands.md` §Table-specific INSERT idempotency, `services/envelope_audit_2026-04-15.md` §9.
