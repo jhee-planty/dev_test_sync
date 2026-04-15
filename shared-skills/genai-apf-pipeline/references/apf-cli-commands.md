@@ -1,10 +1,20 @@
 # APF `etapcomm` CLI Command Reference
 
 **Source**: `functions/ai_prompt_filter/ai_prompt_filter.cpp` lines 256–451 (`do_command` dispatcher)
-**Discovered in**: cycles 31 (validate_template), 35 (full dispatcher map)
-**Runtime invocation**: `ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.<command> [args]"`
+**Discovered in**: cycles 31 (validate_template), 35 (full dispatcher map), 43 (confirmed sole entry point)
+**Runtime invocation**: `ssh -p 12222 solution@218.232.120.58 "sudo /home/solution/bin/etapcomm ai_prompt_filter.<command> [args]"`
 
 **Purpose**: The running etap binary exposes 9 runtime commands through its RPC interface. Most were previously used ad-hoc but had never been catalogued in one place. This reference lists all 9 with usage, expected output, and Phase 6 workflow integration.
+
+**Completeness (cycle 43 verified)**: `do_command` is the **sole RPC dispatch** for ai_prompt_filter — declared in `ai_prompt_filter.h:270` as `override` of a base class virtual, implementing the `etap::rpc_connection` contract. The final `else` branch at line 445 emits the exact error message `"Unknown command. Available: reload_keywords, reload_services, reload_templates, validate_template, show_stats, enable, disable, show_config, test_keyword\n"` — the enumeration is authoritative. No additional binding functions, no hidden registration points, no alternative RPC paths in the ai_prompt_filter module. The 9 commands are **exhaustive**.
+
+**Binary path (cycle 43 confirmed)**: `/home/solution/bin/etapcomm` (NOT `/home/solution/etap/bin/etapcomm` which does not exist). Available copies discovered via `find / -name etapcomm -type f`:
+- `/home/solution/bin/etapcomm` ← canonical (used by all cycles 35+)
+- `/usr/local/bin/etapcomm` ← same binary, aliased
+- `/home/solution/source_for_test/EtapV3/build/sv_x86_64_debug/pkg/bin/etapcomm` ← dev build artifact
+- `/bin.bak.20260406/etapcomm` ← pre-2026-04-06 backup (stale)
+
+**Command syntax (cycle 43 confirmed)**: dot-separator between module name and command, NOT space-separator. `ai_prompt_filter.show_stats` works, `ai_prompt_filter show_stats` returns `FAILED : Invalid command format`.
 
 ---
 
