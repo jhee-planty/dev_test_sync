@@ -894,3 +894,191 @@ Add to §13.6:
 - Phase3 build tags: B13 (request buffering), B16 (body_complete detection moved from middle frames to end), B19 (check_completed guard against ERR_CONNECTION_CLOSED), B25 (HTTP/1.1 hold parity with H2).
 - Related: §13 h2_mode ternary — h2_mode=2 + h2_hold_request=1 is the "keep-alive + hold" pairing that makes the hold mechanism necessary.
 - Test-log cleanup flag: cpp:826 + cpp:834 `[APF_WARNING_TEST:hold_release]`/`[APF_WARNING_TEST:hold_continue]` — not cycle 52's problem, flagged as side-task.
+
+---
+
+## 15. B26/B27 header-body split and de-chunk defense (cycle 53)
+
+Cycle 52 plan referenced B26 ("de-chunk companion path") as an outstanding audit
+item from §12 TL;DR. Cycle 53 audits `convert_to_http2_response` at
+ai_prompt_filter.cpp:1373-1442 to confirm the B26 defensive path is safe for the
+huggingface (h2_mode=2 + is_http2=true) normal flow, and to document what edge
+case B26 actually protects against.
+
+### 15.1 Code path summary
+
+`convert_to_http2_response` receives an HTTP/1.1 response string built by
+`render_envelope_template` (cpp:1635). It must:
+
+1. Split headers from body (B27 CRLF/LF separator logic).
+2. Optionally de-chunk the body (B26) if chunked encoding was applied.
+3. Encode HEADERS frame (HPACK literal-without-indexing, §13.5 reminder on
+   127-byte ceiling).
+4. Emit DATA frame(s) per the Build #20 2-frame strategy (§9 cycle 49).
+5. Optionally append GOAWAY frame when `h2_goaway != 0`.
+
+B26 runs between steps 1 and 2 of the H2 conversion — immediately after the body
+substring has been extracted from the HTTP/1.1 wire format and before HEADERS
+frame assembly.
+
+### 15.2 B27 separator logic (cpp:1376-1404)
+
+```cpp
+size_t sep_crlf = http1_resp.find("\r\n\r\n");
+size_t sep_lf   = http1_resp.find("\n\n");
+/* pick the smaller (earlier) of the two */
+if (sep_crlf <= sep_lf) { sep = sep_crlf; sep_len = 4; }
+else                    { sep = sep_lf;   sep_len = 2; }
+```
+
+**Why this matters:** SSE bodies converted through `recalculate_content_length`
+branch A (`is_sse && !is_h2`) end up wrapped in Transfer-Encoding chunked, so the
+body itself contains `\r\n\r\n` (between chunk terminator and next chunk).
+Naively using "first `\r\n\r\n`" would misinterpret a body-internal chunk
+terminator as the header-body separator, truncating headers and stuffing SSE
+data into the HPACK encoder → `ERR_HTTP2_COMPRESSION_ERROR`.
+
+B27's fix is subtle: it searches for both `\r\n\r\n` and `\n\n` and takes the
+**earlier** one. The real header-body separator is always earlier than any
+body-internal terminator because headers come first. This works because
+generated envelopes use `\r\n\r\n` between headers and body, but body-internal
+chunk terminators may only appear later.
+
+### 15.3 B26 de-chunker (cpp:1412-1442)
+
+Three guards before mutating body:
+
+1. **Position guard**: `first_crlf < 16` — chunk size prefix is at most 15 hex
+   digits before the CRLF. Normal text bodies starting with `{`, `d`, `H`,
+   `data:`, etc., typically have their first CRLF (if any) well past byte 16,
+   or contain non-hex characters in the prefix (see guard 2).
+2. **Hex-prefix guard**: every byte in `[0, first_crlf)` must be `[0-9a-fA-F]`.
+   Any non-hex character aborts.
+3. **Trailer guard**: body must end with exact 7-byte sequence `\r\n0\r\n\r\n`.
+
+All three must pass. If so, body is replaced with `body[first_crlf+2 : size-7]`
+— the payload between the size prefix and the final zero-length chunk marker.
+
+### 15.4 Fast-fail analysis for normal HF body
+
+Assume HF SSE envelope body starts with `data: {"type":"finalAnswer",...}\n\n`
+(typical server-sent-events line format):
+
+- `body.find("\r\n")` — SSE uses LF, not CRLF, so `first_crlf == npos` → fast-fail.
+
+Assume HF body starts with `{"type":"status","status":"ok"}` (plain JSON, no
+SSE wrapping):
+
+- `body.find("\r\n")` — no CRLF → fast-fail.
+
+Assume HF body starts with `data: ...\r\n\r\n` (SSE with CRLF line endings):
+
+- `first_crlf = 6` (< 16, passes guard 1).
+- Hex check: `'d'` ✓, `'a'` ✓, `'t'` ✗ — 't' is not hex, fails guard 2.
+
+Assume HF body starts with `HTTP/1.1 200 OK\r\n` (leaked status line, shouldn't
+happen — render_envelope_template already returns just the envelope body):
+
+- `first_crlf = 15` (< 16, passes guard 1).
+- Hex check: `'H'` ✗ — fails guard 2.
+
+**Conclusion:** B26 is a **no-op for huggingface's normal flow** and in fact a
+no-op for essentially any realistic non-chunked body. It only fires when the
+body is literally a valid chunked encoding envelope, i.e. when branch A of
+`recalculate_content_length` ran on a body that then reached the H2 path.
+
+### 15.5 When B26 actually fires
+
+B26 fires only when all three of these hold:
+
+1. `render_envelope_template` was called with `is_h2 = false` (branch A applies
+   chunking).
+2. The resulting chunked body was then passed to `convert_to_http2_response`
+   (H2 frame encoding).
+3. The body had a valid `<hex>\r\n<data>\r\n0\r\n\r\n` structure.
+
+In the current code, step 1+2 cannot happen on the normal path:
+
+- cpp:1635: `render_envelope_template(..., sd->is_http2)` — the flag matches
+  the session type.
+- cpp:1647: `if (http1_response.empty() || !sd->is_http2) return http1_response;`
+  — non-H2 responses return without touching convert_to_http2_response.
+- cpp:1675: `return convert_to_http2_response(http1_response, ...)` — only
+  reached when `sd->is_http2 == true`, which means render ran with is_h2=true,
+  which means branch B (strip), which means no chunk markers in body.
+
+So **B26 is pure defensive coding**: belt-and-suspenders for future refactors,
+test fixtures, or alternate call sites that might wire the flags incorrectly.
+The guards are cheap enough (3 fast-fails) that the overhead is negligible for
+the hot path even when no chunked encoding is present.
+
+### 15.6 cpp:1647 HTTP/1.1 Connection: keep-alive → close rewrite
+
+Side finding. For `sd->is_http2 == false` (HTTP/1.1 block responses), the code
+rewrites `Connection: keep-alive` → `Connection: close` in place at cpp:1653-1657.
+Critical detail: it uses `replace(pos, 22, "Connection: close")` where 22 is the
+length of "Connection: keep-alive". The replacement "Connection: close" is 17
+chars, not 22 — so this **does shorten the response by 5 bytes**. Content-Length
+is unaffected because Connection is a header, not body.
+
+This looks correct (headers don't participate in Content-Length) but the comment
+at cpp:1655-1656 is slightly misleading: it says "길이 유지로 Content-Length
+영향 없음" (length-preserving so no Content-Length impact) implying the rewrite
+is length-neutral, when in fact length IS changed — just in a field that doesn't
+affect Content-Length. Not a bug, but worth noting for future cycle if anyone
+audits based on the comment.
+
+→ Flagged as low-priority documentation fix; not worth a separate spawn.
+
+### 15.7 h2_end_stream ternary (cpp:1664-1668)
+
+First time §13-style ternary semantics seen for another column:
+
+```cpp
+// Phase3-B30:
+//   0: END_STREAM 없음 (스트림 열린 상태)
+//   1: 즉시 END_STREAM (2-frame: DATA body + DATA empty ES)
+//   2: 지연 END_STREAM (convert에서는 ES 없이 전송, VTS에서 10ms 후 ES 전송)
+const bool use_end_stream = (sd->h2_end_stream == 1);
+```
+
+Note that `use_end_stream` only becomes true for `h2_end_stream == 1`, so the
+generate_block_response layer treats 0 and 2 identically — both emit frames
+without END_STREAM. The differentiation happens downstream at VTS layer, which
+for mode 2 schedules a 10ms-delayed empty DATA frame with END_STREAM. For mode
+0, no delayed ES ever arrives — the stream stays open until transport close.
+
+**Huggingface h2_end_stream value:** unknown from this audit (cycle 51 captured
+h2_mode=2 from DB but didn't record h2_end_stream). TODO for next DB access
+window: `SELECT service_name, h2_mode, h2_end_stream, h2_goaway, h2_hold_request
+FROM ai_prompt_services WHERE service_name='huggingface'\G`.
+
+### 15.8 Verification level count
+
+HF Phase 6 migration audit now covers 12 verification levels:
+
+- (a) DB schema ✓
+- (b) runtime envelope map ✓
+- (c) byte-level baseline ✓
+- (d) CLI completeness ✓
+- (e) SQL idempotency ✓
+- (f) http_response semantics ✓
+- (g) placeholder surface ✓
+- (h) H2 frame conversion ✓ (§9)
+- (i) Content-Length rewrite branches ✓ (§12)
+- (j) service detection + h2_mode ternary ✓ (§13)
+- (k) request hold-release mechanism ✓ (§14)
+- (l) **B26 de-chunker defensive path ✓** (§15 cycle 53)
+
+### 15.9 Cross-references
+
+- cpp:1373-1442: `convert_to_http2_response` prologue (split + de-chunk).
+- cpp:1602-1677: `generate_block_response` full body.
+- §9 cycle 49 Build #20 2-frame DATA strategy.
+- §12 cycle 50 `recalculate_content_length` 3 branches (branch A = chunked TE,
+  only branch that could produce B26-triggering body).
+- §13.5 HPACK 127-byte literal ceiling — informs HEADERS frame encoding
+  constraints, relevant but not affected by B26.
+- Phase3 build tags: B25d (SSE chunked TE for HTTP/1.1), B26 (H2 de-chunker),
+  B27 (CRLF/LF separator picker), B30 (h2_end_stream ternary).
+
