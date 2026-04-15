@@ -97,10 +97,13 @@ HuggingFace chat-ui is an actively developed open-source Svelte app (`github.com
 
 1. `ai_prompt_filter.cpp:1249-1328 render_envelope_template()` — content-type agnostic, placeholder substitution works for any event-stream body.
 2. `ai_prompt_filter.cpp:1602-1677 generate_block_response()` — loads the envelope via `_config_loader->get_envelope_template(response_type)` → pure DB lookup keyed by the new `huggingface_sse` row.
-3. `ai_prompt_filter_db_config_loader.cpp:640-678 db_loader::load()` — builds `_envelopes` map by `response_type` column. Adding a new row registers immediately on next reload.
+3. `ai_prompt_filter_db_config_loader.cpp:640-678 db_loader::load()` — builds `_envelopes` map **by `response_type` column ALONE** (confirmed cycle 41 code read, lines 671-679: `if (_envelopes->find(response_type) == _envelopes->end()) { _envelopes->emplace(std::move(response_type), std::move(envelope)); }`). The SQL query uses `ORDER BY priority DESC`, and the `find == end` guard means duplicate `response_type` rows are discarded at runtime with highest-priority winning. **This has 3 important consequences for huggingface**:
+   - **(a) The `openai_compat_sse` envelope is SHARED at runtime** — even if there are 5 rows in `ai_prompt_response_templates` (one per service), the APF runtime has exactly **one** `_envelopes['openai_compat_sse']` entry. When chatglm/huggingface/kimi/qianwen/wrtn blocks fire, they all look up the same envelope via the same key.
+   - **(b) Our INSERT pattern is sound**: inserting `('huggingface', 'huggingface_sse', <new envelope>)` creates a new `_envelopes['huggingface_sse'] → <new>` entry. The existing `_envelopes['openai_compat_sse']` entry is untouched. UPDATE of `ai_prompt_services.response_type='huggingface_sse' WHERE service_name='huggingface'` then routes only HF's service-map lookup to the new key. chatglm/kimi/qianwen/wrtn still map to `'openai_compat_sse'` in `ai_prompt_services`, so their runtime lookup still hits the old (unchanged) envelope. **Zero collateral impact on the other 4 services.**
+   - **(c) PART 2d regression check is still valid**: comparing MD5 of the `openai_compat_sse` row(s) to baseline is the correct database-level verification. At runtime only one of those rows is actually used, but the MD5 check ensures the INSERT didn't touch ANY of them at the DB layer.
 4. The running etap binary already accepts `response_type` as a DB-driven key (not hard-coded) — cycle 30 `grep` across the worktree confirmed no `switch`/`if` on specific response_type values in the generation path.
 
-**Net**: huggingface_sse is a pure DB migration, matching the pattern of deepseek/v0/github_copilot Phase 6 migrations.
+**Net**: huggingface_sse is a pure DB migration, matching the pattern of deepseek/v0/github_copilot Phase 6 migrations. The INSERT-new-row approach is not just "safe" but provably decoupled from the 4 sibling services at the runtime map level.
 
 ## Phase 6 Migration SQL
 

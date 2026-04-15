@@ -46,10 +46,21 @@ SELECT service_name, domain_patterns, path_patterns, block_mode,
 --   (from 2026-04-14 09:59:52 etap.log blocked trail)
 
 -- 0b. All rows currently on openai_compat_sse — CRITICAL regression baseline.
---     After the migration, 4 of these 5 rows must remain unchanged in:
---       envelope_template content (MD5 hash comparison)
---       enabled flag
---       the 4 non-huggingface service_names must still be present
+--     Cycle 41 code read of ai_prompt_filter_db_config_loader.cpp:671-679 confirmed
+--     APF's runtime _envelopes map is keyed by response_type ALONE:
+--
+--       if (_envelopes->find(response_type) == _envelopes->end()) {
+--           _envelopes->emplace(std::move(response_type), std::move(envelope));
+--       }
+--
+--     With ORDER BY priority DESC, the first row per response_type wins at runtime.
+--     So even if there are 5 rows in the DB (per-service), only ONE envelope is
+--     actually used for openai_compat_sse at block time — shared by all 5 services
+--     via the service_name → response_type mapping in ai_prompt_services.
+--
+--     The regression check: all rows returned here must have IDENTICAL envelope_md5
+--     values compared to the snapshot taken BEFORE the migration runs. Record this
+--     output in the impl journal for post-migration MD5 comparison (PART 2d).
 SELECT service_name, response_type, enabled,
        LENGTH(envelope_template) AS bytes,
        MD5(envelope_template) AS envelope_md5
@@ -57,24 +68,33 @@ SELECT service_name, response_type, enabled,
  WHERE response_type = 'openai_compat_sse'
  ORDER BY service_name;
 -- Expected at baseline (from cycle 21 L2 extraction):
---   5 rows: chatglm, huggingface, kimi, qianwen, wrtn
---   All ~342 bytes
---   All same MD5 (IF the SQL structure uses per-service rows with identical
---   envelope_template; if it's a SINGLE shared row keyed only by response_type,
---   expect 1 row with no service_name ownership — CHECK the actual schema.)
+--   5 rows: chatglm, huggingface, kimi, qianwen, wrtn (per-service row model)
+--   OR 1 row (schema disambiguation — see 0c)
+--   Each ~342 bytes
+--   All same MD5 if template content is literally identical (likely)
 
--- 0c. Schema disambiguation — confirm ai_prompt_response_templates unique key
---     The template row key shape determines whether INSERT adds a new row or
---     UPDATEs an existing per-service row.
+-- 0c. Schema disambiguation — confirm ai_prompt_response_templates unique key shape.
+--     This tells us whether INSERT will conflict, and also whether PART 2d should
+--     expect 5 rows or 1 row on openai_compat_sse.
 SHOW INDEX FROM etap.ai_prompt_response_templates;
 SELECT COUNT(*) AS total_rows FROM etap.ai_prompt_response_templates;
 SELECT COUNT(*) AS openai_compat_rows
   FROM etap.ai_prompt_response_templates
  WHERE response_type = 'openai_compat_sse';
--- If PART 0b returned 5 rows, PART 0c.openai_compat_rows = 5 confirms the
--- per-service row model. If it returns 1, the row is truly shared (no
--- service_name column) and the migration pattern must change to "add a new
--- response_type row keyed only by response_type" with ON DUPLICATE KEY UPDATE.
+-- Read the unique-key index from SHOW INDEX output:
+--   If (service_name, response_type) composite  → PART 0b returns 5 rows, INSERT trivially
+--     succeeds because ('huggingface', 'huggingface_sse') is a new composite value.
+--   If (response_type,) only                    → PART 0b returns 1 row (one of the 5 names
+--     is the winning owner, doesn't matter which). INSERT of huggingface_sse still trivially
+--     succeeds because 'huggingface_sse' is a new response_type. ON DUPLICATE KEY UPDATE on
+--     the INSERT handles either schema.
+--
+-- EITHER WAY, cycle 41's finding makes the migration pattern correct:
+-- APF routes blocks via ai_prompt_services.response_type column lookup, and the
+-- _envelopes map is keyed by response_type. Inserting a new response_type value
+-- with its own envelope, then switching only huggingface's ai_prompt_services row
+-- to point at the new value, isolates HF from the 4 siblings at the RUNTIME level
+-- regardless of how the DB rows are structured.
 
 
 -- ############################################################################
@@ -175,21 +195,43 @@ SELECT service_name, response_type, enabled,
 --   bytes ~268 (pre-substitution); rendered size with 60B warning ~388
 --   enabled=1
 
--- 2d. CRITICAL REGRESSION CHECK — verify the 4 non-huggingface rows on
---     openai_compat_sse are UNCHANGED (MD5 must match PART 0b baseline).
---     huggingface row itself may have become stale on openai_compat_sse if
---     the schema uses per-service row model (ignore it in this check).
+-- 2d. CRITICAL REGRESSION CHECK — verify ALL rows on openai_compat_sse are
+--     physically UNCHANGED (MD5 must match PART 0b baseline).
+--     This query returns the full set without filtering service_name. Whether
+--     the schema has 5 rows (per-service) or 1 row (pure shared key), the check
+--     is the same: every row returned must have identical MD5 + enabled + bytes
+--     vs the PART 0b baseline recorded before the migration.
+--
+--     Cycle 41 code-read rationale: even though APF's runtime _envelopes map
+--     uses exactly ONE entry per response_type regardless of row count,
+--     verifying the full DB row set catches any INSERT/UPDATE that accidentally
+--     touched a sibling row. The 4 sibling services (chatglm/kimi/qianwen/wrtn)
+--     still route through 'openai_compat_sse' via their ai_prompt_services.response_type
+--     column — so the envelope they see at runtime is whichever row won
+--     ORDER BY priority DESC at DB load time. If ANY row's MD5 differs from
+--     baseline, the priority-winning row might now have a different envelope
+--     and sibling services are silently corrupted.
 SELECT service_name, response_type, enabled,
        LENGTH(envelope_template) AS bytes,
        MD5(envelope_template) AS envelope_md5
   FROM etap.ai_prompt_response_templates
  WHERE response_type = 'openai_compat_sse'
-   AND service_name != 'huggingface'
  ORDER BY service_name;
--- Expected: same 4 rows (chatglm, kimi, qianwen, wrtn) with IDENTICAL
--- envelope_md5 values compared to PART 0b. If any row's MD5 differs →
--- ROLLBACK IMMEDIATELY via PART 4 — the migration inadvertently touched
--- the shared row and the 4 sibling services are now broken.
+-- Expected: same rows as PART 0b with IDENTICAL envelope_md5 values.
+-- If ANY row's MD5 differs OR a row is missing → ROLLBACK IMMEDIATELY via PART 4.
+
+-- 2e. Confirm ai_prompt_services rows for the 4 sibling services still route
+--     through openai_compat_sse (only huggingface should have switched).
+SELECT service_name, response_type
+  FROM etap.ai_prompt_services
+ WHERE service_name IN ('chatglm', 'kimi', 'qianwen', 'wrtn', 'huggingface')
+ ORDER BY service_name;
+-- Expected:
+--   chatglm     → openai_compat_sse  (unchanged)
+--   huggingface → huggingface_sse    (CHANGED — this is the whole point)
+--   kimi        → openai_compat_sse  (unchanged)
+--   qianwen     → openai_compat_sse  (unchanged)
+--   wrtn        → openai_compat_sse  (unchanged)
 
 
 -- ############################################################################
