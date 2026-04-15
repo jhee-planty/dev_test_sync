@@ -1877,3 +1877,264 @@ has uncommitted local additions that happen to contain the same string cycle
 not this worktree, and HEAD is still clean).
 
 
+## §19 — Cycle 57: sensitive_keyword_matcher audit (last uncovered APF module)
+
+Context: the APF functions/ directory has 5 hot-path source files. Cycles
+48-55 audited ai_prompt_filter.cpp (main), ai_prompt_filter_db_config_loader
+(detect/match), and the etap core bridge (network_loop, visible_tls_session).
+The keyword engine itself — `sensitive_keyword_matcher.cpp/.h` (449 + 249
+lines, 698 total) — was never code-read. Cycle 57 closes that gap.
+
+NOTE: my cycle 56 next_step said "ai_prompt_filter/ai_prompt_keyword.cpp" but
+the actual filename is `sensitive_keyword_matcher.cpp`. File naming confusion
+only — no new file discovered, just the existing keyword matcher under its
+real name.
+
+### 19.1 Architecture — lock-free matcher bundle + instance_switcher
+
+`sensitive_keyword_matcher` wraps a `matcher_bundle` struct containing:
+- `std::unique_ptr<bo::bo_aho_corasick> ac_matcher` — unified EXACT+PARTIAL
+  matcher (case-insensitive, built with `bo_aho_corasick(true)`)
+- `std::vector<std::unique_ptr<keyword_metadata>> metadata_storage` — owns
+  keyword metadata; raw pointers stored in AC user_data for O(1) lookup
+- `std::vector<regex_cache_entry> regex_cache` — compiled RE2 patterns,
+  sorted by priority descending
+- `bool is_built`
+
+The bundle is held inside `etap::instance_switcher<std::shared_ptr<matcher_bundle>> _matchers`
+(header line 199). `rebuild_matchers()` (line 30) builds a NEW bundle then
+atomically swaps it in via `_matchers.apply_new_instance(new_bundle, [](){})`
+(line 52). `find_sensitive_data` reads the current instance via
+`get_current_instance()` (line 75) — returns a `shared_ptr` so the caller
+holds a reference that keeps the bundle alive across the call even if a
+concurrent rebuild replaces `_matchers`. **Lock-free hot path, copy-on-write
+rebuild.**
+
+This is the same `instance_switcher` pattern used elsewhere in etap core.
+Confirms keyword updates (reload_keywords cli command) cannot stall detection
+traffic — each request walks the old bundle until the swap completes.
+
+### 19.2 Match entry point — find_sensitive_data (cpp:64-97)
+
+Two-phase matching, AC first then REGEX:
+
+```cpp
+// cpp:88
+result = find_keyword_match(*matchers, text, text_len);  // AC (EXACT+PARTIAL)
+if (result.found) return result;
+// cpp:94
+result = find_regex_match(*matchers, text, text_len);    // RE2
+return result;
+```
+
+**First-match-wins across both phases.** No score/longest-match/priority
+tiebreaker at the top level — AC result takes precedence over any REGEX
+that might also match, regardless of priority. This has implications for
+keyword authoring (§19.6 below).
+
+### 19.3 AC matching (find_keyword_match cpp:368-420)
+
+The AC matcher is a single unified Aho-Corasick automaton with case-insensitive
+matching. For each AC hit, the user_data pointer resolves (O(1)) to
+`keyword_metadata*` which carries `{keyword, category, keyword_id, priority, type}`.
+
+**Type-specific post-processing**:
+- `EXACT`: runs `is_word_boundary_before(text, pos, text_len)` AND
+  `is_word_boundary_after(text, end_pos, text_len)` (cpp:400-404). If either
+  check fails, iterate to next AC match. **Only EXACT words enforce word
+  boundaries.**
+- `PARTIAL`: no post-processing — first hit wins (cpp:407 comment "검증 불필요").
+
+**Return on first valid hit** (cpp:416). The AC search iterates via
+`find_next(text, text_len, &state)` in a while loop (cpp:382-417) but only
+for EXACT re-iteration when a boundary check fails. PARTIAL always returns
+on first hit.
+
+### 19.4 Word boundary semantics — Korean-friendly (cpp:297-362)
+
+`is_word_boundary_before` and `is_word_boundary_after` implement a pragmatic
+rule set:
+
+| Prev/Next char | Boundary? | Rule |
+|----------------|-----------|------|
+| Start/end of text | yes | trivial |
+| ASCII space (0x09-0x0D, 0x20) | yes | whitespace |
+| ASCII alphanumeric (A-Za-z0-9) | **no** | word continuation |
+| ASCII punctuation (!"#$%...) | yes | separator |
+| Multi-byte (>0x7F, first byte of UTF-8) | **yes** | Korean hangul always boundary |
+
+The multi-byte-always-boundary rule is the "느슨한" (loose) behavior documented
+at cpp:293. Purpose: handle Korean particle suffixes like "주민등록번호**가**",
+"이메일**은**" where the keyword is followed by a non-space Korean particle.
+Strict word-boundary matching would miss these; loose matching catches them.
+
+**Trade-off**: any Korean character immediately adjacent to an EXACT keyword
+passes the boundary check, so an EXACT keyword "test" inside "testing" would
+fail (ASCII alphanumeric → no boundary) while an EXACT "주민등록번호" inside
+a contiguous Korean string "주민등록번호시스템" would succeed. This is
+intentional for the Korean language use case (particles attach without
+spaces) but could cause false positives if an EXACT keyword is a substring
+of another Korean word. **Workaround is to use PARTIAL for such keywords**
+(which skips boundary checks entirely), or to use REGEX with explicit
+lookahead/lookbehind.
+
+### 19.5 REGEX matching (find_regex_match cpp:422-448)
+
+Linear scan through `bundle.regex_cache` (pre-sorted by priority DESC at
+cpp:268-271). For each entry:
+
+```cpp
+// cpp:437
+if (RE2::PartialMatch(text_piece, *entry.compiled_regex)) {
+    result.found = true; result.matched_keyword = entry.keyword;
+    // ... position is NOT set for regex
+    return result;
+}
+```
+
+**Observation**: `result.position` is NOT populated for REGEX matches (unlike
+AC at cpp:413). Downstream code in apf.cpp reads `result.matched_keyword` and
+`result.category` but not `result.position` for block decisions, so this is
+harmless in practice — but any future feature that wants "position of matched
+keyword in body" for diagnostics would miss regex matches silently.
+
+**Performance**: O(n × regex_count) where n is text length. For typical
+configs (few regex patterns, many AC keywords), AC path dominates. RE2
+is already fast; sorting by priority desc means high-priority regex checks
+run first, minimizing expected-case latency.
+
+### 19.6 Priority semantics — ONLY REGEX respects priority
+
+**Major finding**: `keyword_metadata::priority` is copied during build
+(cpp:181) but **never read during AC matching**. For EXACT/PARTIAL keywords,
+which one matches first depends on:
+1. Positional order in the text (Aho-Corasick finds leftmost match first)
+2. AC internal automaton traversal order at the same position (implementation-defined)
+
+Priority ONLY affects REGEX cache sort order (cpp:268-271). For AC keywords,
+priority is a dead field.
+
+**Implications**:
+- Comment at cpp:86 ("우선순위 순으로 검사 (이미 정렬되어 있음)") is
+  **misleading** — true only for regex_cache, not for the unified AC matcher.
+- Two overlapping AC keywords (e.g., "번호" priority 50 and "주민등록번호"
+  priority 100) will match based on which one Aho-Corasick reaches first in
+  the automaton, not which has higher priority.
+- **Workaround**: if priority ordering is needed for AC keywords, they must
+  be converted to REGEX (with anchors/lookarounds as needed). The cleaner
+  fix would be for AC post-processing to collect ALL matches, sort by
+  priority, and return the highest — at the cost of no-early-exit on first hit.
+
+**Action item** (non-urgent cleanup): either (a) document that priority is
+regex-only and mark the AC priority field as unused, or (b) implement
+priority sort in find_keyword_match. Current behavior is fine for HF Phase 6
+(single keyword class, priority irrelevant) but deserves a note in the
+keyword-authoring guide.
+
+### 19.7 B17 space-normalization fallback (apf.cpp:2448-2467)
+
+Caller `check_sensitive_data_decoded` adds a fallback pass AFTER the matcher
+returns no-match. Logic:
+
+```cpp
+// apf.cpp:2448
+if (!result.found) {
+    std::string normalized;
+    for (char c : decoded_text) {
+        if (c != ' ' && c != '\t') normalized += c;
+    }
+    if (normalized.size() != decoded_text.size()) {
+        result = _keyword_matcher->find_sensitive_data(
+            normalized.c_str(), normalized.size());
+        if (result.found) {
+            bo_mlog_info("KEYWORD_NORMALIZED: ...");
+        }
+    }
+}
+```
+
+**Phase3-B17**: adds "space-normalization fallback" to the build tag list.
+Fills a gap — §17 cross-referenced B13/B14/B15/B16/B24/B30 but B17 was
+missing. Cycle 57 adds it to the build-tag inventory.
+
+**Purpose**: IME/input-method issue where some typing systems insert spaces
+between characters ("주 민 등 록 번 호" instead of "주민등록번호"). Strip
+spaces/tabs only, then retry. Does NOT strip Korean whitespace or other
+multi-byte separators — narrow fix for a narrow symptom.
+
+**Cost analysis**: miss-case pays O(n) copy + second matcher pass (2× worst
+case). Hit-case early-exits after first pass. Only runs when the original
+text produced no match, so performance hit is limited to clean requests
+being re-checked — the block path does NOT add this overhead.
+
+**Edge case**: text with no spaces at all bypasses the fallback
+(`normalized.size() == decoded_text.size()` check at cpp:2456). Correct
+behavior — no work to do.
+
+### 19.8 Relevance to HF Phase 6 migration
+
+Huggingface Phase 6 migrates the block-response envelope template. The
+keyword matcher is service-agnostic — all services share the same unified
+AC + REGEX matchers (§19.1). There's no HF-specific keyword subset or
+filter that could cause HF to miss a keyword while other services catch it.
+The existing Phase 3 `BLOCK_VERIFIED` verdict for HF (from cycle 36+) already
+validated the detection path; §19 just confirms the matcher has no
+service-aware gating.
+
+This closes the last uncovered major APF module. Every file in
+functions/ai_prompt_filter/ that is touched by the HF block path has now
+been code-read in cycles 48-57:
+- ai_prompt_filter.cpp ✅ (cycles 48-54)
+- ai_prompt_filter_db_config_loader.cpp ✅ (cycle 51)
+- sensitive_keyword_matcher.cpp ✅ (cycle 57, this §19)
+- ai_prompt_filter_config.cpp (non-hot-path, XML config; deferred)
+- sql/apf_db_driven_migration.sql (config data, deferred to cycle 58 or
+  post-migration)
+
+### 19.9 Verification level count — now 15
+
+Cycle 55: 14 levels (a-n). Cycle 56: stayed at 14 (tooling audit). Cycle 57
+adds:
+
+**(o) Keyword matching engine**: Aho-Corasick unified EXACT+PARTIAL matcher
+with RE2 regex fallback; lock-free bundle swap via instance_switcher; Korean-
+friendly word boundary rules; priority applies only to regex cache; B17
+space-normalization fallback at caller layer.
+
+Total: **15 verification levels (a-o)** for HF Phase 6 migration confidence.
+
+### 19.10 Side observations (cycle 58+ candidates)
+
+1. **Unused field**: `keyword_metadata::priority` copied at cpp:181 but never
+   read for AC matching. Cleanup candidate — either document as regex-only or
+   implement AC priority sort.
+2. **Misleading comment** at cpp:86: "우선순위 순으로 검사 (이미 정렬되어 있음)"
+   — rewrite to "REGEX 매칭은 우선순위 내림차순, AC 매칭은 텍스트 내 첫 매칭
+   위치 우선".
+3. **Build tag B17** was missing from §17's cross-reference list. Cycle 57
+   adds it; §17.9 should be amended or cycle 58 should consolidate the full
+   B1-B30 build tag inventory.
+4. **REGEX position not populated** at find_regex_match — cpp:437-444 sets
+   matched_keyword/category/keyword_id but not position. Low-risk latent
+   bug if any future diagnostic reads `result.position` from a regex match.
+5. **KEYWORD_CHECK log at apf.cpp:2470** uses the un-namespaced
+   "KEYWORD_CHECK:" prefix rather than `[APF:keyword_check]`. Minor
+   observability inconsistency — candidate for the §18 rename sweep's scope
+   expansion.
+6. **KEYWORD_NORMALIZED log at apf.cpp:2462** same issue — should become
+   `[APF:keyword_normalized]`.
+
+Adds 2 more log-rename candidates to the §18 Phase 7 cleanup side task
+(now covers 15 contamination tags + 6 legacy [APF] + 2 KEYWORD_* = 23 total
+rename sites).
+
+Summary of §19: the sensitive_keyword_matcher module is architecturally sound
+(lock-free bundle swap, O(1) metadata access via AC user_data, RE2 for regex,
+Korean-friendly word boundaries). The only noteworthy finding is that AC
+matching ignores the `priority` field — a latent semantic mismatch with the
+docstring/comment. Not a correctness bug for HF or any current service.
+Verification level count advances to 15 (a-o); last uncovered APF module
+now code-audited.
+
+
+
