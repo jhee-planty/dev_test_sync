@@ -120,3 +120,41 @@ This audit was triggered by a chain of cycle findings:
 - `functions/ai_prompt_filter/ai_prompt_filter.cpp:1249–1328` (`render_envelope_template`)
 - Cycle 21 L2 SSH envelope size extraction (deepseek/copilot/openai_compat/chatgpt sizes)
 - Cycle 31 `github_copilot_design.md` corrections
+
+---
+
+## 8. Cycle 44 follow-up — m365_copilot_sse CORS is **already fixed** in live DB
+
+**Finding**: cycle 44 direct DB query on 218.232.120.58 shows the live `m365_copilot_sse` envelope is **NOT** what the Apr 8 baseline migration file contains. Diff:
+
+| Attribute | Baseline file `apf_db_driven_migration.sql:173-189` | Live DB (cycle 44 HEX decode) |
+|-----------|-----------------------------------------------------|--------------------------------|
+| `access-control-allow-origin` | `*` (wildcard — INVALID with credentials) | `https://copilot.microsoft.com` (specific — VALID) |
+| `access-control-allow-credentials` | `true` | `true` |
+| `Content-Length` header | `Content-Length: 0\r\n` | `Content-Length: {{BODY_INNER_LENGTH}}\r\n` |
+| Envelope size | (computed) | **647 bytes** |
+| MD5 | (computed from baseline text) | `02deeb5f4e81b6c718c4ee8ce8ffc325` |
+
+**Implication #1 (good news)**: The cycle 34 "⚠️ MISMATCH" flag for m365_copilot_sse is **MOOT at runtime** — the live DB already has valid CORS (`https://copilot.microsoft.com` instead of `*`). Section 2 flags can be downgraded. An ad-hoc SSH SQL UPDATE corrected this at some point between Apr 8 and Apr 15. No action needed for m365 Phase 6 touches unless the origin itself changes.
+
+**Implication #2 (concerning)**: This is a **drift case** — the baseline migration file in the source tree is **stale** for m365_copilot_sse. If someone re-runs `apf_db_driven_migration.sql` intending to re-seed the DB (e.g., disaster recovery), the valid CORS header will **regress** to the invalid `*` variant. This makes the cycle 34 concern non-moot at the "source tree integrity" level even though it's moot at the runtime level.
+
+**Implication #3 (placeholder evolution)**: `Content-Length: 0\r\n` (baseline file) → `Content-Length: {{BODY_INNER_LENGTH}}\r\n` (live DB). The live DB now uses the `{{BODY_INNER_LENGTH}}` placeholder explicitly, matching the cycle 42 finding on `openai_compat_sse` (same placeholder, same pattern). Section 4 item 1 ("Content-Length placeholder") should be updated: **two** styles exist in production — `Content-Length: 0\r\n` (rewritten by `recalculate_content_length` at runtime) vs `Content-Length: {{BODY_INNER_LENGTH}}\r\n` (rewritten at template render time via `render_envelope_template`). Both produce the correct final header; they're just different load-bearing contracts.
+
+**Decoded live m365_copilot_sse envelope (647 bytes)**:
+```
+HTTP/1.1 200 OK\r\n
+Content-Type: text/event-stream; charset=utf-8\r\n
+Cache-Control: no-cache\r\n
+access-control-allow-credentials: true\r\n
+access-control-allow-origin: https://copilot.microsoft.com\r\n
+Content-Length: {{BODY_INNER_LENGTH}}\r\n
+\r\n
+event: copilotConversation\r\ndata: {"id":"evt_001","type":"message_start","conversation":{"messageId":"{{UUID:msg_id}}","role":"assistant"}}\r\n\r\n
+event: copilotConversation\r\ndata: {"id":"evt_002","type":"message_content_delta","conversation":{"content":"{{MESSAGE}}"}}\r\n\r\n
+event: copilotConversation\r\ndata: {"id":"evt_003","type":"message_end","conversation":{"messageId":"{{UUID:msg_id}}","finishReason":"blocked"}}\r\n\r\n
+```
+
+**Recommended action** (same as §6 item 2 — elevated priority): backport the live DB envelope into `apf_db_driven_migration.sql` so the source tree matches reality. Until then, anyone using the baseline migration file as a seeding authority will silently reintroduce the invalid CORS header. Candidates for the same backport sweep: `openai_compat_sse` (5 rows, differs from §3.2 cycle 21 approximation per cycle 42 capture), any other service with ad-hoc UPDATEs logged in impl journals.
+
+**Cross-reference**: cycle 42 captured the canonical `openai_compat_sse` baseline (342B, MD5 `7955369a54e3f47da70315d03aa28598`); cycle 44 captured the canonical `m365_copilot_sse` baseline (647B, MD5 `02deeb5f4e81b6c718c4ee8ce8ffc325`). These two MD5s are now durable reference checkpoints for future integrity audits.
