@@ -1082,3 +1082,268 @@ HF Phase 6 migration audit now covers 12 verification levels:
 - Phase3 build tags: B25d (SSE chunked TE for HTTP/1.1), B26 (H2 de-chunker),
   B27 (CRLF/LF separator picker), B30 (h2_end_stream ternary).
 
+---
+
+## 16. prepare_response_type — hardcoded `/prepare` suffix gate (cycle 54)
+
+Cycle 54 audits the `prepare_response_type` / `is_prepare_api` subsystem at
+ai_prompt_filter.cpp:525, cpp:705, cpp:900, cpp:1625-1628 and the baseline SQL
+migration to understand exactly when the prepare envelope path fires.
+
+### 16.1 Why this matters
+
+- Cycle 17 v0 Phase 6 design noted "is_prepare_api is hardcoded to `/prepare`
+  suffix so can't repurpose for `/chat/api/send`" but never documented the
+  full surface.
+- Cycle 48 envelope_audit §11 mentioned the prepare distinction in passing
+  but did not trace the code path end-to-end.
+- huggingface Phase 6 uses `/chat` path, no prepare variant in HF chat-ui's
+  SvelteKit routes — relevant to confirm HF's lookup_key path is pure
+  `response_type` fallback, not prepare-dependent.
+
+### 16.2 Detection: hardcoded `/prepare` suffix (two call sites)
+
+**HTTP/1.1** at cpp:524-526:
+
+```cpp
+sd->api_path = path;
+// pre-send API 감지: 경로 끝이 "/prepare" 이면 true
+sd->is_prepare_api = (path.size() >= 8 &&
+                      path.compare(path.size() - 8, 8, "/prepare") == 0);
+```
+
+**HTTP/2** at cpp:704-706:
+
+```cpp
+// pre-send API 감지: 경로 끝이 "/prepare" 이면 true
+sd->is_prepare_api = (sd->api_path.size() >= 8 &&
+                      sd->api_path.compare(sd->api_path.size() - 8, 8, "/prepare") == 0);
+```
+
+Both sites are **byte-for-byte identical detection logic**. The 8-byte suffix
+`"/prepare"` is **hardcoded**. There is no DB column, no config flag, no
+service-level override. A service wanting to use `prepare_response_type`
+semantics must structure its pre-validation endpoint path to end in
+`/prepare`.
+
+**Known compliant paths:**
+- `chatgpt`: `POST /backend-api/f/conversation/prepare` ✓
+
+**Known non-compliant paths (cannot use prepare mechanism):**
+- `v0`: `/chat/api/send` — cycle 17 confirmed unusable, v0 Phase 6 uses
+  two-row workaround (`v0` service row for `/chat`, `v0_api` service row
+  for `/chat/api/send`).
+- any service with `/pre-send`, `/submit`, `/init`, `/presubmit`,
+  `/validate`, `/check` style pre-validation endpoints — none match.
+
+### 16.3 Cache: DB → session at detect time (cpp:900)
+
+In `detect_and_mark_ai_service` at cpp:870-918:
+
+```cpp
+const ai_service_info* info = _config_loader->get_service_info(*service);
+if (info) {
+    sd->response_type         = info->response_type;
+    sd->prepare_response_type = info->prepare_response_type;  // cpp:900
+    sd->h2_mode               = info->h2_mode;
+    sd->h2_end_stream         = info->h2_end_stream;
+    sd->h2_goaway             = info->h2_goaway;
+    sd->h2_hold_request       = info->h2_hold_request;
+}
+```
+
+`prepare_response_type` is one of 6 columns cached from the DB row at the
+first request on the session. The column default is empty string
+(`VARCHAR(64) NOT NULL DEFAULT ''` per migration line 26), so services that
+don't configure it see `sd->prepare_response_type == ""`.
+
+### 16.4 Lookup: selection gate at cpp:1625-1628
+
+In `generate_block_response`:
+
+```cpp
+// 2. 응답 생성기 조회 (response_type 기반)
+const std::string& lookup_key =
+    (sd->is_prepare_api && !sd->prepare_response_type.empty())
+        ? sd->prepare_response_type
+        : sd->response_type;
+```
+
+**Truth table** (4 cases):
+
+| is_prepare_api | prepare_response_type | lookup_key selected | Effective behavior |
+|----------------|----------------------|---------------------|--------------------|
+| false | empty | response_type | Normal path (vast majority of services) |
+| false | non-empty | response_type | Main POST ignores prepare column |
+| true | empty | response_type | /prepare path falls back to main envelope |
+| true | non-empty | **prepare_response_type** | /prepare path uses its own envelope |
+
+**Key observation**: cases 1+3 are equivalent — if `prepare_response_type` is
+empty (default), the `/prepare` detection is a no-op and everything uses
+`response_type`. Case 2 is also benign — a non-prepare path ignores a
+populated `prepare_response_type`. **Only case 4 is "active"**, and it only
+activates when BOTH (a) the incoming path ends in `/prepare` AND (b) the
+service has explicitly configured a different envelope for that path.
+
+### 16.5 Current population in baseline SQL
+
+Grep `prepare_response_type=['\"][^'\"]*[a-z]` against
+`apf_db_driven_migration.sql` returns exactly **ONE** UPDATE:
+
+```sql
+-- Line 39
+UPDATE etap.ai_prompt_services SET
+  response_type='chatgpt_sse',
+  prepare_response_type='chatgpt_prepare',
+  h2_mode=1, h2_end_stream=1, h2_goaway=1, h2_hold_request=0
+WHERE service_name='chatgpt';
+```
+
+**chatgpt is the only baseline service** using this mechanism. Every other
+service has `prepare_response_type=''` (default).
+
+### 16.6 chatgpt_prepare envelope distinctness
+
+Why does chatgpt need two envelopes? The `chatgpt_prepare` envelope
+(SQL:72-85) is a **plain JSON error response**:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+access-control-allow-credentials: true
+access-control-allow-origin: https://chatgpt.com
+Content-Length: 0
+
+{"status":"error","error_code":"content_policy_violation","error":"{{MESSAGE_RAW}}"}
+```
+
+The `chatgpt_sse` envelope (SQL:87-111) is the full **5-event SSE delta
+stream** for the main conversation POST. The prepare endpoint is a synchronous
+JSON pre-validation check that returns before SSE streaming starts — its
+response format is incompatible with SSE delta framing. Without a separate
+envelope, the main SSE envelope would be sent as a JSON response and
+ChatGPT's React client would fail JSON parsing before ever reaching the
+SSE reader.
+
+This is **the only legitimate use case for prepare_response_type in the
+current codebase**: a service that exposes BOTH a synchronous pre-validation
+API and a streaming main API under the same service_name, where the two
+endpoints need distinct response formats.
+
+### 16.7 Huggingface relevance
+
+HF chat-ui POST routes (from SvelteKit open source):
+- `POST /conversation/{id}` — main streaming endpoint
+- `POST /conversation/{id}/stop-generating`
+- `POST /settings`
+- `GET /api/*` miscellaneous
+
+**None end in `/prepare`.** Therefore:
+
+- `sd->is_prepare_api` will always be `false` for huggingface
+- `lookup_key` will always resolve to `sd->response_type` (the HF envelope
+  key — currently `openai_compat_sse`, Phase 6 target TBD)
+- HF Phase 6 migration **should leave `prepare_response_type` as empty/default**
+- Setting it would be case 2 in the truth table — harmless, but dead weight
+
+**Pre-apply verification:** Phase 6 HF migration SQL must NOT populate
+`prepare_response_type`, and the Phase 6 plan's UPDATE statement on
+ai_prompt_services for huggingface must either omit the column or
+explicitly set it to `''`.
+
+### 16.8 Ordering hazard analysis
+
+Observation: in `on_http2_request` the hold-set block runs at cpp:691-702,
+and `is_prepare_api` is re-detected AFTER that at cpp:704-706:
+
+```cpp
+// ... cpp:691 hold decision runs here ...
+else if (is_post && sd->h2_hold_request && sd->check_completed) {
+    bo_mlog_info("[APF:hold_skip] ...");
+}
+
+// cpp:704 — is_prepare_api re-detected AFTER hold decision
+sd->is_prepare_api = (sd->api_path.size() >= 8 && ...);
+```
+
+**Could a stale `is_prepare_api` leak into the hold decision?**
+
+Checked: the hold-set conditional at cpp:691-697 evaluates
+`is_post && sd->h2_hold_request && !sd->check_completed`. It does NOT
+examine `is_prepare_api`. So the ordering is irrelevant — hold decision
+is prepare-agnostic.
+
+**Could a stale `is_prepare_api` leak into generate_block_response?**
+
+No. `generate_block_response` fires later during `block_session` after the
+body scan completes in the DATA handler. By that time cpp:704-706 has
+already updated `is_prepare_api` for the current request. The flag is
+current when the lookup at cpp:1625 reads it.
+
+**Conclusion**: the ordering is safe as designed but **fragile**. Any future
+edit that adds an `is_prepare_api` check to the hold-set block would
+introduce a stale-read bug on H2. Recommend: move the cpp:704-706 detection
+BEFORE cpp:691 to eliminate the hazard. Low priority (no active bug),
+flagged as defensive cleanup.
+
+### 16.9 Validation at reload time (cpp:115-120)
+
+In the service reload path at cpp:107-134:
+
+```cpp
+if (!svc.prepare_response_type.empty() &&
+    _config_loader->get_envelope_template(svc.prepare_response_type).empty()) {
+    bo_mlog_warn("[APF:validate] service '%s' has prepare_response_type '%s' "
+                 "but no envelope template in DB",
+                 svc.service_name.c_str(), svc.prepare_response_type.c_str());
+}
+```
+
+This is a **reload-time sanity check**: if a service has a non-empty
+`prepare_response_type` column but no matching envelope row in
+`ai_prompt_response_templates`, a WARNING is logged but the service is NOT
+disabled. At block time, `get_envelope_template(lookup_key)` returns empty
+and falls through to the `db_template` plain-text path (cpp:1638-1642).
+
+**For the current chatgpt case**: baseline SQL line 74-85 creates a
+`chatgpt_prepare` envelope row, so the validation passes. If that row gets
+accidentally deleted but the service row still references
+`prepare_response_type='chatgpt_prepare'`, block responses on the
+`/prepare` endpoint would degrade to plain http_response text (Korean
+warning) rather than the structured JSON error. Chat bubble would likely
+still show but browser may see parse errors — degraded UX, not a crash.
+
+### 16.10 Verification level count
+
+HF Phase 6 migration audit coverage now spans 13 verification levels:
+
+- (a) DB schema ✓
+- (b) runtime envelope map ✓
+- (c) byte-level baseline ✓
+- (d) CLI completeness ✓
+- (e) SQL idempotency ✓
+- (f) http_response semantics ✓
+- (g) placeholder surface ✓
+- (h) H2 frame conversion ✓ (§9)
+- (i) Content-Length rewrite branches ✓ (§12)
+- (j) service detection + h2_mode ternary ✓ (§13)
+- (k) request hold-release mechanism ✓ (§14)
+- (l) B26 de-chunker defensive path ✓ (§15)
+- (m) **prepare_response_type selection gate ✓** (§16 cycle 54)
+
+### 16.11 Cross-references
+
+- cpp:115-120 reload validation
+- cpp:525-526 H1.1 `/prepare` detection
+- cpp:704-706 H2 `/prepare` detection
+- cpp:900 DB cache → session
+- cpp:1625-1628 lookup_key selection gate
+- SQL:39 chatgpt UPDATE (only baseline user)
+- SQL:72-85 chatgpt_prepare envelope (JSON error)
+- SQL:87-111 chatgpt_sse envelope (SSE delta stream)
+- Cycle 17 v0 design: first encounter with the hardcoding constraint
+- Cycle 48 §11: first mention of prepare distinction (not traced to code)
+- Cycle 51 §13: huggingface path `/chat` — no prepare variant
+- Cycle 52 §14: hold-set logic (cpp:691) confirmed prepare-agnostic
+
+
