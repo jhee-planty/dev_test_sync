@@ -118,3 +118,33 @@ COMMIT;
 ```
 
 상세: `references/phase2-analysis-registration.md` §INSERT idempotency, `references/apf-cli-commands.md` §Table-specific INSERT idempotency, `services/envelope_audit_2026-04-15.md` §9.
+
+## http_response 컬럼은 차단 메시지 본문 (cycle 47 finding)
+
+`ai_prompt_response_templates.http_response` 컬럼은 이름과 달리 **HTTP 상태 코드가 아니라 차단 메시지 텍스트**이다. APF는 이 값을 envelope의 `{{MESSAGE}}` 자리표시자에 그대로 치환한다. 코드 경로:
+
+```
+ai_prompt_filter.cpp:1239
+  db_template = _config_loader->get_response_template(service_name)
+    → _templates[service_name] = http_response 컬럼 (load_response_templates)
+ai_prompt_filter.cpp:render_envelope_template(envelope, db_template, ...)
+    → {{MESSAGE}} 자리에 db_template 삽입
+```
+
+**INSERT 작성 시 반드시 확인:**
+- `http_response` 값에 `'BLOCK'`, `0`, `NULL`, 자리표시자 문자열이 들어가면 사용자 화면에 그 문자열이 그대로 노출된다.
+- 같은 `service_name`에 기존 row가 있으면 해당 row의 `http_response`를 복사하거나 `INSERT ... SELECT t.http_response FROM ...` 패턴을 사용한다.
+- 기존 row가 없으면 우선순위 tier에 맞는 canonical 텍스트를 사용한다:
+  - `priority=50`: 159바이트 한영 병기 (⚠️ 민감정보가 ... detected.)
+  - `priority=1`: 89바이트 한글 단문 (⚠️ 민감정보가 ... 차단되었습니다.)
+
+**검증 명령어** (migration SQL 작성 후):
+
+```bash
+grep -E "http_response[^a-z]*(=|,)[^'\"]*['\"]?(BLOCK|0|NULL|TODO|TBD|PLACEHOLDER)" file.sql
+# 아무 것도 출력되지 않아야 함
+```
+
+**과거 사고 (cycle 47 발견):** `phase6_huggingface_addendum_2026-04-15.sql`의 PART 1A가 `http_response='BLOCK'`으로, `phase6_combined_migration_2026-04-15.sql`의 1B.2b가 `http_response=0`으로 작성되어 있었다. huggingface는 기존 row(id=37)가 priority 동점으로 구제되었을 수 있으나 undefined behavior였고, v0_api는 신규 row뿐이라 명백한 bug였다 (현재 envelope에 `{{MESSAGE}}` 자리표시자가 없어 latent 상태). 두 파일 모두 cycle 47에 수정.
+
+상세: `services/envelope_audit_2026-04-15.md` §10.

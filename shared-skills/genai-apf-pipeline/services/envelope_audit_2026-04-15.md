@@ -315,3 +315,95 @@ Plus drift on existing services:
 - Cycle 42: canonical openai_compat_sse baseline (MD5 `7955369a54e3f47da70315d03aa28598`)
 - Cycle 44: canonical m365_copilot_sse baseline (MD5 `02deeb5f4e81b6c718c4ee8ce8ffc325`)
 - Cycle 45: full row inventory + schema finding + 3-INSERT idempotency fix + 25-row drift list
+
+---
+
+## §10. `http_response` column IS the block-message text (cycle 47)
+
+**Discovery.** Reading `ai_prompt_filter.cpp:1602-1677` (`generate_block_response`) in cycle 47 revealed that the `db_template` substituted into the envelope's `{{MESSAGE}}` placeholder comes from `_config_loader->get_response_template(service_name)`. Following the load path:
+
+```
+ai_prompt_filter_db_config_loader.h:265
+  get_response_template(service_name) → _templates->find(service_name)
+
+ai_prompt_filter_db_config_loader.cpp:640-667  (load_response_templates)
+  SELECT service_name, http_response, response_type, envelope_template
+    FROM etap.ai_prompt_response_templates
+    WHERE enabled = 1 ORDER BY priority DESC;
+  →  _templates[service_name] = http_response   (first-row-wins)
+```
+
+So the `http_response` column **is** the block-message text — NOT a status code, NOT an HTTP verb, NOT a schema placeholder. Every row's `http_response` value gets inlined into envelope `{{MESSAGE}}` placeholders at block time. The column name is historical baggage from an earlier design.
+
+**Two bugs found and fixed in-draft migrations.**
+
+### 10.1 huggingface addendum PART 1A (`phase6_huggingface_addendum_2026-04-15.sql`)
+
+The draft had `http_response='BLOCK'` as a placeholder. Had this shipped:
+
+- New row: `(huggingface, huggingface_sse, 'BLOCK', priority=50)`
+- Existing row: `(huggingface, openai_compat_sse, 159-byte canonical warning, priority=50)` (id=37, verified cycle 47)
+- `_templates['huggingface']` tiebreak race: both priority=50, tiebreak via InnoDB insertion order (id ASC) → existing id=37 wins in practice, but this is **undefined behavior** per the MySQL docs for rows with tied ORDER BY keys.
+
+Even if the existing row always won the tiebreak today, a future `TRUNCATE + re-apply` would reverse id ordering and the new row (with 'BLOCK') would win → user sees literal "BLOCK" in the chat bubble.
+
+**Fix (applied cycle 47):** new row uses the same 159-byte canonical text as the existing huggingface/chatglm/v0/copilot siblings:
+
+```
+⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.
+```
+
+With both rows holding identical `http_response`, the tiebreak is semantically safe.
+
+### 10.2 combined migration 1B.2b (`phase6_combined_migration_2026-04-15.sql`)
+
+The draft had `http_response=0` (integer literal) for `(v0_api, v0_303_redirect)`. Severity ranking:
+
+- Existing rows for service_name='v0_api': **ZERO** (verified cycle 47 — only `v0` exists at id=46, not `v0_api`).
+- Consequence: the new row IS the only row → `_templates['v0_api'] = '0'`.
+- Current envelope for v0_303_redirect has no `{{MESSAGE}}` placeholder (it's a 303 redirect with empty body), so the bug is **LATENT** today. But any future edit adding an HTML fallback body or injecting `{{MESSAGE}}` into a header would immediately leak the literal character `0` to the user.
+
+**Fix (applied cycle 47):** same 159-byte canonical warning text.
+
+### 10.3 combined migration 1C.2 — verified SAFE
+
+`github_copilot` / `copilot_sse` uses INSERT-SELECT:
+
+```sql
+SELECT 'github_copilot', t.http_response, 'copilot_sse', ...
+  FROM etap.ai_prompt_response_templates t
+ WHERE t.service_name = 'github_copilot' AND t.response_type = 'copilot_403'
+ LIMIT 1;
+```
+
+This inherits `http_response` from the existing `copilot_403` row (id=15, 89-byte ⚠️ warning). No fix needed.
+
+### 10.4 Live DB canonical-text convention (cycle 47 snapshot)
+
+| service_name | id | response_type | priority | len | text |
+|---|---|---|---|---|---|
+| huggingface | 37 | openai_compat_sse | 50 | 159 | ⚠️ ...blocked due to sensitive information detected. |
+| chatglm | 38 | openai_compat_sse | 50 | 159 | (same 159-byte canonical) |
+| copilot | 43 | generic_sse | 50 | 159 | (same 159-byte canonical) |
+| v0 | 46 | v0_json | 50 | 159 | (same 159-byte canonical) |
+| deepseek | 26 | deepseek_sse | 90 | 176 | 이 서비스는 회사 보안 정책에... (deepseek-specific 176-byte variant) |
+| github_copilot | 15 | copilot_403 | 1 | 89 | ⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. |
+| m365_copilot | 17 | m365_copilot_sse | 1 | 89 | (same 89-byte short form) |
+
+**Convention observed:** `priority=50` rows use the 159-byte Korean+English long form; `priority=1` rows use the 89-byte Korean-only short form; deepseek has its own 176-byte variant at `priority=90`. New INSERTs should match the convention of whichever priority tier they occupy.
+
+### 10.5 Verification checklist for all future migrations
+
+Before running any INSERT into `ai_prompt_response_templates`:
+
+1. `SELECT id, service_name, response_type, priority, LENGTH(http_response), LEFT(http_response, 80) FROM ai_prompt_response_templates WHERE service_name = '<target>' ORDER BY priority DESC;` — capture existing rows.
+2. If row(s) exist: copy `http_response` verbatim into the new INSERT, or SELECT from one via INSERT-SELECT.
+3. If NO row exists: pick the canonical text matching the target priority tier (see §10.4).
+4. Verify no literal `BLOCK`, `0`, `NULL`, or schema-placeholder strings remain in `http_response` values.
+5. Grep the final SQL file: `grep -E "http_response[^a-z]*(=|,)[^'\"]*['\"]?(BLOCK|0|NULL|TODO|TBD|PLACEHOLDER)" file.sql` — should return nothing.
+
+### 10.6 Cross-references
+
+- Cycle 47 code read: `functions/ai_prompt_filter/ai_prompt_filter.cpp:1602-1677` (generate_block_response), `ai_prompt_filter_db_config_loader.h:260-280` (get_response_template), `ai_prompt_filter_db_config_loader.cpp:620-708` (load_response_templates)
+- Cycle 47 DB query: `ssh ... mysql -h ogsvm -u root -p... etap -N -e "SELECT ... FROM ai_prompt_response_templates WHERE service_name IN (...)"`
+- Fix applied: `phase6_huggingface_addendum_2026-04-15.sql` PART 1A + `phase6_combined_migration_2026-04-15.sql` section 1B.2b

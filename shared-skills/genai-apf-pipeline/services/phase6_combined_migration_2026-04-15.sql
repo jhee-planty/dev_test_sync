@@ -185,9 +185,24 @@ UPDATE etap.ai_prompt_response_templates
 DELETE FROM etap.ai_prompt_response_templates
  WHERE service_name = 'v0_api'
    AND response_type = 'v0_303_redirect';
+-- http_response BUG FIX (cycle 47 discovery):
+-- Previously this INSERT passed `0` (integer) as the http_response value.
+-- That column IS the block-message text substituted into envelope
+-- `{{MESSAGE}}` placeholders at runtime (ai_prompt_filter.cpp:1239 via
+-- get_response_template → _templates[service_name]). Since v0_api has NO
+-- pre-existing row in live DB (verified cycle 47 via direct query), this
+-- INSERT would create the ONLY row for service_name='v0_api' and make
+-- `{{MESSAGE}}` literally render as the string "0". The v0_303_redirect
+-- envelope currently has no `{{MESSAGE}}` placeholder (it's a 303 redirect
+-- with an empty body), so the bug is LATENT today, but any future edit
+-- that injects `{{MESSAGE}}` into this envelope (e.g., an HTML fallback
+-- body) would immediately leak "0" to the user. Fix by storing the
+-- canonical 159-byte warning text used by the `v0` sibling row (id=46).
 INSERT INTO etap.ai_prompt_response_templates
        (service_name, http_response, response_type, envelope_template, priority, enabled)
-VALUES ('v0_api', 0, 'v0_303_redirect',
+VALUES ('v0_api',
+        '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.',
+        'v0_303_redirect',
         CONCAT(
           'HTTP/1.1 303 See Other\r\n',
           'Location: https://etap.officeguard.local/apf-blocked?s=v0\r\n',

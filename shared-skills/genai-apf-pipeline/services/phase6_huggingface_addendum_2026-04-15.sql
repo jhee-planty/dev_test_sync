@@ -177,10 +177,41 @@ DELETE FROM etap.ai_prompt_response_templates
  WHERE service_name = 'huggingface'
    AND response_type = 'huggingface_sse';
 
+-- ─────────────────────────────────────────────────────────────────────────────
+-- http_response BUG FIX (cycle 47 discovery):
+--
+-- The previous draft used 'BLOCK' as a placeholder in `http_response`. That
+-- column is NOT just documentation — `ai_prompt_filter_db_config_loader.cpp`
+-- load_response_templates() populates `_templates[service_name] = http_response`
+-- and `generate_block_response` (ai_prompt_filter.cpp:1239) substitutes that
+-- value into the envelope's `{{MESSAGE}}` placeholder. With 'BLOCK' as the
+-- value, the chat bubble would render the literal four-letter string "BLOCK"
+-- instead of the Korean+English warning.
+--
+-- The existing huggingface row (id=37, priority=50) already holds the
+-- canonical 159-byte text, so the CURRENT runtime renders correctly via that
+-- row's http_response. But once this addendum INSERTs a NEW row with the
+-- same service_name='huggingface' and priority=50, _templates load order
+-- becomes a tiebreak race (ORDER BY priority DESC + first-row-wins by
+-- insertion order which is InnoDB's id ASC). If the new row wins the tie,
+-- '{{MESSAGE}}' renders as "BLOCK" and the user sees garbage.
+--
+-- FIX: the new row uses the SAME 159-byte text as the existing row (verified
+-- cycle 47 via direct DB query: chatglm id=38, huggingface id=37, v0 id=46,
+-- copilot id=43 all share this canonical string at priority=50). With both
+-- rows holding identical http_response content, the tiebreak no longer
+-- matters — whichever wins yields the correct rendering.
+--
+-- Defense in depth: when the combined migration absorbs this addendum, the
+-- merge step should ALSO verify that no future cycle overrides the text via
+-- UPDATE to a different value while leaving one of the two rows stale.
+-- ─────────────────────────────────────────────────────────────────────────────
 INSERT INTO etap.ai_prompt_response_templates
   (service_name, http_response, response_type, envelope_template, priority, enabled)
 VALUES
-  ('huggingface', 'BLOCK', 'huggingface_sse', CONCAT(
+  ('huggingface',
+   '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.',
+   'huggingface_sse', CONCAT(
     'HTTP/1.1 200 OK\r\n',
     'Content-Type: <CONTENT_TYPE>\r\n',                   -- TBD #454 TOKEN 1
     'Cache-Control: no-cache\r\n',
@@ -191,9 +222,13 @@ VALUES
     '{"type":"finalAnswer","text":"{{MESSAGE}}","interrupted":false}', '<EVENT_SEP>',
     '{"type":"status","status":"finalAnswer"}', '<EVENT_SEP>'
   ), 50, 1);
--- Note: priority=50 (default) is safe because no other row uses
--- response_type='huggingface_sse'. cycle 41 _envelopes map lookup
--- unconditionally selects this row via ORDER BY priority DESC first-row-wins.
+-- Note: priority=50 matches the existing huggingface row (id=37) and the
+-- canonical convention for priority=50 openai_compat_sse siblings. The
+-- envelope_template for response_type='huggingface_sse' is unique, so the
+-- `_envelopes` lookup keyed by response_type is unambiguous. The
+-- `_templates` lookup keyed by service_name has a tiebreak race with the
+-- existing id=37 row, but both rows now hold the same http_response text,
+-- so the tiebreak is semantically safe.
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 1B. UPDATE huggingface service row — switch response_type to the new envelope

@@ -238,13 +238,24 @@ DELETE FROM etap.ai_prompt_response_templates
 
 INSERT INTO etap.ai_prompt_response_templates
        (service_name, http_response, response_type, envelope_template, priority, enabled)
-VALUES ('{service_id}', 'BLOCK', '{response_type}', CONCAT(
+VALUES ('{service_id}',
+        '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.',
+        '{response_type}', CONCAT(
          'HTTP/1.1 200 OK\r\n',
          -- ...
        ), 50, 1);
 
 COMMIT;
 ```
+
+**⚠️ `http_response` is NOT a placeholder** (cycle 47 finding). That column IS the block-message text substituted into envelope `{{MESSAGE}}` at block time via `get_response_template(service_name)` → `_templates[service_name] = http_response`. Never write `'BLOCK'`, `0`, `NULL`, or any schema-placeholder string — the user will see that literal value in the chat bubble. If the target `service_name` has a pre-existing row, copy its `http_response` verbatim (via `INSERT ... SELECT t.http_response FROM ... WHERE service_name='{service_id}' LIMIT 1`). If there is no pre-existing row, use the canonical text matching your priority tier:
+
+| priority | canonical `http_response` text |
+|---|---|
+| 50 | `⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.` (159 bytes) |
+| 1 | `⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.` (89 bytes, Korean-only) |
+
+See `services/envelope_audit_2026-04-15.md` §10 for the code walkthrough, the two in-draft migration bugs that cycle 47 caught (`BLOCK` in huggingface addendum, `0` in combined migration v0_api row), and the full priority convention.
 
 **DO NOT use** `INSERT ... ON DUPLICATE KEY UPDATE` on `ai_prompt_response_templates` even though it looks idiomatic — the baseline `apf_db_driven_migration.sql:91-111` chatgpt_sse example uses this pattern and it's **semantically dead code**. The apparent idempotency is an illusion; it has been accidentally correct only because re-runs shipped identical content.
 
