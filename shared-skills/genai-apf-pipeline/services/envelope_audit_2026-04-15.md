@@ -2610,4 +2610,159 @@ valid as forward-looking verification of code-to-be-deployed. Before Phase 7
 release build, commit all 7 files. Before HF Phase 6 testing, decide
 HEAD vs worktree build target.
 
+---
+
+## §22 — Cycle 60: Readiness summary and conclusion
+
+**Scope:** Synthesize §1-§21 findings into a go/no-go readiness statement
+for Phase 6 (DB migration) and Phase 7 (release build) across all queued
+services (deepseek, v0, github_copilot, huggingface).
+
+### 22.1 Audit coverage map
+
+The 21 preceding sections covered **every production-critical code path**
+in the APF envelope-delivery pipeline:
+
+| Layer | Sections | What was audited |
+|-------|----------|-----------------|
+| **DB schema + SQL** | §1-§3, §9, §10, §20 | All 11 envelope templates, placeholder correctness, CORS headers, composite-key gap, DELETE-then-INSERT idempotency, canonical-text convention, MESSAGE_RAW latent risk |
+| **Placeholder engine** | §11 | Exhaustive placeholder surface: MESSAGE, MESSAGE_RAW, ESCAPE2:MESSAGE, UUID:*, TIMESTAMP, BODY_INNER_LENGTH |
+| **Content-Length rewrite** | §12 | Three-branch behavior (SSE/H1, SSE/H2, non-SSE), is_h2 param dependency |
+| **Service detection** | §13 | h2_mode ternary, detect_service priority algorithm, domain_matcher + path_matcher grammar |
+| **Request hold/release** | §14 | Hold-set, body_complete 3-way OR, B19 re-hold guard, stale-hold defensive release |
+| **Header-body split** | §15 | B27 separator, B26 de-chunker, fast-fail for normal bodies, keep-alive→close rewrite, h2_end_stream ternary |
+| **prepare_response_type** | §16 | Hardcoded `/prepare` suffix gate, DB→session cache, ordering hazard, reload validation |
+| **VTS pipeline** | §17 | 3-module architecture (APF→core→VTS), session flag lifetimes, 5-branch dispatcher, RST_STREAM semantics, full HF path trace |
+| **Observability** | §18 | 20 legitimate [APF:] tags, 6 legacy, 15 contamination rename targets, Phase 7 grep gate |
+| **Keyword matching** | §19 | AC+RE2 architecture, lock-free bundle swap, priority semantics, B17 space-normalization |
+| **Worktree drift** | §21 | 574 uncommitted lines, 7 files, HEAD vs worktree delta mapped |
+
+**Not audited (out of scope):**
+- `ai_prompt_filter_db_config_loader.cpp` internals beyond `domain_matcher`/`path_matcher` (§13)
+- `bo_aho_corasick` internal automaton (treated as black-box library)
+- Etap core TLS handshake layer (outside APF scope)
+- Test PC polling loop / git-sync protocol (operational, not code)
+
+### 22.2 Findings requiring action before Phase 6
+
+| # | Finding | Section | Severity | Status |
+|---|---------|---------|----------|--------|
+| F1 | `ai_prompt_response_templates` has no composite unique key → duplicate INSERT risk | §9.2 | MEDIUM | **MITIGATED** — all migration SQL uses DELETE-then-INSERT pattern (§9.3) |
+| F2 | chatgpt `MESSAGE_RAW` inside JSON string value — latent JSON-escape risk | §20.3 | LOW (latent) | **ACCEPTED** — current canonical texts contain no `"` or `\`; documented for future awareness |
+| F3 | m365_copilot_sse CORS `*` + credentials:true is spec-invalid | §2, §8 | LOW | **FIXED** in live DB (§8 confirmed cycle 44) |
+| F4 | 15 `[APF_WARNING_TEST:]` contamination tags in worktree | §18.3 | LOW | **DEFERRED** to Phase 7 pre-release rename (side task spawned) |
+| F5 | `openai_compat_sse` in live DB but absent from source SQL | §11.3 | INFO | **ACCEPTED** — added via direct DB insert, not from migration file |
+
+**No BLOCKING findings.** All severity=MEDIUM items are mitigated. Phase 6 can proceed.
+
+### 22.3 Findings requiring action before Phase 7
+
+| # | Finding | Section | Severity | Action |
+|---|---------|---------|----------|--------|
+| F6 | 574 uncommitted worktree lines (7 files) | §21 | HIGH | Commit as single B24/B26/B30 commit BEFORE release build |
+| F7 | 15 `[APF_WARNING_TEST:]` tags at `info` level | §18.3, §17.7 | MEDIUM | Rename to `[APF:]` subcategory tags (Phase 7 gate blocks release otherwise) |
+| F8 | Phase 7 release-gate grep needs replacement | §18.4 | MEDIUM | Switch to AND-gate: zero `APF_WARNING_TEST` in functions/ + zero outside docs |
+| F9 | 6 legacy `[APF]` raw-format logs | §18.2 | LOW | Optional: standardize to `[APF:<subcategory>]` format during F7 rename pass |
+
+### 22.4 Per-service Phase 6 readiness
+
+**deepseek** — READY
+- Phase 5 design.md complete with full SQL migration
+- Envelope: SSE named-events + JSON-Patch ops; `{{MESSAGE}}` single-level ✅
+- Body ~469B under 500B ceiling ✅
+- Gate: DB access to 218.232.120.58
+
+**v0** — READY (DB-only)
+- Phase 5 complete (f+h pair primary)
+- Gate: DB access to 218.232.120.58
+
+**github_copilot** — READY
+- Phase 5 design.md complete with full SQL migration
+- CORS resolved (cycle 30): embedded in template, no C++ change needed
+- Envelope: SSE 2-event schema (content + complete); `{{MESSAGE}}` ✅
+- Body ~710B fits under h2_end_stream=1 ceiling ✅
+- Gate: DB access to 218.232.120.58
+
+**huggingface** — CONDITIONALLY READY
+- Phase 4 frontend-inspect pending (#454, ~390+ min stale)
+- Advance preparation done: §20.11 envelope sketch (SSE with `{{MESSAGE}}`)
+- §12.7 Content-Length rewrite audited for HF
+- §14.8 hold/release HF flow traced end-to-end
+- §17.6 VTS HF path traced end-to-end
+- 15 verification levels (a-o) completed
+- Gate: #454 result → Phase 5 design → DB access
+
+### 22.5 Combined Phase 6 migration plan
+
+When DB access window opens at 218.232.120.58:
+1. **deepseek** — INSERT envelope + UPDATE ai_prompt_services (~5 min)
+2. **github_copilot** — INSERT envelope + UPDATE ai_prompt_services + 2× revision_cnt (~5 min)
+3. **v0** — f+h pair migration (~5 min)
+4. **huggingface** (if #454 resolved) — INSERT envelope + UPDATE (~5 min)
+5. `reload_services` → `detect_service` grep → per-service check-warning
+6. Estimated total: 25-35 min
+
+### 22.6 Verification confidence
+
+**15 independent verification levels (a-o)** spanning:
+- DB schema and migration SQL correctness (a-i)
+- Content-Length rewrite behavior (j)
+- Service detection + h2_mode ternary (k)
+- Request hold-release mechanism (l)
+- B26 de-chunker + B27 separator (m)
+- VTS 3-module pipeline end-to-end (n)
+- Keyword matching engine (o)
+
+Every module in the request→hold→keyword-check→block→envelope-render→
+response-rewrite→VTS-dispatch chain has been independently read and traced.
+The audit found **zero correctness bugs** in existing production code paths.
+All findings are either latent risks (F2), spec-compliance issues (F3),
+or operational items (F4, F6-F9).
+
+### 22.7 Conclusion
+
+**The APF envelope-delivery pipeline is READY for Phase 6 migration.**
+
+The §1-§21 audit series — spanning 21 sections across 10 cycles (34, 44-45,
+47-49, 51-59) — has verified every production-critical code path from DB
+schema through service detection, request holding, keyword matching, envelope
+rendering, Content-Length rewriting, to VTS-layer wire dispatch.
+
+No blocking defects were found. The three queued services (deepseek,
+github_copilot, v0) can proceed to Phase 6 as soon as DB access is granted.
+Huggingface joins the batch when #454 arrives and Phase 5 completes.
+
+Phase 7 has two prerequisites: (1) commit the 574-line worktree diff as a
+coherent B24/B26/B30 commit, and (2) execute the 15-tag contamination rename.
+Both are mechanical tasks with no design decisions pending.
+
+**This concludes the envelope audit series.**
+
+### 22.8 Section index
+
+| § | Cycle | Title | Key finding |
+|---|-------|-------|-------------|
+| 1 | 34 | Placeholder usage audit | All 11 envelopes correct; gemini ESCAPE2 is legitimate |
+| 2 | 34 | CORS header audit | m365_copilot `*`+credentials invalid (→§8 fixed) |
+| 3 | 34 | Services NOT in baseline | 4 services added via direct DB insert |
+| 4 | 34 | Structural observations | SSE separator convention, UUID generation |
+| 5 | 34 | Cross-references | Cycle 31/32/33/34 links |
+| 6 | 34 | Recommended follow-ups | 5 items (all addressed in later §) |
+| 7 | 34 | Source | File path + line references |
+| 8 | 44 | m365_copilot CORS fix | Confirmed fixed in live DB |
+| 9 | 45 | DB drift-audit + schema finding | No composite unique key → DELETE-then-INSERT |
+| 10 | 47 | http_response = block-message text | Canonical-text convention established |
+| 11 | 48 | Placeholder surface | Exhaustive: 6 placeholder types across 11 templates |
+| 12 | 49 | Content-Length rewrite | Three-branch is_h2 behavior mapped |
+| 13 | 51 | Service detection + h2_mode | Ternary: 0=disabled, 1=request-body, 2=response-body |
+| 14 | 52 | Request hold/release | body_complete 3-way OR, stale-hold defense |
+| 15 | 53 | B26/B27 header-body split | De-chunker + separator + keep-alive→close |
+| 16 | 54 | prepare_response_type | `/prepare` suffix gate + ordering hazard |
+| 17 | 55 | VTS 3-module pipeline | Full end-to-end trace APF→core→VTS |
+| 18 | 56 | [APF:] observability | 20+6+15 tag inventory, Phase 7 gate |
+| 19 | 57 | sensitive_keyword_matcher | AC+RE2, lock-free swap, B17 normalization |
+| 20 | 58 | SQL Part 3 cross-check | MESSAGE_RAW latent risk, notion h2_mode anomaly |
+| 21 | 59 | Worktree diff inventory | 574 uncommitted lines, HEAD vs worktree delta |
+| 22 | 60 | Readiness summary | **GO for Phase 6; 2 mechanical prereqs for Phase 7** |
+
 
