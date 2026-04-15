@@ -428,17 +428,42 @@ SELECT service_name, domain_patterns, path_patterns, response_type
  WHERE domain_patterns LIKE '%v0.app%' OR domain_patterns LIKE '%v0.dev%';
 ```
 
+## Phase 6 pre-check: `validate_template` CLI
+
+The running etap binary exposes an `ai_prompt_filter.validate_template <response_type>` command (confirmed in `ai_prompt_filter.cpp:319–384`, cycle 31 discovery). It:
+
+1. Loads envelope from DB via `get_envelope_template(response_type)`
+2. Renders with `"__VALIDATION_TEST__"` as the message
+3. Validates HTTP status line (`HTTP/`), header-body separator (`\r\n\r\n`), and Content-Length consistency
+4. Returns a `[VALID]`/`[INVALID]` summary + first 2048 bytes of rendered output
+
+**Phase 6 pre-check procedure (v0 f+h pair — two envelopes):**
+
+```bash
+# After the v0 UPDATE + v0_api INSERT but BEFORE the test-PC request, validate BOTH templates:
+ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template v0_html_block_page"
+# Expected: [VALID] response_type='v0_html_block_page' — HTTP/1.1 200, Content-Type text/html,
+#           body should contain the warning HTML skeleton with {{MESSAGE}} substituted.
+
+ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template v0_303_redirect"
+# Expected: [VALID] response_type='v0_303_redirect' — HTTP/1.1 303 See Other,
+#           Location header present, body empty or short.
+```
+
+v0 is the only service in the Phase 6 combined migration that REGISTERS A NEW row via `INSERT ... ON DUPLICATE KEY UPDATE` rather than UPDATE-in-place (the `v0_api` service + `v0_303_redirect` template are new). If `v0_303_redirect` returns `[INVALID]`, rollback the INSERT via `phase6_combined_migration_2026-04-15.sql` PART 4 v0 revert block (which both reverts the v0 row AND DELETEs the v0_api row) before flipping the service pointer. This prevents a malformed 303 template from attaching to a live service row. **This is a significant Phase 6 de-risk** — verifies wire bytes for the speculative Option-F redirect format without needing a test-PC fetch.
+
 ## Phase 6 handoff checklist (Option F primary)
 
 1. Confirm Etap `/apf-blocked` landing URL exists (or coordinate creation).
 2. Capture pre-migration state via the pre-check SELECT.
-3. Apply the Option F DB UPDATE in transaction; verify revision_cnt bump.
-4. Observe APF reload: `ssh -p 12222 solution@218.232.120.58 "grep 'Loaded.*services' /var/log/etap.log | tail -5"`
-5. Test PC verification:
+3. Apply the Option F DB UPDATE + v0_api INSERT in transaction; verify revision_cnt bump.
+4. **Validate both templates** via `etapcomm ai_prompt_filter.validate_template v0_html_block_page` AND `etapcomm ai_prompt_filter.validate_template v0_303_redirect` (see pre-check above). Require `[VALID]` on BOTH before proceeding.
+5. Observe APF reload: `ssh -p 12222 solution@218.232.120.58 "grep 'Loaded.*services' /var/log/etap.log | tail -5"`
+6. Test PC verification:
    - Navigate to `https://v0.app/` (anonymous is fine — #447 proved input works).
    - Submit a prompt containing a sensitive keyword registered for v0.
    - Observe whether browser navigates to `/apf-blocked` or stays on chat page.
-6. **Risk path**: if Option F produces no visible change (silent fetch-follow
+7. **Risk path**: if Option F produces no visible change (silent fetch-follow
    with SSE parse error buried in Sentry), transition v0 to **NEEDS_USER_SESSION**
    for Option A. User coordination required to capture authenticated HAR.
 

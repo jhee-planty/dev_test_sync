@@ -197,18 +197,41 @@ The SQL above produces an envelope of **~555B** before `{{MESSAGE}}` expansion (
 
 **Recommendation**: Use a short warning text like `⚠️ 보안 정책 위반이 감지되었습니다` (~45B) and verify the rendered envelope size via `bo_mlog_info("[APF:h2_params] ... http1_size=%zu")` at `ai_prompt_filter.cpp:1285` (which is already logged). If rendered size > 500B, either trim more envelope fields OR escalate to `h2_end_stream=1` (mitigation path 2).
 
+## Phase 6 pre-check: `validate_template` CLI
+
+The running etap binary exposes an `ai_prompt_filter.validate_template <response_type>` command (confirmed in `ai_prompt_filter.cpp:319–384`, cycle 31 discovery). It:
+
+1. Loads envelope from DB via `get_envelope_template(response_type)`
+2. Renders with `"__VALIDATION_TEST__"` as the message
+3. Validates HTTP status line (`HTTP/`), header-body separator (`\r\n\r\n`), and Content-Length consistency
+4. Returns a `[VALID]`/`[INVALID]` summary + first 2048 bytes of rendered output
+
+**Phase 6 pre-check procedure:**
+
+```bash
+# After UPDATE but BEFORE triggering test-PC request, validate the updated template:
+ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template deepseek_sse"
+# Expected output: [VALID] response_type='deepseek_sse' template_size=~555 rendered_size=~575
+# The rendered output should contain the JSON-Patch op events:
+#   data: {"v":[{"p":"response/content","o":"append","v":"..."}]}
+# and end with 'data: [DONE]'
+```
+
+If validation fails (`[INVALID]`), **rollback the UPDATE** via the revert block in `phase6_combined_migration_2026-04-15.sql` PART 4 before the test-PC request goes out. This prevents a botched template from going live. **This is a significant Phase 6 de-risk** — we verify the rendered wire bytes without triggering a real block, which matters for deepseek specifically because `h2_end_stream=2` imposes a 500B ceiling and rendered_size must be measured before commit.
+
 ## Phase 6 test criteria
 
 1. **Pre-migration**: capture existing envelope via pre-check SELECT, save to impl journal.
 2. **Apply UPDATE + revision_cnt bump** in single transaction.
-3. **Verify reload**: `ssh -p 12222 solution@218.232.120.58 "grep 'Loaded.*services' /var/log/etap.log | tail -5"`
-4. **Test PC check-warning request** (new #4XX): logged-in deepseek session, trigger a blocked prompt, verify:
+3. **Validate template** via `etapcomm ai_prompt_filter.validate_template deepseek_sse` (see pre-check above). Require `[VALID]` + rendered_size ≤ 500B before proceeding.
+4. **Verify reload**: `ssh -p 12222 solution@218.232.120.58 "grep 'Loaded.*services' /var/log/etap.log | tail -5"`
+5. **Test PC check-warning request** (new #4XX): logged-in deepseek session, trigger a blocked prompt, verify:
    - Assistant chat bubble appears with the warning text (not a network error)
    - Markdown is rendered correctly (`⚠️ 보안 정책` emoji + Korean text)
    - No "네트워크를 확인하고 다시 시도하세요" error UI appears
    - No console errors from SSE parse failure
    - Chat session remains usable after the block (can type next prompt without reload)
-5. **Regression check**: Verify that chatgpt, claude, genspark, blackbox, qwen3, grok (done services) all still show their warnings correctly.
+6. **Regression check**: Verify that chatgpt, claude, genspark, blackbox, qwen3, grok (done services) all still show their warnings correctly.
 
 ## Test Log Protocol (Phase 6 impl journal)
 
