@@ -48,7 +48,7 @@ Access-Control-Allow-Credentials: true
 Access-Control-Expose-Headers: x-github-request-id
 Content-Length: {{BODY_INNER_LENGTH}}
 
-data: {"type":"content","body":"{{ESCAPE2:MESSAGE}}"}
+data: {"type":"content","body":"{{MESSAGE}}"}
 
 data: {"type":"complete","id":"{{UUID:msg}}","parentMessageID":"{{UUID:parent}}","model":"","turnId":"","createdAt":"{{TIMESTAMP_ISO}}","references":[],"role":"assistant","intent":"conversation","copilotAnnotations":{"CodeVulnerability":[],"PublicCodeReference":[]}}
 
@@ -62,33 +62,58 @@ data: {"type":"complete","id":"{{UUID:msg}}","parentMessageID":"{{UUID:parent}}"
 - `Access-Control-Allow-Credentials: true`
 - `Access-Control-Expose-Headers: x-github-request-id` (observed in real responses)
 
-**Cycle 30 investigation (2026-04-15):** Read `ai_prompt_filter.cpp` lines 1249–1328 (`render_envelope_template`) and lines 1602–1677 (`generate_block_response`). Findings:
+**Cycle 30+31 investigation (2026-04-15):** Read `ai_prompt_filter.cpp` lines 1107–1137 (`json_escape` / `json_escape2`), 1249–1328 (`render_envelope_template`), 1602–1677 (`generate_block_response`), 300–380 (`validate_template` CLI), and `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql` lines 138–153 (existing copilot_403 template). Findings:
 
-1. `render_envelope_template()` is a **pure template renderer** — performs ONLY placeholder substitution (`{{MESSAGE}}`, `{{ESCAPE2:MESSAGE}}`, `{{UUID:name}}`, `{{TIMESTAMP}}`, `{{BODY_INNER_LENGTH}}`) + Content-Length recalculation via `recalculate_content_length()`
+1. `render_envelope_template()` is a **pure template renderer** — performs ONLY placeholder substitution (`{{MESSAGE}}`, `{{MESSAGE_RAW}}`, `{{MESSAGE}}`, `{{UUID:name}}`, `{{TIMESTAMP}}`, `{{BODY_INNER_LENGTH}}`) + Content-Length recalculation via `recalculate_content_length()`
 2. `generate_block_response()` loads `envelope_template` from DB via `_config_loader->get_envelope_template(lookup_key)`, passes it verbatim through `render_envelope_template()`, then optionally converts to HTTP/2 frames via `convert_to_http2_response()`
-3. Grep for `Access-Control-Allow|CORS|cors|access_control` across `ai_prompt_filter.cpp` returned **zero matches** — APF has no upstream-header preservation path at all
-4. **APF synthesizes the entire response from scratch.** The envelope_template row IS the wire response (modulo placeholders). There is no "preserve upstream X-header" code — the DB row is ground truth.
+3. **APF synthesizes the entire response from scratch.** The envelope_template row IS the wire response (modulo placeholders). There is no "preserve upstream X-header" code — the DB row is ground truth, including CORS headers.
+4. **CORS not the problem**: Cycle 31 read of `apf_db_driven_migration.sql` lines 138–153 proves the existing `copilot_403` template **already includes** `access-control-allow-credentials: true` + `access-control-allow-origin: https://github.com`. The old envelope is CORS-correct. My earlier cycle 30 "CORS as root cause" hypothesis was **WRONG**.
+5. **Real root cause of old copilot_403 failure**: GitHub Copilot's React app treats any non-200 response as an error and renders the static-i18n primer-react Banner ("I'm sorry but there was an error. Please try again.") **regardless of response body contents** — this was already confirmed by Phase 4 §5 via the empty-500 fetch override test. The old copilot_403 body (JSON with `message`/`documentation_url`/`status`) is fetched successfully by the browser but never read by the error handler. **The fix is to return HTTP 200 + `text/event-stream`**, which enters the success code path and feeds events into the chat bubble. Status code, not CORS, was the blocker.
 
-**Implication for this design:** The Phase 5 envelope template (§2 wire format) is **correct as written**. The three CORS response headers are embedded directly in the template body, so `render_envelope_template()` will emit them verbatim. **No C++ code change is required for Phase 6.**
+**Implication for this design:** The Phase 5 envelope template (§2 wire format) remains **structurally correct** — CORS headers are embedded and will emit verbatim, matching the pattern used by `chatgpt_sse`, `claude`, `grok_ndjson`, `m365_copilot_sse`, and the existing `copilot_403`. **No C++ code change is required for Phase 6.** The HTTP/1.1 status line change from `403 Forbidden` to `200 OK` is the critical piece of the fix.
 
-**Implication for existing `copilot_403` failure mode:** The old copilot_403 envelope (~346 B per cycle 20 L2 intel) almost certainly does NOT include these CORS headers — which explains why GitHub's React app never sees ANY body and falls back to the static i18n Banner error. The browser CORS-rejects the 403 before the fetch promise resolves. **This is the root cause** the new copilot_sse envelope fixes.
+### Placeholder correction (cycle 31)
 
-**Phase 6 pre-check addition:** Before the INSERT/UPDATE, also query the existing copilot_403 envelope_template to confirm it lacks CORS headers:
+Reviewing the placeholder semantics against `json_escape2 = json_escape(json_escape(...))`:
 
-```sql
-SELECT envelope_template FROM etap.ai_prompt_response_templates
-  WHERE service_name = 'github_copilot' AND response_type = 'copilot_403';
--- Expected: HTTP/1.1 403 + Content-Type: application/json + Content-Length + JSON body
--- (no Access-Control-Allow-Origin) — confirms root cause diagnosis
+- `{{MESSAGE}}` — single json_escape: `"` → `\"`, `\` → `\\`, `\n` → `\n`, `\r` → `\r`, `\t` → `\t`. This is the correct escape for embedding user text into a **single level** of JSON string.
+- `{{MESSAGE}}` — double json_escape. Only correct when the text is embedded in a JSON string that is itself embedded in another JSON string (e.g. a JSON string-of-JSON payload).
+- `{{MESSAGE_RAW}}` — no escape. Used when the upstream template provides text that's already JSON-escaped.
+
+The github_copilot SSE envelope embeds the warning into `data: {"type":"content","body":"<text>"}` — a **single** level of JSON nesting. Therefore **`{{MESSAGE}}` is correct, not `{{MESSAGE}}`**. The §2 wire format and §4 migration SQL both use `{{MESSAGE}}` — this is a bug. Correction applied below.
+
+Comparable templates confirm the pattern:
+- `claude` → `"text":"{{MESSAGE}}"` (single escape for SSE JSON body) ✅
+- `copilot_403` → `"message":"{{MESSAGE}}"` (single escape for 403 JSON body) ✅
+- `chatgpt_sse` → `"{{MESSAGE_RAW}}"` (explicit raw, not double escape) ✅
+
+No existing working envelope uses `ESCAPE2` in an SSE-with-JSON-body pattern.
+
+### Phase 6 pre-check: `validate_template` CLI
+
+The running etap binary exposes an `ai_prompt_filter.validate_template <response_type>` command (confirmed in `ai_prompt_filter.cpp:319–384`). It:
+
+1. Loads envelope from DB via `get_envelope_template(response_type)`
+2. Renders with `"__VALIDATION_TEST__"` as the message
+3. Validates HTTP status line (`HTTP/`), header-body separator (`\r\n\r\n`), and Content-Length consistency
+4. Returns a `[VALID]`/`[INVALID]` summary + first 2048 bytes of rendered output
+
+**Phase 6 pre-check procedure:**
+
+```bash
+# After INSERT but BEFORE the ai_prompt_services UPDATE, validate the new template:
+ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template copilot_sse"
+# Expected output: [VALID] response_type='copilot_sse' template_size=~700 rendered_size=~720
+# The rendered output should contain both 'data: {"type":"content"...' and 'data: {"type":"complete"...'
 ```
 
-If the old template DOES include CORS headers (unexpected), add an additional Phase 6 diagnostic: inspect via L2 DevTools whether the browser is rejecting the 403 for a different reason (e.g. missing `Access-Control-Expose-Headers` for a body header the React app reads).
+If validation fails (INVALID), rollback the INSERT before switching `ai_prompt_services.response_type`. This prevents a botched template from going live. **This is a significant Phase 6 de-risk** — we can verify the rendered wire bytes without triggering a real block.
 
 ### Placeholder semantics
 
 | Placeholder | Source | Notes |
 |-------------|--------|-------|
-| `{{ESCAPE2:MESSAGE}}` | DB-configured warning text, JSON-string-escaped | Backslash-escape `"`, `\`, control chars per JSON spec |
+| `{{MESSAGE}}` | DB-configured warning text, single json_escape | Backslash-escape `"`, `\`, `\n`, `\r`, `\t` per JSON spec. CORRECTED cycle 31 from earlier `{{ESCAPE2:MESSAGE}}` typo — ESCAPE2 is `json_escape(json_escape(x))` which would double-escape the text visible to the user. |
 | `{{BODY_INNER_LENGTH}}` | computed body byte length excluding headers | Required for Content-Length |
 | `{{UUID:msg}}` | per-request random UUID | Used as `complete.id` |
 | `{{UUID:parent}}` | per-request random UUID OR reflected from request body's `responseMessageID` field | Reflecting maintains React threading state — preferred but requires request body parse |
@@ -174,6 +199,13 @@ SELECT id, service_name, response_type, priority, enabled, LENGTH(envelope_templ
 BEGIN;
 
 -- 1. Insert new copilot_sse envelope template row
+-- Cycle 31 note: mirrors the chatgpt_sse pattern in apf_db_driven_migration.sql
+--   lines 91–111 (INSERT ... SELECT ... ON DUPLICATE KEY UPDATE). The actual
+--   unique key on ai_prompt_response_templates should be (service_name, response_type)
+--   based on chatgpt coexisting with chatgpt_sse + chatgpt_prepare rows. Verify at
+--   Phase 6 dry-run via SHOW CREATE TABLE etap.ai_prompt_response_templates.
+--   If the key is service_name only, convert to UPDATE instead (and the existing
+--   copilot_403 row becomes the copilot_sse row — the old envelope is lost).
 INSERT INTO etap.ai_prompt_response_templates
   (service_name, response_type, http_response, envelope_template, priority, enabled, description)
 VALUES (
@@ -190,7 +222,7 @@ VALUES (
     'Access-Control-Expose-Headers: x-github-request-id\r\n',
     'Content-Length: {{BODY_INNER_LENGTH}}\r\n',
     '\r\n',
-    'data: {"type":"content","body":"{{ESCAPE2:MESSAGE}}"}\n\n',
+    'data: {"type":"content","body":"{{MESSAGE}}"}\n\n',
     'data: {"type":"complete","id":"{{UUID:msg}}","parentMessageID":"{{UUID:parent}}","model":"","turnId":"","createdAt":"{{TIMESTAMP_ISO}}","references":[],"role":"assistant","intent":"conversation","copilotAnnotations":{"CodeVulnerability":[],"PublicCodeReference":[]}}\n\n'
   ),
   100,
@@ -298,7 +330,7 @@ The captured stream is small enough (373 B for a 1-token response) that schema d
 
 ## 8. Open Questions for Phase 6
 
-1. ~~**Does APF currently strip CORS headers on copilot_403 responses?**~~ **RESOLVED (cycle 30):** APF does not strip or preserve headers at all — it synthesizes the whole response from `envelope_template`. The old copilot_403 template likely does not contain CORS headers, which is the root cause of the existing failure. The new copilot_sse template embeds CORS headers directly, resolving the issue without any C++ change. See §2 "Critical CORS notice" for the investigation.
+1. ~~**Does APF currently strip CORS headers on copilot_403 responses?**~~ **RESOLVED (cycle 30+31):** Two-part answer. (a) APF does not strip or preserve headers at all — it synthesizes the whole response from `envelope_template` (cycle 30). (b) The existing `copilot_403` envelope (confirmed via `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql` lines 138–153) **already contains** `access-control-allow-credentials: true` + `access-control-allow-origin: https://github.com`, so CORS was never the blocker (cycle 31 correction). The **real root cause** of the old failure is that GitHub's React Copilot app treats any non-200 status as an error and renders a static-i18n primer-react Banner regardless of body contents — proven by Phase 4 §5 empty-500 fetch-override test. The new copilot_sse envelope fixes this by returning HTTP 200 + SSE, which enters the success code path. See §2 for the full investigation.
 2. **Should `parentMessageID` reflect the request body's `responseMessageID` field?** Phase 4 noted this maintains React threading state. If APF can parse the request JSON cheaply (it's already buffered for the prompt-content match), reflecting is preferred. If not, generating fresh UUIDs is acceptable per Phase 4 §3.
 3. **Does Copilot's React app retry on its own if the SSE stream looks malformed?** Phase 4 didn't probe this. If yes, our envelope must be perfectly valid (no truncation, valid JSON, proper `\n\n` boundaries) — already specified above.
 4. **Initial-load Option D combination**: should we also implement Option D (initial-load disclaimer banner) as a complementary measure? Probably YES for a one-time session warning, but defer to a follow-up task; Phase 6 focuses on Option A only.
