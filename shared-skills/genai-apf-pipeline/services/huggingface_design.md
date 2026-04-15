@@ -103,7 +103,13 @@ HuggingFace chat-ui is an actively developed open-source Svelte app (`github.com
    - **(c) PART 2d regression check is still valid**: comparing MD5 of the `openai_compat_sse` row(s) to baseline is the correct database-level verification. At runtime only one of those rows is actually used, but the MD5 check ensures the INSERT didn't touch ANY of them at the DB layer.
 4. The running etap binary already accepts `response_type` as a DB-driven key (not hard-coded) — cycle 30 `grep` across the worktree confirmed no `switch`/`if` on specific response_type values in the generation path.
 
-**Net**: huggingface_sse is a pure DB migration, matching the pattern of deepseek/v0/github_copilot Phase 6 migrations. The INSERT-new-row approach is not just "safe" but provably decoupled from the 4 sibling services at the runtime map level.
+5. **`ai_prompt_filter.cpp:1094-1226 convert_to_http2_response()`** (cycle 49 audit) — HTTP/1.1 → H2 frame conversion path. Huggingface profile is `h2_mode=1, h2_end_stream=1, h2_goaway=0`, which routes through the following logic:
+   - **Build #20 2-frame DATA strategy** (lines ~1183-1203): when `end_stream=true && !body.empty()`, the function splits body delivery into **two** DATA frames — `DATA(body, END_STREAM=0)` then `DATA(empty, END_STREAM=1)` — instead of a single `DATA(body, END_STREAM=1)`. Rationale captured in the code comment: a single terminal frame makes Chrome's Fetch API `ReadableStream.read()` resolve to `{value, done: true}` in one tick, and some SSE parsers check `done` first and drop `value` (Copilot #032 failure mode — 0 renders until the 2-frame split was introduced). **Huggingface chat-ui uses `fetch()` + `response.body.getReader()` in SvelteKit, not `EventSource`**, so it hits the exact same `ReadableStream.read()` code path as Copilot. Build #20 is therefore the correct fit for huggingface_sse; no override needed.
+   - **Forbidden headers stripped** at lines ~1140-1143: `content-length`, `transfer-encoding`, `connection` are removed from the HPACK header block (HTTP/2 disallows them per RFC 7540 §8.1.2.2). Our envelope's `Content-Length: 0` placeholder is therefore doubly safe: `recalculate_content_length` rewrites it at the tail of `render_envelope_template`, and then `convert_to_http2_response` drops the header entirely before wire-send. Neither the original `0` nor the rewritten value leaks to the client.
+   - **GOAWAY gate** at line ~1216: `if (send_goaway) { result += build_frame(GOAWAY, ...); }`. Huggingface has `h2_goaway=0`, so no GOAWAY frame is emitted. The SSE client self-closes when the server's `END_STREAM=1` DATA frame arrives — this is the correct semantics for chat-ui's fetch reader, which interprets stream end as "response complete, parse terminal event."
+   - **HPACK encoding** uses literal-without-indexing (0x00 prefix) with a single-byte length field, silently truncating any header name/value > 127 bytes. Huggingface envelope's longest header is `Content-Type: text/event-stream; charset=utf-8` (~46 bytes) and `Cache-Control: no-cache` (~23 bytes). Safe by a 2.7x margin. No future header addition in this envelope is expected to approach the 127-byte ceiling.
+
+**Net**: huggingface_sse is a pure DB migration, matching the pattern of deepseek/v0/github_copilot Phase 6 migrations. The INSERT-new-row approach is not just "safe" but provably decoupled from the 4 sibling services at the runtime map level. The H2 conversion path (Build #20 2-frame DATA + forbidden header stripping + HPACK ceiling) has been code-audited end-to-end and is compatible with the huggingface profile without any C++ change.
 
 ## Phase 6 Migration SQL
 
@@ -125,10 +131,14 @@ SELECT service_name, http_response, response_type,
 
 -- 1. INSERT new huggingface-dedicated envelope row (INSERT, not UPDATE, to preserve
 --    the shared openai_compat_sse row for the other 4 tenants).
+-- NOTE (cycle 47 fix): http_response column IS the block message text that substitutes
+-- into {{MESSAGE}} — MUST NOT be 'BLOCK'/0/NULL. Canonical priority=50 text (159B):
 INSERT INTO etap.ai_prompt_response_templates
   (service_name, http_response, response_type, envelope_template)
 VALUES
-  ('huggingface', 'BLOCK', 'huggingface_sse', CONCAT(
+  ('huggingface',
+   '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.',
+   'huggingface_sse', CONCAT(
     'HTTP/1.1 200 OK\r\n',
     'Content-Type: text/event-stream; charset=utf-8\r\n',
     'Cache-Control: no-cache\r\n',
