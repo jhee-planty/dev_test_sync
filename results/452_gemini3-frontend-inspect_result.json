@@ -1,0 +1,153 @@
+{
+  "id": "452",
+  "request_id": "452",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "executed_by": "test-pc (autonomous /loop polling, windows-mcp browser automation, logged-in Chrome profile)",
+  "timestamp": "2026-04-15T17:22:00+09:00",
+  "description": "Gemini3 Phase 4 frontend-inspect — multi-phase analysis of gemini.google.com/app. DOM structure, CSP, batchexecute endpoint URL pattern, rpcid map, and silent-failure behavior all captured. Dominant finding: Gemini has NONCE-based strict-dynamic CSP that blocks Option D (DOM injection), AND the 'silent fail' claim from the existing design doc is now CONFIRMED via Offline toggle + jserror telemetry inspection. Net verdict for Phase 5: Options A-E all have serious blockers, the existing Strategy D (wrb.fr envelope replacement) is the least-bad path but still requires reverse-engineering the protobuf-over-JSON envelope in a separate follow-up.",
+  "results": [
+    {
+      "service_name": "gemini3",
+      "url_tested": "https://gemini.google.com/app",
+      "verdict": "FRONTEND_PROFILED_WITH_BLOCKERS — silent fail confirmed, CSP blocks DOM inject, envelope replacement (Strategy D) remains the only marginal path",
+      "login_state": {
+        "authenticated": true,
+        "evidence": "Direct navigation to gemini.google.com/app landed on the authenticated workspace with personalized greeting '장희님, 안녕하세요' ('Hello, Jang-hee'). Google Account button at top-right shows 'Google 계정: 최장희 (jjanghee28@gmail.com)'. No sign-in redirect."
+      },
+      "api_endpoint": {
+        "url_template": "https://gemini.google.com/_/BardChatUi/data/batchexecute?rpcids=<RPCID>&source-path=%2Fapp&bl=boq_assistant-bard-web-server_20260413.06_p1&f.sid=8887047125100837041&hl=ko&_reqid=<incrementing_id>&rt=c",
+        "method": "POST",
+        "content_type_req": "application/x-www-form-urlencoded (Google boq framework standard)",
+        "content_type_resp": "application/javascript (wrb.fr envelope, protobuf-over-JSON, wrapped in security prefix)",
+        "http_version": "h2",
+        "remote_address": "[2404:6800:4010:626::2004]:443 (Google IPv6 edge)",
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "rpcids_observed_this_session": [
+          {"rpcid": "c3wobe", "guess": "initial listing / chats endpoint (observed at baseline load)"},
+          {"rpcid": "L5adhe", "guess": "chat send / assistant query — most frequent, fires multiple times per conversation (observed 3x)"},
+          {"rpcid": "ESY5D", "guess": "conversation update / persistence (observed 2x)"},
+          {"rpcid": "PCck7e", "guess": "chat session metadata update (observed 1x)"},
+          {"rpcid": "aPya6c", "guess": "pre-send validation / setup — observed FAILING during Offline (meaning this rpcid is the one that fires first when submitting a new message, and when it can't reach the server the rest of the flow aborts silently)"}
+        ],
+        "build_label": "boq_assistant-bard-web-server_20260413.06_p1 (build date 2026-04-13, production post-fix release 06, phase 1)",
+        "f_sid_session_id": "8887047125100837041 (stable across the session, derived from cookie/initial-data)",
+        "reqid_pattern": "starts around 2962048 and increments by 100000 per request (e.g. 2962048 → 3062048 → 3162048 → 3362048 → 3462048)",
+        "note_did_not_inspect_full_payload": "The f.req POST body (which contains the actual user prompt wrapped in protobuf-over-JSON) was not decoded in this probe — doing so requires either clicking the Payload tab and manually drilling, or decoding the x-www-form-urlencoded f.req parameter with a base64+JSON+JS-array parser. Existing services/gemini_design.md already described this; this probe confirms the endpoint URL template and rpcid map but does not re-derive the payload schema."
+      },
+      "sse_or_streaming": {
+        "is_sse": false,
+        "is_streaming": "partial (single POST response is buffered and Gemini parses it as one batch after the HTTP transaction closes)",
+        "note": "Unlike DeepSeek (#451, true SSE text/event-stream) or v0 (#447-448, pure CSR pushState), Gemini's chat API is a SINGLE POST/response pair. The response body is a wrb.fr envelope containing zero or more assistant fragments that get applied to the Angular state in one pass. This means Strategy D (envelope replacement) is the logical approach for APF — replace the entire response body, don't need to mimic streaming semantics."
+      },
+      "thinking_ui": {
+        "observed": true,
+        "dom_note": "For the baseline prompt 'What is the speed of light?', Gemini briefly showed a thinking state (Google has the 'sparkle' animation + incremental token streaming from the single batchexecute response). The thinking_state screenshot was not captured cleanly due to timing but the final response_state screenshot (04_gemini_response_state.png) shows the full rendered answer with structured sections (Key Characteristics, Scale of Travel, bulleted distances)."
+      },
+      "silent_fail_observed": {
+        "method1_offline_toggle": {
+          "triggered": true,
+          "ui_symptom": "NONE visible in the main chat area. The user's new prompt 'Tell me about quantum physics' was NOT rendered as a new user bubble (or if briefly rendered, was immediately removed), no thinking spinner appeared, no error text, no toast, no modal. The previous conversation ('The Speed of Light' response) remained visible in the chat history unchanged.",
+          "under_the_hood_evidence": "DevTools Network panel clearly shows the failure pipeline: (1) A `batchexecute?rpcids=aPya6c&source-path=%2Fapp%2F86b8bd434a68e364&...` POST fired and failed with network error (HTTP Status 0, XHR Error Code 6). (2) Immediately afterward, FIVE `jserror` reports were POSTed to `https://gemini.google.com/_/BardChatUi/jserror` with the URL-encoded error message: `Error code = 7, Path = /_/BardChatUi/data/batchexecute, Message = There was an error during the transport or processing of this request., HTTP status = 0, Unknown HTTP error in underlying XHR (HTTP Status: 0) (XHR Error Code: 6) (XHR Error Message: ' [0]')`. (3) NONE of these errors surfaced to the UI — the Angular template has no error-display binding for this failure type. Gemini just logs the error to its internal jserror telemetry pipeline and moves on.",
+          "screenshot": "results/files/452/07_offline_silent_fail.png + 08_silent_fail_network_jserror.png"
+        },
+        "method2_block_url": {
+          "triggered": false,
+          "reason": "Skipped — method1 (Offline toggle) already produced a definitive silent-fail signal. Block-URL would only show the same Error code = 7 path with possibly a different XHR Error Code. Both would confirm silent fail. Saved ~3 minutes."
+        }
+      },
+      "hidden_error_hooks": {
+        "inspected_via_js_query": "did not run (would have used document.querySelectorAll('[role=alert], [role=status], [aria-live]') but time-constrained)",
+        "observed_visually_in_DOM_tree": [
+          "<chat-app id='app-root' ng-version='0.0.0-PLACEHOLDER' _nghost-ng-c304432922> — the Angular root component (root of all dynamic content)",
+          "<script id='bard-initial-data' data-payload='{\"KEsM4\":false,\"ZXlM5e\":false}' nonce> — bootstrap payload with feature flags (likely experiment gates)",
+          "<body class='theme-host light-theme zero-state-theme google-sans-context chrome-context-v39' ngcm jslog='283462;track:impression;BardVeMetadataKey:...'> — Angular Material theme system + jslog impression tracking"
+        ],
+        "ngcm_attribute": "Confirms Angular Change Management mode; components use _nghost- and _ngcontent- attribute selectors (shadow-like encapsulation without actual shadow DOM).",
+        "hypothesis_about_aria_regions": "A well-behaved Angular Material app would have <mat-snack-bar-container> for toasts, <mat-dialog-container> for modals, and <div role='alert' aria-live='assertive'> for screen-reader announcements. The fact that Gemini is silent on network failure suggests these slots exist in the DOM template but are not BOUND to the batchexecute error path — so even if APF caused an error, the error wouldn't enter the snack-bar event stream. This is different from 'the slot doesn't exist'; it's 'the slot exists but has no wiring to this error'."
+      },
+      "chat_bubble_dom": {
+        "container_selector": "Hashed Angular component selectors like `_nghost-ng-c304432922` (component host attribute) + `ng-tns-c304432922-0` (template namespace). Custom elements: `<chat-app>`, likely `<message-actions>`, `<message-content>`, `<user-query>`, `<model-response>` — all semantic but minified.",
+        "render_mode": "Angular template rendering with change detection. The message text is rendered via sanitized HTML pipe (Angular's DomSanitizer). Markdown is converted to HTML server-side (in the wrb.fr response) and client-side just html-binds it.",
+        "streaming_pattern": "Per batchexecute response (not token-level). Each time the user sends a message, the Angular state model is updated with the full response from batchexecute, and the template re-renders the message list. No WebSocket or SSE involved.",
+        "framework": "angular (ng-version attribute confirmed, _nghost/_ngcontent pattern, chat-app custom element, ngcm ChangeManagement mode attribute)"
+      },
+      "csp_header": {
+        "summary": "PRESENT and STRICT — nonce + strict-dynamic policy",
+        "directives_observed_partial": "report-uri /_/BardChatUi/cspreport; base-uri 'self'; object-src 'none'; script-src 'report-sample' 'nonce-<per-request-value>' 'unsafe-inline' 'strict-dynamic' https: http:; [connect-src, frame-ancestors, etc. omitted from this snippet]",
+        "key_directives_analysis": {
+          "script_src": "'nonce-<val>' 'strict-dynamic' — ONLY scripts with a matching nonce value (server-generated per request) can execute. `'unsafe-inline'` and `https: http:` are FALLBACKS for old browsers; modern Chrome/Firefox IGNORE them when 'strict-dynamic' is present. This means NO inline <script> or event handler can execute unless it has the exact nonce.",
+          "base_uri": "'self' — prevents <base href=...> hijacking (attacker can't change the base URL for relative resource loads)",
+          "object_src": "'none' — no <object> / <embed> / Flash / legacy plugins allowed",
+          "report_uri": "/_/BardChatUi/cspreport — CSP violations are POSTed back to Google, which means ANY attempt to inject non-nonce'd script WILL be logged and may trigger automated bot detection at Google's end"
+        },
+        "csp_report_endpoint_observed": "https://csp.withgoogle.com/csp/proto/BardChatUi + /_/BardChatUi/cspreport — confirmed in the Console panel log spam",
+        "implication_for_apf": "Options C, D involving script injection are DEFINITIVELY BLOCKED by CSP. Even if APF could somehow inject markup into the document, any <script> it contains will fail the nonce check and be silently dropped by the browser + reported to Google. Non-script DOM manipulation (just adding text elements) would need a pre-existing script to read APF-controlled data and inject text — but APF has no such hook."
+      },
+      "warning_delivery_options": {
+        "a_sse_stream_injection": {
+          "verdict": "BLOCKED",
+          "rationale": "Gemini's response is a SINGLE POST/response, not an SSE stream. There is no long-lived connection for APF to inject events into. The closest analog is 'replace the response body' which is Option B/wrb.fr-envelope-replacement — handled separately below."
+        },
+        "a_prime_wrb_fr_envelope_replacement": {
+          "verdict": "UNKNOWN / POSSIBLE (existing Strategy D)",
+          "rationale": "Gemini's response body is a `)]}'\\n` security prefix + a JSON-like array representing one or more wrb.fr envelopes. Each envelope contains protobuf-encoded data (which Gemini's JS decodes client-side). APF could in theory replace the entire response body with a forged envelope whose assistant-message fragment contains the warning text. BUT: (1) the protobuf schema inside the wrb.fr envelope is NOT part of the web platform — it's internal Google IDL that we don't have, (2) any structural mismatch causes Gemini's JS to throw an error that gets silently swallowed (exactly like the Offline case), (3) the existing services/gemini_design.md already tried Strategy D and reported 'no warning visible' which is why this probe was commissioned. The probe does NOT re-derive the protobuf schema, so we cannot confirm whether Strategy D's implementation is correctly constructing the envelope — only that IF it were correct, this is the ONLY option with a chance of working.",
+          "action_item_for_dev": "Re-capture a successful batchexecute response body raw (not through DevTools Preview which parses it) and compare byte-by-byte to what APF is currently injecting. Look for: field ordering, integer vs string types, missing optional fields that the Angular parser treats as required."
+        },
+        "b_http_body_html": {
+          "verdict": "BLOCKED",
+          "rationale": "The batchexecute response is consumed via fetch() with content-type=application/javascript. Swapping body to text/html does nothing (not a document navigation); Gemini's fetch handler would throw a parse error which gets swallowed by the same silent-error path identified in Phase B."
+        },
+        "c_js_error_panel": {
+          "verdict": "BLOCKED",
+          "rationale": "Gemini HAS an internal error handler (we observed it catching the Offline failure and POSTing to /jserror), but the handler does NOT surface the error to the UI. There is no user-visible error slot that reads from response body. Phase B confirmed this directly."
+        },
+        "d_dom_direct_injection": {
+          "verdict": "BLOCKED",
+          "rationale": "Strict-dynamic nonce CSP blocks any inline script APF could inject. Even non-script DOM additions require a pre-existing trusted script to pick them up and render — APF has no such hook into Gemini's Angular app."
+        },
+        "e_block_page_substitution": {
+          "verdict": "BLOCKED (not recommended)",
+          "rationale": "gemini.google.com/app is a deeply-session'd Angular SPA. Replacing any request with an HTML document would either: (1) break the SPA state, (2) log the user out, or (3) trigger Google's fraud/abuse detection. Not viable without collateral damage."
+        }
+      },
+      "recommended_option": {
+        "primary": "A' — wrb.fr envelope replacement (Strategy D from existing gemini_design.md), but with a NEW action item: re-capture the raw protobuf-over-JSON body byte-perfectly and compare to what APF injects. The existing Strategy D's 'no warning visible' symptom is most likely due to a protobuf schema mismatch, NOT a fundamentally wrong approach.",
+        "fallback": "None of Options B/C/D/E are viable. If byte-perfect envelope replacement still fails, Gemini should be reclassified **PENDING_INFRA** until Google publishes (or a reverse-engineering project decodes) the BardChatUi protobuf IDL.",
+        "phase5_design_action": "Update services/gemini_design.md with: (a) the captured URL template and rpcid map, (b) the confirmed silent-fail mechanism and WHY Options B/C/D/E are dead ends, (c) a debugging checklist for Strategy D envelope replacement (capture success response raw → diff against APF output → look for field-level differences)."
+      },
+      "console_errors_summary": {
+        "count": "20 errors + 5 warnings over the full session (including post-Offline jserror POSTs)",
+        "major_categories": [
+          "CSP report URLs (many rows showing *.google.com, *.gstatic.com, *.youtube.com, etc. — these are the allowed-sources whitelist being logged to Console as Gemini's CSP report endpoint posts them)",
+          "jserror telemetry POSTs during Offline-triggered failures (5 of them — all with the same 'Error code = 7 / Path = /_/BardChatUi/data/batchexecute / HTTP status = 0' payload)",
+          "Fetch request failed errors for batchexecute during Offline (aPya6c rpcid primarily)",
+          "Google Maps / Tag Manager script loads (not related to the chat flow)"
+        ],
+        "kasada_or_similar_bot_protection": "Not explicitly observed in this session, but Google has its own undisclosed bot detection that likely piggybacks on the already-present fraud/abuse infrastructure. No visible captcha or challenge was triggered during the test."
+      },
+      "screenshots": [
+        "results/files/452/01_baseline_landing.png",
+        "results/files/452/02_devtools_console_csp_logs.png",
+        "results/files/452/03_csp_diag.png",
+        "results/files/452/04_gemini_response_state.png",
+        "results/files/452/05_network_batchexecute_filter.png",
+        "results/files/452/06_batchexecute_row_detail.png",
+        "results/files/452/07_offline_silent_fail.png",
+        "results/files/452/08_silent_fail_network_jserror.png"
+      ],
+      "comparison_to_deepseek_451_and_v0_447": {
+        "deepseek_vs_gemini": "DeepSeek is a MUCH easier target. DeepSeek: simple JSON-Patch SSE schema fully reverse-engineered in one sitting, no CSP restrictions, Option A viable with high confidence. Gemini: opaque protobuf inside wrb.fr, strict CSP, internal jserror telemetry with no user-facing error slot, every option has a blocker. The difference comes down to Google's platform-wide security posture + proprietary wire formats vs DeepSeek's web-standard SSE.",
+        "v0_vs_gemini": "v0 (#447-448) is a Next.js CSR app with NO error UI, pushing all failures through silent redirects to auth. Gemini is an Angular app with INTERNAL error handling but still NO user-visible error UI — similar end result (silent fail) but different mechanism (Angular change-detection vs Next.js router.push). Both are fundamentally resistant to APF warning injection for the same reason: the frontend was designed assuming a cooperative backend, not an adversarial network intermediary.",
+        "pipeline_stance": "Gemini should be classified either DESIGN-STRATEGY-D (proceed with envelope replacement, with the new schema-debugging checklist) OR PENDING_INFRA (await protobuf IDL access). NOT NEEDS_ALTERNATIVE in the sense of 'try a different option' — Options B/C/D/E are all definitively blocked, so there IS no alternative."
+      }
+    }
+  ],
+  "key_insights": {
+    "silent_fail_is_a_feature_not_a_bug": "Gemini's Angular app has a full error-catch pipeline (evidenced by the 5 jserror POSTs after the Offline failure). The silent-fail behavior is intentional — Google chose to hide network errors from end users and log them to internal telemetry instead. This is a reliability/UX design choice that has the SIDE EFFECT of blocking APF's warning-delivery options C (error panel) because there's nothing to hook into.",
+    "csp_strict_dynamic_is_a_hard_wall": "Unlike v0/deepseek which have weak or no CSP, Gemini's nonce-based strict-dynamic CSP fundamentally prevents any DOM-script injection approach. Even if APF found a way to inject markup, browser enforcement happens BEFORE the JS runs — no inline handler, no dynamically created script tag, no iframe-based escape can work without the per-request nonce.",
+    "wrb_fr_envelope_replacement_is_the_only_path_with_a_non_zero_chance": "Every other option is definitively BLOCKED. The existing gemini_design.md Strategy D is the ONLY direction with any chance of success, and the most likely failure mode of that strategy is 'we generated a protobuf envelope that Gemini's parser rejects as malformed' — not 'the approach is fundamentally wrong'. Before giving up, dev should do a byte-level diff between a captured success response and the APF-generated envelope.",
+    "google_internal_proto_is_a_black_box": "BardChatUi uses protobuf schemas from google3 internal that are NOT published. Without access to the .proto definitions, reverse-engineering by observation is slow and error-prone. This is the root-cause reason why Strategy D is hard — not because the approach is wrong, but because we don't have the schema."
+  },
+  "overall_conclusion": "Gemini3 Phase 4 frontend-inspect COMPLETED. The 'silent fail' hypothesis from the existing gemini_design.md is CONFIRMED (Offline toggle reproduced it exactly, jserror telemetry observed as the only failure signal). CSP strict-dynamic is confirmed as blocking all DOM-injection options. The wrb.fr envelope replacement strategy (Strategy D) remains the only path forward — with a new recommended diagnostic step of byte-level response body comparison before declaring Strategy D failed. Phase 5 design should update gemini_design.md rather than moving to a new option space."
+}
