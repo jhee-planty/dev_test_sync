@@ -2435,5 +2435,179 @@ No blockers for HF Phase 6 migration. All infrastructure verified at
 the SQL data level to match the code audited in §9, §13, §15, §17, §19.
 
 
+## §21 — Cycle 59: Worktree uncommitted diff full inventory
+
+Context: cycle 56 found cpp:586/859 as uncommitted WebSocket upgrade log
+additions. §18.5 flagged "apf.cpp worktree has ≥2 uncommitted local
+additions" and recommended a full inventory before Phase 7. Cycle 59
+executes this.
+
+### 21.1 Scope of uncommitted changes
+
+`git diff --stat` reveals **7 modified files, 574 insertions, 89 deletions**:
+
+| File | +/- | Category |
+|------|-----|----------|
+| etap/core/etap_packet.h | +2 | Phase3-B24/B30 packet fields |
+| etap/core/tuple.h | +2 | Phase3-B24/B30 session fields |
+| etap/core/network_loop.cpp | +2 | Phase3-B24/B30 session→packet bridge |
+| ai_prompt_filter/ai_prompt_filter.h | +30, -6 | Session struct + API additions |
+| ai_prompt_filter/ai_prompt_filter_db_config_loader.cpp | +9, -7 | B26 path_matcher fix |
+| ai_prompt_filter/ai_prompt_filter.cpp | +474, -62 | **Massive** — 23 hunks |
+| visible_tls/visible_tls_session.cpp | +82, -16 | Phase3-B24/B30 VTS dispatcher |
+
+**This is NOT a log-only change.** These are production code modifications
+implementing multiple Phase3 build tags.
+
+### 21.2 Per-file change inventory
+
+**etap_packet.h** (+2): Two new packet fields at line 1335 area:
+- `u32 _block_response_stream_id = 0;` (Phase3-B24: RST_STREAM stream ID)
+- `u8 _block_response_h2_end_stream = 0;` (Phase3-B30: delayed END_STREAM flag)
+
+**tuple.h** (+2): Matching session fields at line 759 area:
+- `u32 _ai_prompt_block_stream_id = 0;` (Phase3-B24)
+- `u8 _ai_prompt_block_h2_end_stream = 0;` (Phase3-B30)
+
+**network_loop.cpp** (+2): Bridge at line 1238 area — copies session→packet
+for the 2 new fields alongside existing `_block_response_is_http2`.
+
+**ai_prompt_filter.h** (+30, -6):
+- `apf_session_data` gains 3 fields: `accept_type` (string), `is_page_load`
+  (bool), `is_websocket_upgrade` (bool) + corresponding `reset()` clears
+- `need_on_upgraded` event subscription added to `get_events()`
+- `on_upgraded()` virtual override declared (WebSocket upgrade handler)
+- `render_envelope_template()` gains `bool is_h2 = false` parameter
+- `recalculate_content_length()` gains `bool is_h2 = false` parameter
+
+**ai_prompt_filter_db_config_loader.cpp** (+9, -7):
+- `path_matcher::match()`: B26 trailing-slash fix —
+  `pattern.back() == '/' || (next_idx < path.length() && path[next_idx] == '/')`
+- Whitespace cleanup (trailing spaces removed)
+
+**visible_tls_session.cpp** (+82, -16):
+- Log level downgrade: `[APF_WARNING_TEST:hold_activate]` and
+  `[APF_WARNING_TEST:hold_buffer]` (3 sites) from `bo_mlog_info` →
+  `bo_mlog_debug` — reduces production log noise
+- Phase3-B24: `was_held` flag introduced at block emission; conditional
+  RST_STREAM — send CANCEL to server only if `!was_held` (request was
+  forwarded); skip RST_STREAM if held (server never saw the stream)
+- Phase3-B30: delayed END_STREAM — 10ms usleep + raw 9-byte DATA frame
+  with END_STREAM=1 flag + `[APF:delayed_ES]` log
+- Replaces unconditional RST_STREAM skip with the conditional B24 logic
+
+**ai_prompt_filter.cpp** (+474, -62, 23 hunks):
+The largest change. Hunks span most of the file. Key changes inferred
+from hunk positions (mapped to §14-§17 code-audit findings):
+
+- Lines 524-559: WebSocket upgrade detection + Accept-type parsing in
+  `on_http_request` (H1.1 path)
+- Lines 610+: hold-related additions in `on_http_request_content_data`
+- Lines 681-745: H2 request handling expanded (`on_http2_request` +
+  `on_http2_request_data`) — WebSocket + page-load detection + hold logic
+- Lines 803-928: `process_request_data_common` expanded — hold/release
+  with check_completed guard
+- Lines 987-1057: `block_session` — now populates `_block_stream_id` +
+  `_block_h2_end_stream` from service info
+- Lines 1136-1304: `recalculate_content_length` refactored for `is_h2`
+  — the three-branch behavior audited in §12
+- Lines 1304-1374: `render_envelope_template` with `is_h2` parameter
+- Lines 1374-1556: `convert_to_http2_response` major refactor (B26
+  de-chunker + B27 separator + HPACK + H2 frame assembly audited in
+  §9/§15)
+- Lines 1606-1645+: `generate_block_response` expanded — H2 params
+  forwarding, envelope rendering with is_h2
+- Lines 2441+: B17 space-normalization fallback (cycle 57 §19.7 finding)
+
+### 21.3 CRITICAL FINDING — worktree is AHEAD of deployed binary
+
+Cycle 11 (gamma analysis) diagnosed "source-tree drift": the running
+test-server binary emits log strings not present in any git branch.
+Cycle 56 re-confirmed this via `git log -S`.
+
+Cycle 59 reveals the drift is **bidirectional**:
+1. **Deployed binary → may have changes not in git** (cycle 11's finding,
+   unchanged)
+2. **Worktree → has 574 lines of uncommitted code not in git HEAD** (this
+   finding)
+
+The worktree's uncommitted changes implement Phase3-B24/B26/B30, WebSocket
+upgrade detection, accept-type parsing, log level adjustments, and the
+major `convert_to_http2_response` refactor. **None of these exist in the
+deployed binary** (which was built from HEAD or an earlier commit).
+
+**Implications for the envelope_audit (§9-§17)**:
+All code audited in cycles 49-55 was read from this dirty worktree, not
+from HEAD. The audit findings describe the WORKTREE code, not the code
+currently running on the test server. Specifically:
+
+| Audit § | Code audited | In worktree? | In HEAD (deployed)? |
+|---------|-------------|-------------|---------------------|
+| §12 recalculate_content_length | 3-branch `is_h2` | YES | **NO** — HEAD has the old 2-param version |
+| §15 B26 de-chunker | de-chunk path at cpp:1412+ | YES | **NO** — added in worktree |
+| §15 B27 separator picker | CRLF/LF logic | YES | **UNCLEAR** — refactored in worktree |
+| §17 VTS Phase3-B24 RST_STREAM | conditional was_held | YES | **NO** — HEAD has unconditional skip |
+| §17 VTS Phase3-B30 delayed ES | 10ms usleep + raw frame | YES | **NO** — added in worktree |
+| §14 hold/release in apf.cpp | expanded process_request_data_common | YES | **PARTIALLY** — HEAD may have an older version |
+| §19.7 B17 normalization | space-strip fallback | YES | **NO** — added in worktree |
+
+**This does NOT invalidate the audit.** The audit's purpose is to verify
+the correctness of the code that WILL be deployed in the next Phase 7
+build. When this worktree is committed and built, the deployed binary
+will match the audited code. The audit is forward-looking, not retrospective.
+
+However, it means the CURRENT test-server binary lacks several safety
+features the audit assumed were live:
+- No Phase3-B24 conditional RST_STREAM (uses unconditional skip)
+- No Phase3-B30 delayed END_STREAM
+- No B26 de-chunker
+- No B17 space-normalization
+- No WebSocket upgrade detection
+
+These are all enhancements. The base functionality (hold/release/block/
+envelope rendering) exists in HEAD — the worktree adds refinements.
+HF Phase 6 testing on the current test server would use the HEAD code,
+which is the code that passed all existing BLOCK_VERIFIED tests.
+
+### 21.4 Recommendations
+
+1. **Before Phase 7 release build**: commit all 7 files as a single
+   coherent commit covering Phase3-B24/B26/B30 + WebSocket detection +
+   is_h2 param refactor. This is a prerequisite for Phase 7 anyway.
+
+2. **Before HF Phase 6 testing**: decide whether to build from HEAD
+   (current deployed code) or from the worktree (with all enhancements).
+   If testing from HEAD, the test covers the same code that already
+   passed for grok/genspark/chatgpt/claude. If testing from worktree,
+   the test also validates B24/B26/B30 which are beneficial but untested
+   on the real server.
+
+3. **The 15 `[APF_WARNING_TEST:...]` contamination tags in VTS**: 3 of
+   them were already downgraded from `info` → `debug` in the worktree
+   (hold_activate, hold_buffer ×2 at cpp:574/576/607). The remaining
+   12 still use `info`. The rename side task (§18.3) should operate on
+   the worktree version, not HEAD, since the worktree is the code that
+   will be committed.
+
+4. **Risk assessment**: LOW. The worktree changes are consistent with
+   what the audit describes. No finding in §9-§20 contradicts HEAD
+   behavior — the findings describe the enhanced paths that HEAD simply
+   doesn't have. HEAD works for all current DONE services; the worktree
+   adds capabilities needed for future services (delayed ES, conditional
+   RST_STREAM, etc.).
+
+### 21.5 Verification level count — stays at 15
+
+§21 is a housekeeping inventory, not a new code-path verification.
+Count stays at **15 (a-o)**.
+
+Summary of §21: worktree has 574 uncommitted insertions across 7 files
+implementing Phase3-B24/B26/B30, WebSocket detection, accept-type parsing,
+is_h2 parameter refactoring, log level adjustments, and the major
+convert_to_http2_response refactor. ALL code audited in §9-§17 was read
+from this dirty worktree, NOT from HEAD (deployed). Audit findings remain
+valid as forward-looking verification of code-to-be-deployed. Before Phase 7
+release build, commit all 7 files. Before HF Phase 6 testing, decide
+HEAD vs worktree build target.
 
 
