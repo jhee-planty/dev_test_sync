@@ -137,11 +137,74 @@ ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.show_stats"
 
 **What it does**: Calls `output_monitoring(return_msg)` which dumps runtime monitoring state.
 
-**Expected content** (inferred — not yet sampled in pipeline cycles): per-service block counts, recent block history, matcher hit counts, session counts.
+**Actual output** (sampled 2026-04-15 19:55 KST, cycle 36):
 
-**Phase 6 use case**: Runtime health snapshot before/after a DB migration to see if block counts are moving at all. Could replace some L2 etap.log `grep blocked=1` queries if the stats include per-service counters.
+```
+AI Prompt Filter Statistics:
+  Status: Enabled
+  Total AI Requests: 11513
+  Blocked Requests: 32
+  Block Rate: 0.28%
+  Service Requests:
+    baidu: 23
+    cohere: 31
+    huggingface: 86
+    qianwen: 42
+    duckduckgo: 82
+    character: 194
+    wrtn: 2108
+    claude: 6948
+    github_copilot: 23
+    notion: 2
+    gemini3: 112
+    m365_copilot: 161
+    grok: 377
+    perplexity: 7
+    deepseek: 2
+    v0: 745
+    poe: 69
+    mistral: 491
+    gamma: 10
+  Total Checks: 7573
+  Checked Bytes: 14.7M
+  Keywords Loaded: 5 (EXACT: 0, PARTIAL: 1, REGEX: 4)
+  File Log Fallback: 0
+  DB log - success: 32, failed: 0
+  File log - success: 32, failed: 0
+  File rotations: 0
+Current log file: /var/log/ai_prompt/2026-04-15.log (size=25189/104857600)
+```
 
-**Action**: Sample output in a future idle cycle and document the exact format here.
+**Output schema** (per-line parser notes):
+- `Status: Enabled/Disabled` — runtime flag (toggled by `enable`/`disable`)
+- `Total AI Requests / Blocked Requests / Block Rate` — **lifetime counters** since process start (NOT daily resettable — cycle 36 confirmed via cross-check with `/var/log/ai_prompt/2026-04-15.log size=25189` vs huggingface=86)
+- `Service Requests: ...` — per-service lifetime request counts. **Order is roughly alphabetical within groups** (order reflects registration order in services map, NOT sorted). Includes services with non-zero counts only. Services with zero requests since process start are omitted.
+- `Total Checks` — number of request bodies passed through keyword matcher (differs from Total AI Requests when some requests are skipped, e.g. empty bodies or method-filtered)
+- `Checked Bytes` — total bytes scanned by the matcher
+- `Keywords Loaded: N (EXACT: X, PARTIAL: Y, REGEX: Z)` — Aho-Corasick + regex breakdown. **Cycle 36 sample: only 5 total keywords (4 regex + 1 partial), which explains the 0.28% block rate — the keyword set is very narrow** (likely SSN/phone regex patterns).
+- `File Log Fallback: N` — count of failed DB writes that fell back to file log
+- `DB log - success: X, failed: Y` / `File log - success: X, failed: Y` — block event logging counters
+- `File rotations: N` — number of daily log rotations since start
+- `Current log file: <path> (size=X/Y)` — ACTIVE file path + current_size/max_size. Note: path may not be readable as `solution` user (cycle 36 observed `ls` returned NOENT while show_stats reported size=25189 — likely `ai_prompt_filter` process uses root/service UID for log dir writes).
+
+**Phase 6 use case** — snapshot BEFORE and AFTER a migration to see service counts moving:
+
+```bash
+# Before migration
+etapcomm ai_prompt_filter.show_stats > /tmp/stats-before.txt
+
+# Apply migration + send test PC check-warning
+
+# After migration
+etapcomm ai_prompt_filter.show_stats > /tmp/stats-after.txt
+diff /tmp/stats-before.txt /tmp/stats-after.txt
+```
+
+If `Blocked Requests` counter moves by exactly the number of test requests you sent, you have high confidence the block path is firing.
+
+**Diagnostic application** (cycle 36 use case): when a frontend-inspect scenario appears to hang (#454 huggingface, 134+ minutes), show_stats lets us verify whether the test PC is ACTUALLY producing traffic for the service under inspection. Cycle 36 found huggingface=86 = active traffic = scenario is running, not hung. Without show_stats we would have no way to distinguish "test PC stuck" from "test PC successfully running a long multi-phase scenario."
+
+**Counter scope caveat**: counts are lifetime since process start, NOT daily resettable. A large absolute count does NOT mean "today's traffic" — it could be weeks of accumulation. Cross-check with file rotation counter and `ls /var/log/ai_prompt/*.log` to estimate process uptime.
 
 ---
 
@@ -189,11 +252,38 @@ ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.show_config"
 
 **What it does**: Dumps `_config->to_string()` — the entire loaded APF config (services table, templates, settings).
 
-**Expected content** (inferred): every service with its `response_type`, `h2_mode`, `h2_end_stream`, `h2_goaway`, `h2_hold_request`, `domain_patterns`, `path_patterns`. May also include the envelope template bodies.
+**Actual output** (sampled 2026-04-15 19:55 KST, cycle 36):
 
-**Phase 6 use case**: Alternative to `SELECT ... FROM ai_prompt_services` L2 queries when MySQL access is inconvenient. Also useful for detecting config drift between source tree and running binary (cycle 11 running-binary source-tree drift pattern).
+```
+AI Prompt Filter Configuration:
+  Chunk Accumulate Threshold: 1024 bytes
+  Block On Detection: true
+  File Logging:
+    Enabled: true
+    Log Path: /var/log/ai_prompt/
+    Max Prompt Size: 0 bytes (0=unlimited)
+    Max File Size: 104857600 bytes
+```
 
-**Action**: Sample output in a future idle cycle to confirm format — may reveal more config fields than the schema I currently have documented.
+**Reality check** (cycle 36): show_config dumps ONLY the runtime/global options — NOT the services table, NOT templates, NOT keywords. It is much less useful than I initially hoped. **Cannot** substitute for `SELECT ... FROM ai_prompt_services` — those queries still require SSH MySQL access.
+
+**Options shown**:
+- `Chunk Accumulate Threshold` — buffer size for accumulating request body chunks before matcher runs (stream pacing control)
+- `Block On Detection: true` — if false, the matcher runs in "detect and log only" mode without injecting block responses. **This is a safety kill-switch distinct from `enable`/`disable`**: `enable=false` stops ALL matching; `Block On Detection=false` still matches but doesn't block.
+- `File Logging.Enabled` — whether block events are logged to file (in addition to DB)
+- `File Logging.Log Path` — daily rotated file location
+- `File Logging.Max Prompt Size` — per-log-line size limit (0 = unlimited)
+- `File Logging.Max File Size` — rotation threshold (default 100MB)
+
+**Phase 6 use case** — detect config drift between expected settings and running binary. Primarily useful as a quick "is APF set to Block On Detection: true" sanity check before starting a block-verify cycle. For detailed config (services, templates, keywords) you still need the SQL layer.
+
+**What show_config does NOT expose** (had to rediscover via SQL in cycle 36):
+- Service list / response_type mappings
+- Envelope templates
+- Keyword rules
+- H2 attributes per service
+
+**Recommendation**: treat show_config as a "global runtime flags" spot-check only. For anything else, use the direct SQL queries documented in `references/db-access-and-diagnosis.md`.
 
 ---
 
