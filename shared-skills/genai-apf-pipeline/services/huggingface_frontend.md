@@ -79,23 +79,27 @@ Event types (from `src/lib/types/MessageUpdate.ts` in the public repo):
 
 ### 3.2 Current openai_compat_sse envelope (shared by 5 services)
 
-From cycle 21 L2 extraction — openai_compat_sse is 342B:
+**Cycle 42 canonical capture** — direct DB query on etap host confirmed 342B, MD5 `7955369a54e3f47da70315d03aa28598`, all 5 rows identical (chatglm, huggingface, kimi, qianwen, wrtn), priority=50, enabled=1. Decoded from hex:
 
 ```
-HTTP/1.1 200 OK
-Content-Type: text/event-stream; charset=utf-8
-Cache-Control: no-cache
-Content-Length: 0
-
-data: {"choices":[{"delta":{"content":"{{MESSAGE}}"},"index":0,"finish_reason":null}]}
-
-data: {"choices":[{"delta":{},"index":0,"finish_reason":"stop"}]}
-
-data: [DONE]
-
+HTTP/1.1 200 OK\r\n
+Content-Type: text/event-stream; charset=utf-8\r\n
+Cache-Control: no-cache\r\n
+Connection: keep-alive\r\n
+Access-Control-Allow-Origin: *\r\n
+Content-Length: {{BODY_INNER_LENGTH}}\r\n
+\r\n
+data: {"choices":[{"delta":{"content":"{{ESCAPE2:MESSAGE}}"},"index":0,"finish_reason":"stop"}],"model":"blocked","id":"{{UUID:chatcmpl}}"}\n
+\n
+data: [DONE]\n
+\n
 ```
 
-**This is the OpenAI standard SSE format** — `choices[].delta.content` delta events + `[DONE]` sentinel. **It does NOT match huggingface chat-ui's type-tagged schema.** HF's Svelte parser at `src/routes/conversation/[id]/+page.svelte` checks `JSON.parse(line).type` and skips anything missing a `type` field. Therefore the current envelope's `{"choices":[...]}` events are silently discarded → **blank assistant bubble** (what users see).
+**Note vs cycle 21 L2 approximation**: cycle 21 showed TWO data events (first with content + finish_reason=null, second with empty delta + finish_reason=stop). The real row merges into ONE data event with finish_reason=stop + [DONE] sentinel. The 342B byte count matches exactly — only the per-event breakdown was approximated. Cycle 42 is the ground-truth snapshot.
+
+**This is the OpenAI standard SSE format** — `choices[].delta.content` event + `[DONE]` sentinel. **It does NOT match huggingface chat-ui's type-tagged schema.** HF's Svelte parser at `src/routes/conversation/[id]/+page.svelte` checks `JSON.parse(line).type` and skips anything missing a `type` field. Therefore the current envelope's `{"choices":[...]}` event is silently discarded → **blank assistant bubble** (what users see).
+
+**Canonical baseline for PART 0 regression check**: `MD5('7955369a54e3f47da70315d03aa28598')` — record this in impl journal before applying phase6_huggingface_addendum_2026-04-15.sql and verify all 5 rows still match after migration.
 
 **This is the root cause** documented in cycle 21 and waiting for #454 to definitively verify.
 

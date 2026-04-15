@@ -67,11 +67,28 @@ SELECT service_name, response_type, enabled,
   FROM etap.ai_prompt_response_templates
  WHERE response_type = 'openai_compat_sse'
  ORDER BY service_name;
--- Expected at baseline (from cycle 21 L2 extraction):
---   5 rows: chatglm, huggingface, kimi, qianwen, wrtn (per-service row model)
---   OR 1 row (schema disambiguation — see 0c)
---   Each ~342 bytes
---   All same MD5 if template content is literally identical (likely)
+-- Expected at baseline (confirmed cycle 42 via direct DB query on 218.232.120.58):
+--   5 rows: chatglm, huggingface, kimi, qianwen, wrtn (per-service row model confirmed)
+--   Each EXACTLY 342 bytes (LENGTH)
+--   priority=50, enabled=1 on all 5 rows
+--   All 5 rows share IDENTICAL envelope_md5 = '7955369a54e3f47da70315d03aa28598'
+--     (cycle 42 baseline snapshot — record this string in impl journal)
+--   Actual envelope body decoded from hex (cycle 42):
+--     HTTP/1.1 200 OK\r\n
+--     Content-Type: text/event-stream; charset=utf-8\r\n
+--     Cache-Control: no-cache\r\n
+--     Connection: keep-alive\r\n
+--     Access-Control-Allow-Origin: *\r\n
+--     Content-Length: {{BODY_INNER_LENGTH}}\r\n
+--     \r\n
+--     data: {"choices":[{"delta":{"content":"{{ESCAPE2:MESSAGE}}"},"index":0,"finish_reason":"stop"}],"model":"blocked","id":"{{UUID:chatcmpl}}"}\n
+--     \n
+--     data: [DONE]\n
+--     \n
+--   (Single data event with finish_reason=stop + [DONE] sentinel — differs from
+--    frontend.md §3.2 approximated snapshot which showed 2 data events. The real
+--    envelope merges delta.content + finish_reason into one event. The cycle 21
+--    L2 byte count of 342B matches exactly — only the per-event breakdown differed.)
 
 -- 0c. Schema disambiguation — confirm ai_prompt_response_templates unique key shape.
 --     This tells us whether INSERT will conflict, and also whether PART 2d should
@@ -217,7 +234,13 @@ SELECT service_name, response_type, enabled,
   FROM etap.ai_prompt_response_templates
  WHERE response_type = 'openai_compat_sse'
  ORDER BY service_name;
--- Expected: same rows as PART 0b with IDENTICAL envelope_md5 values.
+-- Expected: 5 rows (chatglm, huggingface, kimi, qianwen, wrtn), each 342 bytes,
+--           each with envelope_md5='7955369a54e3f47da70315d03aa28598' (cycle 42 baseline).
+--           NOTE: huggingface's ai_prompt_services row moves OFF openai_compat_sse
+--           in PART 1B, but the envelope ROW for ('huggingface','openai_compat_sse')
+--           is left untouched in PART 1A (INSERT targets 'huggingface_sse' instead).
+--           So this check still sees 5 rows — the 'huggingface' row in this table
+--           is simply abandoned/orphaned from routing but physically identical.
 -- If ANY row's MD5 differs OR a row is missing → ROLLBACK IMMEDIATELY via PART 4.
 
 -- 2e. Confirm ai_prompt_services rows for the 4 sibling services still route
