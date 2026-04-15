@@ -1,8 +1,69 @@
 ## Gemini — Warning Design
 
 **Service ID:** gemini (also aliases: gemini3)
-**Frontend Profile Source:** Phase 1 capture #153 (2026-04-02)
-**Status:** Warning delivery design (Phase 2)
+**Frontend Profile Source:** Phase 1 capture #153 (2026-04-02) · **REFRESHED by #452 (2026-04-15)** → see `services/gemini3_frontend.md`
+**Status:** Warning delivery design — **Phase 5 UPDATE 2026-04-15 (Strategy D retained, schema-debugging checklist added)**
+
+---
+
+## Phase 5 Update — 2026-04-15 (from #452 frontend-inspect)
+
+#452 re-validated this document against live gemini.google.com/app. Findings:
+
+1. **Strategy D remains the ONLY marginal path.** Options A (SSE), B (HTML swap), C (error panel), D (DOM inject), E (block page) are all definitively blocked:
+   - **A**: Gemini uses single POST/response, no SSE stream to inject into
+   - **B**: fetch() parses response as application/javascript → HTML causes throw swallowed by silent-fail pipeline
+   - **C**: Internal jserror telemetry observed catching failures, but **no user-visible error slot reads response body**
+   - **D**: **Strict-dynamic nonce CSP** (`script-src 'nonce-<val>' 'strict-dynamic'`) blocks all inline script. APF has no pre-existing trusted hook.
+   - **E**: Deep Angular SPA session — HTML swap would break state / log out / trigger Google fraud detection
+2. **Silent-fail is a feature, not a bug.** DevTools Offline reproduced the "no user bubble, no spinner, no error" state exactly. FIVE `jserror` POSTs to `/_/BardChatUi/jserror` with `Error code = 7 / HTTP status = 0` — Angular catches the error but doesn't surface it. **Any warning-delivery option that depends on Gemini displaying an error to the user is dead on arrival.**
+3. **Most likely failure mode of existing Strategy D implementation: protobuf schema mismatch.** The wrb.fr envelope contains protobuf-over-JSON from Google's internal IDL (not published). A byte-level diff between a captured success response and APF's generated envelope is the first concrete debugging step that hasn't been tried.
+
+### Updated endpoint + rpcid map (from #452)
+
+```
+POST https://gemini.google.com/_/BardChatUi/data/batchexecute
+    ?rpcids=<RPCID>&source-path=%2Fapp&bl=boq_assistant-bard-web-server_20260413.06_p1
+    &f.sid=8887047125100837041&hl=ko&_reqid=<incrementing_id>&rt=c
+```
+
+| rpcid | Role | Count this session |
+|-------|------|--------------------|
+| `c3wobe` | Initial listing / chats endpoint | 1x baseline |
+| `L5adhe` | Chat send / assistant query | 3x (dominant) |
+| `ESY5D` | Conversation update / persistence | 2x |
+| `PCck7e` | Chat session metadata update | 1x |
+| `aPya6c` | **Pre-send validation — fires first on submit, aborts silently during Offline** | observed failing |
+
+Build label: `boq_assistant-bard-web-server_20260413.06_p1` (2026-04-13 post-fix release).
+Session id: `f.sid=8887047125100837041` (stable per session).
+`_reqid` starts ~`2962048` and increments by `100000` per request.
+
+### Strategy D debugging checklist (NEW action items)
+
+Before declaring Strategy D dead and moving Gemini to PENDING_INFRA, execute this checklist:
+
+1. **Capture a raw success response byte-perfectly.** Not via DevTools Preview (which parses) — via the Response tab "Raw" / "Source" view, or via a network intercept proxy. Save as `local_archive/gemini_success_response_raw.bin`.
+2. **Capture APF's current injected envelope.** Trigger a block, capture what APF actually writes to the wire via `ssldump -p` or etap's own http1_response logging at `ai_prompt_filter.cpp:1285` (`http1_size=%zu`). Save as `local_archive/gemini_apf_envelope_raw.bin`.
+3. **Byte-level diff.** Field-level comparison:
+   - `)]}'\n` security prefix present?
+   - Length-prefixed chunks match Gemini's framing?
+   - Outer array structure (`[["wrb.fr", "<rpcid>", "<payload>", null, null, ...]]`)?
+   - Inner protobuf-over-JSON: field ordering, integer-vs-string types, missing optional fields treated as required by Angular parser, null vs empty-array vs empty-object distinctions?
+   - Trailing `"sideChannel"` and `"generic"` markers present?
+4. **If diff shows differences**, patch the APF envelope template until byte-identical to a success response (modulo the content fields).
+5. **If byte-identical envelope still produces silent fail**, the Angular parser is rejecting it for a reason not visible in the byte stream (cookie binding, nonce coupling, cross-request signature) → **PENDING_INFRA** until Google publishes the BardChatUi protobuf IDL or a community project decodes it.
+
+### Reclassification criteria
+
+- **If checklist step 4 succeeds** → proceed to Phase 6 with the corrected envelope and test on test PC
+- **If checklist step 5 blocks** → Gemini moves to **PENDING_INFRA** (same bucket as gamma: not diagnosable from dev PC without additional infrastructure)
+
+### Hard constraints confirmed by #452
+
+- **CSP strict-dynamic nonce**: all DOM-injection paths blocked at browser level, BEFORE any JS executes. No workaround at APF's network layer.
+- **No user-visible error slot**: Angular template has no error-display binding for batchexecute failures. Options C/D can never work.
+- **Single POST/response, not SSE**: the only injection point is the complete response body. Must be byte-perfect per the wrb.fr + protobuf IDL.
 
 ---
 
