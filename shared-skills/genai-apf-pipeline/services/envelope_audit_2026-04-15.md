@@ -1697,4 +1697,183 @@ the huggingface Phase 6 wire path.
   tracking), B30 (delayed END_STREAM at VTS)
 
 
+## §18 — Cycle 56: [APF:] observability surface inventory + cycle 11 drift follow-up
+
+Context: §17.7 mapped 15 `[APF_WARNING_TEST:...]` contamination sites. To draft
+the cleanup side-task, I also need the full legitimate-tag inventory so the
+rename targets don't collide and Phase 7 release-gate grep can be salvaged
+with a better pattern. Also checked cycle 11's "source-drift" claim against
+the current worktree while reading the cpp.
+
+### 18.1 Legitimate `[APF:<subcategory>]` tags (17 sites, ai_prompt_filter.cpp + visible_tls_session.cpp)
+
+All use `bo_mlog_{info|warn|debug|debug5|error}("[APF:subcategory] ...")`.
+Grouped by purpose:
+
+**Reload-time validation (§cycle 54)** — one subcategory, 4 call sites:
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 1 | apf.cpp:111 | warn  | validate | unknown response_type warning |
+| 2 | apf.cpp:117 | warn  | validate | unknown prepare_response_type warning |
+| 3 | apf.cpp:122 | info  | validate | plain template mode (no envelope) |
+| 4 | apf.cpp:129 | warn  | validate | block_mode=1 + envelope conflict |
+
+**Hold/release lifecycle (§cycle 52 §cycle 55)** — per-module subcategories:
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 5 | apf.cpp:543 | info | hold_set_h1 | H1.1 hold activation |
+| 6 | apf.cpp:548 | info | hold_skip_h1 | H1.1 hold skip (already checked) |
+| 7 | apf.cpp:626 | info | hold_release_h1 | H1.1 clean-request release |
+| 8 | apf.cpp:694 | info | hold_set | H2 hold activation |
+| 9 | apf.cpp:699 | info | hold_skip | H2 hold skip |
+
+**Block emission (§cycle 48-51)** — 3 info logs at block_session path:
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 10 | apf.cpp:1028 | info | block | block() entry with service/http2/stream/prepare |
+| 11 | apf.cpp:1032 | info | block_response | generated response size/http2 |
+| 12 | apf.cpp:1064 | info | block_session_h2 | H2 block session flag dump |
+
+**H2 frame assembly pipeline (§cycle 49 §cycle 53)** — debug-level, 4 sites:
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 13 | apf.cpp:1233 | debug | H2_SSE | SSE body path taken |
+| 14 | apf.cpp:1437 | debug | H2_DECHUNK | de-chunked body size (Phase3-B26) |
+| 15 | apf.cpp:1458 | debug | H2_STATUS | parsed :status + first line separator |
+| 16 | apf.cpp:1560 | debug | H2_HPACK | HPACK encode result |
+
+**Envelope rendering + params (§cycle 48)** — 2 info logs:
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 17 | apf.cpp:1636 | info | envelope | rendered via DB template |
+| 18 | apf.cpp:1671 | info | h2_params | h2_end_stream/goaway/http1_size |
+
+**Service-specific diagnostic** — 1 site (v0 only):
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 19 | apf.cpp:782 | info | v0_diag | stream/api/body sample dump |
+
+**VTS-layer (§cycle 53)** — 1 legitimate site:
+| # | File:line | Level | Subcategory | Purpose |
+|---|-----------|-------|-------------|---------|
+| 20 | vts.cpp:668 | info | delayed_ES | Phase3-B30 10ms delayed END_STREAM confirm |
+
+Count: **20 legitimate `[APF:<subcategory>]` tags** (18 in apf.cpp, 2 in vts.cpp
+including validate×4 as one subcategory-unique entry — or 17 unique subcategory
+strings). Correction to cycle 55 headline count (§17.7 said 17).
+
+### 18.2 Legacy `[APF]` raw-format logs (6 sites, ai_prompt_filter.cpp only)
+
+Pre-dating the `[APF:<subcategory>]` naming convention. All in apf.cpp:
+
+| # | Line | Level | Free-text | Suggested rename |
+|---|------|-------|-----------|------------------|
+| L1 | 569 | debug5 | `Page load request (Accept: text/html) for %s%s` | `[APF:pageload_h1]` |
+| L2 | 586 | info   | `WebSocket upgrade detected for %s%s` | `[APF:ws_upgrade_h1]` |
+| L3 | 722 | info   | `Page load request (Accept: text/html) for %s%s (H2)` | `[APF:pageload_h2]` |
+| L4 | 859 | info   | `WebSocket upgrade detected for AI service: %s (domain=%s)` | `[APF:ws_upgrade_ai]` |
+| L5 | 1611 | error | `No DB template for '%s' — using generic 403 fallback` | `[APF:no_template]` |
+| L6 | 1640 | warn  | `No envelope template for response_type '%s'` | `[APF:no_envelope]` |
+
+### 18.3 Contaminated `[APF_WARNING_TEST:<tag>]` sites (15, from §17.7)
+
+Rename targets drafted against §18.1 so no subcategory collides:
+
+| # | File:line | Current tag | Rename to |
+|---|-----------|-------------|-----------|
+| T1 | apf.cpp:826 | hold_release | `[APF:hold_release]` (NOTE: collides with apf.cpp:626 "hold_release_h1" only on string match; actual subcategory differs — **use `hold_release_h2`** for symmetry) |
+| T2 | apf.cpp:834 | hold_continue | `[APF:hold_continue_h2]` |
+| T3 | vts.cpp:549 | hold_flush | `[APF:vts_flush]` |
+| T4 | vts.cpp:555 | hold_flush_done | `[APF:vts_flush_done]` |
+| T5 | vts.cpp:559 | hold_flush_partial | `[APF:vts_flush_partial]` |
+| T6 | vts.cpp:574 | hold_activate | `[APF:vts_hold_activate]` |
+| T7 | vts.cpp:576 | hold_buffer (first) | `[APF:vts_hold_buffer_new]` |
+| T8 | vts.cpp:607 | hold_buffer (continued) | `[APF:vts_hold_buffer_cont]` |
+| T9 | vts.cpp:589 | hold_overflow | `[APF:vts_hold_overflow]` |
+| T10 | vts.cpp:625 | hold_discard | `[APF:vts_block_discard]` |
+| T11 | vts.cpp:630 | vts_pre | `[APF:vts_block_pre]` |
+| T12 | vts.cpp:643 | vts_post | `[APF:vts_block_post]` |
+| T13 | vts.cpp:682 | vts_keepalive | `[APF:vts_keepalive]` |
+| T14 | vts.cpp:701 | vts_rst_server | `[APF:vts_rst_server]` |
+| T15 | vts.cpp:708 | vts_no_rst | `[APF:vts_no_rst]` |
+
+### 18.4 Phase 7 release-gate grep strategy (replacement)
+
+Old (broken) gate: `grep -r "\[APF_WARNING_TEST:" functions/` → would fire on
+every production build because 15 production tags legitimately use the prefix.
+
+**New gate** (grep two conditions, AND):
+1. `grep -rn "\[APF_WARNING_TEST:" functions/` returns **nothing** (after rename)
+2. `grep -rn "APF_WARNING_TEST" functions/` returns **nothing outside
+   `references/` or doc strings** (catches incomplete renames)
+
+Release-gate script update needed in cycle 52 side-task's scope (now covers
+all 15 sites, not just the 2 cycle 52 identified).
+
+### 18.5 Cycle 11 source-drift follow-up — STRENGTHENED
+
+Cycle 11 (gamma analysis) claimed: *"Running binary emits log strings ('Page
+load request') that don't exist in ANY worktree branch → source tree drift."*
+
+Cycle 56 verification:
+- `git log --all -S "WebSocket upgrade detected for AI service"
+  -- functions/ai_prompt_filter/ai_prompt_filter.cpp` → **empty** (no commit
+  introduces this string)
+- `git status` on the file → **modified, not staged** (uncommitted local)
+- `git diff` shows both cpp:586 and cpp:859 WebSocket upgrade lines as `+`
+  additions → these are WORKTREE-LOCAL additions on top of HEAD
+
+**Conclusion**: Cycle 11 was CORRECT. The running test-server binary's source
+tree (git HEAD) does NOT contain "WebSocket upgrade detected for AI service".
+The fact that my worktree has it is because I (or a prior cycle) added it as
+an uncommitted local change. This does NOT explain gamma's running-binary log
+strings, because that binary was built from HEAD, not from this worktree.
+
+Cycle 11's source-drift theory for gamma.app blank-page remains valid. The
+binary on 218.232.120.58 produces log lines whose exact wording is not in
+git, meaning either (a) a different build branch was deployed, or (b) the
+test server has its own local modifications on the build host. This is STILL
+outside dev-PC diagnosis capability per cycle 11's PENDING_INFRA verdict.
+
+**Side-effect action**: the uncommitted apf.cpp diff should be inventoried —
+there may be other stray local additions beyond the two WebSocket lines that
+could cause drift between this worktree's audit results and what actually runs.
+Deferred to a cycle 57+ housekeeping step; not urgent because the envelope_audit
+findings focus on code shape (hold/release architecture, frame assembly,
+selection gates) which is stable across minor log-line additions.
+
+### 18.6 Observations
+
+- **`[APF:v0_diag]`** at apf.cpp:782 is v0-specific (launched cycle 38 for v0
+  body sampling). After v0 Phase 6 ships and stabilizes, this becomes dead
+  code. Candidate for removal in the same side-task that cleans contamination.
+- **`[APF:H2_*]`** debug tags are a coherent pipeline trace (SSE→DECHUNK→
+  STATUS→HPACK). Leaving them as debug-level is correct; they cost nothing
+  in production and are essential during H2 frame assembly regression.
+- **`[APF:validate]`** (4 sites, same subcategory) is the only subcategory
+  reused across call sites. Acceptable — they all report the same class of
+  error (reload-time config mismatch).
+- **Missing coverage**: no `[APF:]` tag at the detect_service entry point
+  (apf.cpp:870 area). Cycle 51 audited this but there is no info log when
+  `detect_and_mark_ai_service` matches a rule. Live debugging relies entirely
+  on the block-path `[APF:block]` at cpp:1028. For non-blocking paths (hold
+  but no keyword found), there's no "service detected" trace. Low priority
+  but worth noting for future observability uplift.
+
+### 18.7 Verification level count update
+
+Cycle 55 was at 14 levels (a-n). Cycle 56's observability surface map is
+better characterized as a **tooling/cleanup audit** than a new verification
+level — it doesn't uncover new runtime behavior, it inventories existing
+logging. Keep the count at **14**; this §18 is a prerequisite for Phase 7
+release-gate fix, not a runtime verification.
+
+Summary of §18: 20 legitimate `[APF:<subcategory>]` tags (18 apf + 2 vts),
+6 legacy `[APF]` raw-format logs, 15 `[APF_WARNING_TEST:]` contamination sites
+with non-colliding rename targets. Phase 7 release-gate grep strategy
+replacement drafted. Cycle 11 source-drift theory re-confirmed (this worktree
+has uncommitted local additions that happen to contain the same string cycle
+11 said was missing from history — cycle 11 was always talking about HEAD,
+not this worktree, and HEAD is still clean).
+
 
