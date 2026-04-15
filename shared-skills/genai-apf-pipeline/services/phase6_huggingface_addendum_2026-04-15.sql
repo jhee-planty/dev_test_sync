@@ -121,9 +121,34 @@ SELECT COUNT(*) AS openai_compat_rows
 BEGIN;
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- 1A. INSERT new huggingface_sse envelope row
---     (ON DUPLICATE KEY UPDATE ensures idempotency if re-applied after partial
---     failure or a prior cycle's attempt)
+-- 1A. INSERT new huggingface_sse envelope row (DELETE-then-INSERT idempotency)
+--
+--     SCHEMA NOTE (cycle 45 discovery): `ai_prompt_response_templates` has
+--     `PRIMARY KEY (id)` (auto-increment surrogate) as its ONLY unique key.
+--     There is NO unique index on (service_name, response_type) — confirmed
+--     via SHOW CREATE TABLE. The existing indices `idx_service_enabled` and
+--     `idx_priority` are both non-unique.
+--
+--     CONSEQUENCE: `ON DUPLICATE KEY UPDATE` semantics are a no-op in this
+--     table. Every INSERT gets a fresh auto-increment id, so the "duplicate
+--     key" check on PRIMARY KEY always fails and ODKU's UPDATE clause is
+--     never executed. Re-running an INSERT would silently APPEND a new row
+--     every time (see the 3 identical `claude` rows and 5 identical
+--     `openai_compat_sse` rows in the live DB for historical evidence).
+--
+--     RUNTIME IMPACT: cycle 41's `_envelopes` map is keyed by response_type
+--     and applies `ORDER BY priority DESC` with first-row-wins. If all duplicate
+--     rows have identical content (common when re-running the same SQL), the
+--     runtime picks an identical envelope and behavior is correct. But if a
+--     LATER run ships an UPDATED template (e.g., fixing a placeholder bug),
+--     the old row keeps winning (priority tie → older-id-first in InnoDB
+--     insertion order) and the fix is SILENTLY IGNORED.
+--
+--     FIX: explicit DELETE before INSERT guarantees exactly one row exists
+--     after apply, making re-runs truly idempotent. The DELETE targets the
+--     precise (service_name, response_type) pair we're about to INSERT, so
+--     it never touches any other rows. Wrapping in BEGIN/COMMIT ensures
+--     atomicity — either both DELETE and INSERT succeed, or neither.
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- ############################################################################
@@ -144,8 +169,16 @@ BEGIN;
 -- ##                                                                        ##
 -- ############################################################################
 
+-- Idempotency guard: remove any pre-existing huggingface_sse row(s) first.
+-- This is safe because response_type='huggingface_sse' is new in this
+-- migration — no other service maps to it. If a prior cycle's attempt left
+-- a partial row, this wipes it before re-inserting the canonical one.
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = 'huggingface'
+   AND response_type = 'huggingface_sse';
+
 INSERT INTO etap.ai_prompt_response_templates
-  (service_name, http_response, response_type, envelope_template, enabled)
+  (service_name, http_response, response_type, envelope_template, priority, enabled)
 VALUES
   ('huggingface', 'BLOCK', 'huggingface_sse', CONCAT(
     'HTTP/1.1 200 OK\r\n',
@@ -157,10 +190,10 @@ VALUES
     '{"type":"stream","token":"{{MESSAGE}}"}', '<EVENT_SEP>',
     '{"type":"finalAnswer","text":"{{MESSAGE}}","interrupted":false}', '<EVENT_SEP>',
     '{"type":"status","status":"finalAnswer"}', '<EVENT_SEP>'
-  ), 1)
-ON DUPLICATE KEY UPDATE
-  envelope_template = VALUES(envelope_template),
-  enabled           = 1;
+  ), 50, 1);
+-- Note: priority=50 (default) is safe because no other row uses
+-- response_type='huggingface_sse'. cycle 41 _envelopes map lookup
+-- unconditionally selects this row via ORDER BY priority DESC first-row-wins.
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 1B. UPDATE huggingface service row — switch response_type to the new envelope

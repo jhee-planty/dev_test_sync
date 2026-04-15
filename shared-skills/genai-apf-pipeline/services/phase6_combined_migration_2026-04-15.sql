@@ -176,8 +176,17 @@ UPDATE etap.ai_prompt_response_templates
 -- 1B.2b Envelope for v0_303_redirect (Option F, new row on v0_api)
 --       Requires Etap-served /apf-blocked URL to exist (infra prerequisite).
 --       See services/v0_design.md §Recovery Path F "Etap-served URL" for setup.
+--
+--       SCHEMA NOTE (cycle 45): ai_prompt_response_templates has only a
+--       surrogate PRIMARY KEY (id) — NO unique index on (service_name,
+--       response_type). ON DUPLICATE KEY UPDATE never triggers; re-running
+--       this INSERT would silently append duplicate rows. DELETE-then-INSERT
+--       guarantees exact idempotency.
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = 'v0_api'
+   AND response_type = 'v0_303_redirect';
 INSERT INTO etap.ai_prompt_response_templates
-       (service_name, http_response, response_type, envelope_template)
+       (service_name, http_response, response_type, envelope_template, priority, enabled)
 VALUES ('v0_api', 0, 'v0_303_redirect',
         CONCAT(
           'HTTP/1.1 303 See Other\r\n',
@@ -185,10 +194,8 @@ VALUES ('v0_api', 0, 'v0_303_redirect',
           'Cache-Control: no-store\r\n',
           'Content-Length: 0\r\n',
           '\r\n'
-        ))
-    ON DUPLICATE KEY UPDATE
-        response_type     = VALUES(response_type),
-        envelope_template = VALUES(envelope_template);
+        ),
+        50, 1);
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -208,13 +215,25 @@ UPDATE etap.ai_prompt_services
        h2_hold_request = 1
  WHERE service_name = 'github_copilot';
 
--- 1C.2 Envelope INSERT (new row; ON DUPLICATE KEY preserves idempotency)
+-- 1C.2 Envelope DELETE + INSERT (cycle 45 idempotency fix)
+--      SCHEMA NOTE: ai_prompt_response_templates has no unique index on
+--      (service_name, response_type). The apf_db_driven_migration.sql :91
+--      chatgpt_sse pattern uses ON DUPLICATE KEY UPDATE but that's
+--      actually a no-op on this table — the apparent idempotency is an
+--      illusion. We use DELETE-then-INSERT here for true idempotency.
+--      The DELETE only targets the ('github_copilot','copilot_sse')
+--      tuple we're about to create, so it never disturbs the existing
+--      copilot_403 row (which is preserved as the pre-migration fallback).
+--
 --      Embedded CORS headers: copilot API host is cross-origin from github.com
 --      Schema from Phase 4 capture (#453 2026-04-15 18:25):
 --        - 2-event type: content (body) + complete (finalize)
 --        - Cumulative body delta: single content event is sufficient
 --        - `\n\n` event separator (NOT `\r\n\r\n`) — matches captured wire
 --      Placeholder: {{MESSAGE}} = single json_escape (NOT ESCAPE2 — cycle 31 fix)
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = 'github_copilot'
+   AND response_type = 'copilot_sse';
 INSERT INTO etap.ai_prompt_response_templates
        (service_name, http_response, response_type, envelope_template,
         priority, enabled)
@@ -237,10 +256,7 @@ SELECT 'github_copilot', t.http_response, 'copilot_sse',
        100, 1
   FROM etap.ai_prompt_response_templates t
  WHERE t.service_name = 'github_copilot' AND t.response_type = 'copilot_403'
- LIMIT 1
-    ON DUPLICATE KEY UPDATE
-        envelope_template = VALUES(envelope_template),
-        response_type     = VALUES(response_type);
+ LIMIT 1;
 
 
 -- ─────────────────────────────────────────────────────────────────────────────

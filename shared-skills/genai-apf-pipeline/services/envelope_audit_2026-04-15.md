@@ -158,3 +158,160 @@ event: copilotConversation\r\ndata: {"id":"evt_003","type":"message_end","conver
 **Recommended action** (same as §6 item 2 — elevated priority): backport the live DB envelope into `apf_db_driven_migration.sql` so the source tree matches reality. Until then, anyone using the baseline migration file as a seeding authority will silently reintroduce the invalid CORS header. Candidates for the same backport sweep: `openai_compat_sse` (5 rows, differs from §3.2 cycle 21 approximation per cycle 42 capture), any other service with ad-hoc UPDATEs logged in impl journals.
 
 **Cross-reference**: cycle 42 captured the canonical `openai_compat_sse` baseline (342B, MD5 `7955369a54e3f47da70315d03aa28598`); cycle 44 captured the canonical `m365_copilot_sse` baseline (647B, MD5 `02deeb5f4e81b6c718c4ee8ce8ffc325`). These two MD5s are now durable reference checkpoints for future integrity audits.
+
+---
+
+## 9. Cycle 45 — comprehensive DB drift-audit snapshot + **critical schema finding**
+
+**Method**: `SELECT service_name, response_type, CHAR_LENGTH, MD5, priority, enabled FROM etap.ai_prompt_response_templates ORDER BY service_name, response_type` — full row inventory.
+
+**Row count**: ~54 rows visible in live DB vs 11 templates in the Apr 8 baseline migration file. **~43-row drift at the template level** (rows added via ad-hoc SSH SQL since the last full migration, including openai_compat_sse 5-way shared bundle, deepseek_sse, qwen3_json, blackbox_json, baidu_sse, 7 generic_sse services, and orphan/test rows).
+
+### 9.1 Full inventory (cycle 45 baseline checkpoint)
+
+| Service | response_type | bytes | MD5 (first 8) | priority | Notes |
+|---------|---------------|-------|---------------|----------|-------|
+| (empty) | duckduckgo_json | 249 | 5dfbb6dc | 50 | orphan template, no service mapping |
+| (empty) | duckduckgo_minimal | 199 | cf75cefd | 50 | orphan |
+| (empty) | kimi_connect | 274 | 5d84e249 | 50 | orphan |
+| (empty) | qianwen_json | 322 | 41d8b99d | 50 | orphan |
+| (empty) | qianwen_sse | 497 | f05e2f95 | 50 | orphan |
+| `*` | (NULL) | (NULL) | (NULL) | 10 | catch-all fallback, no envelope |
+| baidu | baidu_sse | 290 | 97245e50 | 50 | |
+| blackbox | blackbox_json | 215 | c7cdd770 | 50 | |
+| character | generic_sse | 239 | baeb6791 | 50 | **shared row (×7)** |
+| chatglm | openai_compat_sse | 342 | 79553698 | 50 | shared row (×5) |
+| chatgpt | chatgpt_prepare | 279 | 46b32df2 | 100 | |
+| chatgpt | chatgpt_sse | 1247 | aa64281b | 90 | |
+| chatgpt2 | chatgpt_sse | 1247 | aa64281b | 50 | duplicate response_type |
+| claude | claude | 1118 | 022e27ac | 100 | **3 identical rows** |
+| claude | claude | 1118 | 022e27ac | 100 | duplicate #2 |
+| claude | claude | 1118 | 022e27ac | 100 | duplicate #3 |
+| clova | generic_sse | 239 | baeb6791 | 50 | shared row |
+| clova_x | generic_sse | 232 | 61df0d1c | 50 | different MD5! |
+| cohere | cohere_sse | 489 | 78a68d31 | 50 | |
+| consensus | generic_sse | 239 | baeb6791 | 50 | shared row |
+| copilot | generic_sse | 239 | baeb6791 | 50 | shared row |
+| deepseek | deepseek_sse | 358 | f68703d6 | 90 | Phase 5 target |
+| dola | generic_sse | 239 | baeb6791 | 50 | shared row |
+| duckduckgo | duckduckgo_sse | 362 | d4d21a71 | 50 | |
+| gamma | gamma_sse | 286 | 4d9ca6c1 | 1 | priority=1 anomaly |
+| gemini | gemini | 325 | a244cd3f | 50 | |
+| gemini3 | gemini | 325 | a244cd3f | 50 | duplicate response_type |
+| genspark | genspark_sse | 1424 | b365b816 | 100 | |
+| github_copilot | copilot_403 | 346 | 2584c359 | 1 | Phase 5 target (priority=1 anomaly) |
+| grok | grok_ndjson | 354 | 11f64f34 | 50 | |
+| huggingface | openai_compat_sse | 342 | 79553698 | 50 | shared row |
+| kimi | openai_compat_sse | 342 | 79553698 | 50 | shared row |
+| m365_copilot | m365_copilot_sse | 647 | 02deeb5f | 1 | priority=1 anomaly |
+| meta | meta_graphql | 339 | c6d10891 | 50 | |
+| mistral | mistral_trpc_sse | 875 | cc8b3a70 | 50 | |
+| notion | notion_ndjson | 302 | 2ea397cd | 50 | |
+| perfle | perplexity_sse | 4225 | f9ab6b7d | 50 | perplexity alias |
+| perplexity | perplexity_simple | 172 | 3563d9b9 | 100 | |
+| perplexity | perplexity_sse | 4225 | f9ab6b7d | 100 | |
+| perplexity | perplexity_v2 | 208 | 55d66f79 | 200 | |
+| perplexity | perplexity_v3 | 193 | 308bb6aa | 300 | highest priority in DB |
+| phind | generic_sse | 239 | baeb6791 | 50 | shared row |
+| poe | generic_sse | 239 | baeb6791 | 50 | shared row |
+| qianwen | openai_compat_sse | 342 | 79553698 | 50 | shared row |
+| qwen3 | qwen3_json | 319 | a9d690ac | 50 | |
+| sv_test_200 | (NULL) | (NULL) | (NULL) | 10 | test marker, no envelope |
+| v0 | v0_json | 208 | 2104614c | 50 | **NOT** v0_html_block_page (Phase 5 not applied) |
+| wrtn | openai_compat_sse | 342 | 79553698 | 50 | shared row |
+| you | you_json | 237 | 88f8dde3 | 50 | |
+| _ws_fallback | ws_fallback_error | 216 | fd4386ae | 50 | WebSocket fallback |
+
+**Shared envelopes confirmed** (runtime dedup via cycle 41 `_envelopes` map):
+- `openai_compat_sse` × 5 identical (MD5 79553698) — chatglm/huggingface/kimi/qianwen/wrtn
+- `claude` × 3 identical (MD5 022e27ac) — re-migration artifact
+- `chatgpt_sse` × 2 identical (MD5 aa64281b) — chatgpt+chatgpt2 (different services!)
+- `gemini` × 2 identical (MD5 a244cd3f) — gemini+gemini3 (different services!)
+- `generic_sse` × 7 identical (MD5 baeb6791) — character/clova/consensus/copilot/dola/phind/poe
+- `perplexity_sse` × 2 identical (MD5 f9ab6b7d) — perplexity+perfle (alias)
+
+### 9.2 Critical schema finding: `ai_prompt_response_templates` has NO composite unique key
+
+`SHOW CREATE TABLE etap.ai_prompt_response_templates`:
+
+```sql
+CREATE TABLE `ai_prompt_response_templates` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `service_name` varchar(50) NOT NULL,
+  ...
+  `response_type` varchar(64) DEFAULT NULL,
+  `envelope_template` mediumtext DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_service_enabled` (`service_name`,`enabled`),
+  KEY `idx_priority` (`priority` DESC)
+) ENGINE=InnoDB AUTO_INCREMENT=61;
+```
+
+- `PRIMARY KEY (id)` — surrogate auto-increment, the ONLY unique constraint
+- `idx_service_enabled` — NON-UNIQUE
+- `idx_priority` — NON-UNIQUE
+- **NO unique index on (service_name, response_type)**
+
+**Consequence**: `ON DUPLICATE KEY UPDATE` in `INSERT INTO ai_prompt_response_templates` is a **no-op**. Every INSERT gets a fresh auto-increment id, so the "duplicate key" check on PRIMARY KEY always fails and ODKU's UPDATE clause never executes. Re-running an INSERT silently **appends** a new row every time.
+
+**Historical evidence**: the 3 identical `claude` rows, the 5 identical `openai_compat_sse` rows, and the 2 identical `chatgpt_sse` rows are all symptoms of re-run migrations that nobody noticed because the runtime `_envelopes` map dedupes by response_type and first-row-wins, so behavior was always correct even though the DB accumulated waste rows.
+
+**Runtime impact** (important nuance): because the duplicate rows have IDENTICAL content (same MD5), the first-row-wins runtime picks the same envelope regardless of which duplicate is selected. Behavior has been correct throughout. But if a future re-INSERT carries an UPDATED template (e.g., fixing a placeholder bug), the old row keeps winning via priority tie + InnoDB insertion order — the fix would be SILENTLY IGNORED.
+
+### 9.3 Fix: DELETE-then-INSERT pattern for true idempotency
+
+Cycle 45 amended three Phase 6 INSERTs to use `DELETE FROM ... WHERE service_name=X AND response_type=Y;` immediately before each `INSERT`:
+
+1. `phase6_huggingface_addendum_2026-04-15.sql` PART 1A — huggingface_sse
+2. `phase6_combined_migration_2026-04-15.sql` 1B.2b — v0_303_redirect
+3. `phase6_combined_migration_2026-04-15.sql` 1C.2 — copilot_sse
+
+Each DELETE targets the exact `(service_name, response_type)` pair its paired INSERT is about to create. No other rows are touched. Wrapping the DELETE+INSERT inside the existing BEGIN/COMMIT makes them atomic — either both succeed or neither. Re-running is now safe: DELETE removes any partial/prior attempt, INSERT creates exactly one canonical row.
+
+**NOT amended** (intentional):
+- `ai_prompt_services` INSERTs — that table has `UNIQUE KEY uk_service_name (service_name)`, so ODKU works correctly there.
+- `1B.2a` v0_html_block_page and `1A` deepseek_sse — these are UPDATEs (not INSERTs), idempotent by construction.
+- Existing duplicate rows (3 claude, 5 openai_compat_sse, 2 chatgpt_sse, etc.) — these are pre-existing waste; cleanup deferred to a separate dedup SWEEP task because deleting them requires deciding which row keeps routing through `_envelopes[response_type]` (currently first-row-wins is working).
+
+### 9.4 Backport candidate list (elevated priority)
+
+§6 item 2 elevation: the live DB has drifted **significantly** from `apf_db_driven_migration.sql`. Services that exist in live DB but NOT in baseline file:
+
+- deepseek / deepseek_sse (Phase 5 target)
+- v0 / v0_json (current state; Phase 5 will replace)
+- qwen3 / qwen3_json
+- blackbox / blackbox_json
+- baidu / baidu_sse
+- cohere / cohere_sse
+- duckduckgo / duckduckgo_sse
+- meta / meta_graphql
+- mistral / mistral_trpc_sse
+- you / you_json
+- character / generic_sse (shared)
+- clova / generic_sse (shared)
+- clova_x / generic_sse (different variant)
+- consensus / generic_sse
+- copilot / generic_sse
+- dola / generic_sse
+- phind / generic_sse
+- poe / generic_sse
+- chatgpt2 / chatgpt_sse
+- gemini3 / gemini
+- perfle / perplexity_sse
+- perplexity / perplexity_simple + v2 + v3
+- 5 orphan templates (empty service_name)
+- `*` fallback row
+- `_ws_fallback` row
+- `sv_test_200` test marker
+
+Plus drift on existing services:
+- m365_copilot: origin `*` → `https://copilot.microsoft.com` (cycle 44)
+- openai_compat_sse: 1 data event merged (cycle 42) vs 2-event approximation in frontend.md §3.2
+
+**Recommended next action** (separate task, not blocking Phase 6): write a `regen_baseline_migration.sh` helper that dumps the live DB to SQL form and reconciles with `apf_db_driven_migration.sql`, producing a diff for review. Flag: this is SCOPE CREEP from the Phase 6 path and should be spawned as its own side task, not worked on inside the huggingface hold.
+
+### 9.5 Cross-references
+
+- Cycle 42: canonical openai_compat_sse baseline (MD5 `7955369a54e3f47da70315d03aa28598`)
+- Cycle 44: canonical m365_copilot_sse baseline (MD5 `02deeb5f4e81b6c718c4ee8ce8ffc325`)
+- Cycle 45: full row inventory + schema finding + 3-INSERT idempotency fix + 25-row drift list
