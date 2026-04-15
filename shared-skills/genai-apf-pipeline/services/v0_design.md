@@ -282,6 +282,152 @@ If Etap-served `/apf-blocked` does not yet exist, alternative targets:
 Headers ~115B + trimmed inline HTML ~260B + `{{MESSAGE}}` (~60B) ≈ **435B total**.
 Under the 500B h2_end_stream=2 ceiling with ~65B margin.
 
+## Schema finding — f+h coexistence via priority dispatch (2026-04-15 17:10, cycle 17)
+
+While reviewing the design in idle time waiting on #451/#452 results, verified
+**whether `ai_prompt_services` allows two envelopes for the same domain**.
+
+Answer: **YES, via two separate rows with different `service_name` values** and
+priority-based dispatch.
+
+### Evidence
+
+`ai_services_list::detect_service` at
+`ai_prompt_filter_db_config_loader.cpp:198-296` collects **all** candidate
+services whose `(domain, path)` match, then returns the **highest priority**
+one. Priority = `domain_priority + path_priority`, where:
+
+```cpp
+// Domain priority (load_db_config_loader.cpp:238-242)
+if (domain_pattern.find('*') == std::string::npos) {
+    domain_priority = 1000 + pattern.length();
+} else {
+    domain_priority = 500 + pattern.length();
+}
+
+// Path priority (load_db_config_loader.cpp:260-266)
+if (path_pattern.empty())                          path_priority = 100;
+else if (path_pattern.find('*') == std::string::npos)  path_priority = 1000 + pattern.length();
+else                                                    path_priority = 500 + pattern.length();
+```
+
+For two rows both matching `v0.app`:
+- Row A: `service_name='v0'`,     `path_patterns='/chat'`          → priority 1000+5 = **1005** (matches `/chat`, `/chat/<id>`)
+- Row B: `service_name='v0_api'`, `path_patterns='/chat/api/send'` → priority 1000+14 = **1014** (matches only `/chat/api/send`)
+
+When path is `/chat/api/send`, Row B wins (1014 > 1005). Row A captures all
+other `/chat*` paths it alone matches — i.e. `/chat/<id>` top-level document
+requests on reload.
+
+### Remaining single-row constraint
+
+`is_prepare_api` dispatch at `ai_prompt_filter.cpp:525-526` is **hardcoded** to
+paths ending in `/prepare`. It cannot be repurposed for arbitrary per-path
+envelope selection within a single service row. So the only clean way to ship
+two envelopes for v0 is two separate service rows.
+
+### Updated Option F+H Migration SQL (proposed replacement for current Option F SQL above)
+
+```sql
+BEGIN;
+
+-- 0. Pre-check (run alone first, capture existing state)
+SELECT service_name, domain_patterns, path_patterns, block_mode,
+       response_type, h2_mode, h2_end_stream, h2_goaway, h2_hold_request
+  FROM etap.ai_prompt_services
+ WHERE service_name IN ('v0', 'v0_api');
+
+SELECT service_name, http_response, response_type, envelope_template
+  FROM etap.ai_prompt_response_templates
+ WHERE service_name IN ('v0', 'v0_api');
+
+-- 1a. Row A — Option H: /chat/<id> reload-case block page (text/html document)
+UPDATE etap.ai_prompt_services
+   SET domain_patterns = 'v0.dev,v0.app',
+       path_patterns   = '/chat',                    -- matches /chat, /chat/<id>, but LOSES priority to /chat/api/send (row B)
+       response_type   = 'v0_html_block_page',
+       h2_mode         = 1,
+       h2_end_stream   = 2,
+       h2_goaway       = 0,
+       h2_hold_request = 0
+ WHERE service_name = 'v0';
+
+-- 1b. Row B — Option F: /chat/api/send 303 redirect (new row)
+INSERT INTO etap.ai_prompt_services
+       (service_name, display_name, domain_patterns, path_patterns, block_mode,
+        response_type, h2_mode, h2_end_stream, h2_goaway, h2_hold_request)
+VALUES ('v0_api', 'v0 (API)', 'v0.dev,v0.app', '/chat/api/send', 1,
+        'v0_303_redirect', 1, 2, 0, 0)
+    ON DUPLICATE KEY UPDATE
+        domain_patterns = VALUES(domain_patterns),
+        path_patterns   = VALUES(path_patterns),
+        response_type   = VALUES(response_type),
+        h2_mode         = VALUES(h2_mode),
+        h2_end_stream   = VALUES(h2_end_stream),
+        h2_goaway       = VALUES(h2_goaway),
+        h2_hold_request = VALUES(h2_hold_request);
+
+-- 2a. Envelope for v0_html_block_page (Option H, text/html body)
+UPDATE etap.ai_prompt_response_templates
+   SET response_type     = 'v0_html_block_page',
+       envelope_template = CONCAT(
+         'HTTP/1.1 200 OK\r\n',
+         'Content-Type: text/html; charset=utf-8\r\n',
+         'Cache-Control: no-store\r\n',
+         'Content-Length: 0\r\n',
+         '\r\n',
+         '<!doctype html><title>차단</title><meta charset=utf-8>',
+         '<body><h2>⚠ 보안 정책 안내</h2><p>{{MESSAGE}}</p></body>'
+       )
+ WHERE service_name = 'v0';
+
+-- 2b. Envelope for v0_303_redirect (Option F, new row)
+INSERT INTO etap.ai_prompt_response_templates
+       (service_name, http_response, response_type, envelope_template)
+VALUES ('v0_api', 0, 'v0_303_redirect',
+        CONCAT(
+          'HTTP/1.1 303 See Other\r\n',
+          'Location: https://etap.officeguard.local/apf-blocked?s=v0\r\n',
+          'Cache-Control: no-store\r\n',
+          'Content-Length: 0\r\n',
+          '\r\n'
+        ))
+    ON DUPLICATE KEY UPDATE
+        response_type     = VALUES(response_type),
+        envelope_template = VALUES(envelope_template);
+
+-- 3. Trigger reload
+UPDATE etap.etap_APF_sync_info SET revision_cnt = revision_cnt + 1
+ WHERE table_name = 'ai_prompt_services';
+UPDATE etap.etap_APF_sync_info SET revision_cnt = revision_cnt + 1
+ WHERE table_name = 'ai_prompt_response_templates';
+
+COMMIT;
+```
+
+### Test matrix for f+h pair
+
+| Scenario | Expected hit | Expected UX |
+|----------|-------------|-------------|
+| User types prompt on v0.app (fetch POST `/chat/api/send`) | Row B (`v0_api`, priority 1014) → 303 redirect | Browser auto-follows 303 via fetch → delivers HTML body to JS → Sentry silent (LOW yield, known failure mode) |
+| User reloads `/chat/<hJ35MSWtyWu>` (top-level GET document) | Row A (`v0`, priority 1005) → 200 text/html | Browser renders warning HTML as top-level page (HIGH yield) |
+| User navigates to `v0.app/` root | Neither (path `/` doesn't match `/chat`) | Normal site load |
+| User submits via reload flow | Both rows fire on different requests | F fails silent + H catches the reload |
+
+### Caveat — route conflict check
+
+If ANY existing service row has `domain_patterns` containing `v0.dev` or
+`v0.app` AND `path_patterns` matching `/chat/api/send` with priority ≥ 1014,
+it would outrank Row B. Pre-check SELECT must include a query on all rows
+containing `v0.app` in domain_patterns, not just the ones where
+`service_name IN ('v0', 'v0_api')`. Add to Phase 6 pre-flight:
+
+```sql
+SELECT service_name, domain_patterns, path_patterns, response_type
+  FROM etap.ai_prompt_services
+ WHERE domain_patterns LIKE '%v0.app%' OR domain_patterns LIKE '%v0.dev%';
+```
+
 ## Phase 6 handoff checklist (Option F primary)
 
 1. Confirm Etap `/apf-blocked` landing URL exists (or coordinate creation).
