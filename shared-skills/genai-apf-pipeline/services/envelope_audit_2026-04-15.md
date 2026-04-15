@@ -495,3 +495,106 @@ Before inserting a new envelope_template into `ai_prompt_response_templates`:
 - Cycle 48 grep: `grep -n "ESCAPE2:MESSAGE\|json_escape2" functions/ai_prompt_filter` — only gemini wrb.fr uses it in source baseline.
 - Cycle 42 §8: openai_compat_sse live envelope decode that first noticed the ESCAPE2 usage (anomaly documented here in §11.2).
 - Cycle 44 §8: m365_copilot source-tree drift finding (companion to §11.3 openai_compat_sse drift).
+
+---
+
+## §12 `recalculate_content_length` — three-branch behavior (cycle 49 finding)
+
+**TL;DR**: `recalculate_content_length` is NOT a pure content-length rewriter. It has three branches based on `(is_sse, is_h2)` — two of them **remove** Content-Length rather than rewriting it. The "write `Content-Length: 0` in your envelope" convention works through three different mechanisms, not one. Cycle 48 §11.5 item 3 was an oversimplification.
+
+### 12.1 Code path
+
+`ai_prompt_filter.cpp:1139-1247` — called at the tail of `render_envelope_template` (cpp:1327) with `is_h2` propagated from `generate_block_response` → `is_http2` field driven by `ai_prompt_services.h2_mode` DB column.
+
+The function first parses the response into `headers_part` + `body`, then:
+
+```cpp
+bool is_sse = (headers_lower.find("text/event-stream") != std::string::npos);
+```
+
+This classification is **Content-Type sniffing, not a DB column**. If the envelope's `Content-Type:` header says `text/event-stream`, the function treats it as SSE regardless of what `response_type` is in the DB.
+
+### 12.2 Branch A — SSE over HTTP/1.1 (`is_sse && !is_h2`, Phase3-B25d)
+
+Lines 1166-1204.
+
+1. Remove any existing `Content-Length:` header.
+2. Replace any existing `Connection:` header with `Connection: keep-alive` (or add if missing).
+3. Append `Transfer-Encoding: chunked`.
+4. **Rewrite body** as HTTP chunked encoding: `<hex-size>\r\n<body>\r\n0\r\n\r\n`.
+
+History note from code comment: `#370~#373` diagnosis revealed that removing Content-Length alone was insufficient — Chrome's EventStream tab showed 0 events until Transfer-Encoding: chunked was also added. `Connection: close` also failed because the browser finalizes the stream immediately on close. Real upstream SSE (e.g. qwen3) uses chunked + keep-alive, so the envelope path now mimics that.
+
+**Consequence for envelope authors (HTTP/1.1 SSE):** the wire body is NOT the envelope body verbatim — it's wrapped in chunked framing. If you feed this branch raw SSE events, you'll end up with chunk-header-prefixed SSE events on the wire, which is exactly what the browser expects.
+
+### 12.3 Branch B — SSE over HTTP/2 (`is_sse && is_h2`, Phase3-B29)
+
+Lines 1206-1235.
+
+1. Remove any existing `Transfer-Encoding:` header.
+2. **Remove** any existing `Content-Length:` header.
+3. Return headers + `\r\n\r\n` + body **verbatim** (no chunk wrapping).
+
+Emits `bo_mlog_debug("[APF:H2_SSE] is_h2=true, no chunked, no content-length, body=%zu bytes", body.size())`.
+
+History note from code comment: `B28` discovered that H2 responses with `Content-Length:` make browsers treat the response as complete and fall out of streaming mode — so the header must be removed, not rewritten. H2 frame boundaries (DATA frames + END_STREAM flag) fully encode body size — Content-Length is redundant and harmful.
+
+**Consequence for envelope authors (H2 SSE, e.g. huggingface, github_copilot, deepseek, openai_compat_sse):** write `Content-Length: 0` in the envelope as a no-op placeholder. It will be stripped here, then stripped *again* by `convert_to_http2_response`'s forbidden-header list (cpp:1140-1143, cycle 49 audit), then never appear on the H2 wire. **Triple-safe redundancy:**
+- Layer 1: envelope author writes `0` (not the real length)
+- Layer 2: `recalculate_content_length` B29 branch removes the header
+- Layer 3: `convert_to_http2_response` forbidden-header filter would have removed it anyway
+
+Any one layer failing still produces a correct H2 wire response.
+
+### 12.4 Branch C — Non-SSE (the "classic" path)
+
+Lines 1237-1246.
+
+1. If `Content-Length:` exists: replace its value with `body.size()`.
+2. Else: append `Content-Length: <body.size()>`.
+3. Return headers + `\r\n\r\n` + body.
+
+**Consequence for envelope authors (non-SSE, e.g. v0_303_redirect, v0_html_block_page, gemini_wrb_fr):** write `Content-Length: 0` and it will be rewritten to the actual post-render body length. This is the "classic" convention and the only one where the header literally gets a new numeric value.
+
+### 12.5 Classification by Content-Type (not by DB column)
+
+Because the SSE/non-SSE split is based on `text/event-stream` in the Content-Type header, a DB row's `response_type` name has no bearing on which branch runs. Examples from the live DB:
+
+| Envelope Content-Type | Branch chosen |
+|-----------------------|---------------|
+| `text/event-stream; charset=utf-8` + `h2_mode=1` (huggingface, github_copilot, deepseek, openai_compat_sse, m365_copilot_sse) | **B** (H2 SSE) |
+| `text/event-stream` + `h2_mode=0` (if any; rare) | A (HTTP/1.1 SSE) |
+| `text/html` + `h2_mode=0` (v0_html_block_page) | C (non-SSE) |
+| `application/json` or 303 redirect with empty body (v0_303_redirect) | C (non-SSE) |
+
+If a future envelope wants to ship `text/event-stream` over HTTP/1.1, it will automatically get chunked encoding — no DB change needed. If it wants to ship SSE without chunked encoding (unusual), the Content-Type must NOT be `text/event-stream` — this is the only override available.
+
+### 12.6 Correction to §11.5 item 3
+
+The §11.5 checklist entry "Content-Length: write `Content-Length: 0\r\n` and let `recalculate_content_length` rewrite it" is accurate for **non-SSE** envelopes but misleading for SSE envelopes where it's **removed**, not rewritten. The updated rule:
+
+```
+§11.5 item 3 (revised):
+Content-Length: write `Content-Length: 0\r\n` as a placeholder regardless
+of content type. It will be either rewritten to body.size() (non-SSE,
+branch C) or removed entirely (SSE, branches A and B). Do not precompute
+and do not trust the header at the wire level — check the function branch
+your envelope routes to.
+```
+
+### 12.7 Huggingface-specific re-audit
+
+Huggingface envelope has `Content-Type: text/event-stream; charset=utf-8` and `ai_prompt_services.h2_mode=1` — routes through **branch B**. Flow:
+
+1. `render_envelope_template` runs placeholder substitution, produces HTTP/1.1-style response with `Content-Length: 0`.
+2. `recalculate_content_length` branch B fires: strips Content-Length, strips Transfer-Encoding (not present anyway), returns headers + body verbatim.
+3. `convert_to_http2_response` (cycle 49) converts headers to HPACK block, body to 2-frame DATA strategy (Build #20), strips any remaining forbidden headers (content-length, transfer-encoding, connection) as defense in depth.
+4. Wire response: HEADERS frame + DATA(body, END_STREAM=0) + DATA(empty, END_STREAM=1).
+
+**No byte count is computed anywhere in this path** — the envelope's `Content-Length: 0` is a dummy that gets dropped. This is correct for SSE semantics: an SSE stream is unbounded from the client's perspective until END_STREAM arrives.
+
+### 12.8 Cross-references
+
+- Cycle 49 code read: `ai_prompt_filter.cpp:1139-1247` (recalculate_content_length), cycle 49 also read cpp:1094-1226 (convert_to_http2_response) — the two-function audit completes the envelope → wire path.
+- Cycle 48 §11.5 item 3: the imprecise "always rewritten" claim this section corrects.
+- Build history tags: Phase3-B22 (header parse fix), B25d (HTTP/1.1 SSE chunked wrap), B28-B29 (H2 SSE strip both), B26 (de-chunk body on certain paths — see cpp:1412-1413 for a companion path).
