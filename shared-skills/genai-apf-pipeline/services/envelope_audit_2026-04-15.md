@@ -733,3 +733,164 @@ Before the huggingface Phase 6 migration commits to DB:
 - Cycle 51 code read: `ai_prompt_filter.cpp:870-918` (detect_and_mark_ai_service), cpp:1050-1067 (h2_mode → VTS propagation), cpp:199-298 (ai_services_list::detect_service), cpp:72-193 (domain_matcher + path_matcher).
 - Cycle 11 note (gamma): `ai.api.gamma.app` exact match — this was the same `detect_service` function verifying the domain pattern grammar already.
 - Baseline file grep: `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql:39-50` — h2_mode distribution table.
+
+---
+
+## §14 Request hold/release mechanism (cycle 52 finding)
+
+**TL;DR**: `h2_hold_request=1` activates a buffered-forwarding hold at the VTS layer for POST requests. The hold is set at HEADERS receipt, released when body is complete and keyword-clean, and implicitly discarded when the session is blocked. Multiple defensive paths protect against stuck holds. Huggingface uses this mechanism (h2_hold_request=1). The mechanism has one known test-log-contamination issue (flagged here, not fixed in this audit).
+
+### 14.1 Why the hold exists
+
+From the comment at cpp:529-532:
+> hold 없이 POST를 서버에 전달하면, APF 키워드 검사 완료 전에 서버가 응답을 보내 block response와 충돌하는 race condition 발생.
+
+Without the hold, the race looks like:
+1. Client sends POST HEADERS → forwarded to upstream immediately.
+2. Client sends POST DATA (keyword) → APF starts keyword check.
+3. Upstream receives HEADERS, starts streaming response.
+4. Upstream response and APF block response collide on the client stream — browser sees frame-framing errors (ERR_HTTP2_PROTOCOL_ERROR or ERR_CONNECTION_CLOSED).
+
+With the hold, HEADERS and DATA are buffered inside VTS on the client→server direction. Only when the keyword check verdict is known does VTS either release (forward HEADERS+DATA upstream) or discard (block response pre-empts, upstream never sees anything on this stream).
+
+### 14.2 Hold-set call sites
+
+Two entry points — one per protocol:
+
+**HTTP/1.1** at `cpp:540-544` (`on_http_request` common data):
+```cpp
+if (is_post && sd->h2_hold_request && !sd->check_completed) {
+    tuple._session._apf_hold_for_inspection = 1;
+    bo_mlog_info("[APF:hold_set_h1] service=%s method=POST (HTTP/1.1 hold)", ...);
+}
+```
+
+**HTTP/2** at `cpp:691-695` (`on_http2_request`):
+```cpp
+if (is_post && sd->h2_hold_request && !sd->check_completed) {
+    tuple._session._apf_hold_for_inspection = 1;
+    bo_mlog_info("[APF:hold_set] service=%s stream=%u method=POST", ...);
+}
+```
+
+**Three conditions must all hold for the set to fire:**
+1. `is_post` — method is POST. GET/HEAD never get held (see §14.6).
+2. `sd->h2_hold_request` — DB column says this service needs holding. HF has 1.
+3. `!sd->check_completed` — the session's verdict is still pending. Phase3-B19 guard (see §14.5).
+
+### 14.3 Hold-release (clean request path)
+
+Two release points — one per protocol, both in the DATA handler:
+
+**HTTP/1.1** at `cpp:616-629` (`on_http_request_content_data`):
+```cpp
+if (!sd->blocked && tuple._session._apf_hold_for_inspection) {
+    bool body_complete = (uLen == 0) ||
+                         (headers && headers->_end_of_body) ||
+                         (headers && headers->_content_length > 0 &&
+                          headers->_download_length >= headers->_content_length);
+    if (body_complete) {
+        tuple._session._apf_hold_for_inspection = 0;
+        tuple._session._apf_release_held = 1;
+        bo_mlog_info("[APF:hold_release_h1] ...");
+    }
+}
+```
+
+**HTTP/2** at `cpp:822-836` (`on_http2_request_data`) — identical logic with a different log tag (see §14.7 contamination note).
+
+### 14.4 `body_complete` detection — three-way OR with a trap
+
+Body is considered complete if **any** of these is true:
+1. `uLen == 0` — empty DATA frame is the END_STREAM signal in H2.
+2. `headers->_end_of_body` — parser flag for HTTP/1.1 Content-Length reached or chunked encoding terminator.
+3. `headers->_content_length > 0 && headers->_download_length >= headers->_content_length` — byte-count reached expected total.
+
+**Trap (cpp:814-815 comment)** — for HTTP/2, check #2 is ALWAYS false at callback time:
+
+> NOTE: http2_parser의 set_end_of_body는 콜백 AFTER에 호출되므로 _end_of_body는 항상 0. _download_length 비교가 유일한 신뢰 가능한 방법.
+
+So for H2, only checks #1 and #3 fire in practice. If a future H2 server sends POST body without Content-Length (chunked-style), neither #1 nor #3 would fire on intermediate frames — the hold would wait for an explicit empty DATA frame. Huggingface's chat-ui POSTs JSON bodies with Content-Length in headers, so check #3 fires reliably.
+
+**Adding hold-release logic elsewhere requires knowing this trap** — relying on `_end_of_body` for H2 is a silent bug.
+
+### 14.5 Phase3-B19 guard — check_completed blocks re-holding
+
+From cpp:685-690 comment:
+> Phase3-B19: check_completed가 이미 true이면 hold를 설정하지 않는다. 이유: check_completed=1 + blocked=1인 상태에서 후속 POST가 들어오면, on_http2_request_data의 SKIP 경로로 빠지면서 hold가 release되지 않는다. release되지 않은 hold 버퍼가 PING ACK, WINDOW_UPDATE 등 모든 client→server 트래픽을 차단하여 서버 타임아웃 → ERR_CONNECTION_CLOSED.
+
+So: after a session is blocked, **subsequent POSTs on the same connection skip the hold entirely**. Otherwise the hold buffer would also hold PING ACK and WINDOW_UPDATE frames, starving the server → connection timeout.
+
+This guard applies primarily to `h2_mode=2` (keep-alive) services where the connection survives the block — which includes huggingface. The client might issue a new POST on the same H2 connection after the blocked one; that new POST must forward cleanly.
+
+### 14.6 Stale-hold defensive release
+
+At `cpp:930-941` (`process_request_data_common` SKIP path):
+```cpp
+if (sd->check_completed) {
+    bo_mlog_info("SKIP: check_completed=true ...");
+    // Phase3-B19 defense
+    if (tuple._session._apf_hold_for_inspection) {
+        bo_mlog_info("SKIP_HOLD_RELEASE: releasing stale hold for service=%s", ...);
+        tuple._session._apf_hold_for_inspection = 0;
+        tuple._session._apf_release_held = 1;
+    }
+    return;
+}
+```
+
+Race window: if `on_http2_request` sets hold at time T1, and another thread marks `check_completed=true` before the DATA callback fires at T2, the DATA callback's normal release path at cpp:822 is skipped by the `sd->blocked` gate, but this SKIP_HOLD_RELEASE catches the stale hold. It's a belt-and-suspenders defense documented as "방어 코드: on_http2_request의 !check_completed 조건으로 hold가 설정되지 않아야 하지만, race condition이나 타이밍 차이로 hold가 남아있을 경우 안전하게 해제한다."
+
+### 14.7 Test-log contamination — cpp:826 and cpp:834
+
+Two log lines in the H2 hold-release path use the `[APF_WARNING_TEST:hold_release]` and `[APF_WARNING_TEST:hold_continue]` tags:
+
+```cpp
+bo_mlog_info("[APF_WARNING_TEST:hold_release] service=%s stream=%u ...", ...);  // cpp:826
+bo_mlog_info("[APF_WARNING_TEST:hold_continue] service=%s stream=%u ...", ...); // cpp:834
+```
+
+These tags match the Test Log Protocol (`guidelines.md §6`, `apf-warning-impl/references/test-log-templates.md`) which reserves the `[APF_WARNING_TEST:...]` prefix for **test-only** logs that must be removed before Phase 7 release. The HTTP/1.1 sibling log at cpp:626 uses the production-safe `[APF:hold_release_h1]` tag — the HTTP/2 one should follow the same convention.
+
+**Impact**: non-critical but pollutes the `[APF_WARNING_TEST:...]` grep output that Phase 7 release-gate uses to verify cleanup. The log statements fire on every clean request release in normal production, which defeats the "if any APF_WARNING_TEST: log appears, a test log was left in" detection strategy.
+
+**Not fixed in cycle 52** (out of scope for envelope audit). **Side-task candidate**: rename `[APF_WARNING_TEST:hold_release]` → `[APF:hold_release]` and `[APF_WARNING_TEST:hold_continue]` → `[APF:hold_continue]` at cpp:826, cpp:834.
+
+### 14.8 Huggingface flow trace
+
+Assume user types sensitive keyword in HF chat-ui and clicks send:
+
+1. HF chat-ui `fetch('/chat/conversation/.../messages', {method: 'POST', body: JSON.stringify({...})})` — browser issues POST HEADERS + DATA on an H2 connection.
+2. APF `on_http2_request` fires on HEADERS:
+   - `detect_and_mark_ai_service` matches `huggingface.co` + `/chat` prefix → `sd->service_name='huggingface'`.
+   - `sd->h2_mode=2, h2_hold_request=1` loaded from DB.
+   - `is_post=true && sd->h2_hold_request==1 && !sd->check_completed` → `_apf_hold_for_inspection=1`, hold set. `[APF:hold_set] service=huggingface stream=<N> method=POST` logged.
+3. VTS buffers HEADERS instead of forwarding upstream.
+4. APF `on_http2_request_data` fires on body DATA:
+   - `process_request_data_common` runs keyword scan, finds SSN → calls `block_session_h2`.
+   - `block_session_h2` at cpp:1050+: sets `_ai_prompt_block_is_http2=2` (h2_mode ternary), `_ai_prompt_block_stream_id`, `_ai_prompt_block_h2_end_stream=1`, `sd->blocked=1`, `sd->check_completed=1`.
+   - Back in `on_http2_request_data` at cpp:822: `!sd->blocked` is FALSE → hold-release branch NOT entered.
+5. VTS observes `_ai_prompt_blocked=1` and `_ai_prompt_block_is_http2=2`:
+   - Discards the held HEADERS+DATA buffer (upstream never sees the request at all).
+   - Emits the block response frames via `convert_to_http2_response` (cycle 49 audit): HEADERS + DATA(body, END_STREAM=0) + DATA(empty, END_STREAM=1).
+   - h2_goaway=0 → no GOAWAY frame.
+   - h2_mode=2 → connection stays open.
+6. HF chat-ui's fetch reader receives the block response body, parses SSE events, renders the 민감정보 warning text in the chat bubble.
+7. User types next message → new POST on same H2 connection → Phase3-B19 guard skips hold (check_completed=1) → forwarded cleanly to upstream.
+
+**Every step has been code-audited** across cycles 41-52.
+
+### 14.9 Pre-apply verification items (Phase 6)
+
+Add to §13.6:
+
+5. [ ] Confirm HF POST body is JSON with a Content-Length header (not chunked-style) — verifies body_complete detection via `_download_length >= _content_length` check #3.
+6. [ ] Confirm HF chat-ui does NOT use WebSocket Upgrade — confirms SSE path, not the cpp:842 no-keyword-check WebSocket pass-through.
+7. [ ] Observe `[APF:hold_set] service=huggingface ...` + `[APF:hold_release_h1]` or `[APF_WARNING_TEST:hold_release]` log pairing in etap.log during clean request → proves hold mechanism active for HF.
+
+### 14.10 Cross-references
+
+- Cycle 52 code read: cpp:525-551 (H1.1 hold-set), cpp:596-630 (H1.1 hold-release), cpp:631-702 (H2 hold-set), cpp:728-837 (H2 hold-release + body_complete), cpp:920-941 (SKIP_HOLD_RELEASE defensive path).
+- Phase3 build tags: B13 (request buffering), B16 (body_complete detection moved from middle frames to end), B19 (check_completed guard against ERR_CONNECTION_CLOSED), B25 (HTTP/1.1 hold parity with H2).
+- Related: §13 h2_mode ternary — h2_mode=2 + h2_hold_request=1 is the "keep-alive + hold" pairing that makes the hold mechanism necessary.
+- Test-log cleanup flag: cpp:826 + cpp:834 `[APF_WARNING_TEST:hold_release]`/`[APF_WARNING_TEST:hold_continue]` — not cycle 52's problem, flagged as side-task.
