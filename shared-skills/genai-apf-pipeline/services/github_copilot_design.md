@@ -56,13 +56,33 @@ data: {"type":"complete","id":"{{UUID:msg}}","parentMessageID":"{{UUID:parent}}"
 
 ### Critical CORS notice
 
-`api.individual.githubcopilot.com` is a **separate cross-origin host** from `github.com`. The browser enforces CORS on every response from this host. APF MUST preserve (or synthesize) the following response headers, otherwise the browser rejects the response BEFORE the React app sees it:
+`api.individual.githubcopilot.com` is a **separate cross-origin host** from `github.com`. The browser enforces CORS on every response from this host. APF MUST emit the following response headers, otherwise the browser rejects the response BEFORE the React app sees it:
 
 - `Access-Control-Allow-Origin: https://github.com`
 - `Access-Control-Allow-Credentials: true`
 - `Access-Control-Expose-Headers: x-github-request-id` (observed in real responses)
 
-If APF currently strips these on `copilot_403` responses, the existing 403 envelope may also be CORS-rejected — which would explain why GitHub's UI never sees ANY APF body and falls back to its own error path. **This means Option A may improve outcomes ONLY if CORS headers are correctly preserved.** (TODO during Phase 6: instrument upstream-header preservation behavior.)
+**Cycle 30 investigation (2026-04-15):** Read `ai_prompt_filter.cpp` lines 1249–1328 (`render_envelope_template`) and lines 1602–1677 (`generate_block_response`). Findings:
+
+1. `render_envelope_template()` is a **pure template renderer** — performs ONLY placeholder substitution (`{{MESSAGE}}`, `{{ESCAPE2:MESSAGE}}`, `{{UUID:name}}`, `{{TIMESTAMP}}`, `{{BODY_INNER_LENGTH}}`) + Content-Length recalculation via `recalculate_content_length()`
+2. `generate_block_response()` loads `envelope_template` from DB via `_config_loader->get_envelope_template(lookup_key)`, passes it verbatim through `render_envelope_template()`, then optionally converts to HTTP/2 frames via `convert_to_http2_response()`
+3. Grep for `Access-Control-Allow|CORS|cors|access_control` across `ai_prompt_filter.cpp` returned **zero matches** — APF has no upstream-header preservation path at all
+4. **APF synthesizes the entire response from scratch.** The envelope_template row IS the wire response (modulo placeholders). There is no "preserve upstream X-header" code — the DB row is ground truth.
+
+**Implication for this design:** The Phase 5 envelope template (§2 wire format) is **correct as written**. The three CORS response headers are embedded directly in the template body, so `render_envelope_template()` will emit them verbatim. **No C++ code change is required for Phase 6.**
+
+**Implication for existing `copilot_403` failure mode:** The old copilot_403 envelope (~346 B per cycle 20 L2 intel) almost certainly does NOT include these CORS headers — which explains why GitHub's React app never sees ANY body and falls back to the static i18n Banner error. The browser CORS-rejects the 403 before the fetch promise resolves. **This is the root cause** the new copilot_sse envelope fixes.
+
+**Phase 6 pre-check addition:** Before the INSERT/UPDATE, also query the existing copilot_403 envelope_template to confirm it lacks CORS headers:
+
+```sql
+SELECT envelope_template FROM etap.ai_prompt_response_templates
+  WHERE service_name = 'github_copilot' AND response_type = 'copilot_403';
+-- Expected: HTTP/1.1 403 + Content-Type: application/json + Content-Length + JSON body
+-- (no Access-Control-Allow-Origin) — confirms root cause diagnosis
+```
+
+If the old template DOES include CORS headers (unexpected), add an additional Phase 6 diagnostic: inspect via L2 DevTools whether the browser is rejecting the 403 for a different reason (e.g. missing `Access-Control-Expose-Headers` for a body header the React app reads).
 
 ### Placeholder semantics
 
@@ -278,7 +298,7 @@ The captured stream is small enough (373 B for a 1-token response) that schema d
 
 ## 8. Open Questions for Phase 6
 
-1. **Does APF currently strip CORS headers on copilot_403 responses?** If yes, that's an additional bug — fix it as part of the Phase 6 transaction.
+1. ~~**Does APF currently strip CORS headers on copilot_403 responses?**~~ **RESOLVED (cycle 30):** APF does not strip or preserve headers at all — it synthesizes the whole response from `envelope_template`. The old copilot_403 template likely does not contain CORS headers, which is the root cause of the existing failure. The new copilot_sse template embeds CORS headers directly, resolving the issue without any C++ change. See §2 "Critical CORS notice" for the investigation.
 2. **Should `parentMessageID` reflect the request body's `responseMessageID` field?** Phase 4 noted this maintains React threading state. If APF can parse the request JSON cheaply (it's already buffered for the prompt-content match), reflecting is preferred. If not, generating fresh UUIDs is acceptable per Phase 4 §3.
 3. **Does Copilot's React app retry on its own if the SSE stream looks malformed?** Phase 4 didn't probe this. If yes, our envelope must be perfectly valid (no truncation, valid JSON, proper `\n\n` boundaries) — already specified above.
 4. **Initial-load Option D combination**: should we also implement Option D (initial-load disclaimer banner) as a complementary measure? Probably YES for a one-time session warning, but defer to a follow-up task; Phase 6 focuses on Option A only.
