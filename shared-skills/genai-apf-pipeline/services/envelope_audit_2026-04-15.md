@@ -2137,4 +2137,303 @@ Verification level count advances to 15 (a-o); last uncovered APF module
 now code-audited.
 
 
+## §20 — Cycle 58: apf_db_driven_migration.sql Part 3 cross-check
+
+Context: §8-§11 audited SQL Part 1/2 structure + INSERT idempotency.
+Part 3 (the actual envelope template data, lines 67-299) was never read
+end-to-end. Cycle 58 reads all 11 UPDATE/INSERT blocks and cross-checks
+against cycle 48 placeholder rules and cycles 51/54 h2_* semantics.
+
+File: `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql` (333L total,
+Part 3 spans cpp:67-299 with BEGIN/COMMIT block).
+
+### 20.1 Service × envelope coverage matrix
+
+Part 3 defines envelopes for **10 unique response_types** serving **12
+service_name entries** (2 sharers):
+
+| # | service_name | response_type | h2_mode | h2_end_stream | h2_goaway | h2_hold_request | MESSAGE form | envelope size class |
+|---|--------------|---------------|---------|---------------|-----------|------------------|--------------|---------------------|
+| 1 | chatgpt | chatgpt_prepare | 1 | 1 | 1 | 0 | `MESSAGE_RAW` | small JSON |
+| 2 | chatgpt | chatgpt_sse | 1 | 1 | 1 | 0 | `MESSAGE_RAW` ×1 | 5-event SSE |
+| 3 | claude | claude | 1 | 1 | 1 | 0 | `MESSAGE` ×1 | 6-event SSE |
+| 4 | github_copilot | copilot_403 | 2 | 1 | 0 | 1 | `MESSAGE` ×1 | 403 JSON |
+| 5 | grok | grok_ndjson | 2 | 1 | 0 | 1 | `MESSAGE` ×1 | 3-chunk NDJSON |
+| 6 | m365_copilot | m365_copilot_sse | 1 | 1 | 1 | 0 | `MESSAGE` ×1 | 3-event SSE |
+| 7 | gamma | gamma_sse | 2 | 0 | 0 | 1 | `MESSAGE` ×1 | 4-event SSE + Korean |
+| 8 | notion | notion_ndjson | **2** | 1 | 0 | **0** | `MESSAGE` ×1 | 5-line NDJSON |
+| 9 | perplexity | perplexity_sse | 2 | 0 | 0 | 1 | `MESSAGE` ×4 | 6-event SSE (v5 LOCKED) |
+| 9' | perfle | perplexity_sse (SHARED) | 2 | 0 | 0 | 1 | — | — |
+| 10 | genspark | genspark_sse | 2 | 1 | 0 | 1 | `MESSAGE` ×3 | 7-event SSE |
+| 11 | gemini | gemini | 1 | 1 | 0 | 0 | `ESCAPE2:MESSAGE` | wrb.fr protobuf |
+| 11' | gemini3 | gemini (SHARED) | 1 | 1 | 0 | 0 | — | — |
+
+**Huggingface is ABSENT.** Confirmed — Part 3 has no HF envelope. HF Phase 6
+migration must add a 12th entry in a huggingface-specific migration SQL
+(already scoped in earlier cycles as `phase6_huggingface_addendum_*.sql`).
+
+### 20.2 Placeholder rule cross-check (cycle 48)
+
+Placeholder forms observed in Part 3:
+
+| Placeholder | Semantics | Used by | Safe in JSON-string context? |
+|-------------|-----------|---------|------------------------------|
+| `{{MESSAGE}}` | json_escape applied | claude, copilot_403, grok, m365, gamma, notion, perplexity, genspark | **YES** — escapes `"`, `\`, control chars |
+| `{{MESSAGE_RAW}}` | no escape, direct substitution | chatgpt (both envelopes) | **NO — LATENT RISK** (see §20.3) |
+| `{{UUID:name}}` | unique UUID per name, shared within template | chatgpt_sse (msg_id, conv_id), m365 (msg_id), perplexity (7), genspark (2) | N/A |
+| `{{TIMESTAMP}}` | ISO-8601 now | genspark | N/A |
+| `{{ESCAPE2:MESSAGE}}` | double json_escape | gemini | YES (handles nested JSON-in-JSON in wrb.fr) |
+| `{{BODY_INNER_LENGTH}}` | length prefix | gemini | N/A |
+
+All placeholder forms from cycle 48's rules are accounted for. No unknown
+placeholder syntax. No `TODO`/`TBD`/`PLACEHOLDER` literal strings (verified
+per operational-lessons.md §cycle 47 grep pattern).
+
+### 20.3 MAJOR FINDING — chatgpt `MESSAGE_RAW` in JSON-string value is latent
+
+**Site 1**: chatgpt_prepare at cpp:83:
+```
+'{"status":"error","error_code":"content_policy_violation","error":"{{MESSAGE_RAW}}"}'
+```
+MESSAGE_RAW sits inside `"error":"..."` — a JSON string value.
+
+**Site 2**: chatgpt_sse at cpp:104:
+```
+data: {"o":"patch","v":[{"p":"/message/content/parts/0","o":"append","v":"{{MESSAGE_RAW}}"},...]}
+```
+MESSAGE_RAW sits inside `"v":"..."` — also a JSON string value.
+
+**Risk**: if `http_response` column (the block message text that renders into
+the placeholder per cycle 47 findings) contains any of `"`, `\`, `\n`, or
+control chars < 0x20, the resulting JSON is **malformed**. ChatGPT's client
+will fail to parse the SSE data line, and the warning will not render.
+
+**Current safety**: the two canonical http_response texts per
+operational-lessons.md §cycle 47 are:
+- priority=50: `⚠️ 민감정보가 ... detected.` (ASCII + Hangul, no special chars)
+- priority=1: `⚠️ 민감정보가 ... 차단되었습니다.` (ASCII + Hangul, no special chars)
+
+Both are safe — no `"` or `\`. So **chatgpt currently works correctly** with
+MESSAGE_RAW, and §cycle 42's `DONE` verdict for chatgpt is not retroactively
+invalidated.
+
+**Latent risk**: any future edit of http_response to include quotes (e.g.,
+`⚠️ "민감정보" 감지` or `⚠️ 관리자에게 "admin@example.com" 문의`) would
+silently corrupt the chatgpt JSON and break rendering. Cycle 47's
+operational-lessons.md §"http_response 컬럼은 차단 메시지 본문" warns about
+placeholder tokens (BLOCK/0/NULL/TODO) but NOT about JSON-special chars.
+
+**Why not `{{MESSAGE}}` (json_escape) for chatgpt?** Looking at the envelope:
+- chatgpt_prepare: a plain JSON object — the outer `"error":"..."` IS json,
+  so json_escape would be correct. `{{MESSAGE}}` should work. No reason
+  visible for RAW.
+- chatgpt_sse: the SSE data payload is JSON. Same argument — json_escape
+  should be correct.
+
+**Hypothesis**: chatgpt was the first service migrated (cycles 30-40-ish),
+and `{{MESSAGE_RAW}}` was used before `{{MESSAGE}}` with json_escape was
+implemented. When the escape infrastructure landed, chatgpt was not
+retroactively converted because "it already works". That's how latent
+bugs accumulate.
+
+**Recommendation** (deferred side task): convert chatgpt_prepare and
+chatgpt_sse from MESSAGE_RAW → MESSAGE in a follow-up migration. Test
+against current canonical http_response (byte-identical output expected
+because no special chars to escape), then safe for future edits.
+**Does NOT block HF Phase 6.** Notation only.
+
+### 20.4 Notion h2_mode=2 + h2_hold_request=0 anomaly
+
+Every other h2_mode=2 service has h2_hold_request=1 (buffer before block).
+Notion is the odd one:
+
+| Service | h2_mode | h2_hold_request |
+|---------|---------|------------------|
+| perplexity | 2 | 1 |
+| perfle | 2 | 1 |
+| genspark | 2 | 1 |
+| grok | 2 | 1 |
+| github_copilot | 2 | 1 |
+| gamma | 2 | 1 |
+| **notion** | **2** | **0** |
+
+**Is this correct?** Per §17 (cycle 55), h2_mode=2 can pair with either
+h2_hold_request value. The semantic difference:
+
+- h2_mode=2 + h2_hold_request=1 (6 services): hold the request body, intercept
+  before server sees it, emit block response, VTS branch D discards held
+  buffer, RST_STREAM skipped (was_held=true).
+- h2_mode=2 + h2_hold_request=0 (notion only): forward the request to server,
+  server generates response, APF keyword-detects on response body, then emits
+  block response, VTS branch D has nothing held to discard, RST_STREAM SENT
+  to server to cancel the stream (was_held=false).
+
+**Implication**: notion inspects the SERVER response (not the request) for
+keywords. Cycles before now did not trace the notion-specific path. This
+mode exists in the code but is service-specific; the other 6 hold-mode
+services trigger on request body.
+
+**Not a correctness issue** — it's a design choice. But this means notion's
+check_sensitive_data_decoded runs on response chunks not request body.
+Potential corroboration site: search for notion-specific handling in
+`_apf_inspection_mode` or similar flag. Deferred to cycle 59+.
+
+**Relevance to HF**: HF is request-body detection like the 6 hold-mode
+services, not response-body like notion. HF Phase 6 envelope should pair
+`h2_mode=2` with `h2_hold_request=1` (matching copilot/gamma/grok pattern).
+
+### 20.5 Content-Length handling
+
+All 11 envelopes have `Content-Length: 0\r\n` as the placeholder. This
+matches cycle 49 finding: APF's `render_envelope_template` + downstream
+H2 frame converter recalculate Content-Length after placeholder substitution
+(cpp:recalculate_content_length path audited in §9). The `0` is never sent
+to the client. Consistent across all envelopes.
+
+### 20.6 SSE event separator — `\r\n\r\n` vs `\n\n`
+
+Most SSE envelopes use `\r\n\r\n` as event separator. **Two exceptions**:
+
+- **perplexity_sse** (cpp:241-251): all 6 events use `\n\n` (LF only).
+  Comment at cpp:230 says "v5 LOCKED". Per cycle 53 §15.4, B27 CRLF/LF
+  separator picker exists — perplexity was determined experimentally to
+  need `\n\n` separators.
+- **genspark_sse** (cpp:269-275): all 7 events use `\n\n`. Comment at cpp:260
+  says "주의: \r\n\r\n이 아닌 \n\n을 구분자로 사용해야 함 (클라이언트 JS
+  파서 제약)".
+
+Both are documented exceptions. B27 separator picker handles this
+automatically during rendering based on envelope content inspection.
+
+### 20.7 Gemini envelope structure (revisit)
+
+cpp:293-294 gemini envelope:
+```sql
+')]}''\n\n{{BODY_INNER_LENGTH}}\n',
+'[["wrb.fr","XqA3Ic","[null,null,null,null,[[null,[\\"{{ESCAPE2:MESSAGE}}\\"],null,...
+```
+
+SQL-level `''` is a literal single quote `'` → renders `)]}'` (Google XSSI
+prefix). `\\"` is SQL escape for `\"` which in the final JSON is an escaped
+double-quote. The `{{ESCAPE2:MESSAGE}}` sits inside a JSON-string-inside-a-
+JSON-string — `[null,...,[\"...\"],...]` — so the message must be escaped
+twice (once for the inner string, once for the outer string embedding it).
+
+**`{{BODY_INNER_LENGTH}}` is on its own line with `\n` separator** (not
+`\r\n`). This matches Google's webchannel format: `)]}'\n\n<length>\n<body>`.
+
+**Comment at cpp:282**: "B1~B19 시도. 경고 미표시. 추가 실험 필요." — confirms
+gemini is in the "block-only, warning not yet visible" bucket per cycles
+before cycle 48. Current status.md tracks gemini3 as `phase5_schema_debug_required`.
+Not a migration correctness issue.
+
+### 20.8 Stale comment — grok `BLOCKED_ONLY`
+
+cpp:156 comment says "BLOCKED_ONLY 판정" for grok, but `done_services` in
+pipeline_state.json lists grok as DONE. The comment predates grok's warning
+breakthrough (probably before cycle 40-ish). Stale — cleanup candidate for
+a future SQL comment refresh, no code impact.
+
+### 20.9 Verification against cycle 51 h2_mode audit
+
+Cycle 51 established the h2_mode ternary (0=HTTP/1.1, 1=H2 cascade,
+2=H2 keep-alive). Part 3 UPDATE statements at cpp:39-50 set h2_mode per
+service:
+
+| h2_mode value | Services (count) | Semantic |
+|---------------|------------------|----------|
+| 1 (cascade) | chatgpt, claude, gemini, gemini3, m365_copilot | send HEADERS+DATA+GOAWAY, server tears down |
+| 2 (keep-alive) | perplexity, perfle, genspark, grok, github_copilot, gamma, notion | send HEADERS+DATA+END_STREAM, stream closes, H2 conn alive |
+| 0 (HTTP/1.1) | (none in current baseline) | H1.1-only, unused in Part 3 |
+
+**h2_mode=0 is unused in baseline** — no service in the current SQL
+migration uses HTTP/1.1 only. All services have H2 upgrade support.
+Any future HTTP/1.1-only service would need h2_mode=0 which has been
+audited but not exercised in production. Worth noting.
+
+### 20.10 `h2_end_stream` usage
+
+Cycle 53 §15.7 established the h2_end_stream ternary (0=none, 1=immediate,
+2=delayed VTS 10ms). Part 3 distribution:
+
+| h2_end_stream | Services |
+|---------------|----------|
+| 0 (none — relies on content-length for stream end) | perplexity, perfle, gamma |
+| 1 (immediate END_STREAM flag on last DATA frame) | chatgpt, claude, genspark, gemini, gemini3, grok, github_copilot, m365_copilot, notion |
+| 2 (delayed 10ms at VTS — Phase3-B30) | **(none in baseline)** |
+
+**h2_end_stream=2 is unused in baseline.** This is significant — cycle 53
+§15.7 and cycle 55 §17 both discussed delayed END_STREAM as a Phase3-B30
+build tag and code path in visible_tls_session.cpp:653-670. The code path
+exists and is tested, but no service in the current Part 3 migration uses
+it. Either (a) an earlier service used it and was migrated away, or (b) it
+was added defensively for future services. Relevance to HF: if HF needs
+delayed END_STREAM (unknown until #454 arrives), the code path is live
+and the SQL value `2` is legal per the schema.
+
+### 20.11 HF Phase 6 envelope template — advance preparation
+
+Based on §20.1-§20.10, HF Phase 6 baseline recommendation (subject to #454
+confirmation):
+
+| Field | Recommended value | Rationale |
+|-------|-------------------|-----------|
+| service_name | `huggingface` | existing row, cycle 47 fixed http_response |
+| response_type | `huggingface_sse` | new, not shared |
+| prepare_response_type | `''` (empty) | HF has no prepare API per cycle 54 |
+| h2_mode | `2` (keep-alive) | matches grok/copilot/gamma — HF is H2 chat |
+| h2_end_stream | `1` (immediate) | unless #454 shows otherwise |
+| h2_goaway | `0` | keep H2 conn alive |
+| h2_hold_request | `1` | request-body detection like 6 hold-mode services |
+| envelope MESSAGE form | `{{MESSAGE}}` | JSON-string SSE payload per HF chat-ui (SvelteKit) |
+
+**Envelope sketch** (placeholder — real structure after #454 reverse-engineers SSE schema):
+```
+HTTP/1.1 200 OK\r\n
+Content-Type: text/event-stream; charset=utf-8\r\n
+Cache-Control: no-cache\r\n
+access-control-allow-credentials: true\r\n
+access-control-allow-origin: https://huggingface.co\r\n
+Content-Length: 0\r\n
+\r\n
+data: {"type":"stream","content":"{{MESSAGE}}"}\n\n
+data: {"type":"finalAnswer","text":"{{MESSAGE}}"}\n\n
+```
+
+**Needs from #454**: exact event type names, whether separator is `\r\n\r\n`
+or `\n\n`, whether HF chat-ui consumes chunked deltas or a single finalAnswer,
+CSP restrictions on injection method (Option A viability).
+
+### 20.12 Verification level count — stays at 15
+
+§20 is a **data audit** (SQL content cross-check), not a new runtime
+verification. The checks all validate pre-existing findings (h2_mode ternary
+from §13, placeholder rules from cycle 48, content-length handling from §9,
+SSE separator picker from §15). Does NOT advance the level count.
+
+**Count stays at 15 (a-o).**
+
+### 20.13 Summary
+
+Part 3 covers 10 response_types for 12 service entries. All placeholder
+rules conform to cycle 48 semantics. Content-Length: 0 pattern is
+consistent. h2_mode distribution: 5 cascade + 7 keep-alive; h2_end_stream
+mostly immediate with 3 services on 0 (rely on content-length); delayed=2
+is unused. The sole anomaly is notion's h2_mode=2 + h2_hold_request=0
+(response-body detection mode, legitimate but unique).
+
+**Findings for cycle 59+ side tasks**:
+1. chatgpt MESSAGE_RAW → MESSAGE conversion candidate (§20.3) — latent
+   JSON-corruption risk if http_response ever contains quotes
+2. Stale "BLOCKED_ONLY" comment for grok at cpp:156 — grok is DONE
+3. h2_end_stream=2 code path unused in baseline — document or test when
+   first service needs it
+4. HF Phase 6 envelope sketch drafted (§20.11) — ready for #454 data
+   to fill in concrete schema
+
+No blockers for HF Phase 6 migration. All infrastructure verified at
+the SQL data level to match the code audited in §9, §13, §15, §17, §19.
+
+
+
 
