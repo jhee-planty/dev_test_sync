@@ -407,3 +407,91 @@ Before running any INSERT into `ai_prompt_response_templates`:
 - Cycle 47 code read: `functions/ai_prompt_filter/ai_prompt_filter.cpp:1602-1677` (generate_block_response), `ai_prompt_filter_db_config_loader.h:260-280` (get_response_template), `ai_prompt_filter_db_config_loader.cpp:620-708` (load_response_templates)
 - Cycle 47 DB query: `ssh ... mysql -h ogsvm -u root -p... etap -N -e "SELECT ... FROM ai_prompt_response_templates WHERE service_name IN (...)"`
 - Fix applied: `phase6_huggingface_addendum_2026-04-15.sql` PART 1A + `phase6_combined_migration_2026-04-15.sql` section 1B.2b
+
+---
+
+## §11. Exhaustive envelope-template placeholder surface (cycle 48)
+
+**Source of truth.** `ai_prompt_filter::render_envelope_template` at `ai_prompt_filter.cpp:974-1049`. A single-pass scanner walks the envelope text looking for `{{` … `}}` markers, with a 2-pass post-process for one special marker.
+
+### 11.1 Complete placeholder list
+
+| Placeholder | Substitution | Implementation |
+|---|---|---|
+| `{{MESSAGE}}` | `json_escape(message)` — escapes `"`, `\`, `\n`, `\r`, `\t` exactly once | `ai_prompt_filter.cpp:1000` |
+| `{{MESSAGE_RAW}}` | raw `message` — **no escaping** at all | `ai_prompt_filter.cpp:1002` |
+| `{{ESCAPE2:MESSAGE}}` | `json_escape2(message)` = `json_escape(json_escape(message))` — double escape for JSON-inside-JSON contexts | `ai_prompt_filter.cpp:1004` + cpp:927-930 |
+| `{{TIMESTAMP}}` | `generate_iso8601_utc()` = `YYYY-MM-DDTHH:MM:SS.000000` (UTC, no TZ suffix, microseconds always zero, lazy-initialized once per render) | `ai_prompt_filter.cpp:1006-1009` |
+| `{{BODY_INNER_LENGTH}}` | **2-pass marker.** Pass 1 inserts a sentinel. Pass 2 computes `strlen(result.substr(marker_pos + marker_size))` — the byte length of text from the marker to the end of the rendered string. Requires `\r\n\r\n` header/body separator to exist in the rendered result. | `ai_prompt_filter.cpp:1010-1012` + 1030-1045 |
+| `{{UUID:<name>}}` | RFC 4122 UUID v4, cached per `<name>` within one render call (same `<name>` → identical UUID in a single response) | `ai_prompt_filter.cpp:1013-1018` + generate_uuid4 |
+
+**Unknown placeholder behavior (cpp:1019-1022):** `{{UNKNOWN_KEY}}` is written **back as-is** — the literal string `{{UNKNOWN_KEY}}` ends up in the wire response. Typos in placeholder names therefore fail silently (soft failure → user sees raw `{{…}}` tokens in their chat bubble).
+
+**Content-Length post-processing (cpp:1048):** `recalculate_content_length(result)` is called unconditionally at the end. Any `Content-Length: N\r\n` header in the envelope is overwritten with the actual body byte count. **Convention:** write `Content-Length: 0\r\n` in envelopes and let the C++ code rewrite it. Do NOT try to precompute or handwave the length.
+
+### 11.2 `{{MESSAGE}}` vs `{{ESCAPE2:MESSAGE}}` — usage rule
+
+Single-escape vs double-escape is NOT an aesthetic choice — it depends on how many JSON-parse layers the receiving client will apply:
+
+| Receiver parse layers | Placeholder | Example |
+|---|---|---|
+| 1 layer (direct JSON string embedding) | `{{MESSAGE}}` | `{"type":"stream","token":"{{MESSAGE}}"}` — client does `JSON.parse(sseBody)` once, extracts `.token` as a string |
+| 2 layers (stringified JSON inside another JSON string) | `{{ESCAPE2:MESSAGE}}` | Google's `wrb.fr` webchannel: `[["wrb.fr","XqA3Ic","[null,null,[\"{{ESCAPE2:MESSAGE}}\"],...]",…]]` — outer JSON parse yields a string, which the client `JSON.parse`s AGAIN to get the inner array |
+
+**Source baseline convention** (`apf_db_driven_migration.sql`):
+- `{{MESSAGE}}` used for: chatgpt_sse, github_copilot copilot_403, blackbox NDJSON, m365_copilot copilot_conversation, claude SSE, deepseek_sse
+- `{{ESCAPE2:MESSAGE}}` used for **gemini only** (wrb.fr webchannel, explicitly commented "2단계 JSON escape")
+
+**Live DB anomaly.** Cycle 42 decoded the `openai_compat_sse` envelope and found it uses `{{ESCAPE2:MESSAGE}}` inside `data: {"choices":[{"delta":{"content":"{{ESCAPE2:MESSAGE}}"},...}]}` — a SINGLE JSON parse context that per the rule should use `{{MESSAGE}}`. Consequences of double-escape in single-parse context: real newlines in the message text become literal `\n\n` (backslash-n) in the user's chat bubble after JSON.parse.
+
+**Hypotheses for the openai_compat_sse ESCAPE2 anomaly** (unverified — would need test-PC visual):
+1. **Cosmetic bug, accepted.** The 5 services on openai_compat_sse (chatglm/huggingface/kimi/qianwen/wrtn) actually show literal `\n\n` in their block message and nobody filed a bug.
+2. **Client-side post-process.** Some chat UI's markdown renderer interprets literal `\n` as a line break at display time.
+3. **Historical mistake, frozen by "don't touch what works".** Someone wrote ESCAPE2 when adding the row (via ad-hoc SQL, see drift finding §11.3), and nobody reviewed.
+
+### 11.3 Drift finding: `openai_compat_sse` absent from source baseline
+
+Cycle 48 grep: `openai_compat_sse` **does not exist** anywhere in `functions/ai_prompt_filter/sql/apf_db_driven_migration.sql`. But the live DB has 5 rows at priority=50 for the response_type. Similar drift to cycle 44's m365_copilot finding — someone INSERTed these rows via ad-hoc SQL between the baseline and today, and they are not under source control.
+
+Adds to the cycle 45 §9 25-row drift list as **chatglm/huggingface/kimi/qianwen/wrtn on openai_compat_sse** (5 previously-unrecorded rows).
+
+### 11.4 huggingface addendum verification
+
+With the complete placeholder surface now documented, the draft addendum envelope (PART 1A) was re-audited:
+
+```
+HTTP/1.1 200 OK
+Content-Type: <CONTENT_TYPE>           ← TBD #454 token, NOT a render placeholder
+Cache-Control: no-cache
+Content-Length: 0                      ← recalculate_content_length will rewrite
+<blank>
+{"type":"status","status":"started"}<EVENT_SEP>                              ← TBD #454 token
+{"type":"stream","token":"{{MESSAGE}}"}<EVENT_SEP>                           ← single parse → MESSAGE correct
+{"type":"finalAnswer","text":"{{MESSAGE}}","interrupted":false}<EVENT_SEP>   ← single parse → MESSAGE correct
+{"type":"status","status":"finalAnswer"}<EVENT_SEP>
+```
+
+- Only `{{MESSAGE}}` is used — all within single-JSON-parse contexts where single-escape is correct per §11.2.
+- No `{{UUID:<name>}}`, `{{TIMESTAMP}}`, or `{{BODY_INNER_LENGTH}}` — huggingface SSE protocol does not need them (no session UUIDs in the 4-event schema, no timestamped delta, body length is per-event not cumulative).
+- `Content-Length: 0` is safe (auto-rewrite).
+- `<CONTENT_TYPE>` and `<EVENT_SEP>` are source-level TBD tokens — NOT render-time placeholders. They will be literal-substituted into the SQL before apply (per the addendum's merge instructions). No risk of leaking `<…>` tokens to the wire.
+
+**Verdict:** the huggingface addendum envelope template is placeholder-clean. No third latent bug to fix in cycle 48.
+
+### 11.5 Verification checklist for future envelope templates
+
+Before inserting a new envelope_template into `ai_prompt_response_templates`:
+
+1. **Grep for non-matching `{{...}}`:** `grep -oE '\{\{[^}]+\}\}' envelope.txt | sort -u` — every match should be one of: `{{MESSAGE}}`, `{{MESSAGE_RAW}}`, `{{ESCAPE2:MESSAGE}}`, `{{TIMESTAMP}}`, `{{BODY_INNER_LENGTH}}`, or `{{UUID:<something>}}`.
+2. **Parse-layer check:** count how many `JSON.parse` calls the receiving client makes on the message's location. 1 layer → `{{MESSAGE}}`. 2 layers → `{{ESCAPE2:MESSAGE}}`. 3+ layers is unsupported — would need a `{{ESCAPE3:MESSAGE}}` which does not exist.
+3. **Content-Length:** write `Content-Length: 0\r\n` and let `recalculate_content_length` rewrite it. Do not try to precompute.
+4. **`{{BODY_INNER_LENGTH}}`:** only use if your wire format has a byte count sitting near the marker — Gemini's `)]}'\n\n{N}\n{payload}` is the model case. The marker measures text from itself to end-of-string, NOT between two markers.
+5. **`{{UUID:<name>}}`:** each unique `<name>` gets one UUID per render. Use different names when you need different UUIDs in the same response (e.g., `{{UUID:msg}}` and `{{UUID:parent}}` in copilot_sse).
+6. **Non-render TBD markers:** if you have template tokens like `<CONTENT_TYPE>` or `<EVENT_SEP>` that are meant to be substituted at SQL-write time, use `<...>` (NOT `{{...}}`) to avoid any confusion with render-time placeholders.
+
+### 11.6 Cross-references
+
+- Cycle 48 code read: `ai_prompt_filter.cpp:974-1049` (render_envelope_template full body), cpp:910-930 (json_escape / json_escape2), header ai_prompt_filter.h:421-441 (public placeholder documentation).
+- Cycle 48 grep: `grep -n "ESCAPE2:MESSAGE\|json_escape2" functions/ai_prompt_filter` — only gemini wrb.fr uses it in source baseline.
+- Cycle 42 §8: openai_compat_sse live envelope decode that first noticed the ESCAPE2 usage (anomaly documented here in §11.2).
+- Cycle 44 §8: m365_copilot source-tree drift finding (companion to §11.3 openai_compat_sse drift).
