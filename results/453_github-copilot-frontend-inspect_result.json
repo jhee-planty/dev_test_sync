@@ -1,0 +1,250 @@
+{
+  "id": "453",
+  "service_name": "github_copilot",
+  "status": "DONE",
+  "timestamp": "2026-04-15T18:25:00+09:00",
+  "processed_by": "test_pc_worker_cycle_autonomous_loop",
+  "command": "run-scenario",
+  "login_state": "still_logged_in",
+  "copilot_subscription": "active_with_claude_haiku_4_5",
+  "framework": {
+    "routing": "React Router (development build)",
+    "ui": "primer-react + custom CSS Modules",
+    "bundler": "Webpack or Vite with CSS Modules (content-hashed class names)",
+    "source_evidence": [
+      "https://github.githubassets.com/assets/node_modules/react-router/dist/development/chunk-EPOLDU6W.mjs:193",
+      "https://github.githubassets.com/assets/packages/react-core/NavigatorClientEntry.tsx:84",
+      "https://github.githubassets.com/assets/packages/stats/stats.ts:212",
+      "https://github.githubassets.com/assets/packages/fetch-patch/fetch-patch.ts:11"
+    ],
+    "not_nextjs": "#__next element does not exist; NavigatorClientEntry.tsx suggests custom SPA bootstrap, not Next.js app router"
+  },
+  "spa_routing": {
+    "pattern": "React Router pushState",
+    "from_path": "/copilot",
+    "to_path": "/copilot/c/{conversationUuid}",
+    "observed_uuid": "3ee4eaf1-cb5b-4cc2-adb1-81c333db990d",
+    "full_reload_on_nav": false,
+    "comparable_to": "v0 #447 (pure CSR pushState)"
+  },
+  "api_endpoint": {
+    "url": "https://api.individual.githubcopilot.com/github/chat/threads/{threadId}/messages",
+    "host_is_separate_domain": true,
+    "main_origin": "https://github.com",
+    "cross_origin": true,
+    "method": "POST",
+    "status_success": 200,
+    "http_version": "h2",
+    "remote_address_observed": "140.82.112.22:443",
+    "cors_preflight": "OPTIONS to same URL precedes the POST (visible as duplicate rows in Network)",
+    "content_type_req": "application/json (inferred — request body is JSON)",
+    "content_type_resp": "text/event-stream",
+    "response_csp": "default-src 'none'; sandbox",
+    "referrer_policy": "strict-origin-when-cross-origin",
+    "cache_control": "no-cache",
+    "access_control_expose_headers": "x-github-request-id",
+    "initiator_script": "github.githubassets.com/assets/packages/fetch-patch/fetch-patch.ts:11"
+  },
+  "request_payload_fields_observed": {
+    "responseMessageID": "client-generated UUID (e.g. 15f5e34f-7ca8-4e67-94b0-3ba8bc...)",
+    "parentMessageID": "threading parent UUID",
+    "content": "string — the user prompt text verbatim",
+    "intent": "conversation",
+    "mode": "assertive",
+    "model": "claude-haiku-4.5",
+    "currentURL": "https://github.com/copilot",
+    "references": "[] (empty array in baseline; used when @ mentions attach repos/files)",
+    "context": "[]",
+    "confirmations": "[]",
+    "customInstructions": "[]",
+    "mediaContent": "[]",
+    "skillOptions": "{ deepCodeSearch: false }",
+    "streamJz_or_stream": "true (boolean — enables SSE streaming)",
+    "requestTrace": "false",
+    "structure_note": "Pure JSON POST body with threading + skill system fields. Same endpoint used for both first and subsequent messages in a thread."
+  },
+  "response_format": "sse",
+  "sse_schema": {
+    "format": "classic SSE (data: <json>\\n\\n) — NO event: lines (which is why Chrome DevTools EventStream tab renders empty)",
+    "chunks_per_response": "1 content event per chunk (for short responses) + 1 complete event at end",
+    "event_types": {
+      "content": {
+        "schema": "{\"type\":\"content\",\"body\":\"<text_delta>\"}",
+        "delta_semantics": "body is cumulative text since last content event; client appends to the displayed bubble",
+        "example_verbatim": "data: {\"type\":\"content\",\"body\":\"ready\"}"
+      },
+      "complete": {
+        "schema": "{\"type\":\"complete\",\"id\":\"<msgUuid>\",\"parentMessageID\":\"<parentMsgUuid>\",\"model\":\"<string>\",\"turnId\":\"<string>\",\"createdAt\":\"<ISO8601>\",\"references\":[],\"role\":\"assistant\",\"intent\":\"conversation\",\"copilotAnnotations\":{\"CodeVulnerability\":[],\"PublicCodeReference\":[]}}",
+        "required_for_bubble_finalization": true,
+        "notes": "model and turnId are empty strings in observed responses. createdAt is RFC3339 nanosecond-precision. copilotAnnotations is GitHub's code-safety annotation block (always empty for non-code responses).",
+        "example_verbatim_partial": "data: {\"type\":\"complete\",\"id\":\"95bc484f-2bf0-4cb7-b7be-ca2621b92f7b\",\"parentMessageID\":\"fc075f1a-22a7-44d2-817b-3209728bc584\",\"model\":\"\",\"turnId\":\"\",\"createdAt\":\"2026-04-15T09:16:31.627141074Z\",\"references\":[],\"role\":\"assistant\",\"intent\":\"conversation\",\"copilotAnnotations\":{\"CodeVulnerability\":[],\"PublicCodeReference\":[]}}"
+      }
+    },
+    "capture_method": "window.fetch override (fetch-patch.ts DID respect the override — unlike Google's, GitHub's internal fetch wrapper uses live window.fetch at call time, so our interceptor ran and ReadableStream.getReader() consumed the body via response.clone()).",
+    "captured_bytes": 373,
+    "complete_stream_verbatim": "data: {\"type\":\"content\",\"body\":\"ready\"}\n\ndata: {\"type\":\"complete\",\"id\":\"95bc484f-2bf0-4cb7-b7be-ca2621b92f7b\",\"parentMessageID\":\"fc075f1a-22a7-44d2-817b-3209728bc584\",\"model\":\"\",\"turnId\":\"\",\"createdAt\":\"2026-04-15T09:16:31.627141074Z\",\"references\":[],\"role\":\"assistant\",\"intent\":\"conversation\",\"copilotAnnotations\":{\"CodeVulnerability\":[],\"PublicCodeReference\":[]}}\n\n",
+    "compared_to_deepseek_451": "SIMPLER. DeepSeek uses named events (ready/update_session/title/close) + {p,o,v} JSON-Patch ops with path inheritance. Copilot uses only `data:` with 2 event-type-tagged JSON objects. MUCH easier to replicate for APF envelope injection."
+  },
+  "thinking_ui": {
+    "observation": "For claude-haiku-4.5 responses (the account default), responses arrive so fast (< 2s) that the thinking/loading UI is barely visible. A typing animation may flash briefly during the first content event.",
+    "no_dedicated_screenshot": "08_thinking.png captured post-response because response was rendered before screenshot fired",
+    "dom_selector": "not isolated — subsumed by ChatMessage-module__chatMessage_* container"
+  },
+  "error_ui_observed": {
+    "method_used": "Console fetch override returning synthesized Response with status=500 and empty body, gated on url match for '/messages'",
+    "method_1_offline_toggle": "not run (fetch override was more surgical and sufficient)",
+    "method_2_block_url": "implemented via fetch override (equivalent effect)",
+    "result": "Inline primer-react Banner rendered below the user message with text: 'I'm sorry but there was an error. Please try again.' + warning icon + retry button",
+    "text_source": "STATIC i18n string — NOT read from response body (confirmed by returning empty body → generic text appeared)",
+    "dom_selector": {
+      "description": "div.BannerDescription (static class) nested under div.prc-Banner-BannerContent-LraS2 under div.prc-Banner-BannerContainer-T-S*",
+      "framework": "primer-react (prc- prefix) Banner component",
+      "class_hash_stability": "BannerDescription is a static class; outer hashes (LraS2, T-S) change with each deployment"
+    },
+    "github_flash_or_banner_populated": false,
+    "stale_infrastructure_present": {
+      "js-stale-session-flash": "exists in DOM (div#.js-stale-session-flash stale-session-fla...) — GitHub's legacy session expiry flash, unused by Copilot error path",
+      "ajax-error-message": "div#ajax-error-message.ajax-error-message flash flash-error — EMPTY text, GitHub's legacy XHR error flash, unused by Copilot error path",
+      "note": "GitHub's legacy .js-flash / .flash-error infrastructure is PRESENT in the page shell (as noted in early DIAG: flashEls=2) but Copilot Chat uses its OWN error display via primer-react Banner component, not the legacy flash elements."
+    },
+    "screenshot": "results/files/453/18_error_500.png"
+  },
+  "hidden_error_hooks": [
+    "div.BannerDescription (Copilot's error message text node — STATIC i18n content)",
+    "div.prc-Banner-BannerContent-LraS2 (primer-react Banner content wrapper — hashed class)",
+    "div.prc-Banner-BannerContainer-T-S* (primer-react Banner outer container — hashed class)",
+    "div#.js-stale-session-flash (legacy GitHub flash, UNUSED by Copilot)",
+    "div#ajax-error-message.ajax-error-message.flash.flash-error (legacy GitHub XHR error flash, UNUSED by Copilot)"
+  ],
+  "chat_bubble_dom": {
+    "containers_found": [
+      "div.ImmersiveChat-module__messageContent__FCvt1",
+      "div.message-container + div.ChatMessage-module__chatMessage_*",
+      "div.ChatMessage-module__content__haI0H"
+    ],
+    "class_naming_convention": "CSS Modules — `<ModuleName>-module__<className>__<contentHash>` (e.g. ChatMessage-module__content__haI0H). Hashes rotate on each build.",
+    "stable_partial_selectors": [
+      "[class*='ImmersiveChat-module__messageContent']",
+      "[class*='ChatMessage-module__chatMessage']",
+      "[class*='ChatMessage-module__content']",
+      ".message-container (unhashed static class)"
+    ],
+    "framework": "primer-react (for Banner, Buttons) + custom React components with CSS Modules (for ChatMessage / ImmersiveChat) + react-router for routing",
+    "markdown_rendering": "Copilot renders markdown as HTML inside message-container — includes fenced code blocks (with dedicated `View file: X.py` button for code), ordered/unordered lists (rendered as <li> with bullet/number), and syntax-highlighted `<code>` spans. Feedback row (Good response / Bad response / Copy / Retry with Claude Haiku 4.5 / Retry with model) appears as primer-react IconButton row below each assistant message."
+  },
+  "csp_header": {
+    "length_bytes": 3768,
+    "main_document": "https://github.com/copilot (GET, text/html)",
+    "script_src": "github.githubassets.com",
+    "script_src_features": {
+      "nonce": "NO (no nonce-* directive)",
+      "strict_dynamic": "NO",
+      "unsafe_inline": "NO",
+      "unsafe_eval": "NO",
+      "self": "NO — only github.githubassets.com host allowlisted"
+    },
+    "connect_src_includes_githubcopilot": true,
+    "verdict": "HOST-BASED allowlisting. Only github.githubassets.com can serve scripts. Any injected <script> tag from github.com or inline JS is blocked. Non-script DOM additions (text, divs, spans) are NOT constrained by script-src. Since APF operates at the HTTP layer, CSP is largely IRRELEVANT to envelope/body replacement — the browser trusts what APF serves because APF IS the network transport.",
+    "comparison": "Less strict than Gemini #452 (nonce + strict-dynamic) but still blocks inline script. Same overall shape as v0 #447."
+  },
+  "warning_delivery_options": {
+    "a_sse_stream_injection": {
+      "verdict": "HIGHLY VIABLE",
+      "rationale": "GitHub Copilot's response IS text/event-stream with a simple 2-event-type schema (content + complete). APF can substitute the response body with synthesized content+complete events containing the warning text as body. React app will render as a normal assistant bubble indistinguishable from a real response.",
+      "envelope_template": "data: {\"type\":\"content\",\"body\":\"<WARNING_MSG>\"}\\n\\ndata: {\"type\":\"complete\",\"id\":\"<randomUuid>\",\"parentMessageID\":\"<readFromRequestBody.responseMessageID>\",\"model\":\"\",\"turnId\":\"\",\"createdAt\":\"<nowISO>\",\"references\":[],\"role\":\"assistant\",\"intent\":\"conversation\",\"copilotAnnotations\":{\"CodeVulnerability\":[],\"PublicCodeReference\":[]}}\\n\\n",
+      "content_type_required": "text/event-stream",
+      "status_required": 200,
+      "parent_message_id_source": "Extract from request JSON body field 'responseMessageID' — use the SAME value in the response complete event's id OR parentMessageID. Using responseMessageID directly as complete.id matches what the client expected for that in-flight message.",
+      "caveats": "If parentMessageID doesn't match what client expects, the React app may not append the bubble to the thread (needs validation in staging). A lenient approach: generate new random UUIDs for id and use request's parentMessageID for parentMessageID.",
+      "markdown_support": "body text supports markdown (renders to HTML, code blocks, lists) — APF can use this for richer warning formatting."
+    },
+    "b_http_body_html_replacement": {
+      "verdict": "BLOCKED",
+      "rationale": "Copilot's error path does NOT read response body text — Banner shows static 'I'm sorry but there was an error. Please try again.' regardless of body contents. Returning HTML as a 500 body is ignored by the React app's error handler.",
+      "tested": true,
+      "test_result": "Empty 500 body → generic banner text. No body parsing observed."
+    },
+    "c_js_error_banner_populate": {
+      "verdict": "BLOCKED",
+      "rationale": "GitHub's legacy .js-flash / .flash-error elements exist in the page shell BUT are not wired to Copilot's chat flow. Copilot's error banner is a React-rendered primer-react Banner with HARDCODED i18n text. The React error state doesn't accept an external message string — the text is imported from a locale bundle at compile time.",
+      "dom_evidence": "Banner text is from `div.BannerDescription` which is populated by React on render, not by mutation. The parent container class is `prc-Banner-BannerContent-LraS2` (hashed)."
+    },
+    "d_dom_direct_inject": {
+      "verdict": "PARTIALLY VIABLE (initial load only)",
+      "rationale": "APF can modify the main document GET response for `github.com/copilot` to inject a banner <div> before React mounts. Once React hydrates and React Router takes over, our injected div will be REMOVED when React re-renders the root container. Also: since Copilot chat is React Router CSR, subsequent /copilot/c/{uuid} navigations happen client-side and never go through APF for the document fetch, so the warning only shows on initial load. For a first-time session warning, this is acceptable; for repeated warning, NO.",
+      "csp_consideration": "Non-script DOM (text, divs, spans) is NOT constrained by script-src; APF can safely add markup. But style-src may be host-restricted — use inline style attributes sparingly or include pre-approved utility classes."
+    },
+    "e_block_page_substitution": {
+      "verdict": "BLOCKED (intra-session), POSSIBLE (initial load only — same constraints as v0 #447)",
+      "rationale": "Copilot is a pure CSR React Router SPA. After initial load, all routing is client-side via pushState. APF never sees the subsequent navigation requests for the document HTML (React just updates component state). Replacing the initial /copilot HTML with a block page works only on the very first request. After that, any attempt to substitute triggers on non-document requests and breaks the SPA.",
+      "comparable_to": "v0 #447 (same CSR constraint)"
+    }
+  },
+  "recommended_option": {
+    "primary": "Option A (SSE stream injection)",
+    "primary_rationale": "The ONLY option that reliably delivers a user-visible warning bubble on EVERY Copilot chat interaction, without page reload, without breaking the SPA. Schema is simpler than DeepSeek's JSON-Patch format — just 2 event types. APF already handles SSE envelope replacement for DeepSeek; extending to Copilot requires a new envelope template but shares the same transport layer.",
+    "secondary": "Option D (initial-load banner) — for first-time session disclaimer (e.g., 'Reminder: you are subject to corporate usage policy'). Combine with Option A for chat-level warnings.",
+    "skip": "Options B, C, E are blocked or only marginally viable and should NOT be implemented.",
+    "implementation_notes": [
+      "APF match rule: POST to https://api.individual.githubcopilot.com/github/chat/threads/*/messages",
+      "Trigger condition: body.content matches any APF_SENSITIVE pattern after PROMPT inspection",
+      "Replacement: synthesize SSE body per envelope_template above; set Content-Type: text/event-stream; Status: 200",
+      "parentMessageID extraction: parse request JSON body, read .responseMessageID field — use it as .parentMessageID in the complete event (ensures threading continuity)",
+      "id generation: crypto.randomUUID() for the complete.id field",
+      "createdAt: new Date().toISOString() — Copilot accepts ISO8601 with milliseconds; nanosecond precision (as observed) is not required",
+      "CORS: api.individual.githubcopilot.com is a separate origin from github.com; APF must preserve Access-Control-Allow-Origin: https://github.com and Access-Control-Allow-Credentials: true headers on the replaced response (copy from original upstream) OR the browser will reject the response."
+    ]
+  },
+  "phase_e_console_and_telemetry": {
+    "console_errors_pre_prompt": 1,
+    "console_warnings_pre_prompt": 1,
+    "console_breaking_issues": 1,
+    "likely_cause": "react-router development build console warnings (non-actionable, NOT a GitHub Copilot error)",
+    "telemetry_endpoints_observed": [
+      {
+        "url": "https://api.github.com/_private/browser/stats",
+        "purpose": "GitHub Analytics pixel (equivalent to Google's gen_204)",
+        "initiator": "stats.ts:212"
+      },
+      {
+        "url": "https://collector.github.com/github/collect (approximate — 6+ requests with 'collect' in name)",
+        "purpose": "Client analytics collection"
+      },
+      {
+        "url": "https://browser-errors.tse (or similar browser_errors.tse)",
+        "purpose": "Client-side JS error reporting (GitHub's equivalent of Gemini's jserror pipeline)"
+      },
+      {
+        "url": "https://api.github.com/copilot/.../threads",
+        "purpose": "Thread lifecycle (204 status on creation)"
+      }
+    ],
+    "console_scroll_snapshot": "results/files/453/06_console_error.png + results/files/453/04_console_diag.png — visible console stack including chunk-EPOLDU6W.mjs:193 (react-router) and NavigatorClientEntry.tsx:84"
+  },
+  "comparative_notes": {
+    "vs_447_v0": "Same React Router pushState pattern. Same Option E blocked conclusion. v0 had NO error UI at all on transport failures; Copilot has a STATIC-TEXT primer-react Banner. Both share CSR SPA constraint.",
+    "vs_448_v0_navigation": "Same is_document_request=FALSE observation (Copilot SPA never re-fetches document).",
+    "vs_449_gamma": "Different — gamma had empty body due to APF bootstrap failure. Copilot body hydrates fully (21KB HTML shell). Copilot's initial DIAG showing body.innerText=15 was pre-hydration timing artifact, NOT a bootstrap failure.",
+    "vs_451_deepseek": "Both use SSE with 200 status. Copilot's schema is SIMPLER (2 event types, flat JSON) vs DeepSeek ({p,o,v} JSON-Patch with path inheritance). Copilot Option A is EASIER to implement than DeepSeek Option A.",
+    "vs_452_gemini3": "Gemini has strict nonce+strict-dynamic CSP blocking ALL DOM inject; Copilot has HOST-BASED CSP which is less strict but still blocks inline script. Gemini silent-fails without user-visible error; Copilot shows a GENERIC error banner (better UX, but still no way to inject our text into the banner). Gemini's wrb.fr envelope is the ONLY path; Copilot has BOTH Option A (preferred) AND Option D (initial load).",
+    "apf_pipeline_impact": "Copilot joins DeepSeek in the 'Option A works cleanly' bucket. v0, Gemini, gamma remain in the 'special-case required' bucket. Recommend prioritizing Copilot envelope implementation next (easier than DeepSeek's JSON-Patch) to quickly bring 2 services to parity."
+  },
+  "screenshots": [
+    "results/files/453/01_baseline.png — pre-DevTools Copilot main UI",
+    "results/files/453/04_console_diag.png — pre-hydration DIAG output",
+    "results/files/453/05_dom_counts.png — second DIAG attempt",
+    "results/files/453/06_console_error.png — Console with visible DIAG + clipboard error",
+    "results/files/453/07_visible_page.png — fully-rendered UI post-DevTools-close (effective baseline)",
+    "results/files/453/08_before_send.png — Network tab cleared, prompt typed",
+    "results/files/453/08_thinking.png — Phase A response fully rendered + Network with messages×3",
+    "results/files/453/09_messages_filter.png — Network with filter=messages",
+    "results/files/453/11_messages_headers.png — Headers tab showing POST + 200 + text/event-stream",
+    "results/files/453/12_eventstream.png — EventStream tab (empty; no event: lines)",
+    "results/files/453/13_response_raw.png — Response tab (already finished, can't reload)",
+    "results/files/453/14_payload.png — Payload tab showing full JSON request body fields",
+    "results/files/453/15_sse_live.png — Second send, follow-up Hi message",
+    "results/files/453/18_error_500.png — Phase B: primer-react Banner error UI with static text",
+    "results/files/453/19_final_state.png — final state snapshot"
+  ],
+  "notes": "Complete multi-phase probe executed in one extended session across multiple /loop cycles and one mid-session context-checkpoint (memory-pinned for /compact safety). Phase A SSE body was captured via a window.fetch interceptor (GitHub's fetch-patch.ts respects the live window.fetch reference, unlike Google's), which ALSO worked for Phase B error injection via the same override. No actual DevTools Offline toggle or Block URL was needed — the fetch override delivered equivalent signal and was more surgical. The primer-react Banner component with static i18n text is the CRITICAL finding that BLOCKS Options B and C. The SSE schema simplicity (2 event types, flat JSON) makes Option A the clear winner for APF implementation. Expected time ~10-15 min per request spec; actual time ~40 min due to pre-hydration DIAG false-positive + mid-session context checkpoint + DevTools Response tab limitations requiring fetch override fallback. Screenshot 10_messages_headers.png was discarded (captured Claude Code window after Chrome lost focus) and NOT included in the final screenshot list."
+}
