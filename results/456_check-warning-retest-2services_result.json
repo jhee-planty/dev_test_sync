@@ -1,0 +1,33 @@
+{
+  "id": "456",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-16T11:44:00+09:00",
+  "summary": "Phase 6 retest after envelope fix. Both services still BLOCK_ONLY — same patterns as #455. DeepSeek: empty chat (conversation created but no bubbles). HuggingFace: empty chat (silent fail, no bubbles). Envelope fixes did not resolve rendering issues.",
+
+  "services": {
+    "deepseek": {
+      "login_state": "still_logged_in",
+      "warning_visible": false,
+      "warning_text_exact": null,
+      "console_errors": [],
+      "verdict": "BLOCK_ONLY",
+      "notes": "Used nativeInputValueSetter to set React state + dispatchEvent(input). Send button clicked via accessibility label. Conversation UUID created (2eeab1cf-...) but chat area completely empty — no user message bubble, no assistant response. Same silent-fail as #455 but now without the '네트워크를 확인하고 다시 시도하세요' error message (changed from network error to complete silence). This suggests the fragments fix changed the failure mode but still doesn't render."
+    },
+    "huggingface": {
+      "login_state": "still_logged_in",
+      "warning_visible": false,
+      "warning_text_exact": null,
+      "console_errors": [],
+      "verdict": "BLOCK_ONLY",
+      "notes": "Clipboard paste + Enter submitted the prompt (Svelte textarea accepts clipboard). Conversation UUID created (69e04cbf66c9d5fca7376c81) but COMPLETE SILENT FAIL — identical to #455. No user bubble, no assistant bubble, no error UI. The conversationId fix in the NDJSON template did not resolve the rendering issue. SvelteKit chat-ui appears to require specific NDJSON event sequencing that the template doesn't satisfy."
+    }
+  },
+
+  "comparison_with_455": {
+    "deepseek": "Changed from '네트워크를 확인하고 다시 시도하세요' (network error) to complete silence. The fragments fix changed the failure mode but didn't produce warning rendering.",
+    "huggingface": "Identical silent fail. conversationId addition didn't help."
+  },
+
+  "recommendation": "Both templates need deeper investigation. The issue is likely not just missing fields but fundamental incompatibility between APF's static template responses and the chat UIs' streaming parsers. GitHub Copilot (#455) remains the only service with successful warning rendering."
+}
