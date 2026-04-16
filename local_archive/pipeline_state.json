@@ -1,17 +1,17 @@
 {
   "current_service": "github_copilot",
   "current_phase": "phase6_verified_partial",
-  "last_request_id": 455,
+  "last_request_id": 456,
   "last_result_id": 455,
   "last_checked_result_id": 455,
   "last_delivered_id": 455,
-  "last_poll_at": "2026-04-16T10:48:00+09:00",
+  "last_poll_at": "2026-04-16T11:15:00+09:00",
   "consecutive_empty_polls": 0,
   "stall_count": 0,
   "poll_stage": 1,
   "poll_stage_count": 0,
   "updated_at": "2026-04-16T10:48:00+09:00",
-  "pending_requests": [],
+  "pending_requests": [456],
   "service_queue": [
     {
       "service": "v0",

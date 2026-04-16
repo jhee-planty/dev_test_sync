@@ -10,7 +10,7 @@
 | Service | **github_copilot** → DONE ✅ · **deepseek** (phase6_test_fail) · **huggingface** (phase6_test_fail) · **v0** (needs_user_session) · **gemini3** (phase5_schema_debug_required) |
 | Phase | **phase6_verified_partial** — 1/4 SUCCESS, 2/4 FAIL, 1/4 NEEDS_LOGIN |
 | Strategy | github_copilot SSE injection works. deepseek + huggingface need envelope schema debug (capture success response → diff → fix). v0 needs authenticated session re-test. |
-| Pending requests | (none) |
+| Pending requests | **#456** — deepseek (fragments fix) + huggingface (conversationId fix) retest |
 | Last result processed | **#455 check-warning 4-service** — github_copilot WARNING_DISPLAYED, deepseek BLOCK_ONLY (network error), huggingface BLOCK_ONLY (silent fail), v0 NEEDS_LOGIN |
 | Blockers | deepseek/huggingface: envelope schema mismatch. v0: sign-in policy change. gamma: PENDING_INFRA. |
 
