@@ -1,0 +1,108 @@
+{
+  "id": "463",
+  "command": "run-scenario",
+  "priority": "high",
+  "description": "Claude Code로 코드 리뷰 및 보완 완료 후 전체 서비스 재검증. DONE 9개 서비스의 경고 표시 + BLOCK_ONLY 서비스의 차단 동작을 확인합니다. 빌드/배포 완료된 상태에서 테스트합니다.",
+  "scenarios": [
+    {
+      "group": "DONE — 경고 표시 확인 (9개)",
+      "services": [
+        {
+          "service_name": "chatgpt",
+          "url": "https://chatgpt.com",
+          "expected": "WARNING_DISPLAYED — 경고 메시지가 채팅 버블로 표시"
+        },
+        {
+          "service_name": "claude",
+          "url": "https://claude.ai",
+          "expected": "WARNING_DISPLAYED — 경고 메시지가 채팅 버블로 표시"
+        },
+        {
+          "service_name": "genspark",
+          "url": "https://www.genspark.ai",
+          "expected": "WARNING_DISPLAYED — SSE 스트리밍으로 경고 전달"
+        },
+        {
+          "service_name": "blackbox",
+          "url": "https://www.blackbox.ai",
+          "expected": "WARNING_DISPLAYED — JSON 응답으로 경고 표시"
+        },
+        {
+          "service_name": "qwen3",
+          "url": "https://chat.qwen.ai",
+          "expected": "WARNING_DISPLAYED — JSON 응답으로 경고 표시"
+        },
+        {
+          "service_name": "grok",
+          "url": "https://grok.com",
+          "expected": "WARNING_DISPLAYED — NDJSON 응답으로 경고 표시"
+        },
+        {
+          "service_name": "github_copilot",
+          "url": "https://github.com/copilot",
+          "expected": "WARNING_DISPLAYED — SSE 템플릿으로 채팅 버블 렌더링"
+        },
+        {
+          "service_name": "deepseek",
+          "url": "https://chat.deepseek.com",
+          "expected": "WARNING_DISPLAYED — XHR SSE deepseek_sse_v2 템플릿"
+        },
+        {
+          "service_name": "huggingface",
+          "url": "https://huggingface.co/chat",
+          "expected": "WARNING_DISPLAYED — NDJSON huggingface_ndjson_v2 템플릿"
+        }
+      ]
+    },
+    {
+      "group": "BLOCK_ONLY — 차단 동작 확인 (7개)",
+      "services": [
+        {
+          "service_name": "perplexity",
+          "url": "https://www.perplexity.ai",
+          "expected": "BLOCKED — 검색 실행 차단"
+        },
+        {
+          "service_name": "gemini3",
+          "url": "https://gemini.google.com/app",
+          "expected": "BLOCKED — 조용히 실패 (silent fail)"
+        },
+        {
+          "service_name": "qianwen",
+          "url": "https://chat2.qianwen.com",
+          "expected": "BLOCKED — 자체 에러 메시지 표시"
+        },
+        {
+          "service_name": "baidu",
+          "url": "https://yiyan.baidu.com",
+          "expected": "BLOCKED — SSE 전달되나 UI 미표시"
+        },
+        {
+          "service_name": "gamma",
+          "url": "https://gamma.app",
+          "expected": "BLOCKED — 페이지 로드 실패 가능"
+        },
+        {
+          "service_name": "poe",
+          "url": "https://poe.com",
+          "expected": "BLOCKED — 사이트 크래시 또는 에러"
+        },
+        {
+          "service_name": "v0",
+          "url": "https://v0.dev",
+          "expected": "BLOCKED — 로그인 필요 시 로그인 화면까지만 확인"
+        }
+      ]
+    }
+  ],
+  "test_input": "내 주민번호는 123456-1234567이야",
+  "check_items": [
+    "각 서비스에서 민감정보 입력 후 차단/경고 동작 확인",
+    "DONE 서비스: 경고 문구가 UI에 표시되는지 확인",
+    "BLOCK_ONLY 서비스: 데이터 전송이 차단되는지 확인",
+    "이전과 다른 동작이 있으면 상세히 보고",
+    "콘솔 에러가 있으면 기록",
+    "각 서비스 결과를 개별적으로 보고"
+  ],
+  "context": "Claude Code로 코드 리뷰 및 보완 완료 후 재검증. 이전 테스트 대비 regression 여부 확인이 핵심."
+}
