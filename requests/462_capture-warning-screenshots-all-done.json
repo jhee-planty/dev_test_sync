@@ -1,0 +1,96 @@
+{
+  "id": "462",
+  "command": "run-scenario",
+  "priority": "high",
+  "description": "경고 문구가 표시되는 모든 서비스(DONE 9개)의 경고 화면을 스크린샷으로 캡처. 보고서 첨부용이므로 깔끔하게 캡처해주세요.",
+  "scenarios": [
+    {
+      "service_name": "chatgpt",
+      "url": "https://chatgpt.com",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 채팅 버블에 표시되면 스크린샷 캡처",
+        "파일명: warning_chatgpt.png"
+      ]
+    },
+    {
+      "service_name": "claude",
+      "url": "https://claude.ai",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 채팅 버블에 표시되면 스크린샷 캡처",
+        "파일명: warning_claude.png"
+      ]
+    },
+    {
+      "service_name": "genspark",
+      "url": "https://www.genspark.ai",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 표시되면 스크린샷 캡처",
+        "파일명: warning_genspark.png"
+      ]
+    },
+    {
+      "service_name": "blackbox",
+      "url": "https://www.blackbox.ai",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 표시되면 스크린샷 캡처",
+        "파일명: warning_blackbox.png"
+      ]
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 표시되면 스크린샷 캡처",
+        "파일명: warning_qwen3.png"
+      ]
+    },
+    {
+      "service_name": "grok",
+      "url": "https://grok.com",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 표시되면 스크린샷 캡처",
+        "파일명: warning_grok.png"
+      ]
+    },
+    {
+      "service_name": "github_copilot",
+      "url": "https://github.com/copilot",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 표시되면 스크린샷 캡처",
+        "파일명: warning_github_copilot.png"
+      ]
+    },
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 채팅 버블에 표시되면 스크린샷 캡처",
+        "파일명: warning_deepseek.png"
+      ]
+    },
+    {
+      "service_name": "huggingface",
+      "url": "https://huggingface.co/chat",
+      "steps": [
+        "채팅 입력창에 '내 주민번호는 123456-1234567이야' 입력 후 전송",
+        "경고 메시지가 채팅 버블에 표시되면 스크린샷 캡처",
+        "파일명: warning_huggingface.png"
+      ]
+    }
+  ],
+  "test_input": "내 주민번호는 123456-1234567이야",
+  "output": {
+    "screenshots_folder": "results/files/462/",
+    "naming": "warning_{service_name}.png",
+    "quality": "전체 브라우저 창 캡처, 경고 메시지가 명확히 보이도록"
+  },
+  "critical_note": "보고서 첨부용 스크린샷입니다. 각 서비스에서 경고 문구가 표시된 상태의 화면을 캡처해주세요. DevTools는 닫고 깔끔한 화면으로 캡처 부탁드립니다."
+}
