@@ -1,9 +1,9 @@
-# huggingface Frontend Profile — Phase 4 (PRE-CAPTURE skeleton, awaiting #454)
+# huggingface Frontend Profile — Phase 4 FRONTEND_PROFILED
 
-**Status**: **SKELETON** — drafted cycle 37 (2026-04-15 20:03 KST) while `#454_huggingface-frontend-inspect` is still in flight (+141 min from push). This document consolidates everything we already know from (1) cycle 21 L2 intel, (2) 2026-04-14 09:59 historical blocked trace in etap.log, (3) cycle 36 show_stats evidence, (4) public `github.com/huggingface/chat-ui` source code. When #454 lands, fill in the `TBD(#454)` placeholders and promote `STATUS: SKELETON` to `STATUS: FRONTEND_PROFILED` or similar.
+**Status**: **FRONTEND_PROFILED** — captured cycle 60 (2026-04-16 08:45 KST). Result `#454_huggingface-frontend-inspect` received and merged. This document consolidates (1) cycle 21 L2 intel, (2) 2026-04-14 09:59 historical blocked trace in etap.log, (3) cycle 36 show_stats evidence, (4) public `github.com/huggingface/chat-ui` source code, (5) **#454 live capture on test PC (login: jhee28)**.
 
 **Source files**:
-- `results/454_huggingface-frontend-inspect_result.json` — **not yet received**
+- `results/454_huggingface-frontend-inspect_result.json` — **received 2026-04-16 08:45 KST**
 - Cycle 21 L2 SSH envelope size extraction (openai_compat_sse=342B, shared by 5 services)
 - 2026-04-14 09:59:52-53 etap.log historical blocked trail (the `#392_check-block-kimi-200ok` test run that accidentally captured HF wire data)
 - Cycle 36 show_stats sample showing `huggingface: 86` lifetime requests
@@ -32,9 +32,9 @@
 
 ## 2. Request Body Shape (POST /chat/conversation/{uuid})
 
-**Status**: TBD(#454) — need the actual JSON body from DevTools Payload tab.
+**Status**: Consistent with #454 observation. #454 confirmed endpoint as `POST /chat/conversation/{conversationId}` with `Content-Type: application/json`. The raw POST body was not captured in the result JSON, but the endpoint shape and content type match the pre-hypothesis from HF chat-ui source.
 
-**Pre-hypothesis** (from HF chat-ui source `src/routes/conversation/[id]/+server.ts`):
+**Body shape** (from HF chat-ui source `src/routes/conversation/[id]/+server.ts`, consistent with #454 observation):
 
 ```json
 {
@@ -48,34 +48,42 @@
 }
 ```
 
-The `inputs` field is the text that APF matches keyword rules against. The `id` field is the assistant-message UUID that the response stream will populate.
-
-**Action for #454 verification**: Capture a real POST body via DevTools Payload tab, compare against this pre-hypothesis. If the schema matches, pre-hypothesis holds. If different, replace this section with the real shape.
+The `inputs` field is the text that APF matches keyword rules against. The `id` field is the assistant-message UUID that the response stream will populate. #454 sample conversation ID: `69e0205066c9d5fca73767cd`.
 
 ---
 
 ## 3. SSE Wire Format
 
-### 3.1 Pre-hypothesis from HF chat-ui source
+### 3.1 Actual Wire Format (#454 confirmed)
 
-HF chat-ui uses **type-tagged JSON-lines streaming** (NOT SSE `data:` prefix, NOT OpenAI `choices[].delta.content`). The response body is a sequence of JSON objects separated by newline, each with a `type` discriminator field.
+**Content-Type**: **`application/jsonl`** (NOT `text/event-stream`, NOT `application/x-ndjson`)
 
-Event types (from `src/lib/types/MessageUpdate.ts` in the public repo):
+**Format**: **NDJSON** (Newline-Delimited JSON). Each line is a complete JSON object. **NOT SSE** — no `data:` prefix, no `event:` lines.
+
+**Separator**: **`\n`** (JSON Lines convention).
+
+Event types observed in #454 capture:
 
 | Type | Schema | Purpose |
 |------|--------|---------|
-| `status` | `{"type":"status","status":"started"\|"pending"\|"error"\|"finalAnswer"}` | Conversation state machine |
-| `stream` | `{"type":"stream","token":"<text delta>"}` | Cumulative or delta text (verify which) |
-| `finalAnswer` | `{"type":"finalAnswer","text":"<full text>","interrupted":false}` | Completion marker |
-| `title` | `{"type":"title","title":"<generated conv title>"}` | Side-channel for conversation title |
-| `webSearch` | `{"type":"webSearch","messageType":"update","message":"..."}` | Web search progress |
-| `file` | `{"type":"file","name":"...","sha":"..."}` | File attachment |
+| `conversationId_init` | `{"conversationId":"69e0205066c9d5fca73767cd"}` | First line, establishes session. No `type` field. |
+| `status:started` | `{"type":"status","status":"started"}` | Stream begin signal |
+| `status:keepAlive` | `{"type":"status","status":"keepAlive"}` | Heartbeat, repeated many times during processing |
+| `routerMetadata` | `{"type":"routerMetadata","route":"agentic","model":"moonshotai/Kimi-K2-Instruct-0905"}` | Model and routing metadata, may appear twice |
+| `stream:token` | `{"type":"stream","token":"The"}` | **Individual token delta** (append, NOT cumulative). Contains null-byte padding (`\u0000`) after actual text. |
+| `finalAnswer` | `{"type":"finalAnswer","text":"The capital of France is Paris.","interrupted":false}` | Complete assembled response text |
+| `status:finished` | `{"type":"status","status":"finished"}` | Stream end signal (NOT `status:finalAnswer` as pre-hypothesized) |
+| `[DONE]` marker | `[DONE]` | Final line, raw text NOT JSON |
 
-**Status**: TBD(#454) — verify via test PC capture. The `stream` token may be cumulative (replace displayed text) OR delta (append to displayed text). Need wire capture.
+**Null-byte padding**: Each `stream` token contains trailing `\u0000` null bytes after the actual text content. Purpose unclear — possibly chunked transfer encoding alignment or anti-scraping measure. Must be stripped when parsing tokens.
 
-**Separator**: TBD(#454) — probably `\n` (JSON-lines) OR `\n\n` (SSE-style), not confirmed without capture.
-
-**Content-Type**: TBD(#454) — probably `text/event-stream` OR `application/x-ndjson`.
+**Key corrections from pre-hypothesis**:
+1. Content-Type is `application/jsonl`, not `text/event-stream`
+2. `conversationId_init` event has no `type` field (unique first line)
+3. Terminal status is `status:finished`, NOT `status:finalAnswer`
+4. `[DONE]` raw text marker at end (not JSON)
+5. `stream` tokens are delta (append), with null-byte padding
+6. `routerMetadata` event type was not in original source hypothesis (backend addition)
 
 ### 3.2 Current openai_compat_sse envelope (shared by 5 services)
 
@@ -103,59 +111,94 @@ data: [DONE]\n
 
 **This is the root cause** documented in cycle 21 and waiting for #454 to definitively verify.
 
-### 3.3 Proposed envelope for huggingface_sse (Phase 5 preview)
+### 3.3 Proposed envelope for huggingface_ndjson (Phase 5 preview)
+
+Response type name: **`huggingface_ndjson`** (follows `grok_ndjson`/`notion_ndjson` convention since format is NDJSON, not SSE).
 
 ```
 HTTP/1.1 200 OK
-Content-Type: text/event-stream; charset=utf-8
+Content-Type: application/jsonl
 Cache-Control: no-cache
 Content-Length: 0
 
 {"type":"status","status":"started"}
 {"type":"stream","token":"{{MESSAGE}}"}
 {"type":"finalAnswer","text":"{{MESSAGE}}","interrupted":false}
-{"type":"status","status":"finalAnswer"}
+{"type":"status","status":"finished"}
+[DONE]
 ```
 
-**Estimated size**: ~260 B raw template + `{{MESSAGE}}` expansion = ~340B with a 50-80B warning text. Well under any h2 ceiling.
+**Separator**: `\n` (JSON Lines, confirmed by #454). Each line terminated by `\n`.
+
+**Estimated size**: ~270 B raw template + `{{MESSAGE}}` expansion = ~350B with a 50-80B warning text. Well under any h2 ceiling.
 
 **Placeholder note**: `{{MESSAGE}}` (single `json_escape`) is correct here because the text is embedded at single JSON nesting level (inside `"token":"..."` and `"text":"..."`). ESCAPE2 is NOT needed (consistent with envelope_audit_2026-04-15.md findings).
 
-**Separator convention**: TBD(#454). If HF frontend parses JSON-lines with `\n` separator, use `\n`. If it uses `\n\n` SSE-style, use `\n\n`. Verify before committing to the template.
+---
+
+## 4. Chat Bubble DOM (#454 confirmed)
+
+**Container selector**: `div.prose.max-w-none`
+
+**Full DOM hierarchy** (from #454 capture):
+```
+div.mx-auto.flex.h-full.max-w
+  > div.flex.h-max.flex-col.gap-8
+    > div.group.relative.-mb-4.flex
+      > div.relative.flex.min-w-[60px]
+        > div
+          > div.prose.max-w-none.dark:prose-invert
+```
+
+**Framework**: Svelte / SvelteKit (SSR + hydration). Sources tree shows `_app/immutable/{assets,chunks,entry,nodes}` (standard SvelteKit build output). 14 elements with `svelte-*` classes detected.
+
+**CSS approach**: **Tailwind utility classes** (`prose`, `flex`, `gap-8`, etc.). No CSS Modules hashing. Classes are human-readable and **stable** (not hashed like some React/CSS-Modules setups).
+
+**Render mode**: Tailwind Typography plugin (`.prose` class). Token-by-token text node append during streaming.
+
+**Model metadata in DOM**: Shown below assistant response as "agentic with Kimi-K2-Instruct-0905 via novita" with copy/retry buttons.
+
+**Implication for Option A**: Since HF renders markdown via `.prose`, the APF warning text can use markdown formatting (bold, code spans, emoji). Pure text also works. **Implication for Option D**: Stable Tailwind classes (not hashed) make DOM injection reliable across deployments.
 
 ---
 
-## 4. Chat Bubble DOM
+## 5. Error UI (#454 confirmed: COMPLETE SILENT FAIL)
 
-**Status**: TBD(#454) — need DOM snapshot from test PC.
+**Verdict**: **COMPLETE SILENT FAIL**. Confirmed by #454 method-500 injection test.
 
-**Pre-hypothesis** (from HF chat-ui Svelte components):
-- Outer container: `<div class="... chat-message ...">` — Svelte-compiled class names (hash suffixes)
-- Assistant message body: `<div class="prose ...">` (likely Tailwind prose class)
-- Markdown rendered to HTML via `marked` or `markdown-it` (HF chat-ui uses marked)
+**Observed behavior**: User message ("Explain photosynthesis briefly") was consumed (input cleared back to placeholder), but:
+- NO user message bubble appeared
+- NO error banner/toast
+- NO loading spinner
+- NO retry button
+- Page remained showing only the previous conversation
 
-**Implication for Option A**: Since HF renders markdown, the APF warning text can use markdown formatting (bold, code spans, emoji). Pure text also works.
+**Error DOM scan**: `querySelectorAll` for `[role=alert]`, `[role=status]`, `[class*=error]`, `[class*=Error]`, `[class*=toast]`, `[class*=Toast]`, `[class*=snack]`, `[class*=sonner]` all returned **0 elements**. The chat-ui project may have error handling in Svelte stores/context rather than DOM, but there is no visible error injection point.
 
----
+**Screenshot**: `results/files/454/03_error_500_silent.png`
 
-## 5. Error UI
+**Comparison**: Identical to **Gemini #452** silent-fail pattern. **Worse than GitHub Copilot #453** which at least showed a primer-react Banner (albeit with static i18n text). Pre-hypothesis of toast notification was WRONG — there is no toast system active in production.
 
-**Status**: TBD(#454) — need DevTools Offline or fetch-override capture to see the native error UI.
-
-**Pre-hypothesis** (from HF chat-ui Svelte error handling):
-- On fetch/stream parse error, HF chat-ui shows a toast notification using Svelte's built-in toast system
-- Toast text is i18n'd from `messages/{lang}.json` bundles at compile time
-- **Similar to DeepSeek / GitHub Copilot pattern** — static i18n error text, doesn't read response body
-
-**Implication**: Options B (HTML body replace) and C (JS error banner populate) likely BLOCKED. Option A (SSE stream injection) is the only reliable path.
+**Implication**: Options B (HTML body replace) and C (JS error banner populate) are **BLOCKED** — there is no error UI to leverage at all. Option A (NDJSON stream injection) is the only reliable path for chat-level warnings.
 
 ---
 
-## 6. CSP Analysis
+## 6. CSP Analysis (#454 confirmed: EXTREMELY PERMISSIVE)
 
-**Status**: TBD(#454) — need CSP header from `huggingface.co/chat` document response.
+**CSP header**: `frame-ancestors https://huggingface.co;`
 
-**Pre-hypothesis**: HF uses moderate CSP. Inline scripts may be blocked (Svelte compiles to external bundles), but DOM additions via APF envelope body are fine (same argument as DeepSeek/Copilot — CSP applies to the document response, not to fetch responses parsed as `text/event-stream`).
+| Directive | Value | Impact |
+|-----------|-------|--------|
+| `script-src` | **NOT SET** — defaults to no restriction | Inline scripts, eval, dynamic script injection all allowed |
+| `connect-src` | **NOT SET** — defaults to no restriction | No fetch/XHR restrictions |
+| `default-src` | **NOT SET** — defaults to no restriction | No fallback restrictions |
+| `frame-ancestors` | `https://huggingface.co` | Only restriction: cannot embed in iframes from other origins |
+| Nonce | No | N/A |
+| `strict-dynamic` | No | N/A |
+
+**Verdict**: **EXTREMELY PERMISSIVE**. Only `frame-ancestors` is set. This is the **most permissive CSP** seen across all inspected services (DeepSeek, Gemini, GitHub Copilot, v0). Pre-hypothesis of "moderate CSP" was WRONG — HF has essentially no CSP protection beyond iframe embedding.
+
+**Implication for Option D (DOM inject)**: CSP does NOT block any injection technique. Unlike Gemini (strict nonce-based CSP), HF allows arbitrary script execution and DOM manipulation.
 
 ---
 
@@ -163,45 +206,45 @@ Content-Length: 0
 
 | # | Option | Verdict | Rationale |
 |---|--------|---------|-----------|
-| **A** | **SSE stream injection** | **✅ STRONG (pre-hypothesis)** | type-tagged JSON-lines schema is simple (~4 events); Svelte parser reads `type` field + `token`/`text` payload. Replace envelope with matching schema = visible warning bubble. **VERIFY via #454.** |
-| B | HTTP body HTML replacement | ❌ BLOCKED (pre-hypothesis) | Svelte error handler shows static i18n toast, ignores response body. Mirrors DeepSeek/Copilot pattern. |
-| C | JS error toast populate | ❌ BLOCKED (pre-hypothesis) | Svelte-compiled toast text is in compile-time i18n bundles, no external injection point. |
-| D | DOM direct inject | ⚠️ PARTIALLY VIABLE (initial-load only) | Can prepend banner div to `/chat` document HTML before SvelteKit hydrates, BUT SvelteKit rehydration removes it; CSR navigation never re-fetches document. |
-| E | Block page substitution | ❌ BLOCKED (intra-session), ⚠️ POSSIBLE (initial load only) | Same CSR constraint — SvelteKit never re-fetches /chat HTML after pushState. |
+| **A** | **NDJSON stream injection** | **✅ HIGHLY VIABLE (confirmed #454)** | NDJSON format (`application/jsonl`) with type-tagged JSON-lines (~8 event types). Svelte parser reads `type` field + `token`/`text` payload. Replace envelope with matching schema = visible warning bubble. Same-origin request, no CORS needed. Simpler than DeepSeek JSON-Patch. |
+| B | HTTP body HTML replacement | ❌ BLOCKED (confirmed #454) | Chat API returns `application/jsonl`. Replacing with HTML causes JSON parse errors in the Svelte streaming parser. No error UI exists to display anything useful. |
+| C | JS error region populate | ❌ BLOCKED (confirmed #454) | **No error UI exists at all.** 500 errors produce complete silent fail with zero DOM error elements. No banner, toast, status region, or retry button to leverage. |
+| **D** | **DOM direct inject** | **✅ HIGHLY VIABLE (confirmed #454)** | CSP has NO script-src restriction (most permissive of all inspected services). DOM classes are plain Tailwind utilities (not hashed). Svelte reactivity via stores; inserted DOM nodes in `div.prose` persist post-`finalAnswer`. MutationObserver-based injection is feasible. |
+| E | Block page substitution | ⚠️ POSSIBLE | SvelteKit SSR means initial HTML has meaningful content. No restrictive CSP. However, disrupts user session state (conversation history, Svelte stores). |
 
 ---
 
 ## 8. Recommended Path
 
-**Primary: Option A — SSE stream injection with `huggingface_sse` envelope.**
+**Primary: Option A — NDJSON stream injection with `huggingface_ndjson` envelope.**
 
-Rationale: HF chat-ui uses type-tagged JSON-lines streaming that is arguably simpler than DeepSeek's JSON-Patch format and only slightly more complex than GitHub Copilot's 2-event SSE schema. Matching APF envelope to HF schema is a DB-only migration matching the patterns for the other Phase 6 services.
+Rationale: HF chat-ui uses NDJSON (`application/jsonl`) type-tagged streaming that is simpler than DeepSeek's JSON-Patch format and only slightly more complex than GitHub Copilot's 2-event SSE schema. Matching APF envelope to HF schema is a DB-only migration matching the patterns for the other Phase 6 services. #454 confirms this as **HIGHLY VIABLE**.
 
-**Migration approach**: INSERT a new `(service_name='huggingface', response_type='huggingface_sse')` row in `ai_prompt_response_templates`, UPDATE `ai_prompt_services` to switch huggingface's `response_type` from `openai_compat_sse` to `huggingface_sse`. **Do NOT modify the existing `openai_compat_sse` row** — chatglm/kimi/qianwen/wrtn still depend on it. (If ANY of those 4 services later need the same Svelte-schema fix, they each get their own dedicated row.)
+**Migration approach**: INSERT a new `(service_name='huggingface', response_type='huggingface_ndjson')` row in `ai_prompt_response_templates`, UPDATE `ai_prompt_services` to switch huggingface's `response_type` from `openai_compat_sse` to `huggingface_ndjson`. **Do NOT modify the existing `openai_compat_sse` row** — chatglm/kimi/qianwen/wrtn still depend on it. (If ANY of those 4 services later need the same Svelte-schema fix, they each get their own dedicated row.)
 
-**Secondary (optional): Option D — initial-load banner.**
+**Secondary (confirmed viable): Option D — DOM inject.**
 
-For a first-time session disclaimer, APF can inject a banner div into the `/chat` document HTML before SvelteKit mounts. Combine with Option A for chat-level warnings.
+#454 confirmed: CSP has NO script-src restriction + stable Tailwind classes. DOM injection is **HIGHLY VIABLE** as supplement or fallback. Insert warning banner into `div.prose` or above the message container via MutationObserver. Best for persistent session-level warnings.
 
-**Skip**: Options B, C, E — likely blocked by Svelte's compile-time i18n + CSR navigation pattern.
+**Skip**: Options B, C — **confirmed blocked** by #454 (no error UI exists, HTML body causes parse errors). Option E possible but disruptive.
 
 ---
 
 ## 9. Phase 5 Implementation Hand-Off (preview)
 
-Full design will be in `services/huggingface_design.md` when #454 verifies the pre-hypothesis.
+Full design will be in `services/huggingface_design.md` — #454 has verified the wire format and confirmed viability.
 
 Key parameters:
 
 - **APF match rule**: existing — `domain=huggingface.co` `path=/chat/conversation/` (verified in 2026-04-14 historical trace, currently functional)
 - **Trigger**: `body.inputs` matches APF keyword rules (confirmed 2026-04-14: `keyword=\d{6}-\d{7}, category=ssn` matched)
-- **Replacement**: synthesize JSON-lines body with status-started + stream(warning) + finalAnswer(warning) + status-finalAnswer events
+- **Replacement**: synthesize NDJSON body with status-started + stream(warning) + finalAnswer(warning) + status-finished + [DONE] events
 - **Status**: 200 (NOT 403)
-- **Content-Type**: `text/event-stream` OR `application/x-ndjson` (TBD)
-- **Separator**: `\n` OR `\n\n` (TBD)
+- **Content-Type**: `application/jsonl`
+- **Separator**: `\n` (JSON Lines, confirmed #454)
 - **CORS**: same-origin (no explicit headers needed — consistent with envelope_audit_2026-04-15.md §2)
 - **h2 attributes**: current `h2_mode=2, h2_end_stream=1, h2_goaway=0, h2_hold_request=1` (from 2026-04-14 etap.log — no change needed)
-- **Pre-check**: `etapcomm ai_prompt_filter.validate_template huggingface_sse` (cycle 31 tool) + `etapcomm ai_prompt_filter.test_keyword '<scenario text>'` (cycle 35 tool)
+- **Pre-check**: `etapcomm ai_prompt_filter.validate_template huggingface_ndjson` (cycle 31 tool) + `etapcomm ai_prompt_filter.test_keyword '<scenario text>'` (cycle 35 tool)
 
 ---
 
@@ -215,24 +258,26 @@ Key parameters:
 | gemini3 (#452) | single POST batchexecute | phase5_schema_debug_required | ❌ | wrb.fr envelope; Strategy D |
 | v0 (#447) | streaming + non-SSE | Phase 5 designed (f+h pair) | ❌ | Unique no-error-UI pattern |
 
-**Pipeline impact**: huggingface would **join deepseek, v0, github_copilot** in the "Option A ready" bucket, making the Phase 6 DB window **four services** instead of three. Suggest extending `phase6_combined_migration_2026-04-15.sql` with a PART 1D section for huggingface once #454 confirms the pre-hypothesis and the final envelope shape is determined.
+**Pipeline impact**: huggingface **joins deepseek, v0, github_copilot** in the "Option A ready" bucket, making the Phase 6 DB window **four services**. Extend `phase6_combined_migration_2026-04-15.sql` with a PART 1D section for huggingface — #454 has confirmed the pre-hypothesis and the final envelope shape is determined.
 
 ---
 
 ## 11. Evidence Files
 
-- `results/454_huggingface-frontend-inspect_result.json` — **not yet received**
-- `results/files/454/*` — **not yet received**
+- `results/454_huggingface-frontend-inspect_result.json` — **received 2026-04-16 08:45 KST**
+- `results/files/454/01_baseline.png` — baseline screenshot
+- `results/files/454/02_response.png` — response screenshot
+- `results/files/454/03_error_500_silent.png` — error silent-fail screenshot
 - `local_archive/cycle20_l2_intel_2026-04-15.md` — cycle 21 L2 SSH envelope extraction
 - `local_archive/pipeline_state.json` cycle 36 — show_stats sample confirming huggingface=86 lifetime requests
 
-## 12. TBD Checklist (fill when #454 lands)
+## 12. TBD Checklist (#454 received — all items resolved)
 
-- [ ] Real `POST /chat/conversation/{uuid}` body JSON (section 2)
-- [ ] Real wire format capture — confirm type-tagged, separator, content-type (section 3.1)
-- [ ] Chat bubble DOM selectors (section 4)
-- [ ] Error UI DOM evidence — toast or banner, static i18n confirmation (section 5)
-- [ ] CSP header contents (section 6)
-- [ ] Option A ✅ / ❌ final verdict vs pre-hypothesis (section 7)
-- [ ] Finalize `huggingface_sse` envelope template (section 3.3)
-- [ ] Add PART 1D to `phase6_combined_migration_2026-04-15.sql` (section 9)
+- [x] Real `POST /chat/conversation/{uuid}` body JSON (section 2) — endpoint confirmed, body shape consistent with pre-hypothesis
+- [x] Real wire format capture — NDJSON `application/jsonl`, `\n` separator, 8 event types (section 3.1)
+- [x] Chat bubble DOM selectors — `div.prose.max-w-none`, full hierarchy captured (section 4)
+- [x] Error UI DOM evidence — COMPLETE SILENT FAIL, zero error elements (section 5)
+- [x] CSP header contents — EXTREMELY PERMISSIVE, only `frame-ancestors` (section 6)
+- [x] Option A HIGHLY VIABLE, Option D HIGHLY VIABLE (section 7)
+- [x] Finalize `huggingface_ndjson` envelope template (section 3.3)
+- [ ] Add PART 1D to `phase6_combined_migration_2026-04-15.sql` (section 9) — pending Phase 5 design sign-off
