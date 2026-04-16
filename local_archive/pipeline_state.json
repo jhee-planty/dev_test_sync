@@ -1,24 +1,24 @@
 {
   "current_service": "huggingface",
-  "current_phase": "phase5_designed",
-  "last_request_id": 454,
+  "current_phase": "phase6_testing",
+  "last_request_id": 455,
   "last_result_id": 454,
   "last_checked_result_id": 454,
   "last_delivered_id": 454,
-  "last_poll_at": "2026-04-16T00:00:00+09:00",
-  "consecutive_empty_polls": 34,
+  "last_poll_at": "2026-04-16T09:55:00+09:00",
+  "consecutive_empty_polls": 0,
   "stall_count": 0,
   "poll_stage": 1,
   "poll_stage_count": 0,
-  "updated_at": "2026-04-16T09:14:00+09:00",
-  "pending_requests": [],
+  "updated_at": "2026-04-16T09:55:00+09:00",
+  "pending_requests": [455],
   "service_queue": [
     {
       "service": "v0",
       "priority": 1,
-      "status": "phase6_db_blocked",
-      "task_id": null,
-      "reason": "Phase 5 complete (f+h pair primary). Awaiting DB access to 218.232.120.58 for f+h migration. No active dev work."
+      "status": "phase6_testing",
+      "task_id": 455,
+      "reason": "Phase 6 DB migration applied 09:45 KST. validate_template[v0_html_block_page] VALID 124B. #455 check-warning dispatched 09:52. Awaiting test PC verification."
     },
     {
       "service": "gamma",
@@ -30,9 +30,9 @@
     {
       "service": "deepseek",
       "priority": 3,
-      "status": "phase5_designed",
-      "task_id": null,
-      "reason": "WINNING RESULT #451 (2026-04-15 17:18). Full SSE schema reverse-engineered: named events (ready/update_session/title/close) + unnamed JSON-Patch ops (APPEND/SET/BATCH/SETLASTIDX) with path inheritance. Chat bubble renders off state.response.fragments[-1].content — single patch delivers full warning. Error UI is static i18n (Option C blocked), CSP null (moot for network-layer), Volcengine telemetry noise. Option A (SSE injection) = STRONG GO, Options B/C/D/E all blocked with clear rationale. Phase 4 frontend.md + Phase 5 design.md both written directly from #451 (no sub-agent needed). Phase 6 migration SQL ready: trimmed envelope ~469B under 500B ceiling with ⚠️ 보안 정책 text. Awaiting DB access to 218.232.120.58 for Phase 6 apply, same gate as v0."
+      "status": "phase6_testing",
+      "task_id": 455,
+      "reason": "Phase 6 DB migration applied 09:45 KST. validate_template[deepseek_sse] VALID 454B. #455 check-warning dispatched 09:52. Awaiting test PC verification."
     },
     {
       "service": "gemini3",
@@ -44,16 +44,16 @@
     {
       "service": "github_copilot",
       "priority": 5,
-      "status": "phase5_designed",
-      "task_id": null,
-      "reason": "WINNING RESULT #453 (2026-04-15 18:25) + cycle 30 CORS RESOLUTION. Frontend-inspect captured complete SSE wire format: api.individual.githubcopilot.com/github/chat/threads/{threadId}/messages POST returns text/event-stream with 2-event-type schema (content + complete) — SIMPLER than DeepSeek's JSON-Patch. Phase 4: Option A SSE injection HIGHLY VIABLE; B/C/D/E all blocked or marginal. Error UI is static-i18n primer-react Banner confirmed via fetch override + empty 500 body. Phase 5 design.md complete with full SQL migration: INSERT new copilot_sse envelope template + UPDATE ai_prompt_services + 2x revision_cnt bumps. **Cycle 30 RESOLVED the CORS open question**: Read ai_prompt_filter.cpp render_envelope_template (lines 1249-1328) and generate_block_response (lines 1602-1677), confirmed APF synthesizes response from envelope_template verbatim — no upstream header preservation, no stripping. CORS headers embedded in the new copilot_sse template (Access-Control-Allow-Origin: https://github.com + Allow-Credentials + Expose-Headers) will render into the wire response exactly as written. NO C++ CHANGE REQUIRED. Root cause of existing copilot_403 failure diagnosed: old template lacks CORS headers, cross-origin browser rejects the 403 before React sees it. Phase 6 is now pure DB-only migration matching deepseek+v0 pattern. Body sizing ~710B fits under h2_end_stream=1 ceiling. Joins deepseek + v0 in phase6_db_blocked bucket — three services queue for the same DB window at 218.232.120.58, combined transaction ~25-30min."
+      "status": "phase6_testing",
+      "task_id": 455,
+      "reason": "Phase 6 DB migration applied 09:45 KST. validate_template[copilot_sse] VALID 586B. #455 check-warning dispatched 09:52. Awaiting test PC verification."
     },
     {
       "service": "huggingface",
       "priority": 6,
-      "status": "phase5_designed",
-      "task_id": null,
-      "reason": "WINNING RESULT #454 (2026-04-16 08:45). NDJSON format confirmed (application/jsonl, NOT SSE). 8 event types: conversationId_init, status:started, status:keepAlive, routerMetadata, stream token (with null-byte padding), finalAnswer, status:finished, [DONE]. Silent fail confirmed (zero error UI). CSP extremely permissive (frame-ancestors only). Option A NDJSON injection HIGHLY VIABLE — easiest service of all inspected. Option D DOM inject also HIGHLY VIABLE (no CSP restriction). Phase 4 frontend.md PROFILED + Phase 5 design.md LOCKED. response_type=huggingface_ndjson (follows grok_ndjson/notion_ndjson convention). Content-Type=application/jsonl, separator=\\n. Joins deepseek+v0+github_copilot in phase6_db_blocked — 4 services for combined DB window."
+      "status": "phase6_testing",
+      "task_id": 455,
+      "reason": "Phase 6 DB migration applied 09:45 KST. validate_template[huggingface_ndjson] VALID 282B. #455 check-warning dispatched 09:52. Awaiting test PC verification."
     },
     {
       "service": "baidu",
@@ -86,13 +86,13 @@
     "consecutive_empty_polls": 15
   },
   "work_context": {
-    "cycle": 60,
-    "last_action": "Cycle 60: (1) envelope_audit §22 readiness summary (GO for Phase 6). (2) **#454 huggingface ARRIVED** (08:45 KST, ~15h from push). NDJSON format (application/jsonl, NOT SSE). 8 event types confirmed. Silent fail confirmed. CSP extremely permissive. Option A NDJSON injection HIGHLY VIABLE — easiest service. Promoted huggingface_frontend.md to FRONTEND_PROFILED, huggingface_design.md to DESIGN_LOCKED. response_type renamed huggingface_sse → huggingface_ndjson. All 4 Phase 6 services now READY: deepseek + v0 + github_copilot + huggingface.",
+    "cycle": 61,
+    "last_action": "Cycle 61: Context recovery after compaction. Phase 6 DB migration COMPLETE (09:45 KST). All 4 validate_template VALID. #455 check-warning dispatched (09:52 KST). pipeline_state updated to phase6_testing. Polling for test PC result.",
+    "previous_action_60": "Cycle 60: (1) envelope_audit §22 readiness summary (GO for Phase 6). (2) #454 huggingface ARRIVED. NDJSON format confirmed. All 4 Phase 6 services READY. Phase 6 DB migration executed: deepseek_sse 454B, copilot_sse 586B, huggingface_ndjson 282B, v0_html_block_page 124B. #455 check-warning request created and dispatched.",
     "previous_action_59": "Cycle 59: worktree uncommitted diff inventory, envelope_audit §21. Commit 7bb2fe7.",
     "previous_action_58": "Cycle 58: SQL Part 3 cross-check + chatgpt MESSAGE_RAW latent risk + HF envelope sketch. Commit 0ba8cae.",
-    "previous_action_57": "Cycle 57: sensitive_keyword_matcher full audit, envelope_audit §19. Commit def34b0.",
-    "next_step": "Phase 6 DB migration. All 4 services READY (deepseek + v0 + github_copilot + huggingface). Gate: DB access to 218.232.120.58. Combined migration ~25-35min. Update phase6_combined_migration SQL with PART 1D huggingface_ndjson (use huggingface_design.md §8 SQL). Then await DB access window from user.",
-    "previous_action_56": "Cycle 56: [APF:] log tag inventory + cycle 11 drift re-confirm, envelope_audit §18. Commit 36edb1c."
+    "next_step": "Poll for #455 result. When arrives: evaluate per-service verdicts (WARNING_DISPLAYED → DONE, BLOCK_ONLY/FAILED → diagnose + rollback PART 4). If all 4 pass: promote to DONE (6→10 DONE services). Then Phase 7 prerequisites: (1) commit 574-line worktree diff, (2) 15-tag APF_WARNING_TEST contamination rename.",
+    "previous_action_57": "Cycle 57: sensitive_keyword_matcher full audit, envelope_audit §19. Commit def34b0."
   },
   "classification_summary": {
     "DONE": 6,
