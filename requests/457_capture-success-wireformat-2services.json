@@ -1,0 +1,64 @@
+{
+  "id": "457",
+  "command": "run-scenario",
+  "created_by": "dev",
+  "timestamp": "2026-04-16T13:15:00+09:00",
+  "description": "deepseek + huggingface 성공 응답 wireformat 캡처. blocked 키워드 없는 clean 프롬프트로 실제 SSE/NDJSON 구조를 캡처하여 APF envelope과 byte-level diff 수행 목적.",
+  "services": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "login_required": true,
+      "login_note": "기존 세션 사용",
+      "steps": [
+        "1. Chrome https://chat.deepseek.com 접속, 로그인 확인",
+        "2. DevTools F12 → Network탭 (Preserve log ON, Disable cache ON)",
+        "3. 새 채팅에서 입력: 'Write a hello world function in Python'",
+        "4. 응답 완료까지 대기 (30초~1분)",
+        "5. Network: POST /api/v0/chat/completion 요청 찾기",
+        "6. Response 탭 → 전체 응답 본문 복사 (EventStream 전체)",
+        "7. 복사한 내용을 results/files/457_deepseek_success_response.txt로 저장",
+        "8. 스크린샷: (a) Network탭 해당 요청 Headers, (b) Response 첫 화면",
+        "9. Response Headers 중 Content-Type, Transfer-Encoding 기록"
+      ],
+      "expected_template": "SSE (text/event-stream) with named events: ready, update_session, close 등",
+      "purpose": "APF deepseek_sse envelope과 실제 성공 응답의 구조적 차이를 발견하기 위한 wireformat 캡처",
+      "success_criteria": "EventStream 전체 본문이 파일로 저장됨"
+    },
+    {
+      "service_name": "huggingface",
+      "url": "https://huggingface.co/chat",
+      "login_required": true,
+      "login_note": "jhee28 OAuth 세션",
+      "steps": [
+        "1. Chrome https://huggingface.co/chat 접속, 로그인 확인",
+        "2. DevTools F12 → Network탭 (Preserve log ON, Disable cache ON)",
+        "3. 새 채팅에서 입력: 'Write a hello world function in Python'",
+        "4. 응답 완료까지 대기 (30초~1분)",
+        "5. Network: POST /chat/conversation/* 요청 찾기 (conversation 생성 POST + 응답 스트리밍 POST)",
+        "6. 모든 관련 POST 요청의 Response 탭 → 전체 응답 본문 복사",
+        "7. 복사한 내용을 results/files/457_huggingface_success_response.txt로 저장",
+        "8. 스크린샷: (a) Network탭 해당 요청 Headers, (b) Response 첫 화면",
+        "9. Response Headers 중 Content-Type, Transfer-Encoding 기록",
+        "10. 만약 conversation 생성과 메시지 전송이 별도 POST이면, 둘 다 캡처"
+      ],
+      "expected_template": "NDJSON (application/x-ndjson 또는 text/event-stream) with type-tagged JSON lines",
+      "purpose": "APF huggingface_ndjson envelope과 실제 성공 응답의 구조적 차이를 발견하기 위한 wireformat 캡처",
+      "success_criteria": "전체 NDJSON 응답 본문이 파일로 저장됨"
+    }
+  ],
+  "result_schema": {
+    "per_service": {
+      "login_state": "still_logged_in | session_lost",
+      "response_captured": true,
+      "response_file": "파일 경로",
+      "content_type": "헤더값",
+      "transfer_encoding": "헤더값",
+      "response_size_bytes": 0,
+      "screenshots": [],
+      "notes": ""
+    }
+  },
+  "priority": "HIGH",
+  "notes": "clean 프롬프트 (blocked 키워드 없음). APF가 이 요청을 통과시키므로 실제 서비스 응답을 캡처할 수 있다. 캡처된 wireformat을 APF envelope과 diff하여 3차 수정에 반영."
+}
