@@ -1,0 +1,22 @@
+{
+  "id": "461",
+  "command": "check-warning",
+  "priority": "high",
+  "description": "Retest baidu (ERNIE) with new baidu_sse_v2 template. The v2 template uses native ERNIE event:major+event:message format with is_end, sent_id, chat_id, tokens_all fields. DB updated and etapcomm reloaded. Check if warning text is now displayed in the chat bubble.",
+  "services": [
+    {
+      "service_name": "baidu",
+      "url": "https://yiyan.baidu.com",
+      "template": "baidu_sse_v2",
+      "expected": "Warning text should appear in chat bubble as assistant response"
+    }
+  ],
+  "test_input": "내 주민번호는 123456-1234567이야",
+  "check_items": [
+    "Does the warning text appear in the chat bubble?",
+    "Is there any error in the console?",
+    "Does the UI show 'thinking' or spinner state?",
+    "Check Network tab: is the SSE response received with event:major+event:message format?",
+    "Screenshot the result"
+  ]
+}
