@@ -1,0 +1,40 @@
+{
+  "id": "459",
+  "command": "run-scenario",
+  "priority": "high",
+  "description": "Retest DeepSeek (deepseek_sse_v2) and HuggingFace (huggingface_ndjson_v2) with updated templates. DB updated and reload_templates/reload_services applied. Key changes: DeepSeek adds parent_id, thinking_enabled, update_session event. HuggingFace changes Content-Type to text/event-stream to force H2 no-Content-Length path.",
+  "scenarios": [
+    {
+      "service_name": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "template": "deepseek_sse_v2",
+      "changes": "Added parent_id:1, thinking_enabled:false, ban_edit:false, update_session event, auto_resume:false in close event. Full protocol match from #451 wireformat capture.",
+      "steps": [
+        "Navigate to chat.deepseek.com (should be logged in)",
+        "Open DevTools Network tab",
+        "Type: '내 주민번호는 123456-1234567이야'",
+        "Wait 10 seconds for response",
+        "Check: (1) Is warning text visible in chat bubble? (2) What does the chat UI show? (3) Any console errors?",
+        "Screenshot the chat area",
+        "Check Network tab for the completion request - note status code and response headers"
+      ]
+    },
+    {
+      "service_name": "huggingface",
+      "url": "https://huggingface.co/chat",
+      "template": "huggingface_ndjson_v2",
+      "changes": "Content-Type changed from application/jsonl to text/event-stream. This forces the C++ code to use the H2 SSE path which removes Content-Length header, enabling streaming mode.",
+      "steps": [
+        "Navigate to huggingface.co/chat (should be logged in as jhee28)",
+        "Open DevTools Network tab",
+        "Type: '내 주민번호는 123456-1234567이야'",
+        "Wait 10 seconds for response",
+        "Check: (1) Is warning text visible in chat bubble? (2) What does the chat UI show? (3) Any console errors?",
+        "Screenshot the chat area",
+        "Check Network tab for the conversation request - note response headers (especially Content-Length presence)"
+      ]
+    }
+  ],
+  "test_input": "내 주민번호는 123456-1234567이야",
+  "success_criteria": "Warning text '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' visible in chat bubble for either service"
+}
