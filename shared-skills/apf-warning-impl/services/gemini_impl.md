@@ -64,3 +64,18 @@
 
 **면제 근거:** (1) 원인이 visible_tls_session.cpp의 hold flag 스코프로 특정됨,
 (2) VTS-level hold state 추가라는 구체적 수정안 존재, (3) 시스템 수준 결함으로 다른 서비스에도 영향
+
+### Iteration 5 (2026-04-08) — B14 Result: BLOCKED_ONLY Final
+
+**#255 result:** BLOCKED_NO_WARNING (ERR_CONNECTION_RESET)
+- h2_mode=2, h2_hold_request=1 적용 (VTS-level hold fix 시도)
+- ALL API requests → ERR_CONNECTION_RESET / ERR_CONNECTION_CLOSED
+- Welcome screen 유지 — chat 시작 안 됨
+- 49 console errors, 4 warnings, 9 issues
+
+**VERDICT: BLOCKED_ONLY (Final)**
+- h2_mode=1: cascade failure (H2 멀티플렉싱 파괴)
+- h2_mode=2: ERR_CONNECTION_RESET (모든 API 죽음)
+- B14 (VTS-level hold) 수정으로도 구조적 H2 멀티플렉싱 충돌 미해결
+- 유효 시도: 5회 (B2, B6, B14 + infra_issue 2회 면제)
+- 경고 주입은 구조적으로 불가 — 차단만 유지
