@@ -2,8 +2,10 @@
 -- Phase 6 Addendum — huggingface (2026-04-15, cycle 39)
 -- ============================================================================
 --
--- **STATUS: DRAFT — PENDING #454 HUGGINGFACE FRONTEND INSPECT RESULT**
--- **DO NOT APPLY until the two TBD tokens in PART 1B are resolved by #454.**
+-- **STATUS: SUPERSEDED — merged into phase6_combined_migration_2026-04-15.sql PART 1D (cycle 60)**
+-- **DO NOT APPLY this file separately. Use the combined migration instead.**
+-- Original status was DRAFT pending #454. #454 arrived 2026-04-16 08:45: NDJSON confirmed,
+-- response_type renamed huggingface_sse → huggingface_ndjson, Content-Type = application/jsonl.
 --
 -- This file is an ADDENDUM to phase6_combined_migration_2026-04-15.sql.
 -- When #454 confirms the pre-hypothesis, merge this file into the main

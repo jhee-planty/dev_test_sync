@@ -1,11 +1,12 @@
 -- ============================================================================
--- Phase 6 Combined Migration — deepseek + v0 + github_copilot (2026-04-15)
+-- Phase 6 Combined Migration — deepseek + v0 + github_copilot + huggingface (2026-04-15)
 -- ============================================================================
 --
--- Applies three services' Phase 5 designs in a single DB transaction:
+-- Applies four services' Phase 5 designs in a single DB transaction:
 --   1. deepseek      (SSE envelope replacement, Option A)
 --   2. v0            (f+h pair: v0 html block page + v0_api 303 redirect)
 --   3. github_copilot (SSE envelope INSERT, copilot_403 -> copilot_sse)
+--   4. huggingface   (NDJSON envelope INSERT, openai_compat_sse -> huggingface_ndjson)
 --
 -- Target DB: etap.* on 218.232.120.58 (access via team DB proxy)
 --
@@ -13,6 +14,7 @@
 --   - services/deepseek_design.md     (cycle 18, #451 result)
 --   - services/v0_design.md           (cycle 8, #447/#448 results, f+h pair)
 --   - services/github_copilot_design.md (cycle 26 + cycle 30+31 corrections)
+--   - services/huggingface_design.md    (cycle 38 skeleton + cycle 60 #454 LOCKED)
 --
 -- Pattern references (from functions/ai_prompt_filter/sql/apf_db_driven_migration.sql):
 --   - chatgpt_sse INSERT...ON DUPLICATE KEY UPDATE: lines 91-111
@@ -49,21 +51,23 @@ SELECT service_name, domain_patterns, path_patterns, block_mode,
        h2_mode, h2_end_stream, h2_goaway, h2_hold_request,
        update_date
   FROM etap.ai_prompt_services
- WHERE service_name IN ('deepseek', 'v0', 'v0_api', 'github_copilot')
+ WHERE service_name IN ('deepseek', 'v0', 'v0_api', 'github_copilot', 'huggingface')
  ORDER BY service_name;
 -- Expected baseline:
 --   deepseek:       response_type='deepseek_sse', h2_mode=2, h2_end_stream=2, h2_goaway=0, h2_hold_request=1
 --   v0:             response_type (existing), h2_mode=1, h2_end_stream=2
 --   v0_api:         MAY NOT EXIST YET (INSERT below creates it)
 --   github_copilot: response_type='copilot_403', h2_mode=2, h2_end_stream=1, h2_goaway=0, h2_hold_request=1
+--   huggingface:    response_type='openai_compat_sse', h2_mode=2, h2_end_stream=1, h2_goaway=0, h2_hold_request=1
 
--- 0c. Existing envelope templates — for all three services
+-- 0c. Existing envelope templates — for all four services
 SELECT id, service_name, http_response, response_type,
        LENGTH(envelope_template) AS envelope_bytes, priority, enabled
   FROM etap.ai_prompt_response_templates
- WHERE service_name IN ('deepseek', 'v0', 'v0_api', 'github_copilot')
+ WHERE service_name IN ('deepseek', 'v0', 'v0_api', 'github_copilot', 'huggingface')
     OR response_type IN ('deepseek_sse', 'v0_html_block_page', 'v0_303_redirect',
-                          'copilot_403', 'copilot_sse')
+                          'copilot_403', 'copilot_sse', 'openai_compat_sse',
+                          'huggingface_ndjson')
  ORDER BY service_name, response_type;
 -- Expected baseline (from cycle 20 L2 intel):
 --   deepseek_sse:   ~358B envelope
@@ -77,7 +81,7 @@ SELECT service_name, response_type, envelope_template AS original_template_for_r
 
 
 -- ############################################################################
--- PART 1: Main transaction — apply all three services atomically
+-- PART 1: Main transaction — apply all four services atomically
 -- ############################################################################
 
 BEGIN;
@@ -275,7 +279,50 @@ SELECT 'github_copilot', t.http_response, 'copilot_sse',
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- 1D. Trigger reload signals — single bump per table (covers all 3 services)
+-- 1D. huggingface — NDJSON envelope INSERT (cycle 60, #454 result)
+--     Source: services/huggingface_design.md §Migration SQL
+--     Pattern: DELETE-then-INSERT new row (DO NOT UPDATE shared openai_compat_sse
+--              which still serves chatglm/kimi/qianwen/wrtn)
+--     Format: NDJSON (application/jsonl), NOT SSE
+--     Schema from Phase 4 capture (#454 2026-04-16 08:45):
+--       - 5 minimal events: status:started + stream + finalAnswer + status:finished + [DONE]
+--       - `\n` line separator (JSON Lines convention)
+--     Placeholder: {{MESSAGE}} = single json_escape (single JSON nesting)
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- 1D.1 Service attrs — switch response_type only (h2 params unchanged)
+UPDATE etap.ai_prompt_services
+   SET response_type = 'huggingface_ndjson'
+ WHERE service_name = 'huggingface';
+
+-- 1D.2 Envelope DELETE + INSERT (cycle 45 idempotency fix)
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = 'huggingface'
+   AND response_type = 'huggingface_ndjson';
+INSERT INTO etap.ai_prompt_response_templates
+       (service_name, http_response, response_type, envelope_template,
+        priority, enabled)
+VALUES
+  ('huggingface',
+   '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.',
+   'huggingface_ndjson',
+   CONCAT(
+     'HTTP/1.1 200 OK\r\n',
+     'Content-Type: application/jsonl\r\n',
+     'Cache-Control: no-cache\r\n',
+     'Content-Length: 0\r\n',
+     '\r\n',
+     '{"type":"status","status":"started"}\n',
+     '{"type":"stream","token":"{{MESSAGE}}"}\n',
+     '{"type":"finalAnswer","text":"{{MESSAGE}}","interrupted":false}\n',
+     '{"type":"status","status":"finished"}\n',
+     '[DONE]\n'
+   ),
+   100, 1);
+
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 1E. Trigger reload signals — single bump per table (covers all 4 services)
 --     The etap process polls etap_APF_sync_info every ~5 seconds and reloads
 --     when revision_cnt differs from its last-seen value.
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -304,26 +351,28 @@ SELECT id, table_name, revision_cnt, sync_flag
 -- 2b. Verify service attrs switched
 SELECT service_name, response_type, h2_mode, h2_end_stream, h2_goaway, h2_hold_request
   FROM etap.ai_prompt_services
- WHERE service_name IN ('deepseek', 'v0', 'v0_api', 'github_copilot')
+ WHERE service_name IN ('deepseek', 'v0', 'v0_api', 'github_copilot', 'huggingface')
  ORDER BY service_name;
 -- Expected:
 --   deepseek       response_type='deepseek_sse'       h2_mode=2 end_stream=2 goaway=0 hold=1
 --   v0             response_type='v0_html_block_page' h2_mode=1 end_stream=2 goaway=0 hold=0
 --   v0_api         response_type='v0_303_redirect'    h2_mode=1 end_stream=2 goaway=0 hold=0
 --   github_copilot response_type='copilot_sse'        h2_mode=2 end_stream=1 goaway=0 hold=1
+--   huggingface    response_type='huggingface_ndjson'  h2_mode=2 end_stream=1 goaway=0 hold=1
 
 -- 2c. Verify new envelope sizes
 SELECT service_name, response_type, LENGTH(envelope_template) AS bytes, enabled
   FROM etap.ai_prompt_response_templates
  WHERE response_type IN ('deepseek_sse', 'v0_html_block_page', 'v0_303_redirect',
-                          'copilot_sse', 'copilot_403')
+                          'copilot_sse', 'copilot_403', 'huggingface_ndjson')
  ORDER BY service_name, response_type;
 -- Expected approximately:
---   deepseek       deepseek_sse       ~555B   enabled=1
---   v0             v0_html_block_page ~220B   enabled=1
---   v0_api         v0_303_redirect    ~140B   enabled=1
---   github_copilot copilot_sse        ~700B   enabled=1   (NEW ROW)
---   github_copilot copilot_403        ~346B   enabled=1/0 (ORIGINAL; fallback)
+--   deepseek       deepseek_sse        ~555B   enabled=1
+--   v0             v0_html_block_page  ~220B   enabled=1
+--   v0_api         v0_303_redirect     ~140B   enabled=1
+--   github_copilot copilot_sse         ~700B   enabled=1   (NEW ROW)
+--   github_copilot copilot_403         ~346B   enabled=1/0 (ORIGINAL; fallback)
+--   huggingface    huggingface_ndjson   ~280B   enabled=1   (NEW ROW)
 
 
 -- ############################################################################
@@ -337,6 +386,7 @@ SELECT service_name, response_type, LENGTH(envelope_template) AS bytes, enabled
 --   ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template v0_html_block_page"
 --   ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template v0_303_redirect"
 --   ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template copilot_sse"
+--   ssh -p 12222 solution@218.232.120.58 "etapcomm ai_prompt_filter.validate_template huggingface_ndjson"
 --
 -- Each should return [VALID] with the rendered HTTP response body (first 2048B).
 -- Look for:
@@ -346,6 +396,7 @@ SELECT service_name, response_type, LENGTH(envelope_template) AS bytes, enabled
 --   - __VALIDATION_TEST__ placeholder replaced with literal string (no {{MESSAGE}} leak)
 --   - For copilot_sse: both content and complete SSE events present in body
 --   - For v0_303_redirect: HTTP/1.1 303 status line, Location header present
+--   - For huggingface_ndjson: 5 NDJSON lines (status:started, stream, finalAnswer, status:finished, [DONE])
 --
 -- If ANY returns [INVALID], roll back via PART 4 before proceeding to test PC verification.
 
@@ -401,27 +452,40 @@ DELETE FROM etap.ai_prompt_response_templates
 -- already present per cycle 31 finding), so no template restoration needed.
 COMMIT;
 
--- 4d. Common rollback finishing step — bump revision_cnt so etap reloads
+-- 4d. huggingface rollback — flip back to openai_compat_sse + DELETE huggingface_ndjson row
+BEGIN;
+UPDATE etap.ai_prompt_services
+   SET response_type = 'openai_compat_sse'
+ WHERE service_name = 'huggingface';
+
+DELETE FROM etap.ai_prompt_response_templates
+ WHERE service_name = 'huggingface' AND response_type = 'huggingface_ndjson';
+-- Note: openai_compat_sse shared rows remain untouched (this migration never modified them).
+-- The other 4 tenants (chatglm/kimi/qianwen/wrtn) are unaffected by this rollback.
+COMMIT;
+
+-- 4e. Common rollback finishing step — bump revision_cnt so etap reloads
 UPDATE etap.etap_APF_sync_info
    SET revision_cnt = revision_cnt + 1
  WHERE table_name IN ('ai_prompt_services', 'ai_prompt_response_templates');
 
 
 -- ############################################################################
--- Phase 6 test criteria (all three services) — see individual design docs
+-- Phase 6 test criteria (all four services) — see individual design docs
 -- ############################################################################
 --
--- For each service (deepseek, v0, github_copilot), after the migration applies:
+-- For each service (deepseek, v0, github_copilot, huggingface), after the migration applies:
 --
 -- 1. DB state check (PART 2): revision_cnt bumped by 1 on both tables.
 -- 2. etap reload check: ~5s after COMMIT, grep etap.log for "[APF] reload" or
 --    watch for [APF:envelope] / [APF:h2_params] logs with new response_type values.
--- 3. validate_template (PART 3): [VALID] summary on all four templates.
+-- 3. validate_template (PART 3): [VALID] summary on all five templates.
 -- 4. Test PC check-warning request per service:
 --    a. deepseek       — sensitive prompt to chat.deepseek.com -> warning bubble
 --    b. v0             — sensitive prompt to v0.app reloaded tab -> html block page
 --    c. v0_api         — sensitive prompt to v0.app fresh /chat -> 303 redirect
 --    d. github_copilot — sensitive prompt to github.com/copilot -> warning bubble
+--    e. huggingface    — sensitive prompt to huggingface.co/chat -> warning in chat bubble
 -- 5. Regression sanity: chatgpt + claude + genspark + blackbox + qwen3 + grok
 --    should all remain working (DONE services in the classification).
 --
@@ -430,4 +494,6 @@ UPDATE etap.etap_APF_sync_info
 --
 -- ============================================================================
 -- End of combined Phase 6 migration SQL
+-- 4 services: deepseek + v0 + github_copilot + huggingface
+-- Estimated total: ~25-35 minutes (transaction + reload + validate + per-service check)
 -- ============================================================================
