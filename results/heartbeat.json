@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-16T11:26:00",
+  "timestamp": "2026-04-16T12:06:00",
   "status": "alive",
   "mode": "processing",
   "stage": 1,
-  "cycle": 75,
-  "last_processed_id": 455,
-  "current_task": 456,
+  "cycle": 83,
+  "last_processed_id": 456,
+  "current_task": 457,
   "error_streak": 0,
-  "loop_engine": "dynamic /loop",
-  "note": "Cycle 75: PENDING #456 (check-warning-retest-2services). Processing deepseek→huggingface."
+  "loop_engine": "dynamic /loop + scheduled-task fallback",
+  "note": "Cycle 83: PENDING #457 (capture-success-wireformat-2services). Processing deepseek→huggingface."
 }
