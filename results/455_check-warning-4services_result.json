@@ -1,0 +1,66 @@
+{
+  "id": "455",
+  "command": "run-scenario",
+  "status": "COMPLETED",
+  "timestamp": "2026-04-16T10:25:00+09:00",
+  "summary": "Phase 6 check-warning for 4 services. 1/4 WARNING_DISPLAYED (github_copilot). 2/4 BLOCK_ONLY (huggingface silent-fail, deepseek network-error). 1/4 NEEDS_LOGIN (v0 requires sign-in to submit).",
+
+  "services": {
+    "huggingface": {
+      "login_state": "still_logged_in",
+      "warning_visible": false,
+      "warning_text_exact": null,
+      "response_status": null,
+      "response_content_type": null,
+      "console_errors": [],
+      "dom_state": {"msgs": 0, "bubbles": 0, "errs": 0},
+      "screenshots": ["results/files/455/hf_empty_chat.png"],
+      "verdict": "BLOCK_ONLY",
+      "notes": "Conversation UUID created (69e03561a03b0afe5db68eb5) but COMPLETE SILENT FAIL — no user message bubble, no assistant response, no error UI. Identical to #454 silent-fail pattern. APF blocked the request but NDJSON template was not rendered by SvelteKit chat-ui. Input cleared back to placeholder."
+    },
+    "deepseek": {
+      "login_state": "still_logged_in",
+      "warning_visible": false,
+      "warning_text_exact": "네트워크를 확인하고 다시 시도하세요.",
+      "response_status": null,
+      "response_content_type": null,
+      "console_errors": [],
+      "screenshots": ["results/files/455/deepseek_network_error.png"],
+      "verdict": "BLOCK_ONLY",
+      "notes": "User message bubble displayed correctly. Assistant area shows generic network error: '네트워크를 확인하고 다시 시도하세요.' (Check your network and try again). This is DeepSeek's built-in i18n error message, NOT the APF warning template. The SSE template was not rendered as warning text."
+    },
+    "github_copilot": {
+      "login_state": "still_logged_in",
+      "warning_visible": true,
+      "warning_text_exact": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "response_status": null,
+      "response_content_type": null,
+      "console_errors": [],
+      "screenshots": ["results/files/455/copilot_warning_displayed.png"],
+      "verdict": "WARNING_DISPLAYED",
+      "notes": "SUCCESS! User message 'My SSN is 123456-1234567. Reply in one sentence.' displayed. Assistant bubble shows APF warning: '⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' with thumbs up/down, copy, retry buttons. Warning rendered inline as chat response via SSE template. Model was Claude Haiku 4.5."
+    },
+    "v0": {
+      "login_state": "not_required",
+      "warning_visible": false,
+      "warning_text_exact": null,
+      "response_status": null,
+      "response_content_type": null,
+      "console_errors": [],
+      "screenshots": ["results/files/455/v0_input_not_submitted.png"],
+      "verdict": "NEEDS_LOGIN",
+      "notes": "v0.dev now requires sign-in to submit prompts. Text was pasted into input field but send button did not trigger submission for unauthenticated users. URL redirected from v0.dev to v0.app/chat. The request specified login_required=false but this has changed since the original probe (#447). Cannot test APF warning without authenticated session."
+    }
+  },
+
+  "overall_summary": {
+    "warning_displayed_count": 1,
+    "block_only_count": 2,
+    "needs_login_count": 1,
+    "total_services": 4,
+    "success_rate": "1/4 (25%)",
+    "best_result": "github_copilot — full warning text rendered in chat bubble",
+    "worst_result": "huggingface — complete silent fail, no UI feedback at all",
+    "recommendation": "GitHub Copilot SSE template is working correctly. DeepSeek and HuggingFace templates need different delivery mechanisms — current templates produce silent fail or generic network error instead of rendering warning text. v0 needs re-test with authenticated session."
+  }
+}
