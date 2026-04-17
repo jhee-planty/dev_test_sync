@@ -1,0 +1,27 @@
+﻿{
+  "id": 472,
+  "command": "check-block",
+  "overall_status": "ALL_PASS",
+  "service_name": "page-load-correct-path",
+  "started_at": "2026-04-17T13:55:00+09:00",
+  "completed_at": "2026-04-17T13:57:30+09:00",
+  "duration_seconds": 150,
+  "summary": "올바른 경로(/usr/local/lib/etap/) 배포 후 3개 서비스 모두 경고 페이지 정상 표시! Page Load Intercept 기능 동작 확인. Chrome 브라우저 사용.",
+  "browser": "Chrome",
+  "services": [
+    {"service_name": "wrtn", "url": "https://wrtn.ai", "status": "PASS", "detail": "경고 페이지 표시: 'AI Service Access Restricted' + 'AI 서비스 접속이 보안 정책에 의해 제한되었습니다' + 'OfficeGuard AI Prompt Filter'"},
+    {"service_name": "kimi", "url": "https://kimi.moonshot.cn", "status": "PASS", "detail": "경고 페이지 표시: 'AI Service Access Restricted' + 동일 포맷"},
+    {"service_name": "mistral", "url": "https://chat.mistral.ai", "status": "PASS", "detail": "경고 페이지 표시: 'AI Service Access Restricted' + 동일 포맷. 영문 메시지 약간 다름 (민감정보 차단 문구만 표시)"}
+  ],
+  "diagnosis": {
+    "page_load_intercept": "WORKING",
+    "root_cause_confirmed": "이전 #467~#471 모두 FAIL이었던 원인: .so를 /home/solution/lib/etap/에 배포했으나 etapd는 /usr/local/lib/etap/에서 로드. 올바른 경로에 배포하자 즉시 동작.",
+    "warning_page_content": {
+      "title": "AI Service Access Restricted",
+      "subtitle_ko": "AI 서비스 접속이 보안 정책에 의해 제한되었습니다",
+      "body_ko": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "body_en": "This request has been blocked due to sensitive information detected.",
+      "footer": "OfficeGuard AI Prompt Filter"
+    }
+  }
+}
