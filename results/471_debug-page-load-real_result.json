@@ -1,0 +1,27 @@
+﻿{
+  "id": 471,
+  "command": "check-block",
+  "overall_status": "ALL_FAIL",
+  "service_name": "page-load-intercept-debug-real",
+  "started_at": "2026-04-17T13:49:00+09:00",
+  "completed_at": "2026-04-17T13:51:00+09:00",
+  "duration_seconds": 120,
+  "summary": "디버그 빌드 재배포(13:42 .so 배포+etapd 재시작) 후에도 3개 서비스 모두 경고 페이지 미표시. block_page_load=%u 디버그 문자열이 .so에 포함되었다는 dev 확인에도 불구하고 page load intercept 작동하지 않음.",
+  "services": [
+    {"service_name": "wrtn", "url": "https://wrtn.ai", "status": "FAIL", "detail": "원본 뤼튼 AI 채팅 페이지 정상 로드. 경고 페이지 없음."},
+    {"service_name": "kimi", "url": "https://kimi.moonshot.cn", "status": "FAIL", "detail": "원본 Kimi AI 페이지 정상 로드 (www.kimi.com으로 리다이렉트). 경고 페이지 없음."},
+    {"service_name": "mistral", "url": "https://chat.mistral.ai", "status": "FAIL", "detail": "원본 Le Chat 페이지 정상 로드 (Terms of Service 다이얼로그 표시). 경고 페이지 없음."}
+  ],
+  "diagnosis": {
+    "page_load_intercept": "NOT_WORKING",
+    "debug_build_deployed": true,
+    "debug_string_confirmed": "block_page_load=%u x2 in .so (dev confirmed)",
+    "likely_cause": [
+      "1. block_page_load 코드가 on_http_request 핸들러에서 Accept: text/html 요청을 가로채는 조건이 충족되지 않음",
+      "2. DB에 block_page_load=1 설정이 실제로 로드되지 않았을 가능성",
+      "3. HTTP/2 환경에서 Accept 헤더 파싱 또는 응답 치환 로직에 문제 가능",
+      "4. etapd 로그에서 block_page_load=%u 디버그 출력 확인 필요 — 값이 0이면 DB 미설정, 출력 자체가 없으면 코드 경로 미도달"
+    ],
+    "recommendation": "etapd 로그 확인: grep 'block_page_load' /var/log/etapd*.log — 디버그 출력 유무와 값으로 원인 특정 가능"
+  }
+}
