@@ -1,0 +1,39 @@
+{
+  "id": "475",
+  "command": "check-ws-keyword",
+  "service": "wrtn",
+  "status": "NOT_APPLICABLE",
+  "summary": "wrtn.ai does NOT use WebSocket for chat communication — uses HTTP/2 fetch/SSE instead. WebSocket keyword filter test cannot apply.",
+  "executed_at": "2026-04-17T14:42:00+09:00",
+  "completed_at": "2026-04-17T14:46:00+09:00",
+  "browser": "Chrome",
+  "test_results": [
+    {
+      "step": "send_keyword_message_1",
+      "message_sent": "my password is testpass123",
+      "result": "NOT_BLOCKED",
+      "detail": "Message sent successfully. AI responded with password safety warning in Korean. No WebSocket disconnection or error observed."
+    },
+    {
+      "step": "devtools_socket_filter",
+      "result": "NO_WEBSOCKET",
+      "detail": "DevTools Network tab Socket filter shows 0 WebSocket connections out of 6 total requests. All traffic uses HTTP/2 (h2) protocol."
+    },
+    {
+      "step": "send_keyword_message_2",
+      "message_sent": "my password is secret456",
+      "result": "NOT_BLOCKED",
+      "detail": "Second test message with DevTools open. AI responded normally. Network tab shows 40 requests, all HTTP/2 fetch — zero WebSocket connections."
+    }
+  ],
+  "network_analysis": {
+    "total_requests": 40,
+    "websocket_connections": 0,
+    "protocol": "h2 (HTTP/2)",
+    "transport": "fetch/SSE (not WebSocket)",
+    "api_endpoint": "wrtn.ai/c/{conversation_id}",
+    "notable": "ERR_HTTP2_PROTOCOL_ERROR on /cdn-cgi/challenge (Cloudflare challenge, unrelated to chat)"
+  },
+  "conclusion": "wrtn.ai uses HTTP/2 fetch/SSE for chat API communication, NOT WebSocket. The on_upgraded_data() WebSocket keyword filter cannot intercept this traffic because no WebSocket upgrade occurs. To block sensitive keywords in wrtn.ai chat, the existing HTTP body inspection (APF ai_prompt_filter) path must be used instead.",
+  "recommendation": "WebSocket keyword inspection is not the correct approach for wrtn.ai. The service should be handled by the existing HTTP-based APF pipeline (which already works for wrtn — confirmed in #474 regression test)."
+}

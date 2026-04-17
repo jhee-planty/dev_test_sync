@@ -1,7 +1,7 @@
-﻿{
-  "last_processed": 474,
+{
+  "last_processed": 475,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T14:08:30+09:00",
-  "note": "#474 regression-release-build: ALL_PASS 7/7. Release build regression clean. Page load 5/5 PASS, existing 2/2 PASS."
+  "updated_at": "2026-04-17T14:46:00+09:00",
+  "note": "#475 check-ws-keyword-wrtn: NOT_APPLICABLE. wrtn.ai uses HTTP/2 fetch/SSE, not WebSocket. WS keyword filter cannot apply."
 }
