@@ -2,6 +2,6 @@
   "last_processed": 468,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T13:21:00+09:00",
-  "note": "all requests up to #468 completed. CA+MITM confirmed OK, page-load-intercept needs code deploy."
+  "updated_at": "2026-04-17T14:00:00+09:00",
+  "note": "all requests up to #468 completed. Session recovered, heartbeat re-synced. CA+MITM confirmed OK, page-load-intercept needs code deploy."
 }
