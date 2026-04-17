@@ -259,11 +259,24 @@ impl journal에 "추가 작업" 항목으로 간단히 기록하고 마무리한
   3. 성공 → regression test → Phase 4 → 다음 서비스로
   4. 3회 연속 실패 → 3-Strike Rule 적용 (apf-warning-impl 참조)
   4a. 같은 카테고리 3회 실패 → frontend-inspect 전환 (Same-Category Escalation)
-  4b. 총 5회 실패 → NEEDS_ALTERNATIVE + C++ 코드 수준 검토
+  4b. 카테고리 무관 총 5회 실패 → 필수 서면 정당화 (아래 참조)
+  4c. 정당화 후에도 진전 없으면 → NEEDS_ALTERNATIVE + C++ 코드 수준 검토
   5. 3-Strike 후에도 진전 없으면 → 대안 접근법 전환 (apf-technical-limitations.md 참조)
   6. 대안 방법 모두 소진 → PENDING_INFRA (인프라 확장 대기, 정기 재검토)
   7. NEEDS_USER_SESSION 서비스 → 사용자 협업 세션에서 일괄 처리 (아래 프로토콜 참조)
 ```
+
+**4b. 총 투자 상한 — 서면 정당화 게이트 (Total Failure Gate):**
+카테고리 기반 3-Strike와 별도로, 카테고리 무관 **총 실패 5회**에 도달하면
+다음 시도 전에 반드시 서면 정당화를 작성한다 (하드 블록이 아닌 심의 게이트).
+```
+필수 정당화 항목 (impl journal에 기록):
+  - 지금까지 시도한 접근법 목록 (N회)
+  - 이번에 뭐가 측정 가능하게 달라지는가? (what measurably changed)
+  - 예상 성공 확률과 근거
+  - "달라진 것 없음"이면 → 즉시 NEEDS_ALTERNATIVE로 전환
+```
+근거: DuckDuckGo 17건(29% 성공), qianwen 12건(17% 성공) — 5회 내 성공 못한 서비스는 회복하지 못함 (4/17 회고 데이터).
 
 ### 서비스 우선순위
 

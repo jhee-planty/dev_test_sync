@@ -170,6 +170,12 @@ Recovery로 발견된 요청이 있으면 Step 2로, 없으면 폴링 대기.
 
 요청 JSON의 `command` 필드에 따라 desktop-commander + PowerShell로 작업을 수행한다.
 
+**[MUST] 작업 시작 타임스탬프 기록:**
+명령 실행 전에 `started_at`을 기록한다. 이 값이 result JSON의 `started_at` 필드가 된다.
+```powershell
+$started_at = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+```
+
 **[필수] 매 작업 시작 시 표준 화면 배열:**
 브라우저 작업 전에 반드시 Ensure-ChromeMaximized를 실행한다.
 "최초 1회"가 아니라 "매 작업마다" 실행해야 한다.
@@ -211,21 +217,40 @@ dev 측 판독 정확도를 높이기 위해, 작업 중 화면 상태를 예측
 `scripts/windows/write-result.ps1`로 result JSON 저장 + state.json 갱신을 수행한다.
 스크린샷 등 첨부파일은 `results/files/{id}/`에 저장한다.
 
+**[MUST] 필수 필드 체크리스트 — result JSON에 반드시 포함:**
+```
+  ☐ overall_status   — enum: SUCCESS | FAIL | PARTIAL | BLOCKED | TIMEOUT
+  ☐ status_detail    — 자유 텍스트 (자동화는 overall_status, 사람/회고는 이 필드)
+  ☐ service_name     — 테스트 대상 서비스 ID (요청의 params.service와 동일)
+  ☐ started_at       — ISO 8601, Step 2 진입 시 기록한 $started_at 값
+  ☐ completed_at     — ISO 8601, 이 Step 진입 시점
+  ☐ duration_seconds — completed_at - started_at (초 단위)
+```
+`write-result.ps1`이 위 6개 필드 누락 시 에러를 반환한다.
+필드가 없는 result는 저장하지 않는다 — 불완전한 데이터의 파이프라인 오염 방지.
+
+→ See `references/result-templates.md` § Classification Rules for overall_status 판정 기준.
+
+**결과 파일 네이밍:**
+- 단일 서비스: `results/{id}_result.json` (기존)
+- 배치 요청 서비스별 분리: `results/{id}_{service}_result.json`
+
 ```powershell
 . "$base\scripts\windows\write-result.ps1" -base $base -reqId $reqId -result $result
 ```
 
 `last_processed_id`는 로컬 작성 완료, `last_delivered_id`는 Step 4 push 성공 후 갱신.
 
-→ See `references/result-templates.md` for JSON templates.
+### Step 3.5 — 상세 메트릭 수집 (선택)
 
-### Step 3.5 — 메트릭 수집
+> **핵심 타이밍(started_at, completed_at, duration_seconds, service_name)은
+> Step 3의 result JSON 필수 필드로 이동됨.** 이 단계는 심화 분석용 상세 메트릭만 담당한다.
 
-작업 완료 후 `results/metrics/metrics_{date}.jsonl`에 메트릭을 기록한다.
-**필수 필드:** id, command, service, timestamp, duration_seconds, success, phase_timings
+작업 완료 후 `results/metrics/metrics_{date}.jsonl`에 상세 phase_timings를 기록한다.
 **phase_timings:** browser_focus, prompt_input, wait_response, screenshot, analysis
 
 각 단계는 `[System.Diagnostics.Stopwatch]::StartNew()`로 측정한다.
+이 단계를 건너뛰어도 Step 4 진행을 차단하지 않는다 (best-effort).
 
 → See `references/metrics-collection.md` for PowerShell 코드, 수집 상세, 분석 연동.
 → See `references/phase-definitions.md` for command별 측정 단계 정의.

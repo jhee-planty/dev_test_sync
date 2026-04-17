@@ -11,32 +11,67 @@
 ```json
 {
   "id": "001",
-  "status": "done",
+  "overall_status": "SUCCESS",
+  "status_detail": "차단 및 경고 메시지 정상 표시",
+  "service_name": "chatgpt",
   "result": { },
-  "started": "2026-03-18T10:00:00",
-  "completed": "2026-03-18T10:03:00",
+  "started_at": "2026-03-18T10:00:00",
+  "completed_at": "2026-03-18T10:03:00",
+  "duration_seconds": 180,
   "notes": ""
 }
 ```
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| id | string | yes | 요청 ID와 동일 |
-| status | string | yes | `"done"` 또는 `"error"` |
-| result | object | yes | command별 결과 (아래 참조) |
-| started | ISO 8601 | yes | 작업 시작 시각 |
-| completed | ISO 8601 | yes | 작업 완료 시각 |
+| id | string | MUST | 요청 ID와 동일 |
+| overall_status | string | MUST | enum: `SUCCESS`, `FAIL`, `PARTIAL`, `BLOCKED`, `TIMEOUT` |
+| status_detail | string | MUST | 자유 텍스트 상세 설명 (자동화는 overall_status, 사람/회고는 이 필드) |
+| service_name | string | MUST | 테스트 대상 서비스 ID (요청의 params.service와 동일) |
+| result | object | MUST | command별 결과 (아래 참조) |
+| started_at | ISO 8601 | MUST | Step 2 진입 시 기록한 작업 시작 시각 |
+| completed_at | ISO 8601 | MUST | Step 3 진입 시 기록한 완료 시각 |
+| duration_seconds | number | MUST | completed_at - started_at (초) |
 | notes | string | no | 특이사항, 추가 관찰 |
 
 에러 시 추가 필드:
 
 ```json
 {
-  "status": "error",
+  "overall_status": "FAIL",
+  "status_detail": "Chrome 포커스 상실로 SendKeys 입력 실패",
   "error_detail": "Chrome 포커스 상실로 SendKeys 입력 실패",
   "retry_count": 2
 }
 ```
+
+---
+
+## Classification Rules (overall_status 판정 기준)
+
+| 관측 결과 | overall_status | 예시 |
+|-----------|---------------|------|
+| 차단 + 경고 표시 | `SUCCESS` | blocked=true, warning_visible=true |
+| 차단 성공, 경고 미표시 | `BLOCKED` | blocked=true, warning_visible=false |
+| 경고 표시되나 불완전 | `PARTIAL` | warning_visible=true, text_matches=false |
+| 차단 실패 (서비스 정상 동작) | `FAIL` | blocked=false |
+| 로그인 벽으로 테스트 불가 | `FAIL` | login_required=true |
+| 브라우저/네트워크 타임아웃 | `TIMEOUT` | 응답 없음, desktop-commander timeout |
+| 서비스 접속 자체 불가 | `FAIL` | HTTP 5xx, DNS 실패 |
+| 차단 후 무소음 리셋 | `BLOCKED` | silent_reset=true |
+
+**판단이 모호할 때:** `overall_status`는 가장 가까운 값을 선택하고, `status_detail`에 모호한 이유를 상세 기록.
+
+---
+
+## 결과 파일 네이밍 규칙
+
+| 요청 유형 | 결과 파일 패턴 | 예시 |
+|-----------|--------------|------|
+| 단일 서비스 | `{id}_result.json` | `001_result.json` |
+| 배치 (서비스별 분리) | `{id}_{service}_result.json` | `001_chatgpt_result.json` |
+
+배치 요청이 N개 서비스를 테스트하면 N개의 result 파일을 생성한다.
 
 ---
 

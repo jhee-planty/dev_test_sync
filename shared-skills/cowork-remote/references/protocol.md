@@ -267,9 +267,27 @@ Result: `{ "browser": "Chrome 126", "os": "Windows 11", "network": "corporate", 
 | Item | Pattern | Example |
 |------|---------|---------|
 | Request file | `{id}_{command}.json` | `001_check-block.json` |
-| Result file | `{id}_result.json` | `001_result.json` |
+| Result file (단일) | `{id}_result.json` | `001_result.json` |
+| Result file (배치 서비스별) | `{id}_{service}_result.json` | `001_chatgpt_result.json` |
 | Attachment dir | `files/{id}/` | `files/001/` |
 | Archive dir | `local_archive/{date}/` | `local_archive/2026-03-17/` |
+
+**배치 요청 서비스별 결과 분리:**
+배치 요청(여러 서비스를 한 번에 테스트)의 경우, test PC는 서비스별로 별도의 result 파일을 생성한다.
+요청은 하나의 파일로 유지하되, 결과는 서비스 수만큼 fan-out한다.
+배치 요청 시 `params.services` 배열을 MUST로 포함해야 한다.
+
+```json
+{
+  "id": "010",
+  "command": "check-block",
+  "params": {
+    "services": ["chatgpt", "gemini", "claude"],
+    "prompt": "한글날"
+  }
+}
+```
+→ 결과: `010_chatgpt_result.json`, `010_gemini_result.json`, `010_claude_result.json`
 
 ---
 
