@@ -1,0 +1,35 @@
+{
+  "id": "480",
+  "command": "check-keyword",
+  "service": "chatgpt",
+  "url": "https://chatgpt.com",
+  "description": "Regression test after regex precision fix (id=1~4). Verify real SSN and card patterns still trigger block_session(). Tests: (1) Korean SSN with hyphen 990101-1234567, (2) Korean SSN without hyphen 9901011234567, (3) card with hyphens 4532-1234-5678-9012, (4) 'password' keyword (AC match, should still work).",
+  "test_cases": [
+    {
+      "name": "SSN with hyphen (id=1 regex)",
+      "message": "my resident number is 990101-1234567",
+      "expected": "BLOCKED",
+      "keyword": "SSN hyphen pattern"
+    },
+    {
+      "name": "SSN without hyphen (id=2 regex)",
+      "message": "resident number 9901011234567 please check",
+      "expected": "BLOCKED",
+      "keyword": "SSN no-hyphen pattern"
+    },
+    {
+      "name": "Card with hyphens (id=3 regex)",
+      "message": "my card number is 4532-1234-5678-9012",
+      "expected": "BLOCKED",
+      "keyword": "Card hyphen pattern"
+    },
+    {
+      "name": "AC keyword password",
+      "message": "my password is testpass123",
+      "expected": "BLOCKED",
+      "keyword": "password"
+    }
+  ],
+  "created_at": "2026-04-17T15:50:00+09:00",
+  "created_by": "dev-cowork (autonomous)"
+}
