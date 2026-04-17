@@ -1,7 +1,7 @@
 {
-  "last_processed": 479,
+  "last_processed": 480,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T15:39:00+09:00",
-  "note": "#479 frontend-inspect-wrtn: PARTIAL. Framework=Next.js confirmed. Chat requires login — block UI not observable. Refer #476 for block confirmation."
+  "updated_at": "2026-04-17T15:53:00+09:00",
+  "note": "#480 regression-keyword-chatgpt: ALL_PASS 4/4. SSN hyphen, SSN no-hyphen, card hyphen, password — all blocked. Warning shown 2/4."
 }
