@@ -1,6 +1,6 @@
 # Warning Pipeline — Service Status
 
-> Updated: 2026-04-17 (DB 키워드 수정, wrtn 차단 확인, copilot MITM bypass 확인)
+> Updated: 2026-04-17 (Regex FP 수정 id=1~4, wrtn Phase 4 완료, copilot/character 진단)
 > Source of truth: `dev_test_sync/docs/apf_pipeline_report_20260414.md` + 2026-04-17 deploy logs
 > Previous snapshot: 2026-04-14 — now superseded
 
@@ -58,7 +58,7 @@ the tables below and bump the "Updated" date.
 | Hugging Face | huggingface | 스트리밍 중단 | 빈 채팅 | 초기 핸드셰이크 후 스트리밍 중단 |
 | Baidu (ERNIE) | baidu | SSE 주입 | 경고 미표시 | ERNIE UI가 APF SSE 콘텐츠 무시 |
 | Poe | poe | ERR_HTTP2 (GraphQL+SSE) | 사이트 전체 크래시 | gql+receive 과차단 위험 |
-| Wrtn | wrtn | HTTP/2 fetch/SSE | ✅ 차단 확인 (#476) | DB 키워드 수정 후 password/비밀번호 차단 성공. Phase 4(경고 표시) 진행 대상 |
+| Wrtn | wrtn | HTTP/2 fetch/SSE | ✅ 차단 확인 (#476) | DB 키워드 수정 후 차단 성공. Phase 4 완료 (#479). 경고 테스트에 로그인 필요 (NEEDS_USER_SESSION). Regex FP 수정 완료 (id=1~4). |
 
 **Root cause pattern:** 서비스 프론트엔드가 API 응답 본문을 사용자에게 직접 렌더링하지 않고,
 자체 에러 핸들링을 통해 APF 커스텀 메시지를 무시하거나 대체함.
@@ -74,7 +74,7 @@ the tables below and bump the "Updated" date.
 |---------|-----------|----------|------|
 | Copilot (Bing) | copilot | MITM bypass | #477: copilot.microsoft.com 트래픽이 etap MITM을 경유하지 않음. 네트워크 경로 문제 (VT bypass/라우팅) |
 | M365 Copilot | m365_copilot | WebSocket bypass | copilot.microsoft.com → Azure WebPubSub WS (ws_upgrade 확인됨) |
-| Character.AI | character | WebSocket bypass | 익명 세션 WebSocket |
+| Character.AI | character | H2 WebSocket bypass | #478: WS 키워드 미탐지. HTTP POST는 etap 경유 (SSN regex 차단 확인). WS는 H2 CONNECT 방식으로 upgrade 감지 불가 |
 | DuckDuckGo | duckduckgo | Client-side validation | 클라이언트 JS가 응답 action 검증 (Vercel AI SDK) |
 | Kimi | kimi | Protocol mismatch | ConnectRPC (binary) |
 | Notion AI | notion | Protocol mismatch | H2 multi-stream |
@@ -189,3 +189,4 @@ the tables below and bump the "Updated" date.
 - **H2 DATA 프레임 제약 확인 (2026-04-14)**: h2_end_stream=2 서비스는 500B 이하 템플릿 필수
 - **Page Load Intercept 철회 (2026-04-17)**: 설계 의도 위반 (민감정보 검사 없이 페이지 차단). block_page_load=0 전체 복구.
 - **WebSocket 키워드 검사 배포 (2026-04-17)**: on_upgraded_data() 콜백 구현, m365_copilot ws_upgrade 확인. 실서비스 테스트 대기.
+- **Regex False Positive 수정 (2026-04-17)**: DB `ai_prompt_sensitive_keywords` id=1~4 정밀 regex로 교체. id=1,2(SSN): YYMMDD+성별(1-4) 구조 검증. id=3,4(card): BIN 첫자리(3-6)+word boundary. 수정 후 wrtn telemetry FP 해소 확인.
