@@ -1,7 +1,7 @@
 {
-  "last_processed": 468,
+  "last_processed": 469,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T14:00:00+09:00",
-  "note": "all requests up to #468 completed. Session recovered, heartbeat re-synced. CA+MITM confirmed OK, page-load-intercept needs code deploy."
+  "updated_at": "2026-04-17T13:32:00+09:00",
+  "note": "#469 page-load-intercept retest after rebuild: ALL_FAIL. 7/7 services loaded original pages. block_page_load still not working."
 }
