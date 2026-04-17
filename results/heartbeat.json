@@ -1,7 +1,7 @@
 {
-  "last_processed": 467,
+  "last_processed": 468,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T11:57:00+09:00",
-  "note": "all requests up to #467 completed"
+  "updated_at": "2026-04-17T13:21:00+09:00",
+  "note": "all requests up to #468 completed. CA+MITM confirmed OK, page-load-intercept needs code deploy."
 }
