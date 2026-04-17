@@ -1,7 +1,9 @@
 {
-  "last_processed": 480,
-  "status": "polling",
+  "timestamp": "2026-04-17T18:15:00+09:00",
+  "status": "alive",
+  "last_processed": 481,
   "mode": "autonomous",
-  "updated_at": "2026-04-17T15:53:00+09:00",
-  "note": "#480 regression-keyword-chatgpt: ALL_PASS 4/4. SSN hyphen, SSN no-hyphen, card hyphen, password — all blocked. Warning shown 2/4."
+  "stage": "Stage 1 (1min)",
+  "poll_count": 1,
+  "note": "#481 ALL_PASS 6/6. Pushing results. Resuming polling after push."
 }

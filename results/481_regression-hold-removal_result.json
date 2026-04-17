@@ -1,0 +1,84 @@
+{
+  "id": 481,
+  "command": "check-block",
+  "overall_status": "SUCCESS",
+  "status_detail": "ALL_PASS 6/6 — Hold code removal regression test passed. No regression detected. All DONE services display warnings correctly after h2_hold_request/block_page_load C++ code removal build (etap-root-260417).",
+  "started_at": "2026-04-17T17:31:00+09:00",
+  "completed_at": "2026-04-17T18:15:00+09:00",
+  "duration_seconds": 2640,
+  "service_results": [
+    {
+      "service_name": "chatgpt",
+      "url": "https://chatgpt.com",
+      "overall_status": "SUCCESS",
+      "status_detail": "PASS — Standard APF warning displayed after sending prompt.",
+      "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "started_at": "2026-04-17T17:31:00+09:00",
+      "completed_at": "2026-04-17T17:38:00+09:00",
+      "duration_seconds": 420,
+      "notes": "Warning bubble injected into chat. Standard behavior confirmed."
+    },
+    {
+      "service_name": "claude",
+      "url": "https://claude.ai",
+      "overall_status": "SUCCESS",
+      "status_detail": "PASS — Standard APF warning displayed after sending prompt.",
+      "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "started_at": "2026-04-17T17:38:00+09:00",
+      "completed_at": "2026-04-17T17:45:00+09:00",
+      "duration_seconds": 420,
+      "notes": "Warning displayed in chat area. No regression."
+    },    {
+      "service_name": "genspark",
+      "url": "https://www.genspark.ai",
+      "overall_status": "SUCCESS",
+      "status_detail": "PASS — Standard APF warning displayed after sending prompt.",
+      "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "started_at": "2026-04-17T17:45:00+09:00",
+      "completed_at": "2026-04-17T17:52:00+09:00",
+      "duration_seconds": 420,
+      "notes": "Warning displayed correctly. No regression."
+    },
+    {
+      "service_name": "blackbox",
+      "url": "https://www.blackbox.ai",
+      "overall_status": "SUCCESS",
+      "status_detail": "PASS — Warning in JSON format with Korean and English messages.",
+      "warning_text": "{Korean: '⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.', English: 'Warning: ...'}",
+      "started_at": "2026-04-17T17:52:00+09:00",
+      "completed_at": "2026-04-17T17:58:00+09:00",
+      "duration_seconds": 360,
+      "notes": "Blackbox displays warning in JSON format containing both Korean and English. Warning confirmed present."
+    },
+    {
+      "service_name": "qwen3",
+      "url": "https://chat.qwen.ai",
+      "overall_status": "SUCCESS",
+      "status_detail": "PASS — Extended Korean warning with additional guidance displayed.",
+      "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. 개인정보를 입력하지 마세요.",
+      "started_at": "2026-04-17T17:58:00+09:00",
+      "completed_at": "2026-04-17T18:05:00+09:00",
+      "duration_seconds": 420,
+      "notes": "Qwen3 shows extended warning with additional guidance about not entering personal info."
+    },    {
+      "service_name": "grok",
+      "url": "https://grok.com",
+      "overall_status": "SUCCESS",
+      "status_detail": "PASS — Warning displayed. URL redirected to grok.com/?rid=00000000-apf0-warn-0000-000000000002. DevTools showed ERR_CONNECTION_CLOSED and 403 errors.",
+      "warning_text": "⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "started_at": "2026-04-17T18:05:00+09:00",
+      "completed_at": "2026-04-17T18:15:00+09:00",
+      "duration_seconds": 600,
+      "notes": "Grok required DevTools Console injection for ProseMirror contentEditable input. URL changed to grok.com/?rid=00000000-apf0-warn-0000-000000000002. Network tab showed ERR_CONNECTION_CLOSED on multiple requests and 403 Forbidden. 'Grok이 응답을 완료하지 못했습니다' error also shown. Warning confirmed displayed."
+    }
+  ],
+  "test_summary": {
+    "total_services": 6,
+    "passed": 6,
+    "failed": 0,
+    "pass_rate": "100%",
+    "regression_detected": false
+  },
+  "notes": "Hold code removal regression test (etap-root-260417). All 6 DONE services confirmed working after h2_hold_request/block_page_load C++ code removal. DB columns remain but unused — no impact on warning delivery. wrtn Phase 6 and subsequent work can proceed.",
+  "tested_by": "test-pc-worker (autonomous)"
+}
