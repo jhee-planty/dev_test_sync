@@ -1,0 +1,17 @@
+{
+  "id": 470,
+  "command": "check-block",
+  "created_by": "dev",
+  "timestamp": "2026-04-17T16:40:00+09:00",
+  "description": "Page Load Intercept 디버그 빌드 테스트. block_page_load 값 디버그 로그 추가됨. etapd 13:35 재시작.",
+  "parameters": {
+    "services": [
+      {"service_name": "wrtn", "url": "https://wrtn.ai"},
+      {"service_name": "kimi", "url": "https://kimi.moonshot.cn"},
+      {"service_name": "mistral", "url": "https://chat.mistral.ai"}
+    ],
+    "test_method": "3개 서비스만 빠르게 테스트. 각 URL을 브라우저 새 탭에서 열어 경고 페이지 표시 여부 확인.",
+    "success_criteria": "경고 페이지(403 + 'AI Service Access Restricted') 표시 = PASS"
+  },
+  "notes": "디버그 로그 추가: is_page_load 감지 시 service_name, block_page_load, is_ai 값 출력. 3개만 테스트하여 빠르게 진단."
+}
