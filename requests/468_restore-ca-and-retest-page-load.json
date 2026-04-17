@@ -1,0 +1,56 @@
+{
+  "id": 468,
+  "command": "check-block",
+  "created_by": "dev",
+  "timestamp": "2026-04-17T16:20:00+09:00",
+  "description": "CA 인증서 복구 후 Page Load Intercept 재테스트. #467 결과 ALL_FAIL — CA 삭제 상태로 VT MITM 비활성이 원인.",
+  "parameters": {
+    "prerequisite": {
+      "action": "restore_ca",
+      "description": "Plantynet OfficeGuard CA_V3 인증서를 Windows 인증서 저장소(신뢰할 수 있는 루트 인증 기관)에 재설치. certutil -addstore root 또는 certmgr.msc 사용.",
+      "ca_source": "테스트 서버(218.232.120.58)에서 CA 인증서 다운로드 또는 기존 백업에서 복원",
+      "verification": "certutil -store root | findstr Plantynet 으로 설치 확인 후 진행"
+    },
+    "services": [
+      {
+        "service_name": "wrtn",
+        "url": "https://wrtn.ai",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "copilot",
+        "url": "https://copilot.microsoft.com",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "character",
+        "url": "https://character.ai",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "duckduckgo",
+        "url": "https://duckduckgo.com/?q=hello&ia=chat",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "kimi",
+        "url": "https://kimi.moonshot.cn",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "mistral",
+        "url": "https://chat.mistral.ai",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "you",
+        "url": "https://you.com",
+        "expected": "경고 HTML 페이지 (403 + AI Service Access Restricted)"
+      }
+    ],
+    "test_method": "1) CA 인증서 복구, 2) 브라우저 재시작, 3) 각 URL 접속하여 경고 페이지 표시 확인, 4) 스크린샷 촬영",
+    "success_criteria": "경고 페이지(403 + 'AI Service Access Restricted')가 브라우저에 표시되면 PASS",
+    "verification_keywords": ["AI Service Access Restricted", "OfficeGuard", "보안 정책에 의해 제한"]
+  },
+  "notes": "#467 ALL_FAIL 원인: CA 삭제 상태 → VT MITM 비활성. CA 복구가 선행 조건. 코드는 etap 로그(04/10)에서 정상 동작 확인됨."
+}
