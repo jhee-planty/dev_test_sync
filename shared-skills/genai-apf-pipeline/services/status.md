@@ -1,6 +1,6 @@
 # Warning Pipeline — Service Status
 
-> Updated: 2026-04-17 (wrtn 재분류: NEEDS_ALT→BLOCK_ONLY, WS 인프라 배포)
+> Updated: 2026-04-17 (DB 키워드 수정, wrtn 차단 확인, copilot MITM bypass 확인)
 > Source of truth: `dev_test_sync/docs/apf_pipeline_report_20260414.md` + 2026-04-17 deploy logs
 > Previous snapshot: 2026-04-14 — now superseded
 
@@ -58,7 +58,7 @@ the tables below and bump the "Updated" date.
 | Hugging Face | huggingface | 스트리밍 중단 | 빈 채팅 | 초기 핸드셰이크 후 스트리밍 중단 |
 | Baidu (ERNIE) | baidu | SSE 주입 | 경고 미표시 | ERNIE UI가 APF SSE 콘텐츠 무시 |
 | Poe | poe | ERR_HTTP2 (GraphQL+SSE) | 사이트 전체 크래시 | gql+receive 과차단 위험 |
-| Wrtn | wrtn | HTTP/2 fetch/SSE | 키워드 미탐지 | #475: H2 SSE 사용 확인 (WS 아님). POST body keyword 미탐지 원인 조사 필요 |
+| Wrtn | wrtn | HTTP/2 fetch/SSE | ✅ 차단 확인 (#476) | DB 키워드 수정 후 password/비밀번호 차단 성공. Phase 4(경고 표시) 진행 대상 |
 
 **Root cause pattern:** 서비스 프론트엔드가 API 응답 본문을 사용자에게 직접 렌더링하지 않고,
 자체 에러 핸들링을 통해 APF 커스텀 메시지를 무시하거나 대체함.
@@ -72,7 +72,7 @@ the tables below and bump the "Updated" date.
 
 | Service | service_id | Category | 원인 |
 |---------|-----------|----------|------|
-| Copilot (Bing) | copilot | WebSocket bypass | WS upgrade 시 키워드 검사 미수행 |
+| Copilot (Bing) | copilot | MITM bypass | #477: copilot.microsoft.com 트래픽이 etap MITM을 경유하지 않음. 네트워크 경로 문제 (VT bypass/라우팅) |
 | M365 Copilot | m365_copilot | WebSocket bypass | copilot.microsoft.com → Azure WebPubSub WS (ws_upgrade 확인됨) |
 | Character.AI | character | WebSocket bypass | 익명 세션 WebSocket |
 | DuckDuckGo | duckduckgo | Client-side validation | 클라이언트 JS가 응답 action 검증 (Vercel AI SDK) |
