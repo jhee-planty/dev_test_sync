@@ -1,7 +1,7 @@
 {
-  "last_processed": 478,
+  "last_processed": 479,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T15:33:00+09:00",
-  "note": "#478 check-ws-keyword-character: ALL_FAIL 0/2. WS keyword detection not working on character.ai either. Same issue as #477 copilot — systemic WS problem."
+  "updated_at": "2026-04-17T15:39:00+09:00",
+  "note": "#479 frontend-inspect-wrtn: PARTIAL. Framework=Next.js confirmed. Chat requires login — block UI not observable. Refer #476 for block confirmation."
 }
