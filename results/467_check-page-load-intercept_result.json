@@ -1,0 +1,72 @@
+{
+  "id": 467,
+  "command": "check-block",
+  "overall_status": "ALL_FAIL",
+  "service_name": "page-load-intercept-batch",
+  "started_at": "2026-04-17T11:54:00+09:00",
+  "completed_at": "2026-04-17T11:57:00+09:00",
+  "duration_seconds": 180,
+  "summary": "Page Load Intercept 기능 미동작. 7개 서비스 모두 원래 페이지가 정상 로드됨. 경고 HTML 페이지(403 + AI Service Access Restricted) 미표시.",
+  "critical_note": "CA가 현재 삭제된 상태이나, 모든 서비스가 TLS 에러 없이 원래 페이지 로드됨. 이는 VT MITM 자체가 비활성이거나, block_page_load 기능이 배포되지 않았거나, 서비스 등록이 누락된 것을 시사.",
+  "results": [
+    {
+      "service_name": "wrtn",
+      "url": "https://wrtn.ai",
+      "status": "FAIL",
+      "detail": "원래 서비스 페이지 로드됨. 뤼튼 AI 채팅 인터페이스 정상 표시. 경고 페이지 미표시."
+    },
+    {
+      "service_name": "copilot",
+      "url": "https://copilot.microsoft.com",
+      "status": "FAIL",
+      "detail": "원래 서비스 페이지 로드됨. Microsoft Copilot AI 컴패니언 정상 표시. 경고 페이지 미표시."
+    },
+    {
+      "service_name": "character",
+      "url": "https://character.ai",
+      "status": "FAIL",
+      "detail": "원래 서비스 페이지 로드됨. character.ai 맞춤 추천/장면 인터페이스 정상 표시. 경고 페이지 미표시."
+    },
+    {
+      "service_name": "duckduckgo",
+      "url": "https://duckduckgo.com/?q=hello&ia=chat",
+      "status": "FAIL",
+      "detail": "duck.ai/chat으로 리다이렉트 후 원래 AI Chat 인터페이스 정상 표시. 경고 페이지 미표시."
+    },
+    {
+      "service_name": "kimi",
+      "url": "https://kimi.moonshot.cn",
+      "status": "FAIL",
+      "detail": "kimi.com으로 리다이렉트 후 원래 서비스 페이지 로드됨. KIMI K2.5 채팅 인터페이스 정상 표시. 경고 페이지 미표시."
+    },
+    {
+      "service_name": "mistral",
+      "url": "https://chat.mistral.ai",
+      "status": "FAIL",
+      "detail": "chat.mistral.ai/chat으로 리다이렉트 후 Le Chat 인터페이스 정상 표시. 경고 페이지 미표시."
+    },
+    {
+      "service_name": "you",
+      "url": "https://you.com",
+      "status": "FAIL",
+      "detail": "원래 서비스 페이지 로드됨. You.com AI 검색/채팅 인터페이스 정상 표시. 경고 페이지 미표시."
+    }
+  ],
+  "diagnosis": {
+    "ca_status": "DELETED — Plantynet OfficeGuard CA_V3 인증서가 테스트 PC에서 삭제된 상태",
+    "observation": "CA 삭제 상태임에도 TLS 에러 없이 모든 서비스 접속 성공 → VT MITM이 이 서비스들의 트래픽을 인터셉트하지 않는 상태이거나, block_page_load 기능이 아직 테스트 서버에 배포되지 않음",
+    "possible_causes": [
+      "1. block_page_load=1 설정이 테스트 서버의 module.xml 또는 서비스 DB에 미반영",
+      "2. on_http_request/on_http2_request의 Accept: text/html 조건 분기가 미배포",
+      "3. VT MITM이 비활성 상태이거나 해당 도메인들이 bypass 처리됨",
+      "4. CA 삭제로 인해 MITM 자체가 동작 불가 (하지만 이 경우 TLS 에러가 나야 함)"
+    ],
+    "recommendation": "1) 테스트 서버에 block_page_load C++ 코드가 배포되었는지 확인, 2) module.xml에서 해당 서비스들의 block_page_load=1 설정 확인, 3) CA 재설치 후 재테스트 권장"
+  },
+  "test_environment": {
+    "browser": "Chrome",
+    "os": "Windows (AzureAD)",
+    "ca_installed": false,
+    "vt_mitm_active": "unknown — CA 삭제 상태로 확인 불가"
+  }
+}
