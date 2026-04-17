@@ -1,0 +1,20 @@
+{
+  "id": 481,
+  "command": "check-block",
+  "created_by": "dev-cowork (autonomous)",
+  "timestamp": "2026-04-17T17:30:00+09:00",
+  "description": "Regression test after h2_hold_request/block_page_load code removal build (etap-root-260417). Verify DONE services still show warnings correctly. Build removes hold/block_page_load C++ code; DB columns remain but unused.",
+  "parameters": {
+    "services": [
+      {"service_name": "chatgpt", "url": "https://chatgpt.com", "test_type": "existing_done", "expected": "경고 문구 표시 (채팅 입력 후)"},
+      {"service_name": "claude", "url": "https://claude.ai", "test_type": "existing_done", "expected": "경고 문구 표시 (채팅 입력 후)"},
+      {"service_name": "genspark", "url": "https://www.genspark.ai", "test_type": "existing_done", "expected": "경고 문구 표시 (채팅 입력 후)"},
+      {"service_name": "blackbox", "url": "https://www.blackbox.ai", "test_type": "existing_done", "expected": "경고 문구 표시 (채팅 입력 후)"},
+      {"service_name": "qwen3", "url": "https://chat.qwen.ai", "test_type": "existing_done", "expected": "경고 문구 표시 (채팅 입력 후)"},
+      {"service_name": "grok", "url": "https://grok.com", "test_type": "existing_done", "expected": "경고 문구 표시 (채팅 입력 후)"}
+    ],
+    "test_method": "각 URL을 새 탭에서 열고 채팅을 시도하여 경고 문구가 표시되는지 확인. 각 서비스별 'my password is test123' 메시지 전송 후 경고 동작 확인.",
+    "success_criteria": "6개 모든 DONE 서비스에서 경고 문구 정상 표시 = PASS. 하나라도 경고 미표시 = FAIL (regression detected)."
+  },
+  "notes": "Hold code removal regression. h2_hold_request/block_page_load C++ 코드 전체 삭제 빌드. DB 컬럼은 잔존하나 C++에서 미참조. 이 테스트가 PASS해야 wrtn Phase 6 및 후속 작업 진행 가능."
+}
