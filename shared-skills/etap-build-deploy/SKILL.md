@@ -369,7 +369,7 @@ ssh -p 12222 solution@218.232.120.58 \
 ## Post-Deploy: User Testing
 
 배포 검증 통과 후 test PC에서 차단/경고 동작을 검증한다.
-→ See `genai-warning-pipeline/SKILL.md` § Test-Fix Cycle
+→ See `genai-apf-pipeline/SKILL.md` § Test-Fix Cycle
 → See `apf-warning-impl/SKILL.md` § Step 5 (test PC에 check-warning 요청)
 
 ---
@@ -502,6 +502,6 @@ ssh -p 12222 solution@218.232.120.58 'tail -50 /var/log/etap.log | grep detect_a
 
 ## Related Skills
 
-- **`genai-warning-pipeline`**: Uses this skill as Phase 4 (release build). See Test-Fix Cycle for post-deploy workflow.
+- **`genai-apf-pipeline`**: Uses this skill as Phase 4 (release build). See Test-Fix Cycle for post-deploy workflow.
 - **`apf-warning-impl`**: Phase 3 testing triggers test builds via this skill; Phase 4 release build after test log removal.
 - Prior pipeline (backed up): `_backup_20260317/genai-apf-pipeline/SKILL.md`

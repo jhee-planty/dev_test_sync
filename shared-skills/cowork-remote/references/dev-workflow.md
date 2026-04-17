@@ -321,7 +321,7 @@ ssh -p 12222 solution@218.232.120.58 \
 - test PC IP 활동 없음 (5분간) → 사용자에게 "test PC 확인 필요" 알림
 - `block_session` 로그 있음 → 차단까지 성공, git push 단계 문제 가능성
 
-→ See `genai-warning-pipeline/references/etap-log-diagnostics.md` for 전체 진단 명령어.
+→ See `genai-apf-pipeline/references/etap-log-diagnostics.md` for 전체 진단 명령어.
 
 ### 종료 조건
 

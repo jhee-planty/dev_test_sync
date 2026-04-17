@@ -36,6 +36,27 @@ React contenteditable div가 모든 자동화 입력(SendKeys, clipboard, JS inj
 CDP(--remote-debugging-port=9222)를 통한 입력이 대안이나 미검증.
 최후 수단: "수동 입력 필요" 상태로 보고.
 
+## Wrtn
+
+**과차단 (False Positive):** 로그인 요청 body의 `"password"` JSON 키 이름이 AC 키워드에 매칭.
+- 도메인 패턴 `wrtn.ai,*.wrtn.ai`가 인증 서버까지 포함
+- hold 메커니즘이 로그인 body를 붙잡고 키워드 검사 → block_session 처리
+- ai_prompt 로그에서 확인: body가 `{"email":"...","password":"..."}` 형태
+- **대응 필요:** 경로 패턴 정밀화 (인증 엔드포인트 제외) 또는 도메인 분리
+
+**텔레메트리 차단:** trend-api.wrtn.ai 등 분석용 API에서도 키워드 매칭 발생.
+- 2026-04-17 기준 하루 28건 중 24건이 trend-api 등 비 AI 트래픽
+- **대응 필요:** 비 AI 도메인/경로를 검사 대상에서 제외
+
+→ See `references/apf-hold-mechanism.md` for hold 아키텍처 및 과차단 방지 원칙.
+
+## Character.AI
+
+**텔레메트리 과차단 (해소됨):** Amplitude 분석 이벤트(`events.character.ai /2/httpapi`)의
+device_id, session_id 등 숫자 데이터가 구 SSN 정규식 `\d{6}\d{7}`에 매칭.
+- 2026-04-17 정규식 정밀화 (#480) 이후 해소 확인
+- 매칭 패턴 변경: `\d{6}\d{7}` → `\b(YY)(MM)(DD)-(G)(NNNNNN)\b` (생년월일+성별 구조 검증)
+
 ## HuggingFace
 
 **안정성 우려 (Stability Note):** DONE 분류이나 간헐적 렌더링 실패 관측.

@@ -148,3 +148,49 @@ grep -E "http_response[^a-z]*(=|,)[^'\"]*['\"]?(BLOCK|0|NULL|TODO|TBD|PLACEHOLDE
 **과거 사고 (cycle 47 발견):** `phase6_huggingface_addendum_2026-04-15.sql`의 PART 1A가 `http_response='BLOCK'`으로, `phase6_combined_migration_2026-04-15.sql`의 1B.2b가 `http_response=0`으로 작성되어 있었다. huggingface는 기존 row(id=37)가 priority 동점으로 구제되었을 수 있으나 undefined behavior였고, v0_api는 신규 row뿐이라 명백한 bug였다 (현재 envelope에 `{{MESSAGE}}` 자리표시자가 없어 latent 상태). 두 파일 모두 cycle 47에 수정.
 
 상세: `services/envelope_audit_2026-04-15.md` §10.
+
+---
+
+## Lesson 11: Hold 메커니즘 과차단 — 비 AI 트래픽 차단 금지 (2026-04-17)
+
+> **민감정보가 포함된 패킷 이외에는 절대로 패킷 전송을 방해하는 동작이 있으면 안 된다.**
+
+wrtn.ai에서 로그인 요청 body `{"email":"...","password":"..."}` 의 JSON 키 이름
+`password`가 AC 키워드에 매칭되어 로그인 자체가 차단된 사례. hold 메커니즘이 body를
+붙잡고 키워드 검사를 수행하는 과정에서 AI 프롬프트가 아닌 인증 트래픽이 오탐된 것이다.
+
+```
+진단: ai_prompt 로그에서 차단된 request body를 확인
+  → body가 AI 프롬프트가 아닌 로그인/텔레메트리 데이터인 경우 = 과차단
+
+대응:
+  1. 경로 패턴 정밀화 (인증 엔드포인트 제외)
+  2. 도메인 분리 (auth vs api)
+  3. 키워드 매칭 컨텍스트 개선 (인프라 확장)
+```
+
+→ See `references/apf-hold-mechanism.md` for hold 아키텍처 상세.
+
+---
+
+## Lesson 12: 파일 작업 디렉토리 규칙 (2026-04-17)
+
+**모든 파이프라인 산출물은 스킬에 명시된 디렉토리에서 작업한다.**
+
+| 산출물 유형 | 디렉토리 | 비고 |
+|------------|----------|------|
+| 서비스 status/design/analysis | `genai-apf-pipeline/services/` | status.md, {service_id}_design.md 등 |
+| Implementation journal | `apf-warning-impl/services/` | {service_id}_impl.md |
+| SQL migration | `apf-db-driven-service/` + `Officeguard/` (사본) | DB 변경 SQL |
+| C++ 소스 | `functions/ai_prompt_filter/` | .cpp, .h 파일 |
+| Test request/result | `workspace/dev_test_sync/requests/`, `results/` | Git 동기화 |
+| Pipeline report | `workspace/dev_test_sync/docs/` | apf_pipeline_report_*.md |
+| Reference docs | `genai-apf-pipeline/references/` | Phase별 참조 |
+
+**금지 패턴:**
+- `/sessions/*/` 임시 디렉토리에 최종 산출물 저장 (세션 종료 시 소실)
+- 스킬 미지정 경로에 파일 생성 (추적 불가)
+- Officeguard/에만 저장하고 원본 디렉토리 누락 (이중 관리 실패)
+
+**근거:** 세션 간 컨텍스트 유실 시 파일 기반 복구가 유일한 수단이므로,
+정해진 디렉토리에 일관되게 저장해야 Context Recovery가 동작한다.

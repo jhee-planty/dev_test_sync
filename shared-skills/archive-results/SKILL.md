@@ -65,7 +65,7 @@ python3 /Users/jhee/Documents/workspace/claude_cowork/skills/archive-results/arc
 아카이브에 이미 있는 항목과 ID가 겹치지 않도록 네임스페이스로 분리된다.
 
 ### 자율 실행 루프에서 호출
-genai-warning-pipeline의 자율 실행 루프에서 다음 조건 시 자동 호출:
+genai-apf-pipeline의 자율 실행 루프에서 다음 조건 시 자동 호출:
 - results/ 파일이 50건을 넘었을 때
 - 서비스 전환 시 이전 서비스 결과 정리
 - 명시적 "결과 정리" 지시
@@ -158,6 +158,6 @@ lessons/가 추출되었으므로 원본은 더 이상 필요하지 않다.
 
 ## Related Skills
 
-- **genai-warning-pipeline**: 자율 루프에서 이 스킬의 스크립트를 호출
+- **genai-apf-pipeline**: 자율 루프에서 이 스킬의 스크립트를 호출
 - **workflow-retrospective**: archive_metrics.jsonl을 분석 입력으로 사용
 - **cowork-remote**: 테스트 완료 후 결과 정리 트리거

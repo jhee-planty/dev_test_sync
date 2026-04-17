@@ -1,6 +1,6 @@
 # DB Server Access & Test-Fix Diagnosis Reference
 
-`genai-warning-pipeline/SKILL.md`에서 참조하는 DB 접근 정보와 Test-Fix Cycle 진단 트리.
+`genai-apf-pipeline/SKILL.md`에서 참조하는 DB 접근 정보와 Test-Fix Cycle 진단 트리.
 
 ---
 

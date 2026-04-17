@@ -166,7 +166,7 @@ Define the exact HTTP response that Phase 3 will implement:
 - Log points: where to inject `bo_mlog_info` statements for diagnostic verification
 
 → See `references/DESIGN_SUMMARY.md` for 전체 서비스 설계 요약.
-→ See `SKILLS_DIR/apf-warning-impl/references/test-log-templates.md` (외부 스킬) for log point conventions.
+→ See `../apf-warning-impl/references/test-log-templates.md` (외부 스킬) for log point conventions.
 
 ---
 
@@ -346,6 +346,6 @@ After receiving sub agent output, Cowork reviews in two stages:
 
 ## Related Skills
 
-- **`genai-warning-pipeline`**: Master orchestrator — triggers this skill for Phase 2.
+- **`genai-apf-pipeline`**: Master orchestrator — triggers this skill for Phase 2.
 - **`genai-frontend-inspect`**: Phase 1 — produces the input for this skill.
 - **`apf-warning-impl`**: Phase 3 — consumes this skill's output.

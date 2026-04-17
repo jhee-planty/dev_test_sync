@@ -154,7 +154,7 @@ Set-Content -Path "$base\results\heartbeat.json" -Value $heartbeat -Encoding UTF
 
 ### Step 0 — Session Start Recovery + Step 1 — Git Pull + Scan
 
-매 세션 시작 시 `scripts/windows/session-recovery.ps1`을 실행한다.
+매 세션 시작 시 `references/windows-commands.md`을 실행한다.
 state.json 로드 → 미push 결과 재전송 → 미처리 요청 복구 → git pull → 새 요청 스캔을 자동 수행한다.
 
 ```powershell
@@ -164,7 +164,7 @@ state.json 로드 → 미push 결과 재전송 → 미처리 요청 복구 → g
 Recovery로 발견된 요청이 있으면 Step 2로, 없으면 폴링 대기.
 새 요청이 여러 건이면 `priority: "urgent"`를 먼저 처리한다.
 
-→ See `scripts/windows/session-recovery.ps1` for 전체 로직 (state 로드, unpushed 검증, filesystem 스캔).
+→ See `references/windows-commands.md` for 전체 로직 (state 로드, unpushed 검증, filesystem 스캔).
 
 ### Step 2 — 요청 읽기 + 명령 실행
 
@@ -352,5 +352,5 @@ APF 차단/경고 테스트에 사용하는 민감 키워드: **`한글날`**
 ## Related Skills
 
 - **`cowork-remote`** (dev PC): 이 스킬의 상대방. dev가 요청을 생성하고 결과를 읽는다.
-- **`genai-warning-pipeline`** (dev PC): Phase 1, 3에서 이 PC에 작업을 보낸다.
+- **`genai-apf-pipeline`** (dev PC): Phase 1, 3에서 이 PC에 작업을 보낸다.
 - **`desktop-commander`** (MCP): 이 스킬의 핵심 실행 도구. PowerShell 실행, 파일 I/O, 프로세스 관리.

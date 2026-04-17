@@ -1,6 +1,6 @@
 # Test-Fix Cycle — Diagnostic Reference
 
-> Extracted from genai-warning-pipeline SKILL.md (2026-04-07)
+> Extracted from genai-apf-pipeline SKILL.md (2026-04-07)
 > 이 문서는 Phase 3 테스트 실패 시 원인 진단에 사용한다.
 
 ## 진단 트리
@@ -21,7 +21,7 @@ test PC result reports issue → dev Cowork checks etap logs + console errors
   │   → Adjust block response format → rebuild → retest
   ├─ Log shows write failure → infrastructure issue
   │   → Check visible_tls, proxy connection
-  │   → See `../_backup_20260317/apf-test-diagnosis/SKILL.md` for diagnosis patterns
+  │   → See `../genai-apf-pipeline/SKILL.md` for diagnosis patterns
   └─ No log at all → service detection not triggered → check domain/path patterns
 ```
 

@@ -140,7 +140,7 @@ escalation ②③(에러 페이지, JS injection)이 필요하나 APF에 응답 
   ② cowork-remote § 2-1 "폴링 중 다른 동작 금지" 규칙을 **완화**: 코드 수정/빌드는 금지하되,
      다음 서비스 설계, status 갱신, impl journal 정리 등 **분석 작업은 허용**.
   ③ 결과 미도착 시 "다음 서비스로 이동, 결과 도착 시 복귀" 패턴 도입.
-- **대상**: `cowork-remote/SKILL.md` § 2-1, `genai-warning-pipeline/SKILL.md`
+- **대상**: `cowork-remote/SKILL.md` § 2-1, `genai-apf-pipeline/SKILL.md`
 - **기대**: 유휴 시간 30분+ → 0. 폴링 대기를 생산적 시간으로 전환.
 - **우선순위**: CRITICAL (전체 시간의 60%가 유휴)
 
