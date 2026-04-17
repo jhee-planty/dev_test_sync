@@ -1,12 +1,7 @@
 {
-  "timestamp": "2026-04-16T12:06:00",
-  "status": "alive",
-  "mode": "processing",
-  "stage": 1,
-  "cycle": 83,
-  "last_processed_id": 456,
-  "current_task": 457,
-  "error_streak": 0,
-  "loop_engine": "dynamic /loop + scheduled-task fallback",
-  "note": "Cycle 83: PENDING #457 (capture-success-wireformat-2services). Processing deepseek→huggingface."
+  "last_processed": 465,
+  "status": "polling",
+  "mode": "autonomous",
+  "updated_at": "2026-04-17T18:30:00",
+  "note": "all requests up to #465 completed"
 }
