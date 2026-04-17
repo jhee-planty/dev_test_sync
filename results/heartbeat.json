@@ -1,7 +1,7 @@
 ﻿{
-  "last_processed": 473,
+  "last_processed": 474,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T14:02:30+09:00",
-  "note": "#473 page-load-remaining-4: PARTIAL 2/4. character+you PASS, copilot+duckduckgo FAIL. Total 5/7 pass."
+  "updated_at": "2026-04-17T14:08:30+09:00",
+  "note": "#474 regression-release-build: ALL_PASS 7/7. Release build regression clean. Page load 5/5 PASS, existing 2/2 PASS."
 }
