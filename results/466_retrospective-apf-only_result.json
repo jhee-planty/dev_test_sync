@@ -1,0 +1,108 @@
+{
+  "id": 466,
+  "request_id": "466_retrospective-apf-only",
+  "command": "retrospective",
+  "status": "COMPLETED",
+  "executed_by": "test-pc-worker",
+  "timestamp": "2026-04-17T19:15:00+09:00",
+  "analysis_period": "2026-04-06 ~ 2026-04-17",
+  "scope": "APF_ONLY",
+  "excluded_task_ids": [464, 465],
+  "total_tasks_analyzed": 99,
+  "total_duration_minutes": 3462,
+  "avg_task_duration_seconds": 846,
+  "duration_note": "Duration estimated from request-to-result timestamp gaps. 21 tasks had realistic (<30min) execution times avg 846s. Remaining include queue/overnight wait.",
+  "success_rate_percent": 44.4,
+  "status_breakdown": {
+    "COMPLETED": 30,
+    "UNKNOWN": 43,
+    "SUCCESS": 6,
+    "PARTIAL_SUCCESS": 6,
+    "PARTIAL_FAILURE": 3,
+    "SSE_PARSED_UI_ERROR": 2,
+    "TRANSPORT_OK_UI_FAIL": 2,
+    "FAILED_ERR_HTTP2_COMPRESSION_ERROR": 1,
+    "PARTIAL_FAIL": 1,
+    "JSON_DELIVERED_UI_GENERIC_ERROR": 1,
+    "PARTIAL": 2,
+    "OTHER": 2
+  },
+  "service_breakdown": {
+    "duckduckgo": {"total": 17, "success": 5, "fail": 3, "rate_percent": 29},
+    "qianwen": {"total": 12, "success": 2, "fail": 0, "rate_percent": 17},
+    "deepseek": {"total": 12, "success": 6, "fail": 1, "rate_percent": 50},
+    "mistral": {"total": 6, "success": 2, "fail": 3, "rate_percent": 33},
+    "kimi": {"total": 5, "success": 4, "fail": 0, "rate_percent": 80},
+    "perplexity": {"total": 4, "success": 4, "fail": 0, "rate_percent": 100},
+    "baidu": {"total": 3, "success": 1, "fail": 1, "rate_percent": 33},
+    "v0": {"total": 3, "success": 2, "fail": 0, "rate_percent": 67},
+    "gamma": {"total": 2, "success": 2, "fail": 0, "rate_percent": 100},
+    "gemini": {"total": 1, "success": 1, "fail": 0, "rate_percent": 100},
+    "github-copilot": {"total": 1, "success": 1, "fail": 0, "rate_percent": 100},
+    "huggingface": {"total": 1, "success": 1, "fail": 0, "rate_percent": 100},
+    "unknown": {"total": 32, "success": 13, "fail": 2, "rate_percent": 41}
+  },
+  "top5_slowest_tasks": [
+    {"id": 414, "service": "duckduckgo", "status": "UNKNOWN", "duration_seconds": 1800},
+    {"id": 456, "service": "unknown", "status": "COMPLETED", "duration_seconds": 1740},
+    {"id": 457, "service": "unknown", "status": "PARTIAL", "duration_seconds": 1500},
+    {"id": 394, "service": "duckduckgo", "status": "COMPLETED", "duration_seconds": 1200},
+    {"id": 452, "service": "gemini", "status": "COMPLETED", "duration_seconds": 1020}
+  ],
+  "failure_patterns": [
+    {
+      "pattern": "SSE_STREAM_PARSE_FAILURE",
+      "affected_tasks": [410, 411],
+      "services": ["duckduckgo"],
+      "description": "SSE stream parsed but UI showed error. DuckDuckGo uses non-standard SSE format that APF block response disrupts."
+    },
+    {
+      "pattern": "HTTP2_COMPRESSION_ERROR",
+      "affected_tasks": [405],
+      "services": ["duckduckgo"],
+      "description": "HPACK dynamic table corruption when injecting block response into HTTP/2 stream. Fixed in later tasks via HPACK reset approach."
+    },
+    {
+      "pattern": "TRANSPORT_OK_UI_FAIL",
+      "affected_tasks": [408, 461],
+      "services": ["deepseek", "baidu"],
+      "description": "Block response delivered at transport layer but UI did not render warning. Frontend JS framework consumed response but showed generic error instead of warning."
+    },
+    {
+      "pattern": "MISTRAL_PARTIAL_FAILURE",
+      "affected_tasks": [433, 434, 435],
+      "services": ["mistral"],
+      "description": "Mistral SSE format uses custom event types. Block injection partially works but stream termination inconsistent, causing partial rendering."
+    },
+    {
+      "pattern": "JSON_GENERIC_ERROR",
+      "affected_tasks": [406, 412],
+      "services": ["unknown"],
+      "description": "JSON API response blocked but frontend showed generic error page instead of warning message. Block response content-type or structure mismatch."
+    }
+  ],
+  "bottleneck_observations": [
+    "DuckDuckGo has highest task count (17) but lowest success rate (29%) - non-standard SSE and HTTP/2 behavior makes it the hardest service to block cleanly.",
+    "Qianwen has 12 tasks but only 17% classified as success - many results lack clear status fields (UNKNOWN), suggesting result format inconsistency rather than actual failures.",
+    "32 tasks (32%) have 'unknown' service classification - filename conventions were inconsistent for batch/multi-service tasks.",
+    "43 tasks (43%) have UNKNOWN status - result JSON schema varied significantly across sessions, making automated success/fail classification unreliable.",
+    "Top 5 slowest tasks all >15 minutes - DuckDuckGo and multi-service batch tasks dominate, suggesting complex browser automation sequences are the primary time sink.",
+    "No individual task duration tracking in result JSON - only single timestamp recorded, making precise execution time measurement impossible without git commit history analysis."
+  ],
+  "test_pc_experience_notes": [
+    "Desktop Commander read_file returns metadata-only for JSON files - must use PowerShell Get-Content as fallback.",
+    "DPI scaling (125%, 1536x864 logical) causes coordinate mismatches in browser automation - must account for scale factor.",
+    "mcp__windows-mcp__PowerShell runs as non-admin (AzureAD user) - certificate store operations silently fail without error.",
+    "Git operations require .cmd file pattern with ASCII-only text and chcp 65001 for reliable execution.",
+    "CA certificate was deleted during testing (#464-465) - HTTPS tests through VT MITM will fail until reinstalled.",
+    "Browser automation for SSE-streaming services is fragile - page state changes mid-verification causing stale element errors.",
+    "write_file 25-30 line chunk limit requires multi-part writes for any non-trivial result JSON."
+  ],
+  "recommendations": [
+    "Standardize result JSON schema: always include overall_status, started_at, completed_at, duration_seconds fields.",
+    "Add service name as explicit field in both request and result JSON instead of relying on filename parsing.",
+    "Prioritize DuckDuckGo and Mistral warning implementation - highest failure rates indicate block mechanism needs redesign for these services.",
+    "Implement structured error taxonomy in results to enable automated failure classification.",
+    "Consider splitting batch tasks into single-service requests for clearer metrics tracking."
+  ]
+}
