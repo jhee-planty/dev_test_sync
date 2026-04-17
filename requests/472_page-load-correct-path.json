@@ -1,0 +1,17 @@
+{
+  "id": 472,
+  "command": "check-block",
+  "created_by": "dev",
+  "timestamp": "2026-04-17T13:54:00+09:00",
+  "description": "Page Load Intercept 정확한 경로 배포 후 테스트. 이전 배포 경로가 /home/solution/lib/etap/ 이었으나 etapd는 /usr/local/lib/etap/ 에서 로드. 수정하여 재배포+재시작 13:53.",
+  "parameters": {
+    "services": [
+      {"service_name": "wrtn", "url": "https://wrtn.ai"},
+      {"service_name": "kimi", "url": "https://kimi.moonshot.cn"},
+      {"service_name": "mistral", "url": "https://chat.mistral.ai"}
+    ],
+    "test_method": "3개 서비스만 빠르게 테스트. 각 URL을 브라우저 새 탭에서 열어 경고 페이지 표시 여부 확인.",
+    "success_criteria": "경고 페이지(403 + 'AI Service Access Restricted') 표시 = PASS"
+  },
+  "notes": "Root cause: etapd는 /usr/local/lib/etap/에서 .so 로드. 이전 모든 배포(#467~#471)는 /home/solution/lib/etap/에 배포 → 구 바이너리 사용. 이번에 올바른 경로에 배포."
+}
