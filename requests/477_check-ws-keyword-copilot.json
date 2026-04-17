@@ -1,0 +1,35 @@
+{
+  "id": "477",
+  "command": "check-ws-keyword",
+  "priority": "high",
+  "params": {
+    "service": "copilot",
+    "url": "https://copilot.microsoft.com",
+    "test_type": "websocket_keyword_inspection",
+    "instructions": [
+      "1. Open https://copilot.microsoft.com in Chrome",
+      "2. Wait for the chat interface to load",
+      "3. In the chat input box, type exactly:",
+      "   my password is testpass123",
+      "4. Press Enter to send",
+      "5. Observe the result — check for:",
+      "   a. Connection error or WebSocket disconnection",
+      "   b. Any error message in the chat interface",
+      "   c. Whether the AI response comes through or is blocked/interrupted",
+      "6. Take a screenshot of the result",
+      "7. Open DevTools → Network → filter 'WS' to check WebSocket status",
+      "8. Take a screenshot of the WebSocket frames if visible",
+      "9. Try a second message: 비밀번호는 secret456 입니다",
+      "10. Take a screenshot of that result"
+    ],
+    "sensitive_keyword": "password, 비밀번호",
+    "expected_behavior": "WebSocket connection should be terminated by etap after detecting 'password' keyword in the WS frame payload. The user should see a connection error or the AI response should not arrive.",
+    "verification": {
+      "etap_log_keywords": ["APF:ws_upgrade", "APF:ws_data", "APF:ws_blocked"],
+      "check_etap_log": "ssh -p 12222 solution@218.232.120.58 grep 'APF:ws\\|copilot' /var/log/etap.log | tail -30"
+    }
+  },
+  "attachments": [],
+  "created": "2026-04-17T15:02:00+09:00",
+  "notes": "WebSocket 키워드 검사 실서비스 테스트 (copilot). on_upgraded_data() 인프라 배포 완료. DB 키워드 전체 활성화 완료. copilot은 확인된 WebSocket 서비스."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "476",
+  "command": "check-block",
+  "priority": "high",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai",
+    "test_type": "http_body_keyword_detection",
+    "instructions": [
+      "1. Open https://wrtn.ai in Chrome",
+      "2. Wait for the chat interface to appear",
+      "3. In the chat input box, type exactly:",
+      "   my password is testpass123",
+      "4. Press Enter to send",
+      "5. Observe the result:",
+      "   a. If blocked: the AI response should not arrive, or an error/warning should appear",
+      "   b. If NOT blocked: the AI will respond normally",
+      "6. Take a screenshot of the result",
+      "7. If blocked, also take a screenshot of DevTools Network tab showing the blocked request",
+      "8. Try a second message: 비밀번호는 abc123 입니다",
+      "9. Take a screenshot of that result too"
+    ],
+    "sensitive_keyword": "password, 비밀번호",
+    "expected_behavior": "After DB keyword fix (enabled all sensitive keywords), wrtn POST body should be inspected and 'password'/'비밀번호' keywords should trigger block_session(). The AI response should not arrive or a warning should be shown.",
+    "verification": {
+      "etap_log_keywords": ["APF:block", "APF:hold_set", "hold_release", "KEYWORD_CHECK"],
+      "check_etap_log": "ssh -p 12222 solution@218.232.120.58 grep 'wrtn' /var/log/etap.log | tail -30"
+    }
+  },
+  "attachments": [],
+  "created": "2026-04-17T15:02:00+09:00",
+  "notes": "DB 키워드 수정 후 검증. password/비밀번호 키워드가 disabled(empty) → enabled('true')로 변경됨. sync_info revision 증가 + rebuild 확인 (AC=8, REGEX=7). wrtn은 HTTP/2 fetch/SSE 사용 (WS 아님)."
+}
