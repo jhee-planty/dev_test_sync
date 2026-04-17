@@ -1,0 +1,32 @@
+{
+  "id": "475",
+  "command": "check-ws-keyword",
+  "priority": "normal",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai",
+    "test_type": "websocket_keyword_inspection",
+    "instructions": [
+      "1. Open https://wrtn.ai in Chrome",
+      "2. Wait for the page to fully load (chat interface should appear)",
+      "3. In the chat input box, type the following message exactly:",
+      "   my password is testpass123",
+      "4. Press Enter to send the message",
+      "5. Observe what happens — check for:",
+      "   a. Connection error or disconnection",
+      "   b. Any error message in the chat",
+      "   c. Whether the AI response comes through or is blocked",
+      "6. Take a screenshot of the result",
+      "7. Check browser DevTools Network tab for WebSocket frame status"
+    ],
+    "sensitive_keyword": "password",
+    "expected_behavior": "WebSocket connection should be terminated by etap after detecting 'password' keyword in the sent message frame. The user should see a connection error or the response should not arrive.",
+    "verification": {
+      "etap_log_keywords": ["APF:ws_upgrade", "APF:ws_data", "APF:ws_blocked"],
+      "check_etap_log": "ssh -p 12222 solution@218.232.120.58 grep 'APF:ws' /var/log/etap.log | tail -20"
+    }
+  },
+  "attachments": [],
+  "created": "2026-04-17T14:25:00",
+  "notes": "WebSocket 키워드 검사 최초 테스트. on_upgraded_data() 콜백으로 WS 프레임 내 민감 키워드(password) 감지 → block_session() 호출 확인. 빌드 20260417-142356 배포 완료."
+}
