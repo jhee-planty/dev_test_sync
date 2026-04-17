@@ -1,7 +1,7 @@
-﻿{
-  "last_processed": 477,
+{
+  "last_processed": 478,
   "status": "polling",
   "mode": "autonomous",
-  "updated_at": "2026-04-17T15:16:00+09:00",
-  "note": "#477 check-ws-keyword-copilot: ALL_FAIL 0/2. WS keyword detection not working - both password and 비밀번호 passed through WebSocket without blocking."
+  "updated_at": "2026-04-17T15:33:00+09:00",
+  "note": "#478 check-ws-keyword-character: ALL_FAIL 0/2. WS keyword detection not working on character.ai either. Same issue as #477 copilot — systemic WS problem."
 }
