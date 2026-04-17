@@ -1,0 +1,60 @@
+{
+  "id": 467,
+  "command": "check-block",
+  "created_by": "dev",
+  "timestamp": "2026-04-17T16:00:00+09:00",
+  "description": "Page Load Intercept 기능 검증. block_page_load=1로 설정된 9개 NEEDS_ALTERNATIVE 서비스의 페이지 로드 시 경고 HTML 페이지가 표시되는지 확인.",
+  "parameters": {
+    "services": [
+      {
+        "service_name": "wrtn",
+        "url": "https://wrtn.ai",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "copilot",
+        "url": "https://copilot.microsoft.com",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "character",
+        "url": "https://character.ai",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "duckduckgo",
+        "url": "https://duckduckgo.com/?q=hello&ia=chat",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "kimi",
+        "url": "https://kimi.moonshot.cn",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "mistral",
+        "url": "https://chat.mistral.ai",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      },
+      {
+        "service_name": "you",
+        "url": "https://you.com",
+        "expected": "warning_html_page (403 + AI Service Access Restricted)"
+      }
+    ],
+    "excluded_services": [
+      {
+        "service_name": "m365_copilot",
+        "reason": "NEEDS_USER_SESSION — 로그인 필요, 자동 테스트 불가"
+      },
+      {
+        "service_name": "notion",
+        "reason": "NEEDS_USER_SESSION — 로그인 필요, 자동 테스트 불가"
+      }
+    ],
+    "test_method": "각 URL을 브라우저에서 열고, 페이지 로드 시 'AI Service Access Restricted' 또는 'OfficeGuard AI Prompt Filter' 텍스트가 포함된 경고 페이지가 표시되는지 확인. 스크린샷 촬영.",
+    "success_criteria": "경고 페이지(403 Forbidden + 'AI Service Access Restricted' 제목)가 브라우저에 표시되면 PASS. 원래 서비스 페이지가 로드되면 FAIL.",
+    "verification_keywords": ["AI Service Access Restricted", "OfficeGuard", "보안 정책에 의해 제한"]
+  },
+  "notes": "2026-04-17 배포된 Page Load Intercept 기능 최초 검증. C++ on_http_request/on_http2_request에서 Accept: text/html + block_page_load=1 조건 시 경고 페이지 반환."
+}
