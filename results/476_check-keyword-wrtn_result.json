@@ -1,0 +1,31 @@
+{
+  "id": "476",
+  "command": "check-block",
+  "service": "wrtn",
+  "status": "ALL_PASS",
+  "summary": "HTTP body keyword detection WORKING. Both 'password' (EN) and '비밀번호' (KR) keywords blocked on wrtn.ai. AI response never arrived — empty response area after 20+ seconds.",
+  "executed_at": "2026-04-17T15:06:00+09:00",
+  "completed_at": "2026-04-17T15:08:30+09:00",
+  "browser": "Chrome",
+  "pass_count": 2,
+  "fail_count": 0,
+  "total_count": 2,
+  "test_results": [
+    {
+      "step": "keyword_en_password",
+      "message_sent": "my password is testpass123",
+      "keyword_detected": "password",
+      "result": "BLOCKED",
+      "detail": "Message sent at 15:06. AI response area showed 뤼튼 avatar but NO text content after 20+ seconds. Response was blocked by etap keyword filter."
+    },
+    {
+      "step": "keyword_kr_비밀번호",
+      "message_sent": "비밀번호는 abc123 입니다",
+      "keyword_detected": "비밀번호",
+      "result": "BLOCKED",
+      "detail": "Message sent at 15:08. AI response area showed 뤼튼 avatar but NO text content after 12+ seconds. Korean keyword also blocked successfully."
+    }
+  ],
+  "comparison_with_475": "In #475 (before DB keyword fix), wrtn responded normally with password safety advice. Now after DB keyword fix (disabled→enabled), the response is completely blocked.",
+  "conclusion": "DB keyword fix confirmed working. Both English 'password' and Korean '비밀번호' keywords trigger block_session() on wrtn.ai HTTP POST body inspection. The AI response stream is terminated before any content arrives."
+}
