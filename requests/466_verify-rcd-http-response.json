@@ -1,0 +1,34 @@
+{
+  "id": 466,
+  "command": "run-scenario",
+  "priority": "urgent",
+  "created_at": "2026-04-17T10:35:00",
+  "description": "RCD HTTP 응답 주입 검증 — Etap이 주입한 CA help page가 실제로 클라이언트에 도달하는지 확인",
+  "context": "RCD가 HTTP 요청을 인터셉트하고 CA help page를 전송(result=0, success)하지만 Chrome에서 표시되지 않음. PowerShell로 raw HTTP 응답을 직접 확인하여 주입 패킷이 도달하는지 검증.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "httpbin.org HTTP 응답 확인 (PowerShell)",
+      "description": "PowerShell로 http://httpbin.org에 요청하여 실제 수신되는 HTTP 응답 확인. Etap이 주입한 200 OK + HTML인지, httpbin.org 원본 301 redirect인지 구분.",
+      "powershell": "try { $resp = Invoke-WebRequest -Uri 'http://httpbin.org' -UseBasicParsing -TimeoutSec 10 -MaximumRedirection 0; Write-Host \"StatusCode: $($resp.StatusCode)\"; Write-Host \"ContentLength: $($resp.RawContentLength)\"; Write-Host \"Headers:\"; $resp.Headers | Format-Table -AutoSize; Write-Host \"Body (first 500 chars):\"; Write-Host $resp.Content.Substring(0, [Math]::Min(500, $resp.Content.Length)) } catch { Write-Host \"Error: $($_.Exception.Message)\"; if ($_.Exception.Response) { Write-Host \"Response StatusCode: $($_.Exception.Response.StatusCode)\" } }",
+      "expected": "StatusCode: 200 + Body에 'CA' 또는 'install_cert' 포함 → Etap 주입 성공. StatusCode: 301 + Location: https://httpbin.org → 원본 서버 응답 (Etap 차단 실패)"
+    },
+    {
+      "step": 2,
+      "name": "neverssl.com HTTP 응답 확인 (HSTS 없는 사이트)",
+      "description": "HSTS가 없고 HTTPS 리다이렉트도 없는 순수 HTTP 사이트로 테스트.",
+      "powershell": "try { $resp = Invoke-WebRequest -Uri 'http://neverssl.com' -UseBasicParsing -TimeoutSec 10 -MaximumRedirection 0; Write-Host \"StatusCode: $($resp.StatusCode)\"; Write-Host \"ContentLength: $($resp.RawContentLength)\"; Write-Host \"Body (first 500 chars):\"; Write-Host $resp.Content.Substring(0, [Math]::Min(500, $resp.Content.Length)) } catch { Write-Host \"Error: $($_.Exception.Message)\"; if ($_.Exception.Response) { Write-Host \"Response StatusCode: $($_.Exception.Response.StatusCode)\" } }",
+      "expected": "StatusCode: 200 + Body에 'install_cert' 또는 'CA' → Etap 주입 성공"
+    },
+    {
+      "step": 3,
+      "name": "curl로 raw HTTP 확인 (가능한 경우)",
+      "description": "curl이 설치되어 있으면 더 상세한 HTTP 교환 확인.",
+      "powershell": "if (Get-Command curl.exe -ErrorAction SilentlyContinue) { curl.exe -v --max-time 10 http://httpbin.org 2>&1 | Out-String } else { Write-Host 'curl not available' }",
+      "expected": "HTTP 응답 헤더와 본문 raw 출력"
+    }
+  ],
+  "report_format": {
+    "per_step": "step 번호, StatusCode, Content 첫 500자, 판정 (etap_injected / original_server / timeout / error)"
+  }
+}
