@@ -1,0 +1,31 @@
+{
+  "id": 482,
+  "command": "run-scenario",
+  "created_by": "dev-cowork (autonomous)",
+  "timestamp": "2026-04-17T17:35:00+09:00",
+  "description": "wrtn 채팅 API 경로 파악. 로그인 상태에서 채팅을 보내고 DevTools Network에서 실제 프롬프트가 전송되는 POST 요청의 도메인+경로를 캡처한다.",
+  "parameters": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai",
+    "scenario_steps": [
+      "1. wrtn.ai 접속 (이미 로그인 상태 확인)",
+      "2. DevTools 열기 (F12) → Network 탭 → Fetch/XHR 필터",
+      "3. Network 로그 클리어",
+      "4. 채팅 입력창에 'hello test message' 입력 후 전송",
+      "5. Network 탭에서 POST 요청 중 Request Body에 'hello test message'가 포함된 요청 찾기",
+      "6. 해당 요청의 전체 URL (도메인 + 경로) 기록",
+      "7. Response의 Content-Type 확인 (text/event-stream 예상)",
+      "8. 추가: 같은 채팅에서 'my password is test123' 전송하여 차단 동작 + 경고 표시 여부 확인"
+    ],
+    "capture_requirements": {
+      "chat_api_url": "프롬프트가 전송되는 POST 요청의 전체 URL",
+      "chat_api_path": "URL에서 도메인을 제외한 경로 부분",
+      "request_content_type": "요청의 Content-Type",
+      "response_content_type": "응답의 Content-Type",
+      "warning_visible": "차단 시 경고 문구가 표시되는지 여부",
+      "warning_text": "표시된 경고 문구 내용 (있는 경우)",
+      "console_errors": "브라우저 콘솔 에러 (있는 경우)"
+    }
+  },
+  "notes": "wrtn Phase 6 — 채팅 API 경로 파악 + 경고 표시 확인. 로그인 완료 상태에서 진행. path_patterns='/'를 실제 채팅 API 경로로 축소하기 위한 사전 조사."
+}
