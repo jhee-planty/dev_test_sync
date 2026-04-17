@@ -1,6 +1,6 @@
 # Warning Pipeline — Service Status
 
-> Updated: 2026-04-17 (Regex FP 수정 id=1~4, wrtn Phase 4 완료, copilot/character 진단)
+> Updated: 2026-04-17 (hold 코드 삭제 빌드 배포, wrtn Phase 6 진행 중, regression 테스트 전송)
 > Source of truth: `dev_test_sync/docs/apf_pipeline_report_20260414.md` + 2026-04-17 deploy logs
 > Previous snapshot: 2026-04-14 — now superseded
 
@@ -58,7 +58,7 @@ the tables below and bump the "Updated" date.
 | Hugging Face | huggingface | 스트리밍 중단 | 빈 채팅 | 초기 핸드셰이크 후 스트리밍 중단 |
 | Baidu (ERNIE) | baidu | SSE 주입 | 경고 미표시 | ERNIE UI가 APF SSE 콘텐츠 무시 |
 | Poe | poe | ERR_HTTP2 (GraphQL+SSE) | 사이트 전체 크래시 | gql+receive 과차단 위험 |
-| Wrtn | wrtn | HTTP/2 fetch/SSE | ✅ 차단 확인 (#476) | DB 키워드 수정 후 차단 성공. Phase 4 완료 (#479). 경고 테스트에 로그인 필요 (NEEDS_USER_SESSION). Regex FP 수정 완료 (id=1~4). |
+| Wrtn | wrtn | HTTP/2 fetch/SSE | ✅ 차단 확인 (#476) | **Phase 6 진행 중** — 로그인 완료, 채팅 API 경로 파악 중 (#482). DB envelope id=34 등록됨. path_patterns='/' → 축소 예정. Regex FP 수정 완료 (id=1~4). |
 
 **Root cause pattern:** 서비스 프론트엔드가 API 응답 본문을 사용자에게 직접 렌더링하지 않고,
 자체 에러 핸들링을 통해 APF 커스텀 메시지를 무시하거나 대체함.
@@ -67,6 +67,7 @@ the tables below and bump the "Updated" date.
 
 > **2026-04-17 업데이트:**
 > - Page Load Intercept 철회 (설계 의도 위반 — 민감정보 검사 없이 페이지 접근 차단). block_page_load=0 전체 복구.
+> - **h2_hold_request/block_page_load C++ 코드 완전 삭제** — DB 컬럼 잔존, C++ 미참조. 빌드 `etap-root-260417` 배포.
 > - WebSocket 프레임 키워드 검사 인프라 배포 완료 (on_upgraded_data 콜백). m365_copilot에서 ws_upgrade 확인.
 > - **wrtn 재분류:** #475 테스트 결과 wrtn은 WebSocket이 아닌 HTTP/2 fetch/SSE 사용 확인 → Section B로 이동.
 
@@ -85,11 +86,7 @@ the tables below and bump the "Updated" date.
 - ✅ WebSocket 프레임 키워드 검사 (C++ 구현 완료, 배포됨 — copilot, m365_copilot, character 대상 테스트 필요)
 - ⬜ GET 쿼리 스트링 검사 (you.com)
 - ⬜ ConnectRPC/tRPC/H2 multi-stream 지원 (kimi, mistral, notion)
-- DB: `block_page_load=1` + `warning_html_page` envelope 템플릿
-- C++: `on_http_request()`, `on_http2_request()`에 is_page_load + block_page_load 조건 추가
-- 프로토콜 무관 (HTTP/1.1, HTTP/2 모두 지원)
-
-**잔여 인프라 개발 항목 (Page Load Intercept로 해소되지 않는 경우):**
+**잔여 인프라 개발 항목:**
 - WebSocket 프레임 키워드 검사 (copilot, m365_copilot, character)
 - GET 쿼리 스트링 검사 (you.com)
 - ConnectRPC/tRPC/H2 multi-stream 지원 (kimi, mistral, notion)
@@ -190,3 +187,5 @@ the tables below and bump the "Updated" date.
 - **Page Load Intercept 철회 (2026-04-17)**: 설계 의도 위반 (민감정보 검사 없이 페이지 차단). block_page_load=0 전체 복구.
 - **WebSocket 키워드 검사 배포 (2026-04-17)**: on_upgraded_data() 콜백 구현, m365_copilot ws_upgrade 확인. 실서비스 테스트 대기.
 - **Regex False Positive 수정 (2026-04-17)**: DB `ai_prompt_sensitive_keywords` id=1~4 정밀 regex로 교체. id=1,2(SSN): YYMMDD+성별(1-4) 구조 검증. id=3,4(card): BIN 첫자리(3-6)+word boundary. 수정 후 wrtn telemetry FP 해소 확인.
+- **h2_hold_request/block_page_load C++ 코드 삭제 (2026-04-17)**: 설계 원칙 위반 코드 전수 조사 후 삭제. APF(ai_prompt_filter.cpp/h), VTS(visible_tls_session.cpp/h), Core(tuple.h, etap_packet.h, network_loop.cpp) 9개 파일. DB 컬럼은 잔존(C++에서 미참조). 빌드 `etap-root-260417` 배포 완료 (172/172 targets, zero errors). Regression 테스트 #481 전송.
+- **wrtn Phase 6 시작 (2026-04-17)**: 로그인 완료. DB envelope id=34(openai_compat_sse) 등록 확인. 채팅 API 경로 파악 요청 #482 전송. path_patterns 축소 후 check-warning 테스트 예정.
