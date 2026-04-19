@@ -1,8 +1,8 @@
 # Warning Pipeline — Service Status
 
-> Updated: 2026-04-17 (hold 코드 삭제 빌드 배포, wrtn Phase 6 진행 중, regression 테스트 전송)
-> Source of truth: `dev_test_sync/docs/apf_pipeline_report_20260414.md` + 2026-04-17 deploy logs
-> Previous snapshot: 2026-04-14 — now superseded
+> Updated: 2026-04-20 (regression ALL_PASS 6/6, wrtn → NEEDS_ALTERNATIVE(Socket.IO WS), hold 코드 삭제 확정)
+> Source of truth: `dev_test_sync/docs/apf_pipeline_report_20260414.md` + 2026-04-17~20 test results
+> Previous snapshot: 2026-04-17 — now superseded
 
 ## Maintenance Note
 
@@ -19,8 +19,8 @@ the tables below and bump the "Updated" date.
 | 분류 | 개수 | 설명 |
 |------|------|------|
 | DONE | 6 | 차단 + 경고 표시 완료 |
-| BLOCK_ONLY | 11 | 차단 성공, 경고 미표시 (대안/인프라 탐색 필요) |
-| NEEDS_ALTERNATIVE | 8 | 현재 아키텍처로 차단 불가 (WebSocket/Protocol/GET query) |
+| BLOCK_ONLY | 10 | 차단 성공, 경고 미표시 (대안/인프라 탐색 필요) |
+| NEEDS_ALTERNATIVE | 9 | 현재 아키텍처로 차단 불가 (WebSocket/Protocol/GET query) |
 | DISCONTINUED | 1 | 서비스 종료 |
 | REGION_INACCESSIBLE | 2 | 지역/접속 제한 |
 | DISABLED | 8 | 중복/비활성/과차단/서비스 다운 |
@@ -39,7 +39,7 @@ the tables below and bump the "Updated" date.
 | Qwen3 | qwen3 | qwen3_json | 2 | 1 | |
 | Grok | grok | grok_ndjson | 1 | 1 | |
 
-## B. BLOCK_ONLY (11) — 차단 성공, 경고 미표시
+## B. BLOCK_ONLY (10) — 차단 성공, 경고 미표시
 
 > **Policy note:** SKILL.md 정책은 "BLOCK_ONLY 판정 없음, 모든 대안 시도"이지만,
 > 2026-04-14 리포트 Recommendation #1은 "BLOCK_ONLY 수용"을 제안. 이 10개 서비스는
@@ -58,21 +58,25 @@ the tables below and bump the "Updated" date.
 | Hugging Face | huggingface | 스트리밍 중단 | 빈 채팅 | 초기 핸드셰이크 후 스트리밍 중단 |
 | Baidu (ERNIE) | baidu | SSE 주입 | 경고 미표시 | ERNIE UI가 APF SSE 콘텐츠 무시 |
 | Poe | poe | ERR_HTTP2 (GraphQL+SSE) | 사이트 전체 크래시 | gql+receive 과차단 위험 |
-| Wrtn | wrtn | HTTP/2 fetch/SSE | ✅ 차단 확인 (#476) | **Phase 6 진행 중** — 로그인 완료, 채팅 API 경로 파악 중 (#482). DB envelope id=34 등록됨. path_patterns='/' → 축소 예정. Regex FP 수정 완료 (id=1~4). |
+| ~~Wrtn~~ | ~~wrtn~~ | — | — | **→ Section C 이동** (Socket.IO WebSocket 확인, #482/#483) |
 
 **Root cause pattern:** 서비스 프론트엔드가 API 응답 본문을 사용자에게 직접 렌더링하지 않고,
 자체 에러 핸들링을 통해 APF 커스텀 메시지를 무시하거나 대체함.
 
-## C. NEEDS_ALTERNATIVE (8) — 현재 아키텍처로 차단 불가
+## C. NEEDS_ALTERNATIVE (9) — 현재 아키텍처로 차단 불가
 
+> **2026-04-20 업데이트:**
+> - **wrtn 재분류 (다시):** #482 조사 결과 wrtn 채팅은 Socket.IO WebSocket 사용 확인 (wss://api.wrtn.ai/wrtn.socket.io/). HTTP POST가 아님. SSE envelope 주입 불가 (#483 FAIL). Section B → Section C 이동.
+> - **Regression ALL_PASS 6/6:** hold 코드 삭제 빌드(etap-root-260417) 후 기존 DONE 서비스 영향 없음 확인 (#481).
+> - WS 키워드 검사 인프라: copilot(#477 ALL_FAIL, MITM bypass), character(#478 ALL_FAIL, H2 CONNECT WS). 실서비스에서 미동작.
+>
 > **2026-04-17 업데이트:**
-> - Page Load Intercept 철회 (설계 의도 위반 — 민감정보 검사 없이 페이지 접근 차단). block_page_load=0 전체 복구.
-> - **h2_hold_request/block_page_load C++ 코드 완전 삭제** — DB 컬럼 잔존, C++ 미참조. 빌드 `etap-root-260417` 배포.
+> - Page Load Intercept 철회 + C++ 코드 완전 삭제. h2_hold_request/block_page_load C++ 코드 삭제, DB 컬럼 잔존 (C++ 미참조). 빌드 `etap-root-260417` 배포.
 > - WebSocket 프레임 키워드 검사 인프라 배포 완료 (on_upgraded_data 콜백). m365_copilot에서 ws_upgrade 확인.
-> - **wrtn 재분류:** #475 테스트 결과 wrtn은 WebSocket이 아닌 HTTP/2 fetch/SSE 사용 확인 → Section B로 이동.
 
 | Service | service_id | Category | 원인 |
 |---------|-----------|----------|------|
+| Wrtn | wrtn | Socket.IO WebSocket | #482: 채팅이 Socket.IO WS (wss://api.wrtn.ai/wrtn.socket.io/) 사용. HTTP POST 없음. SSE envelope 주입 불가 (#483 FAIL). 키워드 차단은 동작(#476) but 경고 텍스트 미표시. |
 | Copilot (Bing) | copilot | MITM bypass | #477: copilot.microsoft.com 트래픽이 etap MITM을 경유하지 않음. 네트워크 경로 문제 (VT bypass/라우팅) |
 | M365 Copilot | m365_copilot | WebSocket bypass | copilot.microsoft.com → Azure WebPubSub WS (ws_upgrade 확인됨) |
 | Character.AI | character | H2 WebSocket bypass | #478: WS 키워드 미탐지. HTTP POST는 etap 경유 (SSN regex 차단 확인). WS는 H2 CONNECT 방식으로 upgrade 감지 불가 |
@@ -83,14 +87,11 @@ the tables below and bump the "Updated" date.
 | You.com | you | GET query bypass | GET ?q= 쿼리, POST body 검사 불가 |
 
 **인프라 개발 현황:**
-- ✅ WebSocket 프레임 키워드 검사 (C++ 구현 완료, 배포됨 — copilot, m365_copilot, character 대상 테스트 필요)
+- ⚠️ WebSocket 프레임 키워드 검사 (C++ 구현 완료 + 배포됨, 실서비스 테스트 ALL_FAIL — copilot: MITM bypass, character: H2 CONNECT WS 미감지, wrtn: Socket.IO WS 경고 주입 불가. C++ 디버깅 필요)
+- ⬜ Socket.IO WebSocket 경고 주입 (wrtn — WS 프레임 수준 경고 전달 인프라 필요)
 - ⬜ GET 쿼리 스트링 검사 (you.com)
 - ⬜ ConnectRPC/tRPC/H2 multi-stream 지원 (kimi, mistral, notion)
-**잔여 인프라 개발 항목:**
-- WebSocket 프레임 키워드 검사 (copilot, m365_copilot, character)
-- GET 쿼리 스트링 검사 (you.com)
-- ConnectRPC/tRPC/H2 multi-stream 지원 (kimi, mistral, notion)
-- H2 DATA 프레임 분할 (h2_end_stream=2 서비스의 500B 제한 해소)
+- ⬜ H2 DATA 프레임 분할 (h2_end_stream=2 서비스의 500B 제한 해소)
 
 ## D. DISCONTINUED (1)
 
@@ -188,4 +189,6 @@ the tables below and bump the "Updated" date.
 - **WebSocket 키워드 검사 배포 (2026-04-17)**: on_upgraded_data() 콜백 구현, m365_copilot ws_upgrade 확인. 실서비스 테스트 대기.
 - **Regex False Positive 수정 (2026-04-17)**: DB `ai_prompt_sensitive_keywords` id=1~4 정밀 regex로 교체. id=1,2(SSN): YYMMDD+성별(1-4) 구조 검증. id=3,4(card): BIN 첫자리(3-6)+word boundary. 수정 후 wrtn telemetry FP 해소 확인.
 - **h2_hold_request/block_page_load C++ 코드 삭제 (2026-04-17)**: 설계 원칙 위반 코드 전수 조사 후 삭제. APF(ai_prompt_filter.cpp/h), VTS(visible_tls_session.cpp/h), Core(tuple.h, etap_packet.h, network_loop.cpp) 9개 파일. DB 컬럼은 잔존(C++에서 미참조). 빌드 `etap-root-260417` 배포 완료 (172/172 targets, zero errors). Regression 테스트 #481 전송.
-- **wrtn Phase 6 시작 (2026-04-17)**: 로그인 완료. DB envelope id=34(openai_compat_sse) 등록 확인. 채팅 API 경로 파악 요청 #482 전송. path_patterns 축소 후 check-warning 테스트 예정.
+- **wrtn Phase 6 FAIL → NEEDS_ALTERNATIVE (2026-04-20)**: #482 조사 결과 wrtn 채팅은 Socket.IO WebSocket 사용 (wss://api.wrtn.ai/wrtn.socket.io/). HTTP POST/SSE가 아니므로 openai_compat_sse envelope 주입 불가. #483 check-warning FAIL (아바타만 표시, 텍스트 없음). wrtn → Section C (NEEDS_ALTERNATIVE) 이동.
+- **Regression ALL_PASS 6/6 확정 (2026-04-20)**: #481 결과 수신. hold 코드 삭제 빌드(etap-root-260417) 후 chatgpt, claude, genspark, blackbox, qwen3, grok 모두 경고 정상 표시. 리그레션 없음.
+- **WS 키워드 검사 실서비스 ALL_FAIL (2026-04-17)**: copilot(#477 MITM bypass), character(#478 H2 CONNECT WS 미감지). on_upgraded_data() 인프라가 실서비스에서 미동작. C++ 수준 디버깅 필요.
