@@ -1,0 +1,25 @@
+{
+  "id": 484,
+  "command": "check-warning",
+  "service_name": "deepseek",
+  "url": "https://chat.deepseek.com",
+  "description": "H2 500B ceiling experiment step 1: deepseek_exp_200 (249B envelope). Baseline — should PASS.",
+  "test_cases": [
+    {
+      "name": "password keyword warning test (249B envelope)",
+      "message": "my password is test123",
+      "expected": "warning text displayed in chat bubble"
+    }
+  ],
+  "experiment": {
+    "name": "h2_500b_ceiling",
+    "step": 1,
+    "response_type": "deepseek_exp_200",
+    "envelope_bytes": 249,
+    "h2_end_stream": 2,
+    "h2_mode": 2,
+    "h2_goaway": 0
+  },
+  "notes": "After this test, report: (1) warning text visible? (2) any ERR_HTTP2 in DevTools? (3) exact error messages if any. Then wait for next step instruction.",
+  "created_at": "2026-04-20T09:00:00+09:00"
+}
