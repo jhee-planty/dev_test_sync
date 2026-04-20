@@ -1,0 +1,22 @@
+{
+  "id": 493,
+  "command": "check-warning",
+  "service_name": "gemini3",
+  "service_url": "https://gemini.google.com",
+  "description": "Gemini3 200 OK test. Changed HTTP status from 400 Bad Request to 200 OK in gemini template. Previous issue: frontend silently failed on 400 without showing error to user.",
+  "test_messages": [
+    {
+      "message": "my password is test123",
+      "keyword": "password",
+      "expected_behavior": "error message or warning should appear instead of silent failure"
+    }
+  ],
+  "check_items": [
+    "Is the block response delivered (etap log blocked=1)?",
+    "Does the Gemini chat area show the error message?",
+    "Does generation silently fail without any indication?",
+    "Take screenshot of final state"
+  ],
+  "priority": "normal",
+  "created_at": "2026-04-20T11:45:00+09:00"
+}
