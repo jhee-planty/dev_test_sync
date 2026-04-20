@@ -211,8 +211,32 @@ DevTools Network → Response 탭에서 확인:
 - DevTools Response: NDJSON body 동일하게 도착 (#495와 동일 형식)
 - h2_hold_request 변경은 효과 없음 (body가 원래부터 도착하고 있었으므로)
 
-**종합 판정: BLOCK_ONLY**
-- 4회 시도 (원본, 3-bug fix, h2_hold_request, 진단 확인)
-- Root cause: SvelteKit frontend parser가 APF 주입 NDJSON을 렌더링하지 않음
-- Body는 도착하지만 프론트엔드가 소비하지 않는 구조적 한계
-- DB/template 접근법으로 해결 불가 → BLOCK_ONLY 확정
+**종합 판정: BLOCK_ONLY → 재시도 (h2_end_stream=2)**
+- 4회 시도 (원본, 3-bug fix, h2_hold_request, 진단 확인) → 5회째 진행 중
+- Root cause 재분석: DevTools Response 탭에 body 보이는 것 ≠ ReadableStream async iterator가 chunk를 yield한 것
+- h2_end_stream=1(2-frame DATA)에서는 stream이 즉시 닫혀 async iterator가 yield 전에 종료될 가능성
+- h2_end_stream=2(delayed END_STREAM)로 10ms gap → event loop이 chunk 처리할 시간 확보
+
+### Iteration 5 (#498, 2026-04-20) — h2_end_stream=2 (delayed END_STREAM)
+
+**가설: ReadableStream async iterator가 chunk를 yield하기 전에 stream이 닫힘**
+
+h2_end_stream=1 (현재):
+1. DATA(body, END_STREAM=0) + DATA(empty, END_STREAM=1) → 동일 write()에서 전송
+2. Chrome이 두 프레임을 순차 처리 → stream 열림 → 즉시 닫힘
+3. for-await-of 루프가 chunk를 yield하기 전에 stream 종료 → 빈 결과
+
+h2_end_stream=2 (변경):
+1. VTS가 DATA(body, END_STREAM=0) 전송 → stream 열림, data 버퍼링
+2. 10ms 대기 → browser event loop이 chunk를 yield
+3. VTS가 END_STREAM 전송 → stream 정상 종료
+4. for-await-of 루프가 NDJSON chunk를 처리 → 경고 텍스트 렌더링
+
+**변경:** `UPDATE ai_prompt_services SET h2_end_stream=2 WHERE service_name='huggingface'`
+**reload:** revision_cnt 증가, 자동 reload 대기
+**#498 check-warning 전송:** 결과 대기 중
+
+**근거:**
+- deepseek(h2_end_stream=2)에서 SSE body가 정상 전달 + 렌더링됨
+- github_copilot(h2_end_stream=1)에서는 Build #32에서 0건 수신 확인 → 동일 패턴
+- DevTools Response에 body가 보이더라도, fetch() ReadableStream과 DevTools raw capture는 별개 경로
