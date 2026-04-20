@@ -1,0 +1,27 @@
+{
+  "id": 489,
+  "command": "check-warning",
+  "service_name": "baidu",
+  "overall_status": "FAIL",
+  "status_detail": "Warning text NOT displayed in ERNIE chat area. Message was entered but no chat response appeared. Console showed onmessage with {code:0, msg:'success'} then onclose then AbortError. The v2 endpoint returned 200 but frontend did not render any warning content. ERNIE's own moderation applied strikethrough to 'test123'.",
+  "started_at": "2026-04-20T10:13:00+09:00",
+  "completed_at": "2026-04-20T10:14:30+09:00",
+  "duration_seconds": 90,
+  "test_results": [
+    {
+      "name": "password keyword warning test (baidu_sse_v2 Content-Length fix)",
+      "message": "my password is test123",
+      "expected": "warning text should appear in chat area",
+      "actual": "No chat response area appeared. Input field shows message with strikethrough on 'test123'. Console: onmessage success -> onclose -> AbortError.",
+      "status": "FAIL",
+      "notes": "Content-Length fix ({{BODY_INNER_LENGTH}}) did not resolve the issue. ERNIE receives the SSE response (code:0 success) but then immediately closes the connection and aborts. The frontend does not render any content from the APF response."
+    }
+  ],
+  "console_errors": [
+    "onmessage:>> message {code: 0, msg: 'success', data: {...}, logid: null}",
+    "onclose",
+    "Uncaught (in promise) AbortError: The user aborted a request."
+  ],
+  "network_observations": "v2 endpoint returned 200/ht. cdr and dr requests returned 200. Only 3 XHR requests captured.",
+  "screenshots": []
+}
