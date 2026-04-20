@@ -1,0 +1,42 @@
+﻿{
+    "id":  495,
+    "duration_seconds":  360,
+    "screenshots":  [
+                        "results/files/495/hf_response_body.png"
+                    ],
+    "response_body_lines":  6,
+    "overall_status":  "SUCCESS",
+    "status_detail":  "BODY_PRESENT - APF response body reaches browser ReadableStream. NDJSON v2 template delivers correctly formatted 6-line response with warning message. But frontend does NOT render it ??chat area stays empty. This is a PARSER ISSUE, not an H2 delivery issue.",
+    "response_headers":  {
+                             "status":  "200 OK",
+                             "content_type":  "NOT YET CONFIRMED - panel too narrow to read",
+                             "protocol":  "h2",
+                             "note":  "Response body confirmed present via DevTools Response tab. Status 200, Protocol h2 confirmed from Network list columns."
+                         },
+    "diagnostic_result":  "BODY_PRESENT",
+    "started_at":  "2026-04-20T14:43:00",
+    "service_name":  "huggingface",
+    "command":  "run-scenario",
+    "diagnostic_conclusion":  {
+                                  "issue_type":  "PARSER_ISSUE",
+                                  "next_investigation":  "Check if Content-Type mismatch causes fetch() to reject the response before JS parser reads it",
+                                  "body_reaches_browser":  true,
+                                  "not_h2_delivery":  "H2 delivery is working - body arrives intact",
+                                  "frontend_problem":  "HuggingChat SvelteKit frontend fails to consume/render the injected ReadableStream response"
+                              },
+    "response_body_full":  "{\"conversationId\":\"b28564b5-677b-42d1-add4-3915d1d2e8f0\"}\n{\"type\":\"status\",\"status\":\"started\"}\n{\"type\":\"stream\",\"token\":\"?좑툘 誘쇨컧?뺣낫媛 ?ы븿???붿껌? 蹂댁븞 ?뺤콉???섑빐 李⑤떒?섏뿀?듬땲??\"}\n{\"type\":\"finalAnswer\",\"text\":\"?좑툘 誘쇨컧?뺣낫媛 ?ы븿???붿껌? 蹂댁븞 ?뺤콉???섑빐 李⑤떒?섏뿀?듬땲??\",\"interrupted\":false}\n{\"type\":\"status\",\"status\":\"finished\"}\n[DONE]",
+    "completed_at":  "2026-04-20T14:49:00",
+    "response_body_first_200_chars":  "{\"conversationId\":\"b28564b5-677b-42d1-add4-3915d1d2e8f0\"} {\"type\":\"status\",\"status\":\"started\"} {\"type\":\"stream\",\"token\":\"warning msg...\"} {\"type\":\"finalAnswer\",\"text\":\"warning msg...\",\"interrupted\":false}",
+    "observations":  [
+                         "1. Response tab shows 6 lines of NDJSON content - BODY IS PRESENT",
+                         "2. Line 1: conversationId (UUID format)",
+                         "3. Line 2: status:started",
+                         "4. Line 3: stream with warning token in Korean",
+                         "5. Line 4: finalAnswer with same warning text, interrupted:false",
+                         "6. Line 5: status:finished",
+                         "7. Line 6: [DONE] terminal marker",
+                         "8. Format matches HuggingChat expected NDJSON format perfectly",
+                         "9. Despite body reaching browser, chat area is completely empty",
+                         "10. Conclusion: Parser issue - frontend JS fails to process the ReadableStream"
+                     ]
+}
