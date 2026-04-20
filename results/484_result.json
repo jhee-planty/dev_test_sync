@@ -1,0 +1,48 @@
+{
+  "id": 484,
+  "command": "check-warning",
+  "service_name": "deepseek",
+  "overall_status": "FAIL",
+  "status_detail": "Warning text NOT displayed. First message blocked but showed generic network error ('네트워크를 확인하고 다시 시도하세요') instead of warning text. Second identical message bypassed block entirely and DeepSeek responded normally. Console error: LylaError[INVALID_JSON] — Etap SSE response (data: {\"v\"...) parsed as JSON by DeepSeek frontend, causing parse failure. No ERR_HTTP2_PROTOCOL_ERROR observed.",
+  "started_at": "2026-04-20T09:00:30+09:00",
+  "completed_at": "2026-04-20T09:04:30+09:00",
+  "duration_seconds": 240,
+  "test_results": [
+    {
+      "name": "password keyword warning test (249B envelope)",
+      "status": "FAIL",
+      "details": {
+        "warning_text_visible": false,
+        "err_http2_in_devtools": false,
+        "user_facing_error": "네트워크를 확인하고 다시 시도하세요 (Check network and try again)",
+        "console_errors": [
+          "LylaError[INVALID_JSON]: Unexpected token 'd', \"data: {\"v\"... is not valid JSON",
+          "net::ERR_TIMED_OUT (apm.volccdn.com — unrelated analytics)",
+          "WebAssembly MIME type error (unrelated)"
+        ],
+        "second_attempt": "BYPASSED — same message sent again went through to DeepSeek, normal AI response received",
+        "network_requests": {
+          "chat_api": "https://chat.deepseek.com/api/v0/chat/completion",
+          "pow_challenge": "https://chat.deepseek.com/api/v0/chat/create_pow_challenge",
+          "protocol": "h2",
+          "status": 200
+        }
+      }
+    }
+  ],
+  "experiment": {
+    "name": "h2_500b_ceiling",
+    "step": 1,
+    "response_type": "deepseek_exp_200",
+    "envelope_bytes": 249,
+    "h2_end_stream": 2,
+    "h2_mode": 2,
+    "h2_goaway": 0
+  },
+  "analysis": {
+    "root_cause": "Etap returned SSE-format response (data: {\"v\"...) which DeepSeek's Lyla HTTP client tried to JSON.parse(), causing INVALID_JSON error. The warning content reached the browser but was not rendered as visible warning text — instead the frontend showed a generic network error message.",
+    "block_effectiveness": "PARTIAL — first message blocked, but second identical message bypassed completely",
+    "warning_rendering": "FAIL — SSE envelope format incompatible with DeepSeek's JSON parser"
+  },
+  "screenshots": []
+}
