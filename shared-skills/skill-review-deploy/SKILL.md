@@ -107,6 +107,21 @@ Cowork 마운트에 직접 쓰면 EROFS 에러가 발생한다.
 - fuzzy match 실패 시(99% 유사하지만 정확히 일치하지 않을 때) Python 스크립트로 대체
 - 한번에 50줄 이상 교체하면 경고 발생 — 가능하면 작게 나눠서 수정
 
+**Phase 2 종료 전 Self-Review (필수):**
+
+수정 완료를 선언하기 직전에 편집자가 자신의 변경을 전수 grep으로 검증한다. 특히 **원칙/규칙 추가**, **숫자/식별자 변경**, **신규 파일 생성** 시:
+- §1 원칙 도입 시 전수 grep (새 원칙과 모순되는 기존 패턴 제거 확인)
+- §2 숫자/식별자 변경 전파 (`[6/6]` → `[6/8]` 같은 번호)
+- §3 Markdown 렌더 점검 (`---` 중복, 빈 링크)
+- §4 Orphan 파일 탐지 (신규 references 참조 여부)
+- §5 Cross-reference 경로 검증 (broken link)
+- §6 SSOT 중복 탐지 (같은 ID 복수 위치)
+- §7 토론 결과 반영 확인 (합의 항목 누락 방지)
+
+→ See `references/edit-self-review-checklist.md` for 각 §의 grep 명령어.
+
+통과하지 못한 상태로 수정 완료 선언 금지.
+
 ### Phase 3 — Deploy (배포)
 
 수정된 스킬을 shared-skills에 반영하고 Git push한다.

@@ -5,6 +5,8 @@ VT 모듈의 MITM 프록시 기능을 APF 없이 독립적으로 검증한다.
 
 마지막 검증: 2026-04-03
 
+> ⚠️ **아래 `mysql -u root ogsv -e ...` 명령은 testbed 서버(61.79.198.110)에서 작동하지 않는다** (실증 2026-04-20, `ERROR 1045 Access denied`). DB 쿼리는 다른 환경(staging/admin web backend)에서만 유효. testbed에서 vt_settings 조회가 필요하면 `etapcomm visible_tls.show_config`를 시도하거나 `references/db-queries.md` 상단 경고 참조.
+
 ---
 
 ## 1. MITM 동작 확인

@@ -37,15 +37,15 @@ sudo systemctl restart etapd.service
 | 다중 인스턴스 방지 | systemd가 단일 인스턴스 보장 | 보장 없음 — 여러 인스턴스 동시 기동 가능 |
 | 용도 | **정상 운영 (항상 이것을 사용)** | 디버깅 전용 (gdb 연결 등) |
 
-**증상:** `runetap`으로 시작 시 `pgrep -c etapd`가 2 이상이 되면서 DPDK `rte_eal_init` FAILED 에러 발생. 이후 TLS 인터셉션이 전면 중단되어 모든 트래픽이 bypass됨.
+**증상:** `runetap`으로 시작 시 `pgrep -xc etap`가 2 이상이 되면서 DPDK `rte_eal_init` FAILED 에러 발생. 이후 TLS 인터셉션이 전면 중단되어 모든 트래픽이 bypass됨.
 
 **복구:**
 ```bash
-sudo pkill etapd           # 모든 인스턴스 종료
+sudo pkill -x etap         # 모든 인스턴스 종료 (프로세스명은 etap, systemd 서비스명만 etapd.service)
 sleep 2
 sudo systemctl restart etapd.service
 sleep 5
-pgrep -c etapd             # 반드시 1 확인
+pgrep -xc etap             # 반드시 1 확인
 ```
 
 **실제 사례:** Gemini Iteration 3에서 runetap 사용으로 4개 인스턴스가 동시 기동, DPDK 충돌로 zero TLS interception 발생.

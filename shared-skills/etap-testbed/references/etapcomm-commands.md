@@ -34,17 +34,19 @@ etapcomm ai_prompt_filter.disable
 
 VT는 etapcomm 명령이 제한적 — DB 설정과 etap.log로 확인. (마지막 검증: 2026-04-03)
 
+> ⚠️ **testbed 서버에서 `mysql -u root` 작동 안 함** (실증 2026-04-20). 아래 SQL은 다른 환경(staging/admin web)에서만 유효. testbed에서는 `etap.log` grep으로 대체.
+
 ```bash
-# VT 설정 확인
+# VT 설정 확인 (staging/admin web 환경에서만)
 mysql -u root ogsv -e "SELECT name, integer_value, string_value FROM vt_settings;"
 
-# VT 대상/바이패스 확인
+# VT 대상/바이패스 확인 (staging/admin web 환경에서만)
 mysql -u root ogsv -e "SELECT target, addr FROM vt_targets WHERE \`use\`='true' LIMIT 20;"
 
-# forward_mode 토글 (1=활성, 0=비활성)
+# forward_mode 토글 (staging/admin web 환경에서만)
 mysql -u root ogsv -e "UPDATE vt_settings SET integer_value=1 WHERE name='forward_mode';"
 
-# VT 관련 로그 확인
+# VT 관련 로그 확인 (testbed에서 작동)
 grep -i "visible_tls\|tls_proxy\|bypass" /var/log/etap.log | tail -20
 ```
 
