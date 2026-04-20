@@ -104,6 +104,7 @@ The prior APF pipeline's experience (network-level analysis) is preserved in
 | Design pattern name | `UPPER_SNAKE_CASE` | `SSE_STREAM_WARNING` |
 | C++ log function | `bo_mlog_*` family | `bo_mlog_info(...)` |
 | Reference files | `lowercase-hyphen.md` | `design-patterns.md` |
+| Phase N numbering | Reserved for pipeline 7-phase stages only | Other skills use descriptive names (e.g., "Implementation Entry Check") |
 
 ---
 
@@ -129,12 +130,12 @@ The `[APF_WARNING_TEST:{service_id}]` prefix enables:
 ### Removal (before release build — hard gate)
 
 ```bash
-# Verify all test logs removed before Phase 4
+# Verify all test logs removed before Phase 7 (release build)
 grep -rn "APF_WARNING_TEST" functions/ai_prompt_filter/
 # Expected: no output. If any match → STOP, remove before proceeding.
 ```
 
-Phase 4 (release build via `etap-build-deploy`) **must not proceed** until
+Phase 7 (release build via `etap-build-deploy`) **must not proceed** until
 `grep -r "APF_WARNING_TEST"` returns zero matches.
 
 → See `apf-warning-impl/references/test-log-templates.md` for C++ templates.
@@ -307,7 +308,7 @@ This is a structural safeguard against context decay, not optional behavior.
 ```
 Phase 1 complete → Read apf-warning-design/SKILL.md → begin Phase 2
 Phase 2 complete → Read apf-warning-impl/SKILL.md → begin Phase 3
-Phase 3 complete → Read etap-build-deploy/SKILL.md → begin Phase 4
+Phase 6 complete → Read etap-build-deploy/SKILL.md → begin Phase 7 (release build)
 ```
 
 ### 11-5. TodoList Skill Refresh Pattern
