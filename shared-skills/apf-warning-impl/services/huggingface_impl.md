@@ -154,3 +154,31 @@ parseMessageUpdates(value):
 - 카테고리: template_format (3회 연속)
 - 에스컬레이션: frontend-inspect 전환 — DevTools Response body 확인 필요
 - 진단 목표: POST /chat/conversation/{id} → Response 탭에 body 내용 존재 여부
+
+
+### Iteration 3 (#496, 2026-04-20) — h2_hold_request=0→1 fix
+
+**가설: 조기 응답으로 인한 ReadableStream 전달 실패**
+
+h2_hold_request=0일 때:
+1. Browser가 POST /chat/conversation/{id} 전송 시작 (multipart/form-data)
+2. APF가 request body에서 keyword 감지 → 즉시 block response 전송
+3. Browser의 fetch()가 아직 request body 전송 중 → 응답 수신 준비 안 됨
+4. ReadableStream이 setup되지 않거나 body가 비어있는 상태로 resolve
+5. chat-ui 파서가 빈 body를 받아 아무것도 렌더링하지 않음
+
+h2_hold_request=1로 변경 시:
+1. APF가 request body 전체를 버퍼링 (hold)
+2. Request 완료 후 browser의 fetch()가 "응답 대기" 상태 진입
+3. 그 후 APF가 block response 전송
+4. Browser의 ReadableStream이 정상적으로 body 수신
+5. chat-ui 파서가 NDJSON 이벤트를 처리하여 경고 텍스트 렌더링
+
+**변경:** `UPDATE ai_prompt_services SET h2_hold_request=1 WHERE service_name='huggingface'`
+**reload_services:** 성공
+**#496 check-warning 전송:** 결과 대기 중
+
+**근거:**
+- etap 로그의 response size=496B (body 정상 생성 확인)
+- 3회 연속 템플릿 형식 수정으로 해결 안 됨 → 형식이 아닌 전달 문제
+- deepseek(h2_hold_request=1)에서는 SSE body가 정상 전달됨 → h2_hold_request 차이가 핵심
