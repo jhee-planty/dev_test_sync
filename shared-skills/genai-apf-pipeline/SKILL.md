@@ -38,7 +38,6 @@ description: "Master orchestrator for GenAI APF (ai_prompt_filter) pipeline — 
 - 폴링 체인 미연결
 - **외부 시스템 상태 단정 금지** — "test PC 중단됨", "폴링 중단" 등 단정적 표현 사용 금지.
   결과 미도착 시 "결과 대기 중"으로만 표현하고, 미처리 요청이 있으면 폴링을 계속 진행한다.
-  상태 판단이 필요한 경우(30분 초과 등) 2개 이상 독립 채널(git + SSH)에서 확인한 후에만 판단.
   (근거: 2026-04-20 heartbeat.json 하나로 "test PC 중단" 단정 → 실제로는 정상 작동 중이었음)
 
 ## Goal

@@ -182,3 +182,37 @@ h2_hold_request=1로 변경 시:
 - etap 로그의 response size=496B (body 정상 생성 확인)
 - 3회 연속 템플릿 형식 수정으로 해결 안 됨 → 형식이 아닌 전달 문제
 - deepseek(h2_hold_request=1)에서는 SSE body가 정상 전달됨 → h2_hold_request 차이가 핵심
+
+
+### #495 Diagnostic Result (2026-04-20) — DevTools Response body 확인
+
+**결과: BODY_PRESENT — H2 delivery는 정상, PARSER_ISSUE 확정**
+
+DevTools Network → Response 탭에서 확인:
+- 6줄 NDJSON body가 browser ReadableStream에 도착
+- Line 1: `{"conversationId":"b28564b5-..."}` (UUID)
+- Line 2: `{"type":"status","status":"started"}`
+- Line 3: `{"type":"stream","token":"경고 메시지 (한국어)"}` 
+- Line 4: `{"type":"finalAnswer","text":"경고 메시지","interrupted":false}`
+- Line 5: `{"type":"status","status":"finished"}`
+- Line 6: `[DONE]`
+- Format: HuggingChat 예상 NDJSON 형식과 정확히 일치
+- Status: 200 OK, Protocol: h2
+
+**핵심 결론:**
+- h2_hold_request 가설 무효: body는 h2_hold_request=0일 때도 도착했음
+- **SvelteKit 프론트엔드 파서가 APF 주입 NDJSON 스트림을 소비하지 않음**
+- 구조적 한계: HuggingChat SvelteKit SSR streaming이 특정 서버측 프로세싱을 요구할 가능성
+
+### #496 Result (2026-04-20) — h2_hold_request=1 → FAIL
+
+**결과: FAIL — h2_hold_request=1도 동일 증상**
+- 빈 채팅 영역 (경고 미표시)
+- DevTools Response: NDJSON body 동일하게 도착 (#495와 동일 형식)
+- h2_hold_request 변경은 효과 없음 (body가 원래부터 도착하고 있었으므로)
+
+**종합 판정: BLOCK_ONLY**
+- 4회 시도 (원본, 3-bug fix, h2_hold_request, 진단 확인)
+- Root cause: SvelteKit frontend parser가 APF 주입 NDJSON을 렌더링하지 않음
+- Body는 도착하지만 프론트엔드가 소비하지 않는 구조적 한계
+- DB/template 접근법으로 해결 불가 → BLOCK_ONLY 확정
