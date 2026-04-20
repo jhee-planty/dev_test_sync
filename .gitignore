@@ -34,3 +34,5 @@ _backup_*/
 *.swp
 *.swo
 *~
+queue.json
+results/files/
