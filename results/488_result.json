@@ -1,0 +1,26 @@
+{
+  "id": 488,
+  "command": "check-warning",
+  "service_name": "perplexity",
+  "overall_status": "FAIL",
+  "status_detail": "Warning text NOT displayed. Perplexity redirected from /search/blocked-... URL back to homepage (/?) after receiving 400 Bad Request. The perplexity_sse full format template did not render warning in the chat area.",
+  "started_at": "2026-04-20T10:08:00+09:00",
+  "completed_at": "2026-04-20T10:09:30+09:00",
+  "duration_seconds": 90,
+  "test_results": [
+    {
+      "name": "password keyword warning test (perplexity_sse full format)",
+      "message": "my password is test123",
+      "expected": "warning text displayed in chat area",
+      "actual": "Page redirected to perplexity.ai/search/blocked-{uuid} then back to homepage. No warning text rendered. 400 Bad Request from blocked endpoint.",
+      "status": "FAIL",
+      "notes": "URL briefly showed 'blocked' in path (perplexity.ai/search/blocked-170944ec-...) indicating Etap block was triggered, but frontend could not render the SSE response. Instead got 400 Bad Request and redirected to homepage."
+    }
+  ],
+  "console_errors": [
+    "WebSocket connection to wss://suggest.perple... failed: WebSocket is closed before the connection is established",
+    "GET https://www.perplexi... 400 (Bad Request)"
+  ],
+  "network_observations": "blocked endpoint returned 400/h2. navigate returned 200/h2. Multiple service-worker cached resources loaded. WebSocket suggestion connection failed.",
+  "screenshots": []
+}
