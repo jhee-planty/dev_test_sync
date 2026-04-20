@@ -42,9 +42,9 @@
 - [x] H2 500B ceiling 실험 4단계 완료
 - [x] deepseek 경고 표시 성공 (deepseek_exp_1k)
 - [ ] deepseek_exp_1k 패턴을 다른 h2_end_stream=2 서비스에 적용 (perplexity 등)
-- [ ] apf-technical-limitations.md에서 500B ceiling 한계 항목 제거/수정
-- [ ] deepseek DONE 승격 검토 (경고 표시 성공 확인됨)
-- [ ] phase2-analysis-registration.md에 sweet-spot 템플릿 패턴 문서화
+- [x] apf-technical-limitations.md에서 500B ceiling 한계 항목 제거/수정
+- [x] deepseek DONE 승격 검토 (경고 표시 성공 확인됨) → status.md 반영 완료
+- [x] phase2-analysis-registration.md에 sweet-spot 템플릿 패턴 문서화
 
 ## 단기 할 일
 
