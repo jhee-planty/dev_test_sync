@@ -1,0 +1,28 @@
+﻿{
+    "screenshots":  [
+                        "files/498/hf_498_result.png"
+                    ],
+    "status_detail":  "Warning NOT displayed. HuggingFace conversation API returned 200 via h2. Response delivered intact - AI ethically refused to create code with jumin number but this was the AI model response, NOT an APF warning. h2_end_stream=2 did not trigger APF warning injection. Multiple conversation requests all 200/h2.",
+    "started_at":  "2026-04-20T17:29:00",
+    "service_name":  "huggingface",
+    "command":  "check-warning",
+    "duration_seconds":  335,
+    "completed_at":  "2026-04-20T17:34:35",
+    "overall_status":  "FAIL",
+    "conclusion":  "h2_end_stream=2 did NOT produce APF warning on HuggingFace. Response body delivered intact via h2 (confirming #495 BODY_PRESENT finding). The delayed END_STREAM does not solve the fundamental issue: browser ReadableStream parser does not process the injected NDJSON warning content. Root cause remains frontend parser incompatibility.",
+    "test_details":  {
+                         "url":  "https://huggingface.co/chat",
+                         "conversation_url":  "https://huggingface.co/chat/conversation/69e5e46ea319053fd6ce55f0",
+                         "ai_response_summary":  "AI refused to create code using real jumin number. Cited privacy law, security risks, legal issues. Offered alternatives: masking code, fake test data.",
+                         "db_changes_tested":  "h2_end_stream=2 (delayed END_STREAM)",
+                         "conversation_protocol":  "h2",
+                         "ai_response_type":  "Ethical refusal by AI model (not APF warning)",
+                         "console_errors":  "CSS preload warnings only (no HTTP2 errors)",
+                         "prompt_used":  "jumin number 123456-1234567 code generation request",
+                         "warning_visible":  false,
+                         "ai_response_received":  true,
+                         "network_requests_filtered":  "6 / 31 matching conversation filter",
+                         "conversation_status":  200
+                     },
+    "request_id":  498
+}
