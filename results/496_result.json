@@ -1,0 +1,20 @@
+﻿{
+    "id":  496,
+    "chat_area_empty":  true,
+    "screenshots":  [
+                        "results/files/496/hf_hold_request_496.png"
+                    ],
+    "request_id":  496,
+    "status_detail":  "h2_hold_request=1 did NOT fix the warning display issue. Response body BODY_PRESENT in DevTools Response tab - identical NDJSON v2 format as request #495. 6-line response with Korean warning message arrives intact via ReadableStream. But HuggingChat frontend still shows empty chat area. This CONFIRMS the root cause is a frontend parser issue: HuggingChat SvelteKit does not consume/render the APF-injected NDJSON stream despite it arriving correctly. h2_hold_request change has no effect because the response body was already reaching the browser (proven in #495).",
+    "diagnostic_result":  "BODY_PRESENT",
+    "conclusion":  "h2_hold_request is irrelevant. Problem is frontend parser: HuggingChat does not render injected NDJSON. Need alternative approach - either DOM injection via JS or different response format that SvelteKit streaming parser accepts.",
+    "service_name":  "huggingface",
+    "command":  "check-warning",
+    "warning_visible":  false,
+    "completed_at":  "2026-04-20T15:00:33",
+    "duration_seconds":  420,
+    "h2_hold_request_value":  1,
+    "started_at":  "2026-04-20T14:50:00",
+    "overall_status":  "FAIL",
+    "response_body_sample":  "{\"conversationId\":\"8b79eb74-8528-49be-8f30-518febebf524\"}|{\"type\":\"status\",\"status\":\"started\"}|{\"type\":\"stream\",\"token\":\"warning_msg\"}|{\"type\":\"finalAnswer\",\"text\":\"warning_msg\",\"interrupted\":false}|{\"type\":\"status\",\"status\":\"finished\"}|[DONE]"
+}
