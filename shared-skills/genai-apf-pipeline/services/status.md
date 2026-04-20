@@ -41,7 +41,7 @@
 | v0 | SPA가 JSON error도 무시 | ✅ 완료 | #491 FAIL. NEEDS_ALTERNATIVE 후보 |
 | gamma | SSE payload 파서 호환성 | ✅ 완료 | #492 PARTIAL. SSE 이벤트 구조 정밀 매칭 필요 |
 | gemini3 | protobuf format만 수용 (status code 무관) | ✅ 완료 | #493 FAIL. 6회 시도 소진. BLOCK_ONLY 최종 |
-| huggingface | NDJSON 파서 호환성 또는 H2 body 미전달 | ✅ 완료 | #494 FAIL (3-Strike). DevTools Response body 진단 필요 |
+| huggingface | SvelteKit parser가 APF NDJSON 미소비 (body 도착 확인됨) | ✅ 완료 | #495 BODY_PRESENT + #496 FAIL. BLOCK_ONLY 최종 (4회 시도) |
 | qianwen | CORS + ERR_HTTP2 | ❌ | 인프라 수준 CORS preflight |
 | wrtn | 로그인 필요 | — | NEEDS_USER_SESSION |
 

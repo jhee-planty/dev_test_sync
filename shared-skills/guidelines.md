@@ -351,7 +351,7 @@ wc -l /mnt/.claude/skills/guidelines.md
 mcp__desktop-commander__start_process: cat /Users/jhee/.../shared-skills/guidelines.md
 ```
 
-## SSH 접근 규칙
+### 11-6. SSH 접근 규칙
 
 Cowork VM은 네트워크가 격리되어 있어 외부 서버에 직접 SSH 접근이 안 된다.
 SSH/scp가 필요한 작업은 반드시 `mcp__desktop-commander__start_process`를 통해 호스트 Mac에서 실행한다.
@@ -367,7 +367,7 @@ mcp__desktop-commander__start_process:
 
 ---
 
-## Claude Code 실행 규칙
+### 11-7. Claude Code 실행 규칙
 
 Cowork VM에는 `claude` CLI가 없다. Sub agent(`claude -p`)는 desktop-commander로 호스트에서 실행한다.
 
@@ -395,3 +395,148 @@ command: cat /tmp/cc_output.txt
 - `start_process`가 반환하는 PID는 zsh 래퍼이며, 실제 claude 프로세스는 자식 — `ps aux | grep claude`로 추적
 
 > 검증: 2026-04-03, gemini warning design (sonnet), 252줄 출력, ~3분 소요
+
+---
+
+## 12. File Management Policy
+
+모든 작업 산출물은 아래 정의된 정본 위치에 저장한다.
+git 저장소(dev_test_sync)는 dev↔test PC 교환 전용으로만 사용하며,
+작업 산출물의 관리 저장소로 사용하지 않는다.
+
+### 12.1 Canonical Locations
+
+| Category | Mac Path | Cowork VM Path |
+|----------|----------|----------------|
+| Skill runtime (SKILL.md, references/, services/) | `~/.claude/skills/{skill}/` (plugin managed) | `/mnt/.claude/skills/{skill}/` |
+| Guidelines (single source of truth) | `~/Documents/workspace/dev_test_sync/shared-skills/guidelines.md` | `/mnt/workspace/dev_test_sync/shared-skills/guidelines.md` |
+| Working artifacts (analysis, reports, experiments) | `~/Documents/workspace/claude_cowork/docs/` | `/mnt/workspace/claude_cowork/docs/` |
+| OS release test histories & methods | `~/Documents/workspace/claude_cowork/projects/os-release-tests/` | `/mnt/workspace/claude_cowork/projects/os-release-tests/` |
+| Project-scoped work (non-release) | `~/Documents/workspace/claude_cowork/projects/{project}/` | `/mnt/workspace/claude_cowork/projects/{project}/` |
+| SQL migrations | `~/Documents/workspace/claude_cowork/sql/` | `/mnt/workspace/claude_cowork/sql/` |
+| Pipeline state (handoff, dashboard, state JSON) | `~/Documents/workspace/claude_cowork/state/` | `/mnt/workspace/claude_cowork/state/` |
+| Archive (completed artifacts) | `~/Documents/workspace/claude_cowork/archive/` | `/mnt/workspace/claude_cowork/archive/` |
+| Hook scripts | `~/Documents/workspace/claude_cowork/hooks/` | `/mnt/workspace/claude_cowork/hooks/` |
+| Dev↔Test exchange ONLY | `~/Documents/workspace/dev_test_sync/` | `/mnt/workspace/dev_test_sync/` |
+| C++ source | `~/Documents/workspace/Officeguard/EtapV3/` | `/mnt/Officeguard/` |
+
+### 12.2 Write Authority & Methods
+
+**Cowork VM filesystem constraints:**
+- `/mnt/.claude/skills/` — **EROFS (read-only)**. Plugin managed. Cannot use Edit/Write tools.
+- `/mnt/workspace/` — writable (claude_cowork/, dev_test_sync/)
+- `/mnt/Officeguard/`, `/mnt/functions/`, `/mnt/apf-db-driven-service/` — **chmod read-only** (SessionStart hook enforced)
+
+**Skill files (services/*_impl.md, *_design.md, *_frontend.md):**
+Canonical location: `~/.claude/skills/{skill}/services/` (Mac side, writable).
+Cowork VM에서는 Read-only이므로 **반드시 `desktop-commander`로 편집**한다:
+```
+mcp__desktop-commander__edit_block:
+  file_path: /Users/jhee/.claude/skills/{skill}/services/{file}
+  old_string: "..."
+  new_string: "..."
+```
+Edit/Write 도구로 `/mnt/.claude/skills/` 경로를 사용하면 EROFS 에러가 발생한다.
+Officeguard 경로(`/mnt/Officeguard/`)를 사용하면 EACCES 에러가 발생한다.
+**desktop-commander가 유일한 편집 수단이다.**
+
+**Working artifacts (Cowork Edit/Write 사용 가능):**
+- claude_cowork/state/ — handoff.md, pipeline_state.json
+- claude_cowork/docs/ — analysis, reports, experiments
+- claude_cowork/sql/ — migrations
+- claude_cowork/projects/os-release-tests/releases/*/ — 릴리스별 런타임 기록 (autonomous)
+- claude_cowork/projects/os-release-tests/lessons-learned.md — **append-only** 누적 교훈
+
+**User-approval required:**
+- SKILL.md (skill behavior changes)
+- guidelines.md (operational rules)
+- Procedural references (phase*-*.md, protocol files)
+- claude_cowork/projects/os-release-tests/README.md (진입점 + Release Start Checklist)
+- claude_cowork/projects/os-release-tests/test-catalog.md (테스트 ID 추가/변경)
+
+### 12.3 No Duplicate Masters
+
+Each file has exactly one canonical location. The flow is:
+```
+~/.claude/skills/ (master, Mac writable) → shared-skills/ (deploy snapshot) → .skill (package)
+```
+Never treat dev_test_sync/docs/ as the master for documents that belong in claude_cowork/docs/.
+guidelines.md는 예외: canonical location은 `dev_test_sync/shared-skills/guidelines.md` (단일 원본).
+claude_cowork/skills/guidelines.md는 삭제됨 (2026-04-20).
+
+**Officeguard/EtapV3/.claude/skills/ — 삭제됨 (2026-04-20 토론 합의).**
+중복 사본이 존재하면 Cowork이 잘못된 경로를 편집하므로, .gitignore로 재생성을 방지한다.
+
+### 12.4 Read-only Enforcement (SessionStart Hook)
+
+`pipeline-context.sh`가 세션 시작 시 read-only 디렉토리에 `chmod -R a-w`를 적용한다.
+이 보호는 OS 레벨이므로 Edit/Write/Bash 모두에서 강제된다.
+
+Protected directories:
+- `/mnt/Officeguard/` — C++ source (편집은 Claude Code 또는 SSH로)
+- `/mnt/functions/` — C++ modules
+- `/mnt/apf-db-driven-service/` — SQL archive
+- `/mnt/workspace/Officeguard/` — same physical dir as above
+
+### 12.5 Migration from dev_test_sync
+
+- New artifacts → claude_cowork/docs/ (immediately)
+- Active artifacts → move to claude_cowork/ at next use
+- Historical artifacts → remain in dev_test_sync/docs/ (read-only)
+
+---
+
+## 13. Operational Rules (User Preferences)
+
+These rules are permanent user preferences. They apply to all skills and sessions.
+
+### 13.1 All work runs on the Mac (dev PC)
+
+All commands — SSH, DB queries, git operations, file editing — execute on the
+user's Mac via `desktop-commander` or Mac terminal. The Cowork sandbox has no
+network access to internal servers. Never attempt SSH, mysql, or other network
+commands from the sandbox; always route through the Mac.
+
+- SSH to servers: `mcp__desktop-commander__start_process` with `ssh -p 12222 ...`
+- DB queries: same SSH tunnel → `sudo mysql etap -e "..."`
+- git push/pull: `mcp__desktop-commander__start_process` with `cd ~/Documents/workspace/dev_test_sync && git ...`
+
+### 13.2 Follow genai-apf-pipeline skill
+
+APF 관련 작업 시 반드시 `genai-apf-pipeline` 스킬을 로드하고 그 절차를 준수한다.
+기억에 의존하지 않고, 매 Phase 진입 시 해당 reference 파일을 Read 도구로 로드한다.
+
+- **Pipeline skill path:** `genai-apf-pipeline/SKILL.md`
+- **Phase별 reference:** `genai-apf-pipeline/references/phase{N}-*.md`
+- **서비스 상태:** `genai-apf-pipeline/services/status.md`
+- **DB 접근:** `genai-apf-pipeline/references/db-access-and-diagnosis.md`
+- **로그 진단:** `genai-apf-pipeline/references/etap-log-diagnostics.md`
+
+Key rules from the skill:
+- 한 번에 한 서비스만 작업 (Single-Service Focus)
+- Phase 전환 시 해당 스킬/reference 반드시 재로드
+- blocked=1만으로 성공 판단 금지 — test PC 화면이 ground truth
+- 자율 수행 규칙: 질문으로 끝맺지 않고, 결과 도착 시 즉시 판정 + 다음 작업 시작
+- DB 변경 후 4단계: UPDATE → reload_services → detect grep → check-warning
+
+이 규칙은 H2 ceiling 실험, 서비스 등록, 경고 구현 등 모든 APF 작업에 적용된다.
+
+### 13.3 Autonomous execution on pending tasks
+
+현재 작업이 완료되면 다음 작업이 있는지 확인하고, 있으면 사용자의 요청 없이
+즉시 자율 수행한다. `genai-apf-pipeline` 스킬의 Phase Transitions 테이블과
+`services/status.md`를 참조하여 다음 작업을 결정한다.
+
+- 작업 완료 → handoff.md / status.md에서 다음 할 일 확인 → 즉시 시작
+- Phase 완료 → Phase Transitions 테이블의 "First Action" 실행
+- 서비스 완료(DONE) → 다음 우선순위 서비스로 전환
+- 사용자에게 "다음 뭐 할까요?" 묻지 않는다 — 할 일이 있으면 바로 한다
+- 할 일이 없을 때만 사용자에게 보고하고 대기한다
+
+### 13.4 No schedulers
+
+Do NOT use `mcp__scheduled-tasks__create_scheduled_task`, `update_scheduled_task`,
+cron, fireAt, or any automatic polling mechanism. All polling and result checking
+is done manually — either by user instruction or by explicit manual commands.
+
+Reason: repeated scheduler creation requests were disruptive to the user's workflow.
