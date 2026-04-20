@@ -1,0 +1,36 @@
+{
+  "id": 492,
+  "command": "check-warning",
+  "service_name": "gamma",
+  "overall_status": "PARTIAL",
+  "status_detail": "Block response delivered (ERR_CONNECTION_CLOSED 200 OK on fonts.google and render endpoints). 200 OK status change from 400 allowed the page to proceed further than before — outline generation page loaded and attempted to create cards. However, only 1 empty card was generated instead of the expected 10, and NO content_policy error message was shown to the user. The generation was silently truncated. Previous 400 status caused silent failure at an earlier stage; 200 OK moves failure to a later stage but still no user-visible warning.",
+  "started_at": "2026-04-20T11:18:00",
+  "completed_at": "2026-04-20T11:22:00",
+  "duration_seconds": 240,
+  "test_results": [
+    {
+      "name": "password keyword warning test",
+      "message_sent": "my password is test123",
+      "result": "PARTIAL",
+      "details": "Block delivered, outline page loaded but only 1 empty card generated instead of 10. No error message shown."
+    }
+  ],
+  "check_items": {
+    "block_response_delivered": "YES - ERR_CONNECTION_CLOSED 200 (OK) on render and fonts endpoints in Console",
+    "ui_content_policy_error": "NO - no content_policy error message displayed to user",
+    "generation_silently_fails": "PARTIAL - outline page loads, 1 empty card created, generation truncated silently",
+    "console_errors": "ERR_CONNECTION_CLOSED 200 (OK) on render endpoint, stack trace errors in console, 4 errors total"
+  },
+  "network_observations": {
+    "generate_endpoint": "200 h2 - outline generation request succeeded",
+    "render_endpoint": "FAILED (red) - render request blocked with ERR_CONNECTION_CLOSED",
+    "graphql": "Multiple 200 h2 graphql requests succeeded",
+    "fonts_google": "ERR_CONNECTION_CLOSED 200 (OK) - font request also blocked"
+  },
+  "comparison_with_previous": {
+    "before_200ok": "400 Bad Request caused silent failure at generation stage - nothing loaded",
+    "after_200ok": "200 OK allows outline page to load, generation starts but truncates to 1 empty card. Progress but still no warning."
+  },
+  "analysis": "Changing HTTP status from 400 to 200 OK in gamma_sse template is a PARTIAL improvement. The frontend no longer silently rejects the response at the HTTP level. Instead, the outline generation page loads and attempts to create content. However, the SSE stream content (block response) is not valid generation data, so only 1 empty card is produced. The content_policy error message from the SSE payload is NOT surfaced to the user. The generation appears incomplete rather than blocked. Further template refinement needed to make the error message visible.",
+  "screenshots": ["results/files/492/gamma_outline_partial.png"]
+}
