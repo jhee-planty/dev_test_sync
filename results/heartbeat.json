@@ -1,9 +1,1 @@
-{
-  "timestamp": "2026-04-20T09:26:00+09:00",
-  "status": "alive",
-  "last_processed": 485,
-  "mode": "autonomous",
-  "stage": "Stage 2 (10min)",
-  "poll_count": 11,
-  "note": "Stage 1 complete (10 cycles, no new requests). Transitioning to Stage 2."
-}
+{"timestamp":"2026-04-20T09:30:00","status":"alive","stage":1,"cycle":1,"last_processed":486}
