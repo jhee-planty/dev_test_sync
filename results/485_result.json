@@ -1,0 +1,47 @@
+{
+  "id": 485,
+  "command": "check-warning",
+  "service_name": "deepseek",
+  "overall_status": "PARTIAL",
+  "status_detail": "476B SSE envelope accepted without protocol error. No INVALID_JSON, no ERR_HTTP2. But warning text NOT rendered — chat is completely blank (no user message, no AI response, no error). The completion request returned 200/h2. SSE format was silently consumed but produced no visible DOM content. Significant improvement over #484 (249B → INVALID_JSON error) but still no visible warning.",
+  "started_at": "2026-04-20T09:11:00+09:00",
+  "completed_at": "2026-04-20T09:14:30+09:00",
+  "duration_seconds": 210,
+  "test_results": [
+    {
+      "name": "password keyword warning test (476B envelope)",
+      "status": "PARTIAL",
+      "details": {
+        "warning_text_visible": false,
+        "err_http2_in_devtools": false,
+        "invalid_json_error": false,
+        "user_facing_error": "NONE — chat is completely blank, no error message shown",
+        "console_errors": [
+          "WebAssembly MIME type warning (×2, unrelated)"
+        ],
+        "network_completion": {
+          "url": "https://chat.deepseek.com/api/v0/chat/completion",
+          "status": 200,
+          "protocol": "h2",
+          "type": "xhr"
+        },
+        "chat_state": "Blank — no user message bubble, no AI response, no error text. Input field empty (message was sent). URL changed to new chat session."
+      }
+    }
+  ],
+  "experiment": {
+    "name": "h2_500b_ceiling",
+    "step": 2,
+    "response_type": "deepseek_sse",
+    "envelope_bytes": 476,
+    "h2_end_stream": 2,
+    "h2_mode": 2,
+    "h2_goaway": 0
+  },
+  "comparison_with_484": {
+    "step1_249B": "INVALID_JSON error → network error message shown to user",
+    "step2_476B": "No JS error at all → chat blank, SSE silently consumed",
+    "conclusion": "Larger envelope (476B) avoids JSON parse error but warning content still not rendered in DeepSeek UI"
+  },
+  "screenshots": []
+}
