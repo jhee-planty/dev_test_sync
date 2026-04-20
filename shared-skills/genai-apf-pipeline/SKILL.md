@@ -11,6 +11,11 @@ description: "Master orchestrator for GenAI APF (ai_prompt_filter) pipeline — 
 - **status.md는 자동 생성 파일 — 직접 수정 금지** (regen-status.py가 pipeline report에서 생성 → §Status Tracking 참조)
 - **blocked=1만으로 성공 판단 금지** — test PC 화면이 ground truth
 
+### ⛔ Critical Prohibitions (위반 시 즉시 중단)
+- ⛔ **BLOCK_ONLY 최종 판정 전 `apf-technical-limitations.md`의 모든 대안 시도 필수** — "BLOCKED_ONLY 판정은 존재하지 않는다" → See §Phase Transitions
+- ⛔ **blocked=1만으로 성공 판단 금지** — test PC 화면이 유일한 ground truth → See §Test-Fix Cycle
+- ⛔ **외부 시스템 상태 단정 금지** — 확인 없이 "test PC 중단됨" 등 단정 불가 → See §금지 패턴
+
 ## Autonomous Execution Rules (자율 수행 규칙)
 
 자율 수행 모드에서는 아래 프로토콜을 따른다. 위반 시 PostCompact 훅이 교정한다.

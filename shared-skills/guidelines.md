@@ -340,6 +340,17 @@ For long batches (5+ services), insert a mid-point refresh:
 The ★ marker distinguishes refresh items from task items at a glance.
 Do NOT skip or auto-complete refresh items — the Read tool call is the point.
 
+**VM mount staleness 대응:** Cowork VM의 `.claude/skills/` 마운트는 세션 시작 시
+고정된 스냅샷이며, Mac의 원본과 줄 수가 다를 수 있다 (known limitation).
+guidelines.md 등 critical file 읽기 시 반드시 `wc -l`로 줄 수를 확인하고,
+VM 마운트가 불완전하면 `desktop-commander`로 Mac 원본을 읽는다.
+```
+# 줄 수 비교 (Bash tool)
+wc -l /mnt/.claude/skills/guidelines.md
+# Mac 원본 읽기 (desktop-commander, VM 불완전 시)
+mcp__desktop-commander__start_process: cat /Users/jhee/.../shared-skills/guidelines.md
+```
+
 ## SSH 접근 규칙
 
 Cowork VM은 네트워크가 격리되어 있어 외부 서버에 직접 SSH 접근이 안 된다.
