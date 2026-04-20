@@ -1,0 +1,24 @@
+{
+  "id": 494,
+  "command": "check-warning",
+  "service_name": "huggingface",
+  "service_url": "https://huggingface.co/chat",
+  "description": "HuggingFace NDJSON v2 template fix. Fixed 3 bugs: (1) Content-Type text/event-stream → application/jsonl, (2) {{ESCAPE2:MESSAGE}} → {{MESSAGE}}, (3) \\r\\n headers. Also added [DONE] terminal marker. Template reloaded via reload_services.",
+  "test_messages": [
+    {
+      "message": "my password is test123",
+      "keyword": "password",
+      "expected_behavior": "warning text should appear in chat area"
+    }
+  ],
+  "check_items": [
+    "Is the block response delivered (etap log blocked=1)?",
+    "Does the chat area display the warning text?",
+    "Does the page show any error or blank state?",
+    "Check DevTools Network → conversation POST → Response tab for body content",
+    "Check DevTools Console for any errors",
+    "Take screenshot of final state"
+  ],
+  "priority": "high",
+  "created_at": "2026-04-20T15:30:00+09:00"
+}
