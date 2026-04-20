@@ -1,0 +1,35 @@
+﻿{
+    "template_changes_tested":  {
+                                    "terminal_marker":  "added [DONE]",
+                                    "content_type":  "text/event-stream -\u003e application/jsonl",
+                                    "headers":  "added \\\\r\\\\n line endings",
+                                    "message_format":  "ESCAPE2:MESSAGE -\u003e MESSAGE (raw)"
+                                },
+    "id":  494,
+    "status_detail":  "Block delivered but NO warning shown. Chat area completely empty - no user message bubble, no assistant response, no warning text. Conversation was created (URL changed to conversation ID) but the page shows blank chat with \u0027New Chat\u0027 title. The NDJSON v2 template fix (Content-Type application/jsonl, raw MESSAGE, DONE marker) did not produce visible warning text in the chat area.",
+    "started_at":  "2026-04-20T13:42:00",
+    "service_name":  "huggingface",
+    "command":  "check-warning",
+    "observations":  [
+                         "Conversation was created server-side (URL changed to conversation ID)",
+                         "Chat area is completely empty - no messages at all",
+                         "User message \u0027my password is test123\u0027 not shown in chat",
+                         "No assistant response or warning text displayed",
+                         "No error toast, modal, or inline error message",
+                         "Page title remains \u0027New Chat\u0027 (not showing message summary)",
+                         "Input field cleared and shows \u0027Ask anything\u0027 placeholder",
+                         "NDJSON v2 fixes (Content-Type, MESSAGE format, DONE marker) did not produce visible output"
+                     ],
+    "duration_seconds":  180,
+    "network_evidence":  {
+                             "conversation_id":  "69e5aeefa319053fd6ce4e7a",
+                             "conversation_post":  "huggingface.co/chat/conversation (200 OK - conversation created)",
+                             "total_requests":  28,
+                             "console_errors":  "No JS errors in Console (only 2 issues: possible improvements)"
+                         },
+    "overall_status":  "FAIL",
+    "screenshots":  [
+                        "results/files/494/hf_ndjson_v2.png"
+                    ],
+    "completed_at":  "2026-04-20T13:45:00"
+}
