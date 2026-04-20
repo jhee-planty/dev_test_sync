@@ -79,3 +79,17 @@
 - B14 (VTS-level hold) 수정으로도 구조적 H2 멀티플렉싱 충돌 미해결
 - 유효 시도: 5회 (B2, B6, B14 + infra_issue 2회 면제)
 - 경고 주입은 구조적으로 불가 — 차단만 유지
+
+
+### Iteration 6 (#493, 2026-04-20) — 400→200 OK DB-only change
+
+**변경:** envelope_template HTTP status 400 → 200 OK (DB UPDATE only, no code change)
+**결과: FAIL — 200 OK도 동일한 silent failure**
+- StreamGenerate 200 OK 수신 확인
+- 프론트엔드가 유효한 Gemini streaming format이 아닌 데이터를 조용히 무시
+- Welcome 화면 유지, 사용자 텍스트가 입력 필드에 남아있음
+- 400과 200 OK 동작 완전히 동일
+
+**판정: BLOCK_ONLY 재확인** — DB-only 접근법으로는 해결 불가.
+Gemini 프론트엔드는 유효한 streaming format(protobuf/JSON array)이 아니면
+status code와 무관하게 응답을 무시한다.
