@@ -1,11 +1,7 @@
 {
-    "found_new":  false,
-    "timestamp":  "2026-04-21T11:50:09",
-    "stage":  "batch_polling_done",
+    "cycle":  2,
+    "timestamp":  "2026-04-21T13:55:57",
     "last_processed_id":  505,
-    "cycles_done":  6,
-    "new_ids":  [
-
-                ],
-    "status":  "alive"
+    "stage":  "in_session",
+    "mode":  "claude_direct"
 }
