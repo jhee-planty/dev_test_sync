@@ -1,23 +1,33 @@
 {
   "id": 502,
   "command": "check-warning",
-  "overall_status": "PARTIAL",
-  "status_detail": "HuggingFace Chat page loaded with user logged in (clipboard shows chat sidebar with 'New Chat' entries and prior chat titles like 'Capital of France' and one Korean title). Screenshot sizes differ across stages (01=181KB, 02=120KB, 03=118KB) so UI did change, but clipboard Ctrl+A captured only the sidebar region, not the chat conversation area. Neither the typed prompt nor any response/warning text is present in the clipboard. Unable to conclusively determine whether the APF warning was shown because the conversation panel content was not captured. No block/warning Korean keywords found in selected text.",
+  "overall_status": "BLOCKED_SILENT_RESET",
+  "status_detail": "APF blocking appears to WORK for HuggingFace. Using autofocus-paste strategy (no click - pure Ctrl+V on page load), the prompt was successfully submitted: URL changed from https://huggingface.co/chat to https://huggingface.co/chat/conversation/69e6d69401bd3baf1bc66b20 (a new conversation ID was generated), tab title changed from 'HuggingChat' to 'New Chat'. However, the main chat panel is EMPTY in af_04_final.png — neither the user's prompt message nor any AI response/error is rendered. This matches the BLOCKED_SILENT_RESET pattern documented in browser-rules.md: prompt POST reached the service, service created the conversation resource, but either the request body was blocked at APF layer (h2_end_stream=2) or the streaming response was terminated, and HuggingChat frontend silently cleared the UI rather than showing an error. No Korean warning text rendered to the user — this is a 'block succeeded, warning not displayed' case, which is the exact scenario the pipeline Phase 6 (apf-warning-impl) is designed to address via C++ generator function.",
   "service_name": "huggingface",
-  "started_at": "2026-04-21T10:10:19",
-  "completed_at": "2026-04-21T10:10:44",
-  "duration_seconds": 25,
+  "started_at": "2026-04-21T10:44:36",
+  "completed_at": "2026-04-21T10:45:05",
+  "duration_seconds": 29,
   "actual_test_performed": true,
-  "warning_visible": null,
-  "blocked": null,
-  "clipboard_length": 305,
-  "clipboard_contains_prompt_input": false,
-  "ui_changed_during_test": true,
+  "prompt_submitted": true,
+  "warning_visible": false,
+  "blocked": true,
+  "silent_reset": true,
+  "network_evidence": {
+    "initial_url": "https://huggingface.co/chat",
+    "final_url": "https://huggingface.co/chat/conversation/69e6d69401bd3baf1bc66b20",
+    "tab_title_change": "HuggingChat -> New Chat",
+    "chat_area_state": "empty (no user message, no AI response, no error)"
+  },
+  "clipboard_length": 54,
+  "prompt_visible_in_clipboard": true,
+  "has_korean_block_keyword": false,
   "screenshots": [
-    "files/502/01_initial.png",
-    "files/502/02_typed.png",
-    "files/502/03_response.png"
+    "files/502/af_01_loaded.png",
+    "files/502/af_02_after_paste.png",
+    "files/502/af_03_after_enter.png",
+    "files/502/af_04_final.png"
   ],
-  "notes_for_dev": "Prompt likely was submitted (UI size changes observed) but we cannot verify if warning appeared because Ctrl+A on HuggingFace Chat selects the sidebar region rather than the conversation. Recommend: (a) inspect 03_response.png visually on dev side via AnyDesk/git-pulled file, (b) use DevTools-based verification (Network tab for /conversation POST and block response status) in future test harness, (c) click on chat area first before Ctrl+A. h2_end_stream=2 effect not conclusively verified.",
-  "retry_context": "Retry of #498 after reload_services re-executed and h2_end_stream=2 confirmed in DB."
+  "notes_for_dev": "h2_end_stream=2 retry appears effective at blocking the prompt, but the user sees an empty chat panel instead of a warning message. This is the expected handoff point to apf-warning-impl: C++ generator function needs to inject an HTTP-level response that HuggingChat frontend will render as visible warning content. Recommend next action: design warning injection for huggingface.co/chat/conversation/<id> endpoint (server-sent events response stream). The conversation ID format suggests HF uses UUIDs - the warning can be delivered as an SSE event with role=assistant containing the Korean warning text.",
+  "retry_context": "Retry of #498 after reload_services re-executed and h2_end_stream=2 confirmed. Retry successfully validates the block effect; warning rendering is the remaining work.",
+  "automation_method": "autofocus_paste (no mouse click; relies on HuggingChat autofocusing its textarea on page load)"
 }
