@@ -1,0 +1,66 @@
+{
+  "id": 510,
+  "command": "check-warning",
+  "overall_status": "BLOCKED_NO_RENDER",
+  "status_detail": "v3 envelope did NOT resolve the baidu rendering issue. SAME Console error '[onmessage] status error!' at vendors-jSy077-j.js:2 persists as in #507. The user prompt bubble is not rendered. Chat area stuck at '理解问题'. This means the status check is STILL failing — either the status value is not at the expected location in the JSON, or it's not a number, or the JSON isn't being parsed because the chunk delimiters are still wrong.",
+  "service_name": "baidu",
+  "started_at": "2026-04-21T16:35:00",
+  "completed_at": "2026-04-21T16:37:30",
+  "duration_seconds": 150,
+  "actual_test_performed": true,
+  "prompt_submitted": true,
+  "warning_visible_in_ui": false,
+  "network_evidence": {
+    "request_status": 200,
+    "request_size": "0.7 kB",
+    "conversation_request_observed": true,
+    "url_transition": "chat.baidu.com/?enter_type=chat_url → chat.baidu.com/search?enter_type=chat_url&internal=1",
+    "chat_area_state": "'理解问题' (Understanding question) - same as #507"
+  },
+  "console_error_still_present": {
+    "message": "[onmessage] status error!",
+    "source": "vendors-jSy077-j.js:2",
+    "significance": "IDENTICAL to #507 error — the v3 envelope did not fix the root cause"
+  },
+  "root_cause_re_analysis": {
+    "what_we_know_from_#509_js_decoding": [
+      "MSG_CONTINUE_STATUS = [0, 1001, 1002, 1003, 1004, 1005] — status must be a NUMBER in this set",
+      "Chunks must be wrapped in <!--chat-sse-data-start ... chat-sse-data-end--> HTML comment delimiters",
+      "Chunk format: [<eventType>]:<JSON> (eventType in brackets BEFORE colon, then JSON body)",
+      "Envelope: {status:0, data:{message:{content:{...}, metaData:{state, endTurn, seqId, msgId}}}}",
+      "Status is at ROOT level of the JSON body, NOT inside data"
+    ],
+    "hypothesis_about_v3": [
+      "H1: v3 may have HTML comment delimiters correct but placed status in wrong location (e.g., inside data.message instead of root)",
+      "H2: v3 may have status=0 at root but sent as STRING \"0\" instead of NUMBER 0 (JSON serializer mistake)",
+      "H3: v3 may be missing the HTML comment delimiters entirely — sending raw JSON or 'data: ...' SSE lines",
+      "H4: v3 may have wrong eventType prefix format — missing brackets or using different delimiter"
+    ],
+    "immediate_next_test": "Ask dev to share the EXACT bytes v3 sends. Even better: capture v3's response via server-side log (Etap /var/log/ai_prompt/). Or have APF write the outbound envelope bytes to a file for inspection."
+  },
+  "exact_expected_envelope_bytes": {
+    "description": "Minimal working chunk per #509 decoded spec",
+    "bytes_utf8": "<!--chat-sse-data-start[generator]:{\"status\":0,\"data\":{\"message\":{\"content\":{\"text\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\"},\"metaData\":{\"state\":\"generate-complete\",\"endTurn\":true,\"seqId\":1,\"msgId\":\"apf_warn_1\"},\"msgId\":\"apf_warn_1\"}}}chat-sse-data-end-->",
+    "notes": [
+      "status MUST be JSON number 0 (no quotes): \"status\":0",
+      "Must be wrapped in the HTML-comment-style delimiters (literal bytes <!--chat-sse-data-start and chat-sse-data-end-->)",
+      "Event type prefix [generator]: comes AFTER start delimiter and BEFORE the JSON",
+      "metaData.state = 'generate-complete' AND endTurn=true signals final message",
+      "No newline needed between chunks, but tolerated",
+      "Simplest alternative: [card]:⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (plain text body after colon, no JSON needed for card type)"
+    ]
+  },
+  "screenshots": [
+    "files/510/510_after_send.png (Network shows conversation 200 OK, chat stuck at 理解问题)",
+    "files/510/510_console.png (Console shows [onmessage] status error! at vendors-jSy077-j.js:2 - SAME as #507)"
+  ],
+  "recommended_dev_actions": [
+    "CRITICAL: Compare v3's output bytes with the spec in #509_result.json. Most likely issue: missing HTML comment delimiters OR status field nested inside data instead of at root.",
+    "Quickest verification: Write APF's baidu envelope output to /tmp/apf_baidu_out.bin and compare hex bytes to the exact_expected_envelope_bytes above.",
+    "Try the 'card' type approach from #509 — simplest format, no JSON needed. If that renders warning, we know delimiters work; then work up to 'generator' type with JSON.",
+    "Fallback capture test: use Etap's own middleware to log what APF sends on its way to the browser. Compare vs #509 spec."
+  ],
+  "notes_for_dev": "We are VERY close — just need to align the actual bytes with the #509 spec. The #507 error persists in #510 meaning the fundamental delimiter/structure issue wasn't resolved. Suggest: ask APF developer to paste the LITERAL bytes of the response they generate, then we can eyeball the diff against expected_envelope_bytes above.",
+  "retry_context": "Applied #509 decoded spec to create baidu v3 envelope. Test shows v3 still triggers the same status_error. Envelope implementation must be off in one of: delimiters, status field location, or eventType prefix.",
+  "automation_method": "windows-mcp (App/Shortcut/Type/Click/Snapshot) + DevTools Console inspection. All UI automation steps successful. Clear diagnostic signal obtained: Console error persists → same root cause as #507."
+}
