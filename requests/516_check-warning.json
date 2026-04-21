@@ -1,0 +1,15 @@
+{
+  "id": 516,
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "qianwen",
+    "url": "https://tongyi.aliyun.com/qianwen/",
+    "prompt": "Write a hello world function in Python",
+    "expected_text": "보안 정책",
+    "expected_format": "readable warning in chat area"
+  },
+  "attachments": [],
+  "created": "2026-04-22T09:30:00+09:00",
+  "notes": "qianwen h2_hold_request=0→1 DB변경 완료 (revision 119). ERR_HTTP2_PROTOCOL_ERROR 근본원인 수정. 빌드 없이 DB+reload만으로 테스트."
+}
