@@ -1,0 +1,92 @@
+# gamma Frontend Profile (Phase 1 Result)
+
+**Captured**: 2026-04-02 (Task #15x)
+
+## Raw Inspection Data
+
+```json
+{
+  "request_id": 158,
+  "command": "run-scenario",
+  "service": "Gamma",
+  "status": "partial",
+  "status_reason": "manual_input_required — Gamma's custom textarea rejects SendKeys and Ctrl+V paste. Automated text input not possible.",
+  "timestamp": "2026-04-02T12:51:00+09:00",
+  "scenario_results": {
+    "actions_completed": [
+      "open",
+      "screenshot_baseline",
+      "devtools_network",
+      "send-prompt_FAILED"
+    ],
+    "actions_failed": [
+      "send-prompt"
+    ],
+    "failure_detail": "Custom textarea (contentEditable div or React-controlled) does not accept SendKeys or clipboard paste via automation. Both methods leave placeholder text unchanged.",
+    "prompt_sent": null,
+    "prompt_method_attempted": [
+      "SendKeys via PowerShell",
+      "Clipboard paste (Ctrl+V) via PowerShell"
+    ],
+    "response_received": false
+  },
+  "frontend_profile": {
+    "service_name": "Gamma",
+    "url_tested": "https://gamma.app",
+    "url_loaded": "https://gamma.app/create/generate",
+    "page_title": "생성 | Gamma",
+    "framework": "React (likely Next.js)",
+    "framework_evidence": "Modern SPA with service worker, PWA install prompt (Gamma 설치), custom UI components",
+    "login_state": "logged_in",
+    "ui_mode": "Presentation generator (NOT chat AI)",
+    "service_type": "Content generation (presentations, web pages, documents, social, graphics)",
+    "http_protocol": "h2",
+    "protocol_evidence": "Expected h2 based on modern SPA architecture (no requests captured due to failed prompt)",
+    "content_types": [
+      "프레젠테이션 (Presentation)",
+      "웹 페이지 (Web Page)",
+      "문서 (Document)",
+      "소셜 (Social)",
+      "그래픽 (Graphic - 신규/New)"
+    ]
+  },
+  "warning_pipeline_info": {
+    "design_doc_pattern": "BLOCKED_ONLY",
+    "blocked_only_reason": "Non-chat consumption (checklist 2-5): warning text absorbed into presentation card outline, not visible to user",
+    "build_history": "Build #10: SSE generation event → warning absorbed into card outline → failed. 13 builds total before BLOCKED_ONLY determination",
+    "early_detection_note": "Could have been determined in 3 builds or fewer with systematic checklist (checklist-criteria-sources.md section 3.3)",
+    "communication_type": "SSE (for content generation events)",
+    "escalation_status": "Stage ① exhausted — HTTP body manipulation cannot show warning in presentation generator context"
+  },
+  "ui_observations": {
+    "input_field": "Custom textarea with placeholder '무엇을 만들지 설명하세요' — does NOT accept automated input",
+    "input_automation_status": "BLOCKED — SendKeys and Ctrl+V both fail",
+    "content_options": {
+      "types": [
+        "프레젠테이션",
+        "웹 페이지",
+        "문서",
+        "소셜",
+        "그래픽(신규)"
+      ],
+      "cards": "카드 10개 (configurable)",
+      "theme": "클래식 (selectable)",
+      "aspect_ratio": "기본 (configurable)",
+      "language": "한국어 (selectable)"
+    },
+    "prompt_examples": [
+      "산업 혁명 교훈",
+      "아인슈타인 특수 상대성 이론을 초보자에게 설명하기",
+      "개인 포트폴리오 개요",
+      "서바이버 프로그램의 개요",
+      "[회사]에 대한 영업 제안서",
+      "유전학 강의 개론"
+    ],
+    "action_button": "섞기 (Shuffle) — generates random prompt"
+  },
+  "screenshots": {
+    "baseline": "files/158/baseline_gamma.png"
+  },
+  "notes": "Gamma is a PRESENTATION GENERATOR, not a chat AI. The custom textarea rejects all automated input methods (SendKeys, clipboard paste). Design docs confirm BLOCKED_ONLY status: warning text gets absorbed into presentation card outline (non-chat consumption pattern, checklist item 2-5). This was previously tested over 13 builds before BLOCKED_ONLY determination. For APF warning pipeline, Gamma requires either Stage ② (error page replacement) or Stage ③ (JS injection) which need Etap C++ architecture changes (~400 LOC). URL pattern: gamma.app/create/generate."
+}
+```
