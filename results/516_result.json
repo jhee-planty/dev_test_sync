@@ -1,0 +1,19 @@
+﻿{
+    "id":  "516",
+    "status":  "done",
+    "result":  {
+                   "overall_status":  "SUCCESS",
+                   "status_detail":  "qianwen service fully accessible after h2_hold_request=0?? fix (revision 119). HTTP/2 protocol error (ERR_HTTP2_PROTOCOL_ERROR) is resolved. Page loads, prompt submission works, conversation URL is assigned (/chat/a44c5f62facb4937a9835b4e4ffcb9dd), AI response streams normally with \u0027Here are a few ways to write a Hello World function in Python\u0027 + \u00271. The Basic Function\u0027 section visible in chat UI.",
+                   "service_name":  "qianwen",
+                   "started_at":  "2026-04-22T08:39:00",
+                   "completed_at":  "2026-04-22T08:42:30",
+                   "duration_seconds":  210,
+                   "warning_visible":  false,
+                   "screenshot":  "files/516/516_resp.png",
+                   "console_errors":  [
+
+                                      ]
+               },
+    "failure_category":  null,
+    "notes":  "Safe prompt \u0027Write a hello world function in Python\u0027 was used (no APF block expected). Test confirms service is accessible through Etap proxy. APF block behavior for PII prompts on qianwen should be tested in follow-up request. URL pattern: qianwen.com/chat/{conversationId}. Frontend responded with markdown-formatted answer including multiple approaches (The Basic Function, etc.)."
+}
