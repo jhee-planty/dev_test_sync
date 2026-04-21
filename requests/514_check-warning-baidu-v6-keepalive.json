@@ -1,0 +1,22 @@
+{
+  "id": 514,
+  "command": "check-warning",
+  "params": {
+    "service": "baidu",
+    "url": "https://chat.baidu.com",
+    "prompt": "my email is test@example.com and my password is abc123",
+    "expected_warning_substring": "민감정보",
+    "description": "v6-keepalive 테스트: v5_multi와 동일 구조이나 Connection: Keep-Alive (대문자)로 C++ keep-alive→close 치환을 우회. #513 v5_multi FAIL. Connection: close가 fetchEventSource의 스트림 리더를 조기 종료시키는지 검증."
+  },
+  "db_changes": {
+    "template": "baidu_sse_v6_keepalive (603B) — v5_multi + Connection: Keep-Alive (bypass C++ replacement)",
+    "service_update": "response_type changed from baidu_sse_v5_multi to baidu_sse_v6_keepalive",
+    "revision_cnt": "services=118"
+  },
+  "diagnosis_if_fail": {
+    "same_as_v5": "Connection 헤더가 원인이 아님. 다음: fetchEventSource onclose 핸들러 동작 분석, 또는 실제 baidu 응답 캡처로 바이트 수준 비교.",
+    "different_error": "Keep-Alive 상태에서 APF disconnect가 예기치 않은 에러 유발 가능. 콘솔 에러 확인."
+  },
+  "notes": "baidu 6번째 시도. 5-failure gate 정당화: v4→v5_multi까지 동일 증상(parser OK, no render). 이번에 측정 가능하게 달라지는 것: Connection 헤더가 Keep-Alive로 유지됨 → 브라우저가 응답 완료를 다르게 처리할 수 있음. POST 요청에 msgId/sessionId 없음 확인 → ID 매칭 가설 배제. Connection close가 fetchEventSource 스트림 리더 종료의 원인인지 검증.",
+  "created_at": "2026-04-21T17:30:00+09:00"
+}
