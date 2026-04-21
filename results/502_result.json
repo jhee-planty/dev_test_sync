@@ -1,0 +1,23 @@
+{
+  "id": 502,
+  "command": "check-warning",
+  "overall_status": "PARTIAL",
+  "status_detail": "HuggingFace Chat page loaded with user logged in (clipboard shows chat sidebar with 'New Chat' entries and prior chat titles like 'Capital of France' and one Korean title). Screenshot sizes differ across stages (01=181KB, 02=120KB, 03=118KB) so UI did change, but clipboard Ctrl+A captured only the sidebar region, not the chat conversation area. Neither the typed prompt nor any response/warning text is present in the clipboard. Unable to conclusively determine whether the APF warning was shown because the conversation panel content was not captured. No block/warning Korean keywords found in selected text.",
+  "service_name": "huggingface",
+  "started_at": "2026-04-21T10:10:19",
+  "completed_at": "2026-04-21T10:10:44",
+  "duration_seconds": 25,
+  "actual_test_performed": true,
+  "warning_visible": null,
+  "blocked": null,
+  "clipboard_length": 305,
+  "clipboard_contains_prompt_input": false,
+  "ui_changed_during_test": true,
+  "screenshots": [
+    "files/502/01_initial.png",
+    "files/502/02_typed.png",
+    "files/502/03_response.png"
+  ],
+  "notes_for_dev": "Prompt likely was submitted (UI size changes observed) but we cannot verify if warning appeared because Ctrl+A on HuggingFace Chat selects the sidebar region rather than the conversation. Recommend: (a) inspect 03_response.png visually on dev side via AnyDesk/git-pulled file, (b) use DevTools-based verification (Network tab for /conversation POST and block response status) in future test harness, (c) click on chat area first before Ctrl+A. h2_end_stream=2 effect not conclusively verified.",
+  "retry_context": "Retry of #498 after reload_services re-executed and h2_end_stream=2 confirmed in DB."
+}

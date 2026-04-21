@@ -1,0 +1,22 @@
+{
+  "id": 501,
+  "command": "check-warning",
+  "overall_status": "PARTIAL",
+  "status_detail": "Prompt submission could not be confirmed. Clipboard contains only the gamma.app initial creation page text (Korean: '영웅 / 오늘은 뭐를 만들고 싶으신가요? / 뭐를 만들지 설명하세요 / 프롬프트 예시'). 02_typed.png and 03_response.png have identical size (85011 bytes) which strongly indicates the page did not change after Enter was pressed. No warning text, no error text, no block indicator found in clipboard. Likely causes: (1) Tab focus did not reach the active input field on gamma.app; (2) gamma.app requires login and session is not active (redirect to login may have happened without visible change); (3) Input field may require click instead of Tab. Test environment did not verify h2_end_stream=2 effect because the request was never actually submitted.",
+  "service_name": "gamma",
+  "started_at": "2026-04-21T10:08:08",
+  "completed_at": "2026-04-21T10:08:34",
+  "duration_seconds": 26,
+  "actual_test_performed": false,
+  "warning_visible": false,
+  "blocked": false,
+  "clipboard_length": 282,
+  "clipboard_contains_prompt_input": false,
+  "screenshots": [
+    "files/501/01_initial.png",
+    "files/501/02_typed.png",
+    "files/501/03_response.png"
+  ],
+  "notes_for_dev": "Retry test for #497 could not be validated. Automation hit the input-submit step but evidence suggests the prompt was not actually sent to the service API. Recommend: (a) user-assisted session with pre-authenticated Chrome, or (b) introduce a mouse-click on the input textarea before typing for gamma.app specifically, or (c) HTTP-level fallback to directly POST to gamma's generation API with the test prompt to verify APF block behavior independently of the UI.",
+  "retry_context": "Retry of #497 after reload_services re-executed and h2_end_stream=2 confirmed in DB."
+}

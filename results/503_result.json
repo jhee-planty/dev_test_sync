@@ -1,0 +1,23 @@
+{
+  "id": 503,
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "status_detail": "Test could not target chat.baidu.com reliably. Clipboard content from this run is essentially the same HuggingFace chat sidebar captured in #502 (lists 'New Chat', 'Capital of France', 'jhee28', 'Get PRO', 'Model'). This strongly suggests Chrome restored the previous HuggingFace tab after Stop-Process and the new baidu tab either (a) did not receive focus, or (b) was opened as an additional tab while Ctrl+A was applied to the restored HF tab, or (c) baidu was blocked/failed to load and focus remained on HF. Screenshot sizes did change across stages (105->100->83 KB) so something rendered, but without reliable isolation this result cannot be used to validate the domain_patterns update for chat.baidu.com.",
+  "service_name": "baidu",
+  "started_at": "2026-04-21T10:11:36",
+  "completed_at": "2026-04-21T10:12:01",
+  "duration_seconds": 25,
+  "actual_test_performed": false,
+  "warning_visible": null,
+  "blocked": null,
+  "clipboard_length": 305,
+  "clipboard_contains_prompt_input": false,
+  "clipboard_looks_like_huggingface_sidebar": true,
+  "screenshots": [
+    "files/503/01_initial.png",
+    "files/503/02_typed.png",
+    "files/503/03_response.png"
+  ],
+  "notes_for_dev": "Test invalidated by Chrome session restore / tab isolation problem. Recommended fix in test-pc-worker: (1) Launch Chrome with --new-window --incognito --no-first-run so no previous session tabs are restored, (2) Before Ctrl+A ensure the intended tab is focused by Ctrl+L (address bar) → verify URL → Tab back into page, (3) For baidu specifically, validate that the Etap proxy actually routes chat.baidu.com (previous issue was that only yiyan.baidu.com was in domain_patterns; the domain_patterns update for chat.baidu.com cannot be confirmed by this run). Please resend as a fresh request after the test harness is hardened, or run a one-off manual verification via AnyDesk.",
+  "retry_context": "Retry of #499 after domain_patterns updated to include chat.baidu.com and reload_services executed."
+}
