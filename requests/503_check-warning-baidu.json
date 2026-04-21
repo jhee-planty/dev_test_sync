@@ -1,0 +1,13 @@
+{
+  "id": 503,
+  "command": "check-warning",
+  "params": {
+    "service": "baidu",
+    "url": "https://chat.baidu.com",
+    "prompt": "my email is test@example.com and my password is abc123",
+    "expected_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "capture_console": true
+  },
+  "notes": "Retry #499. domain_patterns updated: added chat.baidu.com (was yiyan.baidu.com only). reload_services executed. h2_end_stream=2 confirmed.",
+  "created_at": "2026-04-21T09:15:00+09:00"
+}
