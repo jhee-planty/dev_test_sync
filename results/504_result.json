@@ -1,0 +1,37 @@
+{
+  "id": 504,
+  "command": "check-warning",
+  "overall_status": "BLOCKED_SILENT_RESET",
+  "status_detail": "Envelope v3 (huggingface_ndjson_v3 with conversationId line removed) did NOT resolve the silent reset issue. Test execution: successfully forced Chrome to foreground via Alt+Tab keybd_event (UIPI workaround after initial Focus-Chrome failed because Claude Cowork was active window). Navigated to huggingface.co/chat, waited 12s for full load, pasted prompt via autofocus (Ctrl+V without click - HF autofocuses input textarea). Submitted via Enter. URL changed from https://huggingface.co/chat/ to https://huggingface.co/chat/conversation/69e6dc5fa319053fd6ce7b94 (new conversation created server-side), tab title changed from 'HuggingChat' to 'New Chat'. Main chat panel remained COMPLETELY EMPTY after 14+ seconds wait. No user message bubble, no AI/warning response, no error text. Ctrl+A+Ctrl+C captured only 54 chars (the prompt itself, still in the textarea). This is the IDENTICAL pattern observed in #502. Root cause hypothesis from request (conversationId UUID mismatch breaking Svelte parser) is INCORRECT - the issue persists without that line.",
+  "service_name": "huggingface",
+  "started_at": "2026-04-21T11:09:18",
+  "completed_at": "2026-04-21T11:09:55",
+  "duration_seconds": 37,
+  "actual_test_performed": true,
+  "prompt_submitted": true,
+  "warning_visible": false,
+  "blocked": true,
+  "silent_reset": true,
+  "envelope_v3_resolves_rendering": false,
+  "network_evidence": {
+    "initial_url": "https://huggingface.co/chat/",
+    "final_url": "https://huggingface.co/chat/conversation/69e6dc5fa319053fd6ce7b94",
+    "tab_title_change": "HuggingChat -> New Chat",
+    "conversation_id_server_assigned": "69e6dc5fa319053fd6ce7b94",
+    "chat_area_state_after_14s": "completely empty (no user message bubble, no AI response, no error)"
+  },
+  "clipboard_length": 54,
+  "clipboard_content_note": "Contains only the prompt text — prompt stayed in textarea because Enter submitted to backend but frontend did not advance state",
+  "prompt_visible_in_clipboard": true,
+  "screenshots": [
+    "files/504/at_00_before.png",
+    "files/504/at_01_after_alttab.png",
+    "files/504/at_02_loaded.png",
+    "files/504/at_03_pasted.png",
+    "files/504/at_04_after_enter.png",
+    "files/504/at_05_final.png"
+  ],
+  "notes_for_dev": "Envelope v3 did NOT fix the silent reset. The conversationId-first-line hypothesis is ruled out. Suggested next investigation paths for Phase 6 (apf-warning-impl): (1) Check browser DevTools Console for Svelte parser errors — need a DevTools-enabled test run. (2) Capture the actual APF-injected response stream bytes via a debug middleware or etap.log body capture to compare field-by-field with a known-good HF response envelope from HAR. (3) HF may have switched from SSE/NDJSON to a newer stream format — recommend fresh HAR capture of a non-blocked request to verify current envelope schema (Phase 1 re-capture). (4) The post-submission empty-chat state confirms the block works at HTTP layer (h2_end_stream=2 is correct); the rendering failure is purely a response-body format mismatch. TEST HARNESS NOTE: Alt+Tab via keybd_event successfully overcame Windows UIPI where Force-Foreground with AttachThreadInput + Alt keypress failed. Recommend adding Alt+Tab fallback to test-pc-worker's Focus-Chrome routine for future retries when user has an active Claude session.",
+  "retry_context": "Retry of #502 with envelope v3 (conversationId line removed). Silent reset persists - fix hypothesis was incorrect.",
+  "automation_method": "alt_tab_force_focus + autofocus_paste"
+}

@@ -1,7 +1,11 @@
 {
-    "stage_1_cycle":  1,
-    "status":  "alive",
-    "timestamp":  "2026-04-21T10:14:51",
+    "found_new":  true,
+    "timestamp":  "2026-04-21T11:04:56",
+    "stage":  "batch_polling_done",
     "last_processed_id":  503,
-    "stage":  "idle_after_batch_501_503"
+    "cycles_done":  6,
+    "new_ids":  [
+                    504
+                ],
+    "status":  "alive"
 }
