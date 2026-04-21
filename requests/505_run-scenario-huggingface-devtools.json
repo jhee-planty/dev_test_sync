@@ -1,0 +1,90 @@
+{
+  "id": 505,
+  "command": "run-scenario",
+  "params": {
+    "service": "huggingface",
+    "url": "https://huggingface.co/chat",
+    "description": "Manual DevTools diagnosis: capture actual HTTP response body and JS errors when APF blocks HuggingFace prompt",
+    "steps": [
+      {
+        "step": 1,
+        "action": "open_devtools",
+        "description": "Chrome에서 huggingface.co/chat 열기 전에 먼저 빈 탭에서 F12로 DevTools 열기. Network 탭 선택 후 'Preserve log' 체크박스 활성화. Console 탭도 확인하여 에러가 보이는지 준비."
+      },
+      {
+        "step": 2,
+        "action": "navigate",
+        "url": "https://huggingface.co/chat",
+        "description": "DevTools가 열린 상태에서 huggingface.co/chat으로 이동. 페이지 로드 완료까지 대기."
+      },
+      {
+        "step": 3,
+        "action": "screenshot",
+        "target": "full_page",
+        "filename": "505_step3_page_loaded.png",
+        "description": "페이지 로드 후 전체 화면 스크린샷 (DevTools 포함)"
+      },
+      {
+        "step": 4,
+        "action": "type_prompt",
+        "text": "my email is test@example.com and my password is abc123",
+        "description": "채팅 입력란에 PII 포함 프롬프트 입력. 아직 전송하지 않음."
+      },
+      {
+        "step": 5,
+        "action": "clear_network",
+        "description": "Network 탭에서 Clear 버튼(🚫 아이콘) 클릭하여 이전 요청 모두 제거. 깨끗한 상태에서 차단 응답만 캡처하기 위함."
+      },
+      {
+        "step": 6,
+        "action": "submit_prompt",
+        "description": "Enter 키로 프롬프트 전송. APF가 차단하므로 응답이 block response로 대체됨."
+      },
+      {
+        "step": 7,
+        "action": "wait",
+        "seconds": 5,
+        "description": "5초 대기 — APF block response 수신 및 프론트엔드 처리 시간"
+      },
+      {
+        "step": 8,
+        "action": "capture_network",
+        "description": "Network 탭에서 '/conversation' 또는 POST 요청 찾기. 해당 요청 클릭 후: (1) Headers 탭 스크린샷, (2) Response 탭 클릭하여 응답 본문 스크린샷. 특히 Response 탭의 실제 body 내용이 핵심 — APF가 주입한 NDJSON이 여기 보여야 함.",
+        "filename_prefix": "505_step8_network"
+      },
+      {
+        "step": 9,
+        "action": "screenshot",
+        "target": "network_response_body",
+        "filename": "505_step9_response_body.png",
+        "description": "Network > Response 탭의 응답 본문 텍스트를 반드시 캡처. 이것이 가장 중요한 데이터 — 브라우저가 실제로 수신한 바이트를 보여줌."
+      },
+      {
+        "step": 10,
+        "action": "capture_console",
+        "description": "Console 탭으로 전환. 빨간색 에러 메시지가 있으면 스크린샷 캡처. JavaScript 파싱 에러가 있다면 HF Svelte 파서가 NDJSON을 reject한 증거.",
+        "filename": "505_step10_console.png"
+      },
+      {
+        "step": 11,
+        "action": "screenshot",
+        "target": "chat_area",
+        "filename": "505_step11_chat_result.png",
+        "description": "채팅 영역 스크린샷 — 경고 메시지가 보이는지, 빈 화면인지, 에러 메시지가 있는지 확인"
+      },
+      {
+        "step": 12,
+        "action": "copy_response_text",
+        "description": "Network > Response 탭의 텍스트를 Ctrl+A → Ctrl+C로 복사하여 result의 details.response_body 필드에 텍스트로 기록. 스크린샷만으로는 긴 응답이 잘릴 수 있으므로 텍스트 복사가 필수."
+      }
+    ]
+  },
+  "notes": "HuggingFace #502/#504 both BLOCKED_SILENT_RESET. APF block response is generated correctly (etap logs confirm 429B H2 response with huggingface_ndjson_v3). But frontend silently resets — conversation URL changes but chat panel is empty. This diagnostic captures: (1) actual response body browser received (Network > Response), (2) JS parsing errors (Console), (3) visual state of chat area. Root cause hypotheses: (A) H2 frame reassembly issue — browser receives different bytes than APF sent, (B) HF Svelte parser expects fields not in our NDJSON, (C) Content-Type or other header mismatch, (D) timing issue with delayed END_STREAM.",
+  "expected_result": {
+    "response_body": "TEXT of the actual HTTP response body from Network > Response tab",
+    "console_errors": "Any JS errors related to response parsing",
+    "screenshots": ["505_step3_page_loaded.png", "505_step8_network_headers.png", "505_step9_response_body.png", "505_step10_console.png", "505_step11_chat_result.png"],
+    "chat_state": "Description of what the chat area shows after prompt submission"
+  },
+  "created_at": "2026-04-21T12:15:00+09:00"
+}
