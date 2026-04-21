@@ -1,7 +1,1 @@
-{
-    "cycle":  2,
-    "timestamp":  "2026-04-21T16:04:18",
-    "last_processed_id":  507,
-    "stage":  "in_session",
-    "mode":  "claude_direct"
-}
+{"pid":19504,"stage":"stage1","last_processed_id":508,"timestamp":"2026-04-21T16:28:11","cycle":1,"status":"alive","meta":{"error_count":0,"total_cycles":1},"mode":"resilient"}
