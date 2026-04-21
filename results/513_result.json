@@ -1,0 +1,46 @@
+{
+  "id": 513,
+  "command": "check-warning",
+  "overall_status": "BLOCKED_NO_RENDER",
+  "status_detail": "v5_multi (baseData + generator multi-chunk) did NOT render the warning in chat UI. Same 理解问题 (thinking) state as v4 and v5-card. HTML comment delimiters work (no status error), JSON structure is accepted, but chat bubble never materializes. Even the multi-chunk sequence with baseData anchor and generator content doesn't trigger rendering.",
+  "service_name": "baidu",
+  "started_at": "2026-04-21T17:08:00",
+  "completed_at": "2026-04-21T17:10:00",
+  "duration_seconds": 120,
+  "actual_test_performed": true,
+  "prompt_submitted": true,
+  "warning_visible_in_ui": false,
+  "evolution_summary": {
+    "v2_HF_style": "status error (wrong schema)",
+    "v3_standard_SSE": "status error (missing HTML comment delimiters)",
+    "v4_HTML_comments": "parser OK, no render (single chunk insufficient)",
+    "v5_card": "parser OK, no render (card type doesn't trigger chat bubble)",
+    "v5_multi": "parser OK, no render (sequence not matching baidu's expected message-binding flow)"
+  },
+  "why_v5_multi_might_fail": {
+    "H1_msgId_validation": "Client may generate OR validate msgId against a specific format (UUID v4, baidu-specific prefix) that APF's generated msgId doesn't match. Frontend would silently drop messages with unknown msgId.",
+    "H2_sessionId_mismatch": "sessionId may be bound to client-side request context established at prompt submission. APF-injected sessionId doesn't match → frontend treats messages as stale/foreign.",
+    "H3_missing_required_metaData": "#509 destructuring showed: endTurn, speedInfo, logInfo, sessionId, msgId, isDefault, qid, status, seqId, knowledgeId. v5_multi may be missing critical fields like qid (query id) or knowledgeId that baidu needs to bind to the current request context.",
+    "H4_request_binding": "baidu frontend tracks SSE messages via the ORIGINAL POST request context. When APF intercepts and replaces response, the 'request trace' is broken — frontend may compare incoming msgId/sessionId against an internal registry of sent requests and reject unknown ones.",
+    "H5_check_reqSeqId_or_trackSeqId": "From #509 context: 'Sj.trackSeqId(Oj)' is called BEFORE status check. If trackSeqId expects a specific sequence ID format tied to client-side request counter, APF's seqId=1,2,3 may conflict."
+  },
+  "network_evidence": {
+    "url_transition": "chat.baidu.com/?enter_type=chat_url → chat.baidu.com/search?enter_type=chat_url&internal=1",
+    "user_bubble_visible": true,
+    "thinking_indicator": "still stuck at 理解问题"
+  },
+  "critical_next_step": "MITM proxy capture of baidu's REAL response bytes for a normal query. Without knowing the exact msgId/sessionId/qid/seqId values baidu generates for real requests, we can only guess. The #509 JS analysis told us the SHAPE of the envelope; now we need the DATA (specifically, how client-side msgId/sessionId are generated and whether APF must match them).",
+  "recommended_dev_actions": [
+    "Setup Etap-side logging: log every outgoing response body to chat.baidu.com/aichat/api/conversation for a known-good (unblocked) query. This captures REAL baidu response. Compare vs our v5_multi envelope byte-by-byte.",
+    "Alternative: DevTools Application tab → inspect client-side storage (sessionStorage, IndexedDB) after a real baidu query to see if client maintains a request→msgId registry.",
+    "Alternative: search vendors-jSy077-j.js for 'trackSeqId' and 'reqSeqId' functions to understand the seq_id generation/validation logic. Our seqId values may be rejected.",
+    "Try: v6_matched — read the REQUEST body (POST data) baidu sends, extract its generated msgId/sessionId/qid, and echo those back in the APF response. This guarantees IDs match client expectations.",
+    "Dev inspect what happens RIGHT BEFORE status error in v3/v4: check if a specific REQUEST field was parsed that's now populated in v5_multi. The progression suggests we're very close — just one more field needed."
+  ],
+  "screenshots": [
+    "files/513/513_result.png (same 理解问题 state, user prompt visible, no assistant response)"
+  ],
+  "notes_for_dev": "We've exhausted the guessable envelope structures. Next step requires either: (a) server-side response capture via Etap logging, or (b) POST request body parsing to extract client-generated msgId/sessionId/qid and ECHO them back. The H4 hypothesis (request binding) is most likely — baidu's frontend probably generates ephemeral IDs in the OUTGOING request, and APF's response must echo those specific IDs for the message to be accepted.",
+  "retry_context": "Progression: v2 parser reject → v3 parser reject → v4 parser OK but no render → v5_card no render → v5_multi no render. Structure is correct per #509; remaining issue is likely about ID matching between client request and APF response.",
+  "automation_method": "windows-mcp fast iteration (no DevTools this run - we already confirmed parser accepts v4+ via #511)."
+}
