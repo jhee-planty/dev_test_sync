@@ -1,0 +1,53 @@
+{
+  "id": 511,
+  "command": "check-warning",
+  "overall_status": "PARTIAL_PROGRESS",
+  "status_detail": "v4 envelope MAJOR progress! The '[onmessage] status error!' console error that persisted through #507, #510 is now GONE. Only 3 console warnings remain, all preload-related (not parser errors). This means: (1) HTML comment delimiters <!--chat-sse-data-start ... chat-sse-data-end--> are now recognized by the ChunkStreaming parser, (2) JSON body parses successfully, (3) status field with value 0 passes the MSG_CONTINUE_STATUS check. HOWEVER: warning content STILL does not render in chat UI — stuck at '理解问题' (thinking) indicator. The user prompt bubble is visible (typed prompt on right side). Only the assistant response bubble is missing.",
+  "service_name": "baidu",
+  "started_at": "2026-04-21T16:55:00",
+  "completed_at": "2026-04-21T16:57:30",
+  "duration_seconds": 150,
+  "actual_test_performed": true,
+  "prompt_submitted": true,
+  "warning_visible_in_ui": false,
+  "status_error_in_console": false,
+  "progress_vs_v3": {
+    "v3_errors": ["[onmessage] status error! (at vendors-jSy077-j.js:2)"],
+    "v4_errors": [],
+    "improvement": "Parser now accepts envelope structure. HTML comment delimiters from #509 JS analysis WORKED. Status as numeric 0 WORKED."
+  },
+  "network_evidence": {
+    "url_transition": "chat.baidu.com/?enter_type=chat_url → chat.baidu.com/search?enter_type=chat_url&internal=1",
+    "user_bubble_visible": true,
+    "assistant_bubble": "missing - should appear with warning text",
+    "thinking_indicator": "stuck at '理解问题' (Understanding question)"
+  },
+  "console_state": {
+    "total_issues": 3,
+    "issues_breakdown": "all 3 are 'resource was preloaded using link preload but not used' warnings (unrelated to APF)",
+    "no_js_errors_about_parsing": true,
+    "no_status_error": true,
+    "significance": "Parser is now digesting our envelope without errors. The issue moved downstream — content delivery to UI renderer."
+  },
+  "remaining_issue_hypothesis": {
+    "H1_eventType_mismatch": "v4 uses [generator] type. Perhaps basedata type is required FIRST (to establish msgId anchor) before generator can stream. From #509 decoded flow: basedata → generator → final. Sending only [generator] without preceding [baseData] event may leave frontend in limbo waiting for initialization.",
+    "H2_missing_metaData_fields": "Full metaData schema per #509: {state, endTurn, seqId, msgId, speedInfo, logInfo}. If any required field missing, renderer may skip. endTurn=true + state=generate-complete combination is critical to signal 'done'.",
+    "H3_content_field_wrong": "content field structure varies by eventType. For generator it may expect {text, type, ...} not just {text}. Or content may need to be string directly (not object) for certain cases.",
+    "H4_missing_outer_fields": "Envelope may need sessionId, msgId, seq_id AT ROOT level (not inside data.message). The destructuring {status, data:{message}, sessionId, seq_id, type} = wj suggests these fields exist at root."
+  },
+  "recommended_dev_actions": [
+    "Inspect closely: baidu frontend's handleMessageData function in vendors-jSy077-j.js. Search for 'generating-resp' and 'basedata' usage to see the expected event sequence.",
+    "Try multi-chunk v5 envelope: first chunk [baseData] with msgId, then [generator] with warning text content, then [generator] with state=generate-complete endTurn=true.",
+    "Add sessionId + seq_id to root of each chunk (per destructuring pattern observed).",
+    "Verify content field structure: inside generator event, content likely needs {text: '...', type: 'text'} or similar. The #509 decoded context showed content for 'card' type accepts plain string; for 'generator' it should be object with text field.",
+    "Quick test: try 'card' type instead (simpler format). Send: <!--chat-sse-data-start[card]:⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.chat-sse-data-end-->",
+    "Alternative confirmation: inspect baidu's real response for 'What is 2+2?' (captured visually in #508). baidu's own response showed the text rendering, so the exact envelope format needs byte-level matching."
+  ],
+  "screenshots": [
+    "files/511/511_result.png (user bubble + 理解问题 indicator, no warning)",
+    "files/511/511_console.png (3 preload warnings, NO status error - BIG improvement!)"
+  ],
+  "notes_for_dev": "🚀 BREAKTHROUGH: v4's HTML comment delimiters work! The parser no longer bails with status error. This is significant validation of #509's JS analysis. Now just need to align content structure. Suggest: (a) try 'card' type for simplicity, (b) OR add basedata + generator multi-chunk sequence. If card type renders warning — we're DONE. If it doesn't, we know the issue is deeper in generator content structure.",
+  "retry_context": "#510 v3 FAILED (same status error as #507). #511 v4 (HTML comment delimiter format per #509 JS decoding) makes status error DISAPPEAR - parser now accepts envelope. Last remaining step: content rendering.",
+  "automation_method": "windows-mcp (App/Shortcut/Type/Snapshot) + DevTools F12 + Console observation. Simpler than #510 since no Network body capture needed (we trust status error presence/absence as signal)."
+}

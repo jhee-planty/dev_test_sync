@@ -1,1 +1,7 @@
-{"pid":19504,"stage":"stage1","last_processed_id":509,"timestamp":"2026-04-21T16:34:14","cycle":3,"status":"alive","meta":{"error_count":0,"total_cycles":3},"mode":"resilient"}
+{
+    "cycle":  1,
+    "timestamp":  "2026-04-21T16:54:28",
+    "last_processed_id":  510,
+    "stage":  "claude_direct",
+    "mode":  "in_session_only"
+}
