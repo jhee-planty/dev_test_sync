@@ -1,35 +1,80 @@
 {
   "id": 505,
   "command": "run-scenario",
-  "overall_status": "FAIL",
-  "status_detail": "DevTools-based diagnosis scenario could NOT be executed reliably via SendKeys automation. Multiple compounding failures: (1) After F12 opens DevTools docked to bottom, keyboard focus stays on Chrome main page (not DevTools). Ctrl+Shift+P in that state opens Chrome's PRINT dialog (confirmed: final window title was 'Google Chrome - 인쇄' = 'Print'), not DevTools Command Menu. (2) After Print dialog opened, subsequent SendKeys for 'preserve' and 'Show Network' went to an input that was not DevTools — possibly the Print dialog search box, possibly got interrupted when Claude Cowork app regained foreground. (3) Keystrokes leaked to the Claude Cowork chat window: 'preserve' appeared as 'ㅔㄱㄷㄴㄷㄱㅍㄷ' (Korean IME mapping of qwerty 'preserve') and 'Show Network' as '뇆 ㅜㄷㅅ재가' (Korean IME mapping of 'Show Network'). This confirms (a) Korean IME was active system-wide and intercepted English letters, (b) foreground was lost from Chrome at least part of the test. No useful DevTools capture was obtained. Screenshots were saved but likely show: regular Chrome pages, possibly Print dialog, and post-test chat area — not the Network Response body or Console errors that were requested.",
+  "overall_status": "SUCCESS",
+  "status_detail": "DevTools diagnostic executed successfully via Windows MCP (App switch + Click by label + Type by label). CRITICAL FINDING: The APF-injected NDJSON response body IS correctly formed and fully received by the browser. HuggingChat's Svelte frontend parses it without JavaScript errors (no Console errors about NDJSON parsing) but does NOT render the content to the chat UI. This definitively rules out (a) H2 frame reassembly issues, (b) Content-Type mismatch, (c) truncation/timeout, (d) Svelte parser rejection. The issue is in HF's RENDERING LOGIC: it receives valid MessageUpdate events but doesn't create a visible assistant message bubble.",
   "service_name": "huggingface",
-  "started_at": "2026-04-21T11:42:45",
-  "completed_at": "2026-04-21T11:43:40",
-  "duration_seconds": 55,
-  "actual_test_performed": false,
-  "automation_interference": true,
-  "failures": [
-    "F12 did not give DevTools keyboard focus",
-    "Ctrl+Shift+P triggered Print dialog instead of DevTools Command Menu",
-    "Korean IME converted English SendKeys to Korean chars",
-    "Foreground partially lost to Claude Cowork app (keystroke leakage confirmed by user)"
+  "started_at": "2026-04-21T13:28:00",
+  "completed_at": "2026-04-21T13:33:00",
+  "duration_seconds": 300,
+  "actual_test_performed": true,
+  "prompt_submitted": true,
+  "warning_visible_in_ui": false,
+  "warning_present_in_response_body": true,
+  "network_evidence": {
+    "request_method": "POST",
+    "request_url": "https://huggingface.co/chat/conversation/69e6fda85dc5af8c866f6446",
+    "request_type": "fetch (streaming NDJSON)",
+    "response_body_full": "{\"type\":\"status\",\"status\":\"started\"}\n{\"type\":\"stream\",\"token\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\"}\n{\"type\":\"finalAnswer\",\"text\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\",\"interrupted\":false}\n{\"type\":\"status\",\"status\":\"finished\"}\n[DONE]",
+    "response_body_line_count": 5,
+    "response_body_contains_korean_warning": true,
+    "url_changed_to_conversation": "https://huggingface.co/chat/conversation/69e6fda85dc5af8c866f6446",
+    "tab_title_change": "HuggingChat -> New Chat",
+    "chat_area_state": "completely empty — no user message bubble, no assistant response bubble, no error",
+    "console_state": "8 warnings total, ALL are preload-related ('was preloaded using link preload but not used...'). NO JavaScript errors, NO SyntaxError, NO parser errors regarding NDJSON response."
+  },
+  "analysis": {
+    "what_works": [
+      "H2 block at APF layer (h2_end_stream=2 correctly blocks outbound request)",
+      "NDJSON envelope is syntactically valid (5 lines, each valid JSON, [DONE] terminator)",
+      "Content-Type is accepted by browser (fetch stream processed without error)",
+      "HF conversation creation endpoint returns success (URL changes to /conversation/<ID>)",
+      "Svelte parser consumes the stream without throwing any console error"
+    ],
+    "what_does_not_work": [
+      "HF UI does not render the stream/finalAnswer content as an assistant message bubble",
+      "Even the user's submitted prompt is NOT rendered (normally frontend shows user message immediately on submit)"
+    ],
+    "root_cause_hypotheses_ranked": [
+      {
+        "rank": 1,
+        "hypothesis": "Missing user-message confirmation event. HF frontend awaits an explicit confirmation event (e.g., 'messageCreated' or embedded in STATUS:started payload) before rendering the user bubble AND creating the assistant bubble as anchor for STREAM tokens. Without the user bubble anchor, subsequent stream/finalAnswer events have nowhere to attach.",
+        "evidence": "User prompt bubble is also absent despite being typed successfully. Normally HF shows user message optimistically on submit."
+      },
+      {
+        "rank": 2,
+        "hypothesis": "GET /api/v2/conversations/{id} returns conversation with NO messages because APF intercepted the backend write. When HF frontend fetches conversation state after the stream closes, it sees empty messages[] and clears the in-memory stream too (consistent state).",
+        "evidence": "Multiple GET fetches to /api/v2/conversations/69e6fda85dc5af8c866f6446 visible in Network tab. Their responses were not inspected in this run but would likely show empty messages array."
+      },
+      {
+        "rank": 3,
+        "hypothesis": "Missing required fields in MessageUpdate events. HF may require messageId, role, or timestamp fields in stream/finalAnswer events to render. Our envelope has only type+token or type+text.",
+        "evidence": "HuggingChat-ui source (chat-ui repo) MessageUpdate type may have evolved to require additional fields beyond what is documented in older designs."
+      },
+      {
+        "rank": 4,
+        "hypothesis": "TITLE event is missing. HF flow may require STATUS:started -> TITLE -> STREAM -> FINAL_ANSWER -> STATUS:finished. Skipping TITLE might cause reducer to stall at 'waiting for title'.",
+        "evidence": "Speculation based on typical chat-ui flow; needs source code verification."
+      }
+    ]
+  },
+  "recommended_dev_actions": [
+    "Verify Hypothesis 2 by capturing the GET /api/v2/conversations/{id} response body immediately after stream ends. If messages[]=[], APF must also handle that endpoint or make the block transparent to DB state.",
+    "Read HuggingChat chat-ui source on GitHub (huggingface/chat-ui, src/lib/server/endpoints/ or routes/conversation/[id]/+server.ts) to identify EXACT required MessageUpdate structure and flow sequence.",
+    "Try inserting a synthetic 'message' event before 'stream': {\"type\":\"message\",\"role\":\"user\",\"content\":\"<prompt>\"}. If HF renders only warning but missing user bubble, this may unlock.",
+    "Try including messageId in stream/finalAnswer events: {\"type\":\"stream\",\"messageId\":\"apf-warn-<uuid>\",\"token\":\"...\"}",
+    "Alternative approach: inject warning via the /api/v2/conversations/{id} GET response instead of the streaming endpoint — set messages=[{role:'assistant',content:'<warning>'}] so HF's state sync reconstructs the message bubble on next refresh."
   ],
-  "title_final": "Google Chrome - 인쇄 (Print dialog)",
-  "screenshots_saved": [
-    "files/505/505_step3_page_loaded.png",
-    "files/505/505_step4_after_type.png",
-    "files/505/505_step5_network_cleared.png",
-    "files/505/505_step7_after_wait.png",
-    "files/505/505_step8_network_headers.png",
-    "files/505/505_step9_response_body.png",
-    "files/505/505_step10_console.png",
-    "files/505/505_step11_chat_result.png"
+  "screenshots": [
+    "files/505/505_step3_page_loaded.png (HuggingChat + DevTools Network tab ready)",
+    "files/505/505_step4_typed.png (prompt typed into 'Ask anything' input)",
+    "files/505/505_step8_network.png (Network tab showing 17/25 requests after submit)",
+    "files/505/505_step9_response_body.png (Response body of POST /chat/conversation/{id} visible in DevTools)",
+    "files/505/505_step10_console.png (Console showing 8 preload warnings, zero errors)",
+    "files/505/505_step11_chat_result.png (DevTools closed — chat area completely empty)"
   ],
-  "screenshots_quality": "LOW - likely do not show intended states (Network Response body, Console errors). Visual inspection by dev required to salvage any signal.",
-  "response_body_capture_length": 54,
-  "response_body_capture_note": "54 chars is the prompt text, NOT the HTTP response body. Capture went wrong.",
-  "console_capture_length": 0,
-  "notes_for_dev": "SCENARIO CANNOT BE COMPLETED VIA CURRENT AUTOMATION. Reasons and recommendations: (1) DevTools automation via Windows SendKeys is fundamentally unreliable — Chrome DevTools pane focus is not addressable through standard keyboard shortcuts. Even Ctrl+Shift+J (open Console) opens DevTools but focuses the input; navigation to Network panel requires clicking on the Network label or using Command Menu which in turn requires DevTools focus. (2) Korean IME interception of English SendKeys adds another failure mode. (3) Foreground window theft by the active Claude Cowork chat window (ongoing user interaction) causes keystrokes to leak. RECOMMENDED ALTERNATIVES: (a) MANUAL DIAGNOSIS via AnyDesk — operator opens DevTools, captures Network Response body + Console errors, pastes into a result JSON. This is the most reliable for one-off diagnosis. (b) CDP APPROACH — restart Chrome with --remote-debugging-port=9222; a Python or PowerShell client connects via WebSocket to chrome://json/version and can directly fetch Network.responseBody, getExceptionDetails from Runtime, etc. This is programmatic and avoids UI automation entirely. Would require a one-time Chrome restart (session loss warning). (c) HTTP PROXY CAPTURE — have a middleware proxy sit between client and Etap to mirror the APF-injected response bytes to a file; simplest bypass of browser entirely. For THIS specific #502/#504 diagnosis need (bytes that browser actually received), option (c) is cleanest; option (a) is fastest to execute manually.",
-  "retry_context": "DevTools scenario requested to diagnose #502/#504 BLOCKED_SILENT_RESET. Automation path blocked; manual/CDP path required."
+  "response_body_file": "files/505/505_response_body.txt",
+  "automation_method": "windows-mcp App+Click+Type+Snapshot (first successful DevTools automation in this batch)",
+  "notes_for_dev": "THIS IS THE BREAKTHROUGH. The response body is available in files/505/505_response_body.txt and is IDENTICAL to what APF should be generating. Svelte receives it cleanly. The issue is NOT envelope corruption — it's rendering logic mismatch. Phase 6 (apf-warning-impl) should focus on: (a) capturing GET /api/v2/conversations/{id} response and enriching it with synthetic messages, OR (b) expanding the streaming envelope to include a 'message'-type event that creates the assistant bubble anchor. Both approaches need chat-ui source inspection.",
+  "retry_context": "DevTools scenario requested in #505 to diagnose #502/#504 BLOCKED_SILENT_RESET. Previous attempt via SendKeys failed due to UIPI and Korean IME. This retry via Windows MCP succeeded cleanly — the problem was test harness choice, not a fundamental limitation."
 }
