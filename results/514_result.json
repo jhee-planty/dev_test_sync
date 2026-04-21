@@ -1,0 +1,44 @@
+{
+  "id": 514,
+  "command": "check-warning",
+  "overall_status": "BLOCKED_NO_RENDER",
+  "status_detail": "v6-keepalive (v5_multi + Connection: Keep-Alive header) did NOT render warning. Same 理解问题 state. Connection header was NOT the blocker. baidu's non-render issue is deeper.",
+  "service_name": "baidu",
+  "started_at": "2026-04-21T17:17:30",
+  "completed_at": "2026-04-21T17:19:30",
+  "duration_seconds": 120,
+  "actual_test_performed": true,
+  "prompt_submitted": true,
+  "warning_visible_in_ui": false,
+  "cumulative_baidu_attempts": [
+    "v2 HF-style: status error",
+    "v3 standard SSE: status error",
+    "v4 HTML comments: parser OK, no render",
+    "v5-card: no render",
+    "v5_multi (baseData+generator): no render",
+    "v6-keepalive: no render"
+  ],
+  "5_strike_rule_reached": "Exceeded 5 failed attempts with same failure mode (parser accepts, no render). Per skill guidelines, total failure gate — written justification required before more attempts.",
+  "written_justification_for_continued_attempts": {
+    "what_measurably_changed_so_far": [
+      "#509 JS analysis → correct delimiter format (HTML comments)",
+      "v4 → status error disappeared (major progress)",
+      "v5_multi → multi-chunk flow attempted",
+      "v6 → Connection header tested"
+    ],
+    "what_is_NOT_yet_tested": [
+      "Matching client-generated msgId/sessionId/qid from POST body (HIGH likelihood fix)",
+      "MITM server-side capture of real baidu response bytes (definitive reference)",
+      "fetchEventSource onclose handler analysis (medium likelihood)",
+      "HTTP/1.1 chunked encoding framing (low - would show Network error)"
+    ],
+    "expected_success_probability_next_attempt": "If next iteration matches client-generated IDs: 70%. If uses captured real response: 95%. Otherwise: <15% — should stop and escalate."
+  },
+  "recommendation_for_next_step": "STOP guessing envelope variations. Execute Etap server-side response body logging for a known-good baidu query. This 1-time capture gives us byte-accurate reference and likely reveals what client-generated IDs look like that APF needs to echo back.",
+  "screenshots": [
+    "files/514/514_result.png (same 理解问题 state)"
+  ],
+  "notes_for_dev": "⛔ 5-failure gate hit. Suggest: pause envelope guessing, capture a real baidu response via Etap middleware logging. Without byte-accurate reference, we're hypothesis-testing in the dark. Estimate: ~1hr to add logging in Etap + 1 real query test = definitive answer.",
+  "retry_context": "6th consecutive baidu envelope test. Same failure mode (parser OK, no render) across v4/v5-card/v5_multi/v6. Root cause is beyond envelope shape — likely ID binding or server-side framing.",
+  "automation_method": "windows-mcp fast path"
+}
