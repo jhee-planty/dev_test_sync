@@ -1,0 +1,35 @@
+{
+  "id": 505,
+  "command": "run-scenario",
+  "overall_status": "FAIL",
+  "status_detail": "DevTools-based diagnosis scenario could NOT be executed reliably via SendKeys automation. Multiple compounding failures: (1) After F12 opens DevTools docked to bottom, keyboard focus stays on Chrome main page (not DevTools). Ctrl+Shift+P in that state opens Chrome's PRINT dialog (confirmed: final window title was 'Google Chrome - 인쇄' = 'Print'), not DevTools Command Menu. (2) After Print dialog opened, subsequent SendKeys for 'preserve' and 'Show Network' went to an input that was not DevTools — possibly the Print dialog search box, possibly got interrupted when Claude Cowork app regained foreground. (3) Keystrokes leaked to the Claude Cowork chat window: 'preserve' appeared as 'ㅔㄱㄷㄴㄷㄱㅍㄷ' (Korean IME mapping of qwerty 'preserve') and 'Show Network' as '뇆 ㅜㄷㅅ재가' (Korean IME mapping of 'Show Network'). This confirms (a) Korean IME was active system-wide and intercepted English letters, (b) foreground was lost from Chrome at least part of the test. No useful DevTools capture was obtained. Screenshots were saved but likely show: regular Chrome pages, possibly Print dialog, and post-test chat area — not the Network Response body or Console errors that were requested.",
+  "service_name": "huggingface",
+  "started_at": "2026-04-21T11:42:45",
+  "completed_at": "2026-04-21T11:43:40",
+  "duration_seconds": 55,
+  "actual_test_performed": false,
+  "automation_interference": true,
+  "failures": [
+    "F12 did not give DevTools keyboard focus",
+    "Ctrl+Shift+P triggered Print dialog instead of DevTools Command Menu",
+    "Korean IME converted English SendKeys to Korean chars",
+    "Foreground partially lost to Claude Cowork app (keystroke leakage confirmed by user)"
+  ],
+  "title_final": "Google Chrome - 인쇄 (Print dialog)",
+  "screenshots_saved": [
+    "files/505/505_step3_page_loaded.png",
+    "files/505/505_step4_after_type.png",
+    "files/505/505_step5_network_cleared.png",
+    "files/505/505_step7_after_wait.png",
+    "files/505/505_step8_network_headers.png",
+    "files/505/505_step9_response_body.png",
+    "files/505/505_step10_console.png",
+    "files/505/505_step11_chat_result.png"
+  ],
+  "screenshots_quality": "LOW - likely do not show intended states (Network Response body, Console errors). Visual inspection by dev required to salvage any signal.",
+  "response_body_capture_length": 54,
+  "response_body_capture_note": "54 chars is the prompt text, NOT the HTTP response body. Capture went wrong.",
+  "console_capture_length": 0,
+  "notes_for_dev": "SCENARIO CANNOT BE COMPLETED VIA CURRENT AUTOMATION. Reasons and recommendations: (1) DevTools automation via Windows SendKeys is fundamentally unreliable — Chrome DevTools pane focus is not addressable through standard keyboard shortcuts. Even Ctrl+Shift+J (open Console) opens DevTools but focuses the input; navigation to Network panel requires clicking on the Network label or using Command Menu which in turn requires DevTools focus. (2) Korean IME interception of English SendKeys adds another failure mode. (3) Foreground window theft by the active Claude Cowork chat window (ongoing user interaction) causes keystrokes to leak. RECOMMENDED ALTERNATIVES: (a) MANUAL DIAGNOSIS via AnyDesk — operator opens DevTools, captures Network Response body + Console errors, pastes into a result JSON. This is the most reliable for one-off diagnosis. (b) CDP APPROACH — restart Chrome with --remote-debugging-port=9222; a Python or PowerShell client connects via WebSocket to chrome://json/version and can directly fetch Network.responseBody, getExceptionDetails from Runtime, etc. This is programmatic and avoids UI automation entirely. Would require a one-time Chrome restart (session loss warning). (c) HTTP PROXY CAPTURE — have a middleware proxy sit between client and Etap to mirror the APF-injected response bytes to a file; simplest bypass of browser entirely. For THIS specific #502/#504 diagnosis need (bytes that browser actually received), option (c) is cleanest; option (a) is fastest to execute manually.",
+  "retry_context": "DevTools scenario requested to diagnose #502/#504 BLOCKED_SILENT_RESET. Automation path blocked; manual/CDP path required."
+}
