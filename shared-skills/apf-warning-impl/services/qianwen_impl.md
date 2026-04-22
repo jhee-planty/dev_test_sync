@@ -108,7 +108,26 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
   - H2 전달 측면에서는 성공 (1414B 전달 + END_STREAM on DATA)
 - #529: DevTools 필수 지시 + 첫 번째 차단 요청 바이트 확인 지시 — IN PROGRESS
 
-**H2 전달 수정 검증 완료:**
-- h2_end_stream=2 (#527 DevTools): 0바이트 수신 (RST_STREAM 선행)
-- h2_end_stream=1 (#528 VTS 로그): 1414B 전달 + delayed_ES 없음 (race condition 제거)
-- 남은 문제: (1) APF 트리거 비일관성 (50%), (2) 브라우저 SSE 파싱 + 경고 문구 표시 확인
+- #529: **NOT_RENDERED** — DevTools: 4회 모두 차단, 4회 모두 0.0 kB + "Failed to load response data"
+  - etap VTS: 4회 모두 `written=1414 expected=1414` — SSL_write 성공
+  - 그러나 Chrome은 0바이트로 보고. CORS error 동반.
+  - **C++ 코드 분석 결론**: `convert_to_http2_response()`에서 `end_stream=true`이면
+    `DATA(body,0x00) + DATA(empty,END_STREAM)` 2프레임을 **단일 SSL_write**로 전송.
+    VTS 주석: "h2_end_stream=1은 데이터와 END_STREAM이 동시에 도착하여 브라우저가 이벤트를 파싱하지 못함"
+  - 결론: h2_end_stream=1도 h2_end_stream=2도 qianwen에서는 실패.
+
+**H2 END_STREAM 3단 비교:**
+| h2_end_stream | 동작 | 결과 |
+|---|---|---|
+| 2 (delayed) | DATA → 10ms → END_STREAM | RST_STREAM 선행 → 0바이트 (#527) |
+| 1 (immediate) | DATA + empty_DATA(ES) 동시 | SSE 파서 미실행 → 0바이트 (#529) |
+| 0 (none) | DATA만 전송, 스트림 열림 | **미검증** — genspark 성공 패턴 |
+
+### Iteration 7 (2026-04-22) — h2_end_stream=0 (streaming, no END_STREAM) (#530)
+- DB: h2_end_stream=1→0, h2_mode=2, h2_goaway=0. etapd reload 19:52:33 confirmed.
+- 가설: END_STREAM을 보내지 않으면 브라우저가 SSE를 스트리밍 모드로 파싱.
+  스트림은 열린 채 유지 (로딩 인디케이터 표시 가능 — 허용).
+  genspark이 이 패턴으로 DONE 달성.
+- convert_to_http2_response: end_stream=false → `HEADERS(END_HEADERS) + DATA(body, 0x00)` 단일 전송.
+  END_STREAM 없으므로 브라우저가 ReadableStream을 열어둠 → SSE 이벤트 순차 처리.
+- #530 check-warning pushed
