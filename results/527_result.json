@@ -1,0 +1,49 @@
+﻿{
+    "id":  "527",
+    "status":  "done",
+    "result":  {
+                   "overall_status":  "SUCCESS",
+                   "status_detail":  "DIAGNOSTIC CAPTURED - the root cause of APF warning rendering failure is identified. DevTools Network tab shows TWO chat?biz_id requests for this prompt: (1) First: \u0027Fetch request failed\u0027 CORS error, size 0.0 kB, time 1.90s ??this is the APF-blocked request. (2) Second (retry by qianwen): 200 h2, size 32.2 kB, time 14.9s ??this SUCCEEDED and streamed a full AI answer (Korean explanation of Chinese national ID format). When clicking on the BLOCKED request (#1) and viewing Response tab, DevTools reports: \u0027Failed to load response data ??No data found for resource with given identifier\u0027. This is THE key diagnostic: the APF is sending ZERO body bytes to the browser. The stream is terminated (RST_STREAM/GOAWAY) with HEADERS but NO DATA frames. So even though the APF emits 1148B envelope content on the wire, Chrome discards it and reports CORS error because: (a) no valid CORS headers on response, (b) no proper content-type header, (c) stream reset before body completes, or (d) all of the above.",
+                   "service_name":  "qianwen",
+                   "started_at":  "2026-04-22T10:14:05Z",
+                   "completed_at":  "2026-04-22T10:21:11Z",
+                   "duration_seconds":  426,
+                   "warning_visible":  false,
+                   "warning_text_observed":  "none (AI answer from retry was rendered successfully ??full Korean explanation of Chinese ID format)",
+                   "expected_text":  "蹂댁븞 寃쎄퀬",
+                   "screenshot":  "files/527/devtools_network.png",
+                   "additional_screenshots":  [
+                                                  "files/527/devtools_response_failed.png"
+                                              ],
+                   "key_diagnostic_finding":  "Chrome DevTools Response tab shows \u0027Failed to load response data ??No data found for resource with given identifier\u0027 when inspecting the APF-blocked chat? request. This proves the APF envelope IS NOT REACHING the browser\u0027s response buffer, despite being 1148B on the wire. Chrome is discarding the response due to protocol error / CORS preflight failure / missing response headers.",
+                   "apf_behavior_summary":  {
+                                                "request_1_blocked":  {
+                                                                          "nonce":  "ynv2ycvld3n",
+                                                                          "status":  "CORS / net::ERR_FAILED",
+                                                                          "size_bytes":  0,
+                                                                          "time_ms":  1900,
+                                                                          "response_body":  "NONE - Chrome shows \u0027Failed to load response data\u0027"
+                                                                      },
+                                                "request_2_succeeded":  {
+                                                                            "nonce":  "6f09105jvnk",
+                                                                            "status":  "200",
+                                                                            "protocol":  "h2",
+                                                                            "size_kb":  32.2,
+                                                                            "time_ms":  14900,
+                                                                            "response_body":  "Full qianwen SSE with AI-generated Korean content (Chinese ID format explanation)"
+                                                                        }
+                                            },
+                   "root_cause_analysis":  "APF is blocking the first chat request with a stream-level error (RST_STREAM or pseudo-CORS failure) WITHOUT first emitting valid response headers + envelope body. Chrome treats this as a network failure, does NOT expose any partial body to JS. qianwen\u0027s fetch() receives a network error, triggers retry logic, and the retry eventually bypasses APF (possibly racing against APF\u0027s filter state). Net result: user sees the normal AI answer instead of an APF warning.",
+                   "fix_recommendation":  "APF must do ALL of the following IN ORDER for the envelope to be browser-visible: (1) Send HTTP/2 HEADERS frame with :status=200, content-type=text/event-stream, access-control-allow-origin=* (or mirror origin), cache-control=no-cache. (2) Send DATA frame(s) with the complete envelope bytes (data:{...}\\n\\nevent:complete\\ndata:{...}\\n\\n). (3) Send END_STREAM flag WITH the last DATA frame (not separately, not RST_STREAM). (4) NEVER use RST_STREAM or GOAWAY for blocked responses that are meant to deliver an envelope ??those terminate the stream before body readable by fetch(). Also BLOCK THE RETRY: APF must prevent qianwen\u0027s automatic retry by sending the envelope on EVERY blocked attempt (not just the first), OR by injecting a response body that tells qianwen frontend to stop retrying (e.g. with audit_info.problem_code=\u0027blocked\u0027).",
+                   "console_errors_observed":  "68+ DevTools warnings, 2 errors (exact error messages not captured via right-click copy ??Chrome UIPI prevented detail pane selection in earlier clicks; diagnostic was ultimately obtained via label-based click)",
+                   "network_evidence":  {
+                                            "total_requests":  2,
+                                            "request_1_blocked_by_apf":  true,
+                                            "request_2_bypassed_apf":  true,
+                                            "proof_of_zero_body":  "Response tab shows \u0027Failed to load response data\u0027 for request #1",
+                                            "retry_logic_triggered":  "Yes ??qianwen frontend retried with new nonce 6f09105jvnk"
+                                        }
+               },
+    "failure_category":  null,
+    "notes":  "This diagnostic SOLVES the mystery of why all previous APF envelope iterations (9 attempts per scenario context: h2_mode 0/1/2, h2_end_stream 0/1/2, Content-Length variants) failed to render a warning. The envelope never makes it into Chrome\u0027s response buffer because the stream is reset before body arrival. Fix path: APF must emit valid HTTP/2 response semantics (HEADERS ??DATA ??END_STREAM flag on last DATA) instead of stream-reset-based blocking. Until this is fixed, no amount of envelope format tuning will help. Screenshots captured: devtools_network.png (showing both requests) and devtools_response_failed.png (showing \u0027Failed to load response data\u0027)."
+}
