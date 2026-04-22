@@ -85,11 +85,19 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
 - h2_mode=2로 원복 (revision 124)
 - 결론: H2 종료 방식이 문제가 아님. 3가지 모두 NOT_RENDERED.
 
-### Iteration 5 (2026-04-22) — DevTools 진단 (#527)
-- 9회 반복 실패 후 근본 원인 특정 필요
-- #527 run-scenario: DevTools Network 탭을 열고 프롬프트 전송, 실제 응답 캡처
-- 확인 대상:
-  - (1) Response Headers: CORS 헤더 도달 여부
-  - (2) Response Body: SSE events 수신 여부
-  - (3) Console Errors: 정확한 에러 메시지
-- h2_mode=2, h2_end_stream=2, template v4 (1148B)
+### Iteration 5 (2026-04-22) — DevTools 진단 (#527) ✅ ROOT CAUSE FOUND
+- #527 DevTools Network 캡처 결과:
+  - **Chrome이 APF 차단 요청에서 0바이트 수신** (size: 0.0 kB)
+  - Response 탭: "Failed to load response data - No data found for resource with given identifier"
+  - 두 번째 요청(재시도)은 APF를 우회하여 정상 AI 응답 수신 (32.2 kB)
+- **근본 원인**: h2_end_stream=2 (10ms 지연 END_STREAM)에서 RST_STREAM이 DATA 프레임보다 먼저 도착
+  → Chrome이 응답 전체를 파기 → 0바이트 → fetch() 실패 → "消息生成失败" 표시
+- **핵심 증거**: #520(h2_end_stream=1)은 "envelope bytes sent but parser rejects" → 바이트가 전달됨!
+  h2_end_stream=1은 DATA 프레임에 END_STREAM 포함 → RST_STREAM 전에 응답 완료
+
+### Iteration 6 (2026-04-22) — h2_end_stream=1 + v4 format (#528) — IN PROGRESS
+- DB: h2_end_stream=2→1, h2_mode=2. revision services=125, templates=23.
+- 가설: h2_end_stream=1은 DATA+END_STREAM을 즉시 전송 → Chrome이 body를 읽을 수 있음
+  + v4 올바른 qianwen SSE 포맷 → 프론트엔드가 경고 문구를 표시
+- #520 대비 변경점: 포맷만 다름 (OpenAI→qianwen native SSE). H2 전달 동일.
+- #528 check-warning pushed
