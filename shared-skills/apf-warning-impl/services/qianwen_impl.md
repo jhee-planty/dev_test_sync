@@ -7,9 +7,9 @@
 - envelope: SSE (data:{sessionId:...,msgId:...,contents:[{contentType:"text",content:...}],msgStatus:"finished"})
 - Prior classification: BLOCK_ONLY → testing (2026-04-20) → active iteration (2026-04-22)
 
-## DB State (2026-04-22 current, revision 122/22)
+## DB State (2026-04-22 current, revision 122/23)
 - h2_mode=2, h2_end_stream=2, h2_goaway=0, h2_hold_request=1, block_mode=1
-- response_type=qianwen_sse (dedicated, 1167B — v3 actual captured format)
+- response_type=qianwen_sse (dedicated, 1148B — v4, Content-Length removed)
 - CORS: Access-Control-Allow-Origin: https://qianwen.com + Access-Control-Allow-Credentials: true
 - Template format: qianwen ACTUAL web frontend format (multi_load/iframe, audit_info, event:complete)
 - http_response: 159 bytes (warning text with emoji)
@@ -56,8 +56,16 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
 - v3 template (1167B): two SSE events — initial data + event:complete final
 - DB: revision_cnt services=122, templates=22. etapd reload confirmed 17:59+18:03
 - h2_end_stream=2, h2_mode=2, CORS https://qianwen.com + credentials
-- #523 pushed, awaiting test PC (currently inactive)
-- Fallback plan if #523 fails:
+- #522: APF_DID_NOT_TRIGGER (prompt didn't match — likely timing issue during DB reload)
+- #523: PARTIAL/NOT_RENDERED — APF blocked ✅, envelope sent (1405B H2) ✅, but browser showed native error "消息生成失败" instead of warning text
+- Root cause: `Content-Length: 0` in HTTP headers told browser body is empty → SSE events never parsed
+
+### Iteration 3c (2026-04-22) — v4 template: Content-Length removed (#524) — IN PROGRESS
+- Fix: Removed `Content-Length: 0` header from template (SSE streaming should have no Content-Length)
+- Template size: 1167B → 1148B (v4)
+- DB revision templates=23, etapd reload confirmed at 18:20:25
+- #524 check-warning pushed
+- Fallback plan if #524 fails:
   - (A) CORS origin: try https://tongyi.aliyun.com instead
-  - (B) h2_end_stream=0 (keep stream open, let frontend close on disconnection_signal)
-  - (C) Further template refinement from #521 raw capture data
+  - (B) h2_end_stream=0 (keep stream open)
+  - (C) Check if qianwen uses fetch() vs EventSource (different parsing behavior)
