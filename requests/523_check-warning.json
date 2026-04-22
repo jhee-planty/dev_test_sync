@@ -1,0 +1,19 @@
+{
+  "id": "523",
+  "command": "check-warning",
+  "params": {
+    "service": "qianwen",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://tongyi.aliyun.com/qianwen",
+    "context": "qianwen_sse v3 template: ACTUAL captured format from #521 (multi_load/iframe + audit_info blocked + event:complete + disconnection_signal). CORS https://qianwen.com + credentials. h2_end_stream=2. revision templates=22. THIS is the correct format based on real SSE capture.",
+    "check_details": {
+      "revision": "services=122, templates=22",
+      "template_changes": "v3: actual qianwen SSE format (1167B) from #521 capture. mime_type=multi_load/iframe, audit_info.problem_code=blocked, event:complete final",
+      "key_difference_from_522": "#522 used wrong format (qwen-free-api DashScope API format). #523 uses actual web frontend format captured from real response.",
+      "expected_behavior": "Warning text appears in chat area as if it were a blocked AI response with audit_info signal"
+    }
+  },
+  "created_at": "2026-04-22T18:30:00+09:00",
+  "created_by": "dev"
+}
