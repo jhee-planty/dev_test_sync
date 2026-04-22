@@ -60,12 +60,16 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
 - #523: PARTIAL/NOT_RENDERED — APF blocked ✅, envelope sent (1405B H2) ✅, but browser showed native error "消息生成失败" instead of warning text
 - Root cause: `Content-Length: 0` in HTTP headers told browser body is empty → SSE events never parsed
 
-### Iteration 3c (2026-04-22) — v4 template: Content-Length removed (#524) — IN PROGRESS
+### Iteration 3c (2026-04-22) — v4 template: Content-Length removed (#524, #525)
 - Fix: Removed `Content-Length: 0` header from template (SSE streaming should have no Content-Length)
 - Template size: 1167B → 1148B (v4)
 - DB revision templates=23, etapd reload confirmed at 18:20:25
-- #524 check-warning pushed
-- Fallback plan if #524 fails:
+- #524: **FAIL / APF_DID_NOT_TRIGGER** — APF가 프롬프트를 차단하지 않음. qianwen이 AI 응답 전체 스트리밍 (주민등록번호 18자리 형식 상세 설명)
+- ⚠️ APF 트리거 비일관성: #522 pass → #523 block → #524 pass. 동일 프롬프트 3회 중 1회만 차단
+- 가능 원인: (a) DB reload 타이밍, (b) APF rate/session 기반 필터링, (c) 세션별 상태 추적, (d) CDN 에지 노드 차이
+- #525: 재시도 push 완료 — APF 트리거 확인 + v4 검증 목적
+- Fallback plan:
   - (A) CORS origin: try https://tongyi.aliyun.com instead
   - (B) h2_end_stream=0 (keep stream open)
   - (C) Check if qianwen uses fetch() vs EventSource (different parsing behavior)
+  - (D) etap 로그 분석: APF rule evaluator 도달 여부 확인
