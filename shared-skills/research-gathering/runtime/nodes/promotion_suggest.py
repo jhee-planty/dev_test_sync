@@ -134,17 +134,22 @@ def main():
     query_dir = Path(args.query_dir)
     with open(query_dir / "query.json", encoding="utf-8") as f:
         query = json.load(f)
-    contradiction_path = query_dir / "outputs" / "contradiction_check.json"
 
-    if not contradiction_path.exists():
+    # Prefer disconfirmation_check 의 업데이트된 findings. fallback: contradiction_check.
+    dc_path = query_dir / "outputs" / "disconfirmation_check.json"
+    cc_path = query_dir / "outputs" / "contradiction_check.json"
+
+    source_path = dc_path if dc_path.exists() else cc_path
+
+    if not source_path.exists():
         result = {
             "status": "FAILED",
             "node_id": "promotion_suggest",
-            "reason": "contradiction_check.json not found",
+            "reason": "disconfirmation_check.json / contradiction_check.json not found",
             "promotion_candidates": [],
         }
     else:
-        with open(contradiction_path, encoding="utf-8") as f:
+        with open(source_path, encoding="utf-8") as f:
             cc = json.load(f)
         findings = cc.get("findings", []) or []
 

@@ -61,13 +61,15 @@ TAIL
 
 ### 편집 연산 (plan 에 대한)
 
+> **v1 note — not yet exposed at runtime**: 아래 연산은 4/21 Batch Linked List 설계의 공식 interface 이나 v1 에서는 runtime callable API 로 구현되지 않음. Iterative refinement (조사 중 새 경로 발견 등) 은 `report.json` 의 `missing_actions` 필드로 사용자에게 후속 명령 제안 방식으로 처리됨. `feedback.sh --report-incident` 가 `missing_actions` 로 부족한 구체 사례를 기록할 때 v1.1 에서 구현.
+
 - `insert_after(anchor, new_node)` / `insert_before(anchor, new_node)` — 조사 중간 추가 노드 삽입
 - `remove(node)` — DONE 노드 제거 불가
 - `replace(old, new)` / `reorder(a, b)` (둘 다 PENDING 일 때만)
 - `wrap_as_batch([n1, n2])` — 독립·동질 노드를 배치로 묶기
 - `unwrap_batch(batch)` — 배치를 개별 serial 로 풀기
 
-전체 재작성 금지. diff-level 편집만.
+전체 재작성 금지. diff-level 편집만 (v1.1 이후 runtime 노출 시).
 
 ---
 

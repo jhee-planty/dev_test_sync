@@ -23,11 +23,13 @@ def load(outputs: Path, name: str):
     return None
 
 
-def derive_status(failed, contradictions, findings):
+def derive_status(failed, contradictions, findings, disconfirmation_insufficient_reason=None):
     unresolved = any(c.get("resolution") in ("user_required", "deferred") for c in contradictions)
     if failed:
         return "partial"
     if unresolved:
+        return "insufficient"
+    if disconfirmation_insufficient_reason:
         return "insufficient"
     if len(findings) == 0:
         return "insufficient"
@@ -114,6 +116,7 @@ def main():
     tr  = load(outputs, "transcript_scan") or {}
     ag  = load(outputs, "aggregate_dedup") or {}
     cc  = load(outputs, "contradiction_check") or {}
+    dc  = load(outputs, "disconfirmation_check") or {}
     ps  = load(outputs, "promotion_suggest") or {}
 
     # Collect failed nodes
@@ -133,11 +136,15 @@ def main():
         "memory":     mem.get("coverage", {}) if mem else {},
     }
 
-    findings = cc.get("findings", []) or ag.get("findings", []) or []
+    # findings priority: disconfirmation_check (latest) > contradiction_check > aggregate_dedup
+    findings = dc.get("findings", []) or cc.get("findings", []) or ag.get("findings", []) or []
     contradictions = cc.get("contradictions", []) or []
     promotion_candidates = ps.get("promotion_candidates", []) or []
 
-    status = derive_status(failed, contradictions, findings)
+    # Round 3: disconfirmation enforcement
+    disconfirmation_insufficient_reason = dc.get("insufficient_reason") if dc else None
+
+    status = derive_status(failed, contradictions, findings, disconfirmation_insufficient_reason)
 
     report = {
         "schema_version": 1,
@@ -154,6 +161,8 @@ def main():
         report["missing_actions"].append(f"Retry or repair: {n['node_id']} ({n['reason']})")
     if any(c.get("resolution") in ("user_required", "deferred") for c in contradictions):
         report["missing_actions"].append("Resolve contradictions (see contradictions field)")
+    if disconfirmation_insufficient_reason:
+        report["missing_actions"].append(f"Disconfirmation missing: {disconfirmation_insufficient_reason}")
 
     with open(qd / "report.json", "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)

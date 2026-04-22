@@ -25,6 +25,7 @@ KEYWORD=""
 CONSUMER="interactive"
 AUTONOMOUS="true"
 RETENTION=""
+SCOPE="filesystem,git,memory,transcript"  # default: all four scanners
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 RUN_ROOT="${RESEARCH_RUN_ROOT:-$PWD/.research-run}"
 
@@ -35,6 +36,7 @@ while [ $# -gt 0 ]; do
     --consumer)   CONSUMER="$2"; shift 2 ;;
     --autonomous) AUTONOMOUS="$2"; shift 2 ;;
     --retention)  RETENTION="$2"; shift 2 ;;
+    --scope)      SCOPE="$2"; shift 2 ;;
     --run-root)   RUN_ROOT="$2"; shift 2 ;;
     --help|-h)
       cat <<USAGE
@@ -44,6 +46,8 @@ Options:
   --consumer <id>             interactive | discussion-review | workflow-retrospective | cowork-micro-skills-guide
   --autonomous true|false     default true (conservative defaults, no questions)
   --retention session|30d|permanent
+  --scope <comma-list>        subset of {filesystem,git,memory,transcript} (default: all four)
+                              narrowing produces status=partial with coverage.skipped=true
   --run-root <path>           default \$PWD/.research-run
 
 Output:
@@ -207,32 +211,86 @@ import json
 p='$QUERY_DIR/plan.json'; d=json.load(open(p))
 print('DONE')" 2>/dev/null || echo "DONE")"
 
+# ───── scope 파싱 ─────
+in_scope() {
+  local scanner="$1"
+  echo ",$SCOPE," | grep -q ",${scanner},"
+}
+
+write_skipped_scan() {
+  # scanner 가 scope 밖이면 placeholder output 작성
+  local scanner="$1"
+  local outfile="$QUERY_DIR/outputs/${scanner}.json"
+  python3 - "$outfile" "$scanner" <<PY
+import json, sys
+path, scanner = sys.argv[1], sys.argv[2]
+with open(path, "w") as f:
+    json.dump({
+        "status": "SKIPPED",
+        "node_id": scanner,
+        "reason": "excluded by --scope flag",
+        "hit_count": 0,
+        "coverage": {"numerator": 0, "denominator": 0, "target": "skipped", "skipped": True},
+        "hits": []
+    }, f, indent=2, ensure_ascii=False)
+PY
+}
+
 # ───── Step 2: main_batch (parallel) ─────
-# bash 에서 실제 병렬 실행 — &로 백그라운드, wait 로 barrier
-echo "[research-scan] step 2: main_batch (git ∥ memory ∥ filesystem)" >&2
+echo "[research-scan] step 2: main_batch (scope=$SCOPE)" >&2
 update_node_status "main_batch" "RUNNING"
 
-(python3 "$SKILL_DIR/runtime/nodes/git_scan.py" --query-dir "$QUERY_DIR" 2>&1 && \
-   update_node_status "git_scan" "DONE" || \
-   { FAILED_NODES+=("git_scan:runtime_error"); update_node_status "git_scan" "FAILED"; }) &
-GIT_PID=$!
+# git
+if in_scope "git"; then
+  (python3 "$SKILL_DIR/runtime/nodes/git_scan.py" --query-dir "$QUERY_DIR" 2>&1 && \
+     update_node_status "git_scan" "DONE" || \
+     { FAILED_NODES+=("git_scan:runtime_error"); update_node_status "git_scan" "FAILED"; }) &
+  GIT_PID=$!
+else
+  write_skipped_scan "git_scan"
+  update_node_status "git_scan" "SKIPPED"
+  GIT_PID=""
+fi
 
-(python3 "$SKILL_DIR/runtime/nodes/memory_scan.py" --query-dir "$QUERY_DIR" 2>&1 && \
-   update_node_status "memory_scan" "DONE" || \
-   { FAILED_NODES+=("memory_scan:runtime_error"); update_node_status "memory_scan" "FAILED"; }) &
-MEM_PID=$!
+# memory
+if in_scope "memory"; then
+  (python3 "$SKILL_DIR/runtime/nodes/memory_scan.py" --query-dir "$QUERY_DIR" 2>&1 && \
+     update_node_status "memory_scan" "DONE" || \
+     { FAILED_NODES+=("memory_scan:runtime_error"); update_node_status "memory_scan" "FAILED"; }) &
+  MEM_PID=$!
+else
+  write_skipped_scan "memory_scan"
+  update_node_status "memory_scan" "SKIPPED"
+  MEM_PID=""
+fi
 
-(python3 "$SKILL_DIR/runtime/nodes/filesystem_scan.py" --query-dir "$QUERY_DIR" 2>&1 && \
-   update_node_status "filesystem_scan" "DONE" || \
-   { FAILED_NODES+=("filesystem_scan:runtime_error"); update_node_status "filesystem_scan" "FAILED"; }) &
-FS_PID=$!
+# filesystem
+if in_scope "filesystem"; then
+  (python3 "$SKILL_DIR/runtime/nodes/filesystem_scan.py" --query-dir "$QUERY_DIR" 2>&1 && \
+     update_node_status "filesystem_scan" "DONE" || \
+     { FAILED_NODES+=("filesystem_scan:runtime_error"); update_node_status "filesystem_scan" "FAILED"; }) &
+  FS_PID=$!
+else
+  write_skipped_scan "filesystem_scan"
+  update_node_status "filesystem_scan" "SKIPPED"
+  FS_PID=""
+fi
 
-wait $GIT_PID $MEM_PID $FS_PID
+# Wait only on running PIDs
+for p in $GIT_PID $MEM_PID $FS_PID; do
+  [ -n "$p" ] && wait "$p"
+done
 update_node_status "main_batch" "DONE"
 
 # ───── Step 3: transcript_scan (solo long-running) ─────
-echo "[research-scan] step 3: transcript_scan" >&2
-run_node "transcript_scan" || echo "[research-scan] transcript_scan failed" >&2
+if in_scope "transcript"; then
+  echo "[research-scan] step 3: transcript_scan" >&2
+  run_node "transcript_scan" || echo "[research-scan] transcript_scan failed" >&2
+else
+  echo "[research-scan] step 3: transcript_scan SKIPPED (--scope)" >&2
+  write_skipped_scan "transcript_scan"
+  update_node_status "transcript_scan" "SKIPPED"
+fi
 
 # ───── Step 4~6: aggregate / contradiction / promotion (serial) ─────
 echo "[research-scan] step 4: aggregate_dedup" >&2
@@ -241,7 +299,10 @@ run_node "aggregate_dedup" || echo "[research-scan] aggregate_dedup failed" >&2
 echo "[research-scan] step 5: contradiction_check" >&2
 run_node "contradiction_check" || echo "[research-scan] contradiction_check failed" >&2
 
-echo "[research-scan] step 6: promotion_suggest" >&2
+echo "[research-scan] step 6: disconfirmation_check" >&2
+run_node "disconfirmation_check" || echo "[research-scan] disconfirmation_check failed" >&2
+
+echo "[research-scan] step 7: promotion_suggest" >&2
 run_node "promotion_suggest" || echo "[research-scan] promotion_suggest failed" >&2
 
 # ───── report.json (schema v1) + report.md 생성 (별도 python 스크립트 호출) ─────

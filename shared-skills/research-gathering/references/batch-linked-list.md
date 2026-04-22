@@ -140,7 +140,9 @@ while plan.has_pending():
 
 ## 편집 연산 (Plan 수정)
 
-실행 중 또는 실행 전 plan.json 에 대해 허용된 diff-level 편집:
+> **v1 not exposed at runtime** — 아래 연산은 4/21 Batch Linked List 설계의 공식 interface 이며, 본 문서는 spec 정의 문서. v1 skill 은 이들을 runtime callable API 로 노출하지 않음. 실행 중 plan 수정 필요 사례는 `report.json` 의 `missing_actions` 로 후속 명령 제안 → 사용자 재호출. 2026-04-22 토론 consensus: `feedback.sh --report-incident` 가 `missing_actions` 방식으로 해결되지 않는 구체 사례를 기록할 때 v1.1 에서 runtime API 구현.
+
+실행 중 또는 실행 전 plan.json 에 대해 허용된 diff-level 편집 (spec):
 
 | 연산 | 의미 | 제약 |
 |------|------|------|

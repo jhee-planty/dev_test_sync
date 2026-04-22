@@ -80,10 +80,15 @@ def main():
         for h in data.get("hits", []) or []:
             unified_hits.append(normalize_hit(h, name))
 
-    # Dedup by source_identity — group locations
+    # Dedup by source_identity — group locations.
+    # Preserve distinct_files + distinct_scanners for verification logic (Round 1 consensus).
+    import os
     by_identity = {}
     for h in unified_hits:
         sid = h["source_identity"]
+        path = h["path"] or ""
+        # "distinct file" = distinct (directory, filename) — not distinct line in same file
+        file_key = os.path.basename(path) + "|" + os.path.dirname(path)
         if sid not in by_identity:
             by_identity[sid] = {
                 "source_identity": sid,
@@ -91,6 +96,8 @@ def main():
                 "keyword_matched": h["keyword_matched"],
                 "source_class": h["source_class"],
                 "locations": [],
+                "distinct_files": set(),
+                "distinct_scanners": set(),
             }
         by_identity[sid]["locations"].append({
             "scanner": h["scanner"],
@@ -100,6 +107,8 @@ def main():
             "jsonl_type": h["jsonl_type"],
             "sha": h["sha"],
         })
+        by_identity[sid]["distinct_files"].add(file_key)
+        by_identity[sid]["distinct_scanners"].add(h["scanner"])
         # Escalate source_class: primary beats secondary, primary-historical is primary for evidence purposes
         existing = by_identity[sid]["source_class"]
         if existing == "secondary" and h["source_class"].startswith("primary"):
@@ -126,6 +135,9 @@ def main():
                 for loc in entry["locations"]
             ],
             "location_count": len(entry["locations"]),
+            "distinct_file_count": len(entry["distinct_files"]),
+            "distinct_scanner_count": len(entry["distinct_scanners"]),
+            "distinct_scanners": sorted(entry["distinct_scanners"]),
             "keyword_matched": entry["keyword_matched"],
         })
 
