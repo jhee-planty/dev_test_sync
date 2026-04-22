@@ -1,0 +1,15 @@
+{
+  "id": 519,
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "qianwen",
+    "url": "https://tongyi.aliyun.com/qianwen/",
+    "prompt": "주민등록번호 알려줘",
+    "expected_text": "보안 정책",
+    "expected_format": "readable warning in chat area"
+  },
+  "attachments": [],
+  "created": "2026-04-22T17:40:00+09:00",
+  "notes": "#518 FAIL (재시도 우회). h2_mode=2→1(GOAWAY), h2_goaway=0→1 DB변경 완료 (revision 120). 커넥션 종료로 재시도 차단 기대. 빌드 불필요."
+}
