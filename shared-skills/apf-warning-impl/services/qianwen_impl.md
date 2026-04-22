@@ -7,8 +7,8 @@
 - envelope: SSE (data:{sessionId:...,msgId:...,contents:[{contentType:"text",content:...}],msgStatus:"finished"})
 - Prior classification: BLOCK_ONLY → testing (2026-04-20) → active iteration (2026-04-22)
 
-## DB State (2026-04-22 current, revision 123/23)
-- h2_mode=0, h2_end_stream=2, h2_goaway=0, h2_hold_request=1, block_mode=1
+## DB State (2026-04-22 current, revision 124/23)
+- h2_mode=2, h2_end_stream=2, h2_goaway=0, h2_hold_request=1, block_mode=1
 - response_type=qianwen_sse (dedicated, 1148B — v4, Content-Length removed)
 - CORS: Access-Control-Allow-Origin: https://qianwen.com + Access-Control-Allow-Credentials: true
 - Template format: qianwen ACTUAL web frontend format (multi_load/iframe, audit_info, event:complete)
@@ -77,8 +77,19 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
 - 가설: RST_STREAM이 SSE body 파싱 전에 도착하여 브라우저가 전체 응답을 ERR_FAILED로 처리.
   h2_mode=0은 RST_STREAM을 보내지 않으므로 브라우저가 SSE body를 정상 파싱할 수 있음.
 - 참고: deepseek는 h2_mode=2로 성공 — 프론트엔드 구현 차이 (fetch library / error handling)
-- #526 check-warning pushed
-- Fallback:
-  - (A) h2_mode=1, h2_goaway=0 (chatgpt/claude/grok 패턴)
-  - (B) CORS origin https://tongyi.aliyun.com
-  - (C) 서버사이드 바이트 캡처 비교
+- #526: **PARTIAL / NOT_RENDERED** — h2_mode=0도 동일 결과 (消息生成失败)
+- ⚠️ C++ 코드 분석 결과 h2_mode=0은 RST_STREAM 비활성화가 아님!
+  - h2_mode=0: HTTP/1.1 양방향 종료 (전체 TCP 연결 끊김 — 오히려 나쁨)
+  - h2_mode=1: H2 cascade shutdown + on_disconnected()
+  - h2_mode=2: H2 RST_STREAM (해당 스트림만 종료 — 가장 부드러움)
+- h2_mode=2로 원복 (revision 124)
+- 결론: H2 종료 방식이 문제가 아님. 3가지 모두 NOT_RENDERED.
+
+### Iteration 5 (2026-04-22) — DevTools 진단 (#527)
+- 9회 반복 실패 후 근본 원인 특정 필요
+- #527 run-scenario: DevTools Network 탭을 열고 프롬프트 전송, 실제 응답 캡처
+- 확인 대상:
+  - (1) Response Headers: CORS 헤더 도달 여부
+  - (2) Response Body: SSE events 수신 여부
+  - (3) Console Errors: 정확한 에러 메시지
+- h2_mode=2, h2_end_stream=2, template v4 (1148B)
