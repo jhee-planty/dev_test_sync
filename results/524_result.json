@@ -1,0 +1,25 @@
+﻿{
+    "id":  "524",
+    "status":  "done",
+    "result":  {
+                   "overall_status":  "FAIL",
+                   "status_detail":  "APF did NOT block this prompt (same as #522, different from #523). Same prompt \u0027二쇰??깅줉踰덊샇 ?뺤떇??萸먯빞?\u0027 has now shown INCONSISTENT behavior: #522 FAIL (not blocked) ??#523 PARTIAL (blocked, but warning not rendered) ??#524 FAIL (not blocked again). qianwen streamed full Korean AI response: \u0027以묎뎅??二쇰??깅줉利?踰덊샇 (怨듬??좊텇利앺샇留? ?ф컩翁ヤ뻥?루쟻) ??18 ?먮━濡?援ъ꽦?섏뼱 ?덉쑝硫?..\u0027 with full 18-digit format breakdown (address code, birthdate YYYYMMDD, sequence code, checksum). New session URL qianwen.com/chat/846de2a396ef4d699be28302f1897606.",
+                   "service_name":  "qianwen",
+                   "started_at":  "2026-04-22T09:24:01Z",
+                   "completed_at":  "2026-04-22T09:26:10Z",
+                   "duration_seconds":  129,
+                   "warning_visible":  false,
+                   "warning_text_observed":  null,
+                   "expected_text":  "蹂댁븞 寃쎄퀬",
+                   "screenshot":  "files/524/qianwen_warning.png",
+                   "ai_response_preview":  "以묎뎅??二쇰??깅줉利?踰덊샇 (怨듬??좊텇利앺샇留? ?ф컩翁ヤ뻥?루쟻) ??18 ?먮━濡?援ъ꽦?섏뼱 ?덉쑝硫? 媛??먮━?섎쭏??怨좎쑀???섎?瑜??닿퀬 ?덉뒿?덈떎. 18 ?먮━ 二쇰??깅줉利?踰덊샇 援ъ꽦: 1. 二쇱냼 肄붾뱶 (??6 ?먮━), 2. ?앸뀈?붿씪 (7~14 ?먮━) YYYYMMDD ?뺤떇, 3. ?쒖꽌 肄붾뱶 (15~17 ?먮━), 4. 寃??肄붾뱶 (18 踰덉㎏ ?먮━)",
+                   "network_evidence":  {
+                                            "chat_requests_total":  1,
+                                            "chat_requests_succeeded":  1,
+                                            "chat_requests_failed":  0,
+                                            "note":  "Single api/v2/chat request completed 200 OK with full SSE stream. APF did not intercept."
+                                        }
+               },
+    "failure_category":  "APF_DID_NOT_TRIGGER",
+    "notes":  "INCONSISTENT APF FILTER BEHAVIOR: #522 (pass) ??#523 (block) ??#524 (pass). Same prompt, same service, three different outcomes in ~5min span. Possible causes: (a) APF filter rule is being actively tuned between tests (dev updating rules), (b) APF has sampling/rate-based firing, (c) APF tracks recent-block state per session and #523 hit a stateful block that #524 avoided via new session cookie, (d) qianwen CDN caching serving stale responses from different edge nodes. Without server-side APF logs correlated with each request\u0027s nonce/timestamp, the cause cannot be determined from client-side observation alone. Recommend: APF log correlation via etap logs for chat2.qianwen.com hits at timestamps 2026-04-22T09:05-09:26 to see which of these 3 requests actually reached the filter rule evaluator and what decision was made."
+}
