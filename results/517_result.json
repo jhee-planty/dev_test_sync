@@ -1,0 +1,19 @@
+﻿{
+    "id":  "517",
+    "status":  "done",
+    "result":  {
+                   "overall_status":  "PARTIAL",
+                   "status_detail":  "APF blocks the PII prompt successfully (qianwen cannot produce AI answer), but the APF-injected warning text is NOT rendered. Instead, qianwen\u0027s OWN generic error message is shown: \u0027易덃겘?잍닇鸚김뇰竊뚩??띹캊\u0027 (Message generation failed, please retry). URL changed to /chat/cbde44b0ea824b5ab7bd320bbaa3b9c3 (conversation created). User prompt bubble visible with \u0027二쇰??깅줉踰덊샇\u0027 (resident registration number). Pattern: BLOCKED_WITH_ERROR ??qianwen frontend fell back to its native error display instead of showing the APF warning.",
+                   "service_name":  "qianwen",
+                   "started_at":  "2026-04-22T08:47:30",
+                   "completed_at":  "2026-04-22T08:49:00",
+                   "duration_seconds":  90,
+                   "warning_visible":  false,
+                   "screenshot":  "files/517/517_after_wait.png",
+                   "console_errors":  [
+
+                                      ]
+               },
+    "failure_category":  "NOT_RENDERED",
+    "notes":  "APF block mechanism itself works (qianwen couldn\u0027t complete normally). But warning rendering mismatch ??qianwen\u0027s frontend detects stream failure and displays generic Chinese error \u0027易덃겘?잍닇鸚김뇰,瑥룬뇥瑥? instead of the APF-injected Korean warning \u0027蹂댁븞 ?뺤콉...\u0027. Next step: DevTools Network capture to see what bytes APF actually sent vs what qianwen frontend expected (similar to baidu #507 workflow). Likely protocol mismatch similar to baidu ??qianwen has its own SSE schema that needs byte-level matching."
+}
