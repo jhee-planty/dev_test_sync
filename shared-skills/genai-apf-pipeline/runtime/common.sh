@@ -2,7 +2,7 @@
 # common.sh — genai-apf-pipeline runtime shared helpers
 set -u
 
-PIPELINE_STATE="${PIPELINE_STATE:-$HOME/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json}"
+PIPELINE_STATE="${PIPELINE_STATE:-$HOME/Documents/workspace/claude_cowork/state/pipeline_state.json}"
 DASHBOARD="${DASHBOARD:-$HOME/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md}"
 STATUS_MD="${STATUS_MD:-$HOME/Documents/workspace/dev_test_sync/shared-skills/genai-apf-pipeline/services/status.md}"
 SCHEMA_VERSION="1.0"

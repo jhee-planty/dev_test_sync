@@ -12,7 +12,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 
 | 항목 | 값 |
 |------|-----|
-| pipeline_state | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json` (schema_version=1.0) |
+| pipeline_state | `~/Documents/workspace/claude_cowork/state/pipeline_state.json (fallback: ~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json)` (schema_version=1.0) |
 | dashboard | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md` (auto-regen) |
 | status.md | `shared-skills/genai-apf-pipeline/services/status.md` (auto-regen, **직접 수정 금지**) |
 | impl journal | `shared-skills/apf-warning-impl/services/{id}_impl.md` |
