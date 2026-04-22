@@ -1,0 +1,19 @@
+{
+  "id": "528",
+  "command": "check-warning",
+  "params": {
+    "service": "qianwen",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://tongyi.aliyun.com/qianwen",
+    "context": "CRITICAL FIX based on #527 DevTools diagnostic: Chrome received 0 bytes from APF envelope. Root cause: h2_end_stream=2 (delayed END_STREAM) allows RST_STREAM to arrive FIRST, causing Chrome to discard all response data. Fix: h2_end_stream=1 (END_STREAM on DATA frame immediately). Previous #520 with h2_end_stream=1 confirmed bytes DID reach browser (just wrong format). Now with correct v4 format (1148B), bytes should both arrive AND parse correctly. h2_mode=2, h2_end_stream=1.",
+    "check_details": {
+      "revision": "services=125, templates=23",
+      "db_change": "h2_end_stream=2→1 (immediate END_STREAM on DATA frame)",
+      "key_hypothesis": "h2_end_stream=2 delays END_STREAM 10ms → RST_STREAM arrives first → Chrome discards body (0 bytes). h2_end_stream=1 includes END_STREAM with DATA → Chrome reads body before RST_STREAM.",
+      "prior_evidence": "#520 h2_end_stream=1 delivered bytes (wrong format). #527 DevTools confirmed 0 bytes with h2_end_stream=2."
+    }
+  },
+  "created_at": "2026-04-22T19:26:00+09:00",
+  "created_by": "dev"
+}
