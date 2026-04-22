@@ -1,0 +1,24 @@
+﻿{
+    "id":  "526",
+    "status":  "done",
+    "result":  {
+                   "overall_status":  "PARTIAL",
+                   "status_detail":  "APF BLOCKED this prompt (same as #523/#525). qianwen chat area displays \u0027易덃겘?잍닇鸚김뇰竊뚩??띹캊\u0027. 5-test sequence on same prompt now: #522 pass ??#523 block-generic ??#524 pass ??#525 block-generic ??#526 block-generic. Two consecutive blocks (#525, #526) suggests the APF filter may have settled into blocking the phrase consistently, though the APF warning envelope is still not rendered in the chat ??qianwen frontend continues to fall back to its native error UI. New session URL qianwen.com/chat/fc346b1051a24accb56b8cfe885ea69c.",
+                   "service_name":  "qianwen",
+                   "started_at":  "2026-04-22T10:00:35Z",
+                   "completed_at":  "2026-04-22T10:02:30Z",
+                   "duration_seconds":  115,
+                   "warning_visible":  false,
+                   "warning_text_observed":  "易덃겘?잍닇鸚김뇰竊뚩??띹캊",
+                   "expected_text":  "蹂댁븞 寃쎄퀬",
+                   "screenshot":  "files/526/qianwen_warning.png",
+                   "console_errors":  [
+                                          "net::ERR_FAILED or CORS on chat?biz_id=ai_qwen (inferred from error UI)"
+                                      ],
+                   "network_evidence":  {
+                                            "note":  "DevTools closed. Error UI fallback \u0027易덃겘?잍닇鸚김뇰竊뚩??띹캊\u0027 implies APF intercepted chat API request with connection termination (same pattern as #523/#525)."
+                                        }
+               },
+    "failure_category":  "NOT_RENDERED",
+    "notes":  "Block delivery mechanism still the same issue as #519/#520/#523/#525: APF envelope reaches the wire but qianwen SSE parser rejects it and fires native fallback. Recommend server-side Etap capture of exact bytes APF is emitting ??compare against the multi_load/iframe+content template documented in #521. Until APF emits a schema-compatible envelope, qianwen will keep showing its own error string instead of the Korean warning."
+}
