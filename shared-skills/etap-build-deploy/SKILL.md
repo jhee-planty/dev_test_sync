@@ -90,3 +90,4 @@ exit 0 if summary.failed==0 else 1.
 - `cowork-remote` : 배포 완료 후 test PC 검증 요청 push 할 때 사용.
 - `apf-warning-impl` : warning iteration 마다 본 skill 호출.
 - `genai-apf-pipeline` : Phase 7 에서 본 skill 호출.
+- `research-gathering` : 빌드·배포 환경 설정 (컴파일 서버 주소 / ninja 옵션 등) 이력 조사 시 6-Tier scan.

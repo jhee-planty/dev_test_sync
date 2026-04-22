@@ -143,3 +143,4 @@ runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2)
 - `etap-build-deploy` : 빌드/배포 완료 후 본 skill 로 검증 요청 push.
 - `apf-warning-impl` : warning impl 세션 중 본 skill 통해 test 왕복.
 - `genai-apf-pipeline` : 최상위 orchestrator. 본 skill 을 반복 호출.
+- `research-gathering` : 본 skill 에 영향 주는 과거 설계 / 사용자 구두 지시를 찾을 때 — "왜 request schema 가 이렇게 정해졌는가" 같은 이력 조사 시 6-Tier scan.

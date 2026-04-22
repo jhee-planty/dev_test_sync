@@ -99,3 +99,4 @@ mcp__desktop-commander__start_process
 
 - `cowork-remote` (dev 쪽 pair) — request/result 교환 프로토콜.
 - `genai-apf-pipeline` — 최상위 orchestrator (dev 쪽).
+- `research-gathering` — test-pc 자동화 중 "이전에 왜 이 대기 시간 / 재시도 수치로 정해졌나?" 같은 이력 조사 시 호출.

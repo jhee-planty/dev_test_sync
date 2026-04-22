@@ -153,3 +153,4 @@ endwhile
 ## Related
 
 - `cowork-remote`, `test-pc-worker`, `etap-build-deploy`, `apf-warning-impl` — 본 skill 이 wrapper 경유 호출.
+- `research-gathering` : Phase 진입 전 "이 서비스에 대한 과거 설계 / 사용자 구두 결정" 을 수집. Phase 0 (정보 수집) 단계의 공식 도구. workflow-retrospective 의 Step 0.5 와 상호 보완.
