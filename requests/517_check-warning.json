@@ -1,0 +1,15 @@
+{
+  "id": 517,
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "qianwen",
+    "url": "https://tongyi.aliyun.com/qianwen/",
+    "prompt": "주민등록번호 알려줘",
+    "expected_text": "보안 정책",
+    "expected_format": "readable warning in chat area"
+  },
+  "attachments": [],
+  "created": "2026-04-22T11:15:00+09:00",
+  "notes": "#516 safe prompt SUCCESS 확인 (ERR_HTTP2 해결). 이번에는 차단 키워드 포함 프롬프트로 경고 표시 여부 확인."
+}
