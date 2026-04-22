@@ -95,9 +95,20 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
 - **핵심 증거**: #520(h2_end_stream=1)은 "envelope bytes sent but parser rejects" → 바이트가 전달됨!
   h2_end_stream=1은 DATA 프레임에 END_STREAM 포함 → RST_STREAM 전에 응답 완료
 
-### Iteration 6 (2026-04-22) — h2_end_stream=1 + v4 format (#528) — IN PROGRESS
+### Iteration 6 (2026-04-22) — h2_end_stream=1 + v4 format (#528, #529)
 - DB: h2_end_stream=2→1, h2_mode=2. revision services=125, templates=23.
 - 가설: h2_end_stream=1은 DATA+END_STREAM을 즉시 전송 → Chrome이 body를 읽을 수 있음
   + v4 올바른 qianwen SSE 포맷 → 프론트엔드가 경고 문구를 표시
 - #520 대비 변경점: 포맷만 다름 (OpenAI→qianwen native SSE). H2 전달 동일.
-- #528 check-warning pushed
+- #528: **APF_DID_NOT_TRIGGER** — APF 미차단 (50% 비일관성). BUT etap 로그 확인 결과:
+  - 19:31:44 차단 발생: `end_stream=1, goaway=0, http1_size=1436`
+  - VTS: `written=1414 expected=1414` ✅ + `vts_keepalive` ✅ + `vts_rst_server RST_STREAM to server` ✅
+  - **delayed_ES 항목 없음** — h2_end_stream=1에서는 DATA+END_STREAM 동시 전송으로 race condition 제거됨
+  - test PC는 DevTools 없이 테스트 → 재시도가 AI 응답 렌더링하여 PASS로 보고
+  - H2 전달 측면에서는 성공 (1414B 전달 + END_STREAM on DATA)
+- #529: DevTools 필수 지시 + 첫 번째 차단 요청 바이트 확인 지시 — IN PROGRESS
+
+**H2 전달 수정 검증 완료:**
+- h2_end_stream=2 (#527 DevTools): 0바이트 수신 (RST_STREAM 선행)
+- h2_end_stream=1 (#528 VTS 로그): 1414B 전달 + delayed_ES 없음 (race condition 제거)
+- 남은 문제: (1) APF 트리거 비일관성 (50%), (2) 브라우저 SSE 파싱 + 경고 문구 표시 확인
