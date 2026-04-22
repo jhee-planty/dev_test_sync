@@ -7,8 +7,8 @@
 - envelope: SSE (data:{sessionId:...,msgId:...,contents:[{contentType:"text",content:...}],msgStatus:"finished"})
 - Prior classification: BLOCK_ONLY → testing (2026-04-20) → active iteration (2026-04-22)
 
-## DB State (2026-04-22 current, revision 122/23)
-- h2_mode=2, h2_end_stream=2, h2_goaway=0, h2_hold_request=1, block_mode=1
+## DB State (2026-04-22 current, revision 123/23)
+- h2_mode=0, h2_end_stream=2, h2_goaway=0, h2_hold_request=1, block_mode=1
 - response_type=qianwen_sse (dedicated, 1148B — v4, Content-Length removed)
 - CORS: Access-Control-Allow-Origin: https://qianwen.com + Access-Control-Allow-Credentials: true
 - Template format: qianwen ACTUAL web frontend format (multi_load/iframe, audit_info, event:complete)
@@ -67,9 +67,18 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
 - #524: **FAIL / APF_DID_NOT_TRIGGER** — APF가 프롬프트를 차단하지 않음. qianwen이 AI 응답 전체 스트리밍 (주민등록번호 18자리 형식 상세 설명)
 - ⚠️ APF 트리거 비일관성: #522 pass → #523 block → #524 pass. 동일 프롬프트 3회 중 1회만 차단
 - 가능 원인: (a) DB reload 타이밍, (b) APF rate/session 기반 필터링, (c) 세션별 상태 추적, (d) CDN 에지 노드 차이
-- #525: 재시도 push 완료 — APF 트리거 확인 + v4 검증 목적
-- Fallback plan:
-  - (A) CORS origin: try https://tongyi.aliyun.com instead
-  - (B) h2_end_stream=0 (keep stream open)
-  - (C) Check if qianwen uses fetch() vs EventSource (different parsing behavior)
-  - (D) etap 로그 분석: APF rule evaluator 도달 여부 확인
+- #525: **PARTIAL / NOT_RENDERED** — APF 차단 ✅, 하지만 "消息生成失败" 표시 (same as #523). Content-Length 제거(v4)는 효과 없음.
+- 근본 원인 재분석: `net::ERR_FAILED` → h2_mode=2 (RST_STREAM)가 브라우저를 연결 실패로 처리
+- APF 트리거 비일관성 확인: #522 pass / #523 block / #524 pass / #525 block (50% 차단율)
+
+### Iteration 4 (2026-04-22) — v5: h2_mode=0 (RST_STREAM disabled, #526)
+- DB change: h2_mode=2→0 (RST_STREAM 비활성화). END_STREAM(delayed 10ms)만으로 스트림 종료.
+- revision services=123, templates=23. etapd reload 18:56:22 confirmed.
+- 가설: RST_STREAM이 SSE body 파싱 전에 도착하여 브라우저가 전체 응답을 ERR_FAILED로 처리.
+  h2_mode=0은 RST_STREAM을 보내지 않으므로 브라우저가 SSE body를 정상 파싱할 수 있음.
+- 참고: deepseek는 h2_mode=2로 성공 — 프론트엔드 구현 차이 (fetch library / error handling)
+- #526 check-warning pushed
+- Fallback:
+  - (A) h2_mode=1, h2_goaway=0 (chatgpt/claude/grok 패턴)
+  - (B) CORS origin https://tongyi.aliyun.com
+  - (C) 서버사이드 바이트 캡처 비교
