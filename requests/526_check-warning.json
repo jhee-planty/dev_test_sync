@@ -1,0 +1,19 @@
+{
+  "id": "526",
+  "command": "check-warning",
+  "params": {
+    "service": "qianwen",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://tongyi.aliyun.com/qianwen",
+    "context": "qianwen_sse v5: h2_mode changed 2→0 (RST_STREAM DISABLED). Previous #523/#525 showed APF blocks correctly and sends envelope (1405B H2), but browser sees net::ERR_FAILED because RST_STREAM terminates connection before SSE body is parsed. v5 removes RST_STREAM — only END_STREAM (delayed 10ms) terminates the stream cleanly. Template unchanged (v4, 1148B). CORS https://qianwen.com.",
+    "check_details": {
+      "revision": "services=123, templates=23",
+      "db_change": "h2_mode=0 (was 2). RST_STREAM disabled.",
+      "key_hypothesis": "RST_STREAM caused net::ERR_FAILED → 消息生成失败. Without RST_STREAM, browser should parse SSE body normally.",
+      "etapd_reload": "18:56:22 confirmed (29 services loaded)"
+    }
+  },
+  "created_at": "2026-04-22T18:58:00+09:00",
+  "created_by": "dev"
+}
