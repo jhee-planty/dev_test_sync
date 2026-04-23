@@ -533,6 +533,7 @@ Key rules from the skill:
 - 서비스 완료(DONE) → 다음 우선순위 서비스로 전환
 - 사용자에게 "다음 뭐 할까요?" 묻지 않는다 — 할 일이 있으면 바로 한다
 - 할 일이 없을 때만 사용자에게 보고하고 대기한다
+- **복수 valid options → 사용자 선택 요구 금지 (Hard Rule 6)**. 내부 Autonomous Micro-Discussion Pattern (DF+EC 2-role, sub-minute) 으로 결정 + 실행 + `pipeline_state.json last_decision` 기록. 세부: `genai-apf-pipeline/references/autonomous-execution-protocol.md §Hard Rule 6` + §Autonomous Micro-Discussion Pattern.
 
 ### 13.4 Polling Policy (2026-04-23 v2 — 11차 session)
 
