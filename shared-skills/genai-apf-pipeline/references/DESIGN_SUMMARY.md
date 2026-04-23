@@ -132,5 +132,3 @@ m365_copilot_design.md
 notion_design.md
 DESIGN_SUMMARY.md (this file)
 ```
-
-Note: Original target directory `/sessions/busy-relaxed-wright/mnt/.skills/skills/genai-apf-pipeline/services/` is read-only. Documents should be migrated once write access is available.
