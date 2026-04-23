@@ -533,10 +533,19 @@ Key rules from the skill:
 - 사용자에게 "다음 뭐 할까요?" 묻지 않는다 — 할 일이 있으면 바로 한다
 - 할 일이 없을 때만 사용자에게 보고하고 대기한다
 
-### 13.4 No schedulers
+### 13.4 Polling Policy (2026-04-23 재정립)
 
-Do NOT use `mcp__scheduled-tasks__create_scheduled_task`, `update_scheduled_task`,
-cron, fireAt, or any automatic polling mechanism. All polling and result checking
-is done manually — either by user instruction or by explicit manual commands.
+→ **Canonical**: `~/.claude/memory/user-preferences.md` 의 "Polling Policy" 섹션
 
-Reason: repeated scheduler creation requests were disruptive to the user's workflow.
+**핵심 요약**:
+- **유일한 허용 방식**: in-session bash loop
+  (Claude's bash turn 안에서 `while true; do ...; sleep N; done`)
+- **금지 (모두)**: `mcp__scheduled-tasks__create_scheduled_task` / `update_scheduled_task`, OS-level **cron**, **fireAt**, **Monitor** persistent background task, 기타 session 외부 persistent trigger 생성 메커니즘
+- **이유**: session 외부 trigger 는 사용자 workflow 를 reminder 알림으로 방해. in-session loop 하나로 충분.
+
+**세부 protocol**: `genai-apf-pipeline/references/autonomous-execution-protocol.md`
+
+**과거 확대 해석 주의** (INTENTS D1 사례):
+- "No schedulers" 를 "모든 polling 금지" 로 해석하지 말 것
+- "수동 폴링만" 을 "in-session loop 까지 금지" 로 해석하지 말 것
+- 정확한 경계: **session 외부 persistent task 만 금지**
