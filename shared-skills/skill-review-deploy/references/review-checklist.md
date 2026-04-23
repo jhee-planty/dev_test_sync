@@ -121,3 +121,70 @@ for skill in $SKILL_LIST; do
   sed -n '/^description:/,/^---/p' "$SKILLS_DIR/$skill/SKILL.md" | grep -oP '"[^"]*"' | sort
 done
 ```
+
+---
+
+## Library-wide Runtime / Meta-data Sweep (C9-C12 보조)
+
+SKILL.md Quality Criteria 9-12 는 **per-change** 검증 (edit-self-review-checklist §8-§11 에서 실행). 본 리뷰 단계 (library-wide batch) 에서는 **health sweep** 만 수행.
+
+### 8. Side-effect Profile Header Audit (C11 보조)
+
+runtime script 중 `side-effect-profile` 헤더 미선언 식별:
+
+```bash
+echo "=== Side-effect Profile Audit ==="
+RUNTIME_DIRS="$SHARED/*/runtime /Users/jhee/Documents/workspace/claude_work/projects/apf-operation/scripts"
+for d in $RUNTIME_DIRS; do
+  [ -d "$d" ] || continue
+  for f in "$d"/*.sh; do
+    [ -f "$f" ] || continue
+    profile=$(head -5 "$f" | grep -oE "side-effect-profile:\s*S[0-3]" | awk '{print $NF}')
+    if [ -z "$profile" ]; then
+      echo "  UNCLASSIFIED: $f"
+    fi
+  done
+done
+```
+
+UNCLASSIFIED 는 retrofit debt — 다음 touch 시 헤더 추가. 급한 수정 아님.
+
+### 9. Runtime Script Destructive-Pattern Audit (C11 misclassification)
+
+S0/S1 선언된 script 에 destructive / network 패턴 있으면 misclassification 의심:
+
+```bash
+for d in $RUNTIME_DIRS; do
+  [ -d "$d" ] || continue
+  for f in "$d"/*.sh; do
+    [ -f "$f" ] || continue
+    profile=$(head -5 "$f" | grep -oE "side-effect-profile:\s*S[0-3]" | awk '{print $NF}')
+    if [[ "$profile" == "S0" || "$profile" == "S1" ]]; then
+      grep -lE "curl|wget|git push|scp|ssh|rm |DELETE|DROP" "$f" && \
+        echo "  CAUTION: $f profile=$profile contains potentially destructive pattern"
+    fi
+  done
+done
+```
+
+### 10. Installation Integrity (C12)
+
+```bash
+bash ~/.claude/hooks/check-installation.sh
+echo "RC=$?"
+```
+
+기대: `3/3 checks passed` + RC=0. 1+ failure 시 stderr 경고 확인 후 수정.
+
+### 11. Discussion-review Invocation Audit (C9, 선택)
+
+지난 30일 review 리포트에 "External Review Decision" 섹션 부재 여부 (monthly audit item):
+
+```bash
+# review 리포트 디렉터리 (outputs 또는 archived)
+find ~/Library/Application\ Support/Claude/local-agent-mode-sessions -name "skill-review-report-*.md" -mtime -30 2>/dev/null | while read f; do
+  grep -q "External Review Decision" "$f" || echo "  MISSING §8: $f"
+done
+```
+
+**해당 sweep 들은 Phase 1 리뷰 시 수행**. 상세 per-change 검증은 `edit-self-review-checklist.md` §8-§11 참조.
