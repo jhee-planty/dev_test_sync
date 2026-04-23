@@ -1,0 +1,130 @@
+{
+  "id": "533",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "scenario": "test_pc_environment_setup_phase_b",
+    "started_at": "2026-04-23T17:29:00Z",
+    "completed_at": "2026-04-23T17:33:30Z",
+    "step_1_pull": {
+      "current_HEAD": "220544d [cowork-remote] push request 533 run-scenario (Test PC setup Phase B: install junctions + verify windows-mcp)",
+      "expected_4eb2670_present": true,
+      "git_log_3": [
+        "220544d [cowork-remote] push request 533 run-scenario (Test PC setup Phase B: install junctions + verify windows-mcp)",
+        "4eb2670 Test PC setup: junction install script + test-pc-worker windows-mcp 마이그레이션",
+        "63a9cd9 [cowork-remote] archive 532 (Test PC env profile, done — Junction 권장)"
+      ]
+    },
+    "step_2_install_junctions": {
+      "exit_code": 0,
+      "installed": 12,
+      "replaced_plain_dirs": 11,
+      "new": 1,
+      "skipped": 0,
+      "failed": 0,
+      "per_skill": [
+        {"name": "apf-warning-impl", "action": "REPLACED (plain→junction)"},
+        {"name": "archive-results", "action": "REPLACED"},
+        {"name": "cowork-remote", "action": "REPLACED"},
+        {"name": "discussion-review", "action": "REPLACED"},
+        {"name": "etap-bench", "action": "REPLACED"},
+        {"name": "etap-build-deploy", "action": "REPLACED"},
+        {"name": "etap-testbed", "action": "REPLACED"},
+        {"name": "genai-apf-pipeline", "action": "REPLACED"},
+        {"name": "research-gathering", "action": "NEW"},
+        {"name": "skill-review-deploy", "action": "REPLACED"},
+        {"name": "test-pc-worker", "action": "REPLACED"},
+        {"name": "workflow-retrospective", "action": "REPLACED"}
+      ]
+    },
+    "step_3_verify_junctions": {
+      "total_entries": 12,
+      "all_junction": true,
+      "all_targets_point_to_shared_skills": true,
+      "note": "Per-entry Target = C:\\Users\\최장희\\Documents\\dev_test_sync\\shared-skills\\<name> for every row. 100% clean."
+    },
+    "step_4_verify_skill_freshness": {
+      "test-pc-worker": {
+        "type_declared": true,
+        "type_value": "A",
+        "allowed_tools": "mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, Bash, Read, Write",
+        "sha1": "9DB6763913CDE168B32747B85D663B58A68AEE85",
+        "freshness": "CURRENT — windows-mcp migration fully reflected"
+      },
+      "cowork-remote": {
+        "type_declared": true,
+        "type_value": "A",
+        "allowed_tools": "Bash, Read, Write, Edit",
+        "sha1": "CCB1F95D2AFDA673F4C6B7B715D36CCFE5F4B28F",
+        "freshness": "CURRENT — dev-only framing and Polling Policy v2 reflected"
+      },
+      "skill-review-deploy": {
+        "type_declared": true,
+        "type_value": "A",
+        "sha1": "F379D6542C4193DE220DFEA3D32A595D1DC8A633",
+        "freshness": "CURRENT — 12-criteria review layer language present"
+      }
+    },
+    "step_5_verify_windows_mcp_tool_names": {
+      "dev_assumed": [
+        "mcp__windows-mcp__PowerShell",
+        "mcp__windows-mcp__FileSystem",
+        "mcp__windows-mcp__Click",
+        "mcp__windows-mcp__Type",
+        "mcp__windows-mcp__Screenshot"
+      ],
+      "actually_registered_on_test_pc": [
+        "mcp__windows-mcp__App",
+        "mcp__windows-mcp__Click",
+        "mcp__windows-mcp__Clipboard",
+        "mcp__windows-mcp__FileSystem",
+        "mcp__windows-mcp__Move",
+        "mcp__windows-mcp__MultiEdit",
+        "mcp__windows-mcp__MultiSelect",
+        "mcp__windows-mcp__Notification",
+        "mcp__windows-mcp__PowerShell",
+        "mcp__windows-mcp__Process",
+        "mcp__windows-mcp__Registry",
+        "mcp__windows-mcp__Scrape",
+        "mcp__windows-mcp__Screenshot",
+        "mcp__windows-mcp__Scroll",
+        "mcp__windows-mcp__Shortcut",
+        "mcp__windows-mcp__Snapshot",
+        "mcp__windows-mcp__Type",
+        "mcp__windows-mcp__Wait"
+      ],
+      "mismatch_in_dev_assumed": "NONE — all 5 dev-assumed tools exist verbatim",
+      "missing_from_dev_assumed_but_useful": [
+        "mcp__windows-mcp__Scrape — DOM text extraction (likely needed for check-warning scenarios)",
+        "mcp__windows-mcp__Snapshot — accessibility tree inspection (useful for dynamic SPAs like AI chat UIs)",
+        "mcp__windows-mcp__Scroll — scroll in chat windows",
+        "mcp__windows-mcp__Wait — deterministic waiting for page state",
+        "mcp__windows-mcp__Clipboard — large-prompt paste workaround when Type is rate-limited"
+      ],
+      "recommendation_for_dev": "Consider adding Scrape + Snapshot + Wait + Clipboard + Scroll to test-pc-worker allowed-tools. For check-warning scenarios these are load-bearing (DOM text read, waiting for response render, scroll-to-see)."
+    },
+    "step_6_smoke_test": {
+      "command": "powershell -ExecutionPolicy Bypass -File $env:USERPROFILE\\.claude\\skills\\test-pc-worker\\runtime\\scan-requests.ps1",
+      "exit_code": 0,
+      "stdout_tail": "[17:29:58] git pull failed - continuing with local filesystem\\n533\\n[17:29:58] scan complete: since=532, new=1",
+      "junction_passthrough_works": true,
+      "note": "Script read state.json, scanned requests/, detected 533 as new (since=532). git pull subprocess from inside the runtime reported failure (likely a PATH/auth issue when invoked from a restricted powershell context) but filesystem fallback worked correctly. Not a blocker for the junction test, but may be worth Dev looking at — runtime's internal `git pull` should mirror the capability of the wrapper git_sync.bat."
+    },
+    "step_7_post_install_dir_state": {
+      "name": "test-pc-worker",
+      "LinkType": "Junction",
+      "Target": "C:\\Users\\최장희\\Documents\\dev_test_sync\\shared-skills\\test-pc-worker",
+      "verified": true
+    },
+    "observed_side_effect_proof_of_live_sync": {
+      "evidence": "Immediately after running install-skills.ps1, the system-reminder listing available skills reflected the updated test-pc-worker description ('PowerShell + windows-mcp 로 Chrome 자동화' — the migrated wording). Prior to install this would have read 'desktop-commander'. Junction passthrough is active at skill-load time, no Claude restart required.",
+      "confidence": "HIGH"
+    },
+    "outcome": "Phase B install + all 7 verification steps PASSED. 12 skills are now live-synced via NTFS junctions. Every future `git pull` in dev_test_sync/ instantly updates Claude's skill runtime. Stale-install issue from 531/532 fully resolved.",
+    "follow_ups_for_dev": [
+      "test-pc-worker allowed-tools likely undersized for full check-warning workflow — consider adding Scrape, Snapshot, Wait, Clipboard, Scroll (all exist on test PC's windows-mcp).",
+      "runtime/scan-requests.ps1 'git pull failed' message: root-cause the invocation context (may be due to powershell subprocess lacking git config or auth inheritance). The skill's own pull should be robust enough to match git_sync.bat behavior.",
+      "Optional: add a post-install verification step to install-skills.ps1 that checks SKILL.md SHA against HEAD and flags drift — currently possible as a separate check."
+    ]
+  }
+}
