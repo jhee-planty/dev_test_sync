@@ -101,18 +101,18 @@ notes에 "estimated"라고 표시한다.
 **타이밍 측정 방법:**
 
 PowerShell 실행 시 각 주요 단계의 전후에 시각을 기록한다.
-Cowork이 각 desktop-commander 호출의 소요 시간을 관찰하고,
+Cowork이 각 MCP (windows-mcp / desktop-commander) 호출의 소요 시간을 관찰하고,
 이를 phase별로 매핑한다.
 
 정밀 측정이 어려운 경우(하나의 PowerShell 스크립트가 여러 phase를 포함)
 전체 duration만 기록하고 phase_timings는 `{"total": N}`으로 단순화.
 
-### Append 방법 (desktop-commander)
+### Append 방법 (windows-mcp FileSystem / 또는 desktop-commander)
 
 ```
-1. read_file로 기존 내용 읽기
+1. FileSystem read 로 기존 내용 읽기
 2. 새 줄 추가
-3. write_file로 전체 내용 쓰기
+3. FileSystem write 로 전체 내용 쓰기
 ```
 
 파일이 없으면 새로 생성한다.

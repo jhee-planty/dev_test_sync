@@ -84,5 +84,5 @@ step이 많으면 `total`만 기록해도 된다.
 
 - **정확도보다 일관성**: 매번 같은 위치에서 같은 방식으로 시간을 재야 추이를 볼 수 있다.
 - **점진적 세분화**: 처음에는 `{"total": 45}` 만으로도 충분하다. 반복 실행 후 병목이 보이면 phase를 분리한다.
-- **MCP 호출 오버헤드 제외**: desktop-commander 자체의 왕복 시간은 phase에 포함하지 않는다. PowerShell 내부에서 측정하는 것이 정확하다.
+- **MCP 호출 오버헤드 제외**: windows-mcp / desktop-commander 자체의 왕복 시간은 phase에 포함하지 않는다. PowerShell 내부에서 측정하는 것이 정확하다.
 - **추정치 표기**: 정확히 측정할 수 없는 phase는 notes에 "estimated" 표기. 추후 정밀화.

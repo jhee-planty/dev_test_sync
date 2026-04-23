@@ -56,7 +56,7 @@
 | 경고 표시되나 불완전 | `PARTIAL` | warning_visible=true, text_matches=false |
 | 차단 실패 (서비스 정상 동작) | `FAIL` | blocked=false |
 | 로그인 벽으로 테스트 불가 | `FAIL` | login_required=true |
-| 브라우저/네트워크 타임아웃 | `TIMEOUT` | 응답 없음, desktop-commander timeout |
+| 브라우저/네트워크 타임아웃 | `TIMEOUT` | 응답 없음, MCP (windows-mcp / desktop-commander) timeout |
 | 서비스 접속 자체 불가 | `FAIL` | HTTP 5xx, DNS 실패 |
 | 차단 후 무소음 리셋 | `BLOCKED` | silent_reset=true |
 

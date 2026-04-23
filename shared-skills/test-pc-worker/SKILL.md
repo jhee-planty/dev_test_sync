@@ -1,8 +1,8 @@
 ---
 name: test-pc-worker
 type: A
-description: Test PC (Windows) 전용 worker. dev 가 push 한 requests/ 를 git pull 로 수신 → PowerShell + desktop-commander 로 Chrome 자동화 실행 → results/ 에 결과 push. Use when on test PC and user says "새 요청 확인", "요청 처리", "check-warning 실행", "check-block 실행", "dev 에서 요청 왔어?", "result push". 결정론 runtime 은 PowerShell script. Claude 는 DOM/Console 판독 + scenario decision 만 담당. 응답 대기 중 자동 에스컬레이션 없음 (cowork-remote 와 pair).
-allowed-tools: mcp__desktop-commander__start_process, mcp__desktop-commander__read_file, mcp__desktop-commander__write_file, mcp__desktop-commander__list_directory, mcp__desktop-commander__create_directory, mcp__desktop-commander__kill_process, Read, Write
+description: Test PC (Windows) 전용 worker. dev 가 push 한 requests/ 를 git pull 로 수신 → PowerShell + windows-mcp 로 Chrome 자동화 실행 → results/ 에 결과 push. Use when on test PC and user says "새 요청 확인", "요청 처리", "check-warning 실행", "check-block 실행", "dev 에서 요청 왔어?", "result push". 결정론 runtime 은 PowerShell script. Claude 는 DOM/Console 판독 + scenario decision 만 담당. 응답 대기 중 자동 에스컬레이션 없음 (cowork-remote 와 pair).
+allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, Bash, Read, Write
 ---
 
 # test-pc-worker
@@ -18,13 +18,17 @@ Test PC (Windows) 전용 micro-control skill. Pair of `cowork-remote` (dev 쪽).
 
 ## Runtime 호출 규약
 
-모든 결정론 작업은 PowerShell script via desktop-commander `start_process`:
+모든 결정론 작업은 PowerShell script via `windows-mcp` PowerShell tool (또는 Bash):
 
 ```
-mcp__desktop-commander__start_process
+mcp__windows-mcp__PowerShell
   command: powershell -ExecutionPolicy Bypass -File $SKILL_DIR\runtime\{script}.ps1 {args}
   timeout_ms: 120000
 ```
+
+File I/O 는 `mcp__windows-mcp__FileSystem` (read / write / list / create). Chrome 자동화용 GUI 상호작용은 `mcp__windows-mcp__Click` / `Type` / `Screenshot`.
+
+**Legacy note**: 2026-04-23 11차 이전에는 `mcp__desktop-commander__*` 였음. Test PC 에 desktop-commander MCP 가 없는 환경에서는 windows-mcp 로 대체 (allowed-tools 참조).
 
 ---
 
