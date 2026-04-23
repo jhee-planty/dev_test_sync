@@ -1,10 +1,9 @@
----
-name: apf-warning-design
-description: >
-  Phase 2 skill for designing warning delivery strategies for AI services. Analyzes frontend inspection results and existing block response code, then determines the most effective way to show a warning to the user — chat bubble injection, error page replacement, alert/dialog, or any other method that works. Produces per-service warning design documents. Use this skill whenever the user wants to design, plan, or review how a warning should be delivered in an AI service, choose a warning delivery pattern, or create a design document for warning implementation. Even mentions like "how should the warning look on Gemini" or "plan the Claude warning" should trigger this skill. Also use for updating designs when services change their frontend.
----
+# Phase 5 — Warning Design (sub-agent prompt)
 
-# APF Warning Design Skill
+> **Note**: 본 파일은 `genai-apf-pipeline` Phase 5 에서 `invoke-subagent.sh` 로
+> dispatch 되는 **sub-agent prompt** 이다. 독립 skill 이 아니므로 `name:`/`description:`
+> frontmatter 제거 (2026-04-23 skill-atomicity 재토론 R1 Opt-2). 외부 참조들은
+> `genai-apf-pipeline/references/phase5-warning-design.md` 경로로 통일됨.
 
 ## Purpose
 
@@ -70,9 +69,9 @@ Design a warning delivery strategy for {service_id}.
 
 Frontend profile: SKILLS_DIR/genai-frontend-inspect/services/{service_id}_frontend.md
 Existing code: ETAP_ROOT/functions/ai_prompt_filter/ai_prompt_filter.cpp
-Design patterns: SKILLS_DIR/apf-warning-design/references/design-patterns.md
-Warning delivery checklist: SKILLS_DIR/apf-warning-design/references/warning-delivery-checklist.md
-Existing design doc: SKILLS_DIR/apf-warning-design/services/{service_id}_design.md (if exists)
+Design patterns: SKILLS_DIR/genai-apf-pipeline/references/design-patterns.md
+Warning delivery checklist: SKILLS_DIR/genai-apf-pipeline/references/warning-delivery-checklist.md
+Existing design doc: SKILLS_DIR/genai-apf-pipeline/services/{service_id}_design.md (if exists)
 Guidelines: SKILLS_DIR/guidelines.md
 
 IMPORTANT: Fill out the warning delivery checklist (Section 1 and 2) BEFORE choosing a strategy.

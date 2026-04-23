@@ -1,5 +1,6 @@
 ---
 name: workflow-retrospective
+type: A
 description: "APF 테스트 자동화 워크플로우 회고 및 최적화 스킬 (dev PC 전용). test-pc-worker가 수집한 메트릭 로그와 experience를 분석하여 비효율 패턴을 탐지하고, 스킬 개선안을 제시한다. Use this skill whenever: \"회고해줘\", \"비효율 분석\", \"워크플로우 개선\", \"어디가 느려?\", \"뭐가 불필요해?\", \"최적화\", \"retrospective\", \"메트릭 분석\", \"로그 분석\", \"작업 통계\", \"패턴 분석\", or any request to review and optimize the APF test automation workflow. Also trigger when the user says \"개선점 찾아줘\" or \"이거 왜 이렇게 오래 걸려?\""
 ---
 
@@ -195,11 +196,11 @@ Git에는 최신 리포트만 유지한다.
 
 ---
 
-## Related Skills
+## Outbound Dependencies
 
-- **`test-pc-worker`** (test PC): 매 작업 후 Step 4에서 메트릭을 자동 수집 (results/metrics/에 jsonl로 기록). 이 스킬이 분석할 데이터를 생성한다.
-- **`archive-results`** (dev): Step 0에서 선행 실행. 서비스별 성공/실패 분류, lessons, 메트릭을 제공. 회고 분석의 데이터 기반.
-- **`cowork-remote`** (dev/test): 작업 요청/결과의 원본 데이터 소스.
-- **`genai-apf-pipeline`** (dev): APF 전체 파이프라인. 파이프라인 수준 비효율은 여기에 피드백.
-- **`schedule`**: 방안 2 전환 시 자동 회고 스케줄링에 사용.
-- **`research-gathering`** (Type B utility): Step 0.5 (adoption tracker) 와 보완 관계. 회고에서 발견된 개선 제안 중 공식 원칙 문서 (INTENTS / lessons / MEMORY) 미반영 항목을 `research-gathering` 으로 cross-skill scan 해 promotion_proposal 생성 가능. deeper integration (Step 0.5 가 research-gathering 호출) 은 현재 defer, incident 누적 시 재검토.
+본 skill (Type A) 이 **참조하는** 것들. Inbound caller 는 IoC (원칙 8.1) 에 따라 명시하지 않음 — 2026-04-23 skill-atomicity 재토론 R3.
+
+- **`archive-results`** (dev, Type B): Step 0 에서 선행 실행하여 서비스별 성공/실패 분류, lessons, 메트릭을 확보. 회고 분석의 **데이터 기반**.
+- **`research-gathering`** (dev, Type B): Step 0.5 에서 사용. 회고에서 발견된 개선 제안 중 공식 원칙 문서 (INTENTS / lessons / MEMORY) 미반영 항목을 cross-skill scan 해 promotion_proposal 생성.
+
+본 skill 의 출력은 dev PC 측에서 수동 검토되며, 다른 skill 이 직접 소비하지 않는다 (사용자가 적절한 skill 로 연결).

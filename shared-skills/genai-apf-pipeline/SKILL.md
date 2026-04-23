@@ -17,7 +17,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 | dashboard | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md` (auto-regen) |
 | status.md | `shared-skills/genai-apf-pipeline/services/status.md` (auto-regen, **직접 수정 금지**) |
 | impl journal | `shared-skills/apf-warning-impl/services/{id}_impl.md` |
-| design doc | `shared-skills/apf-warning-design/services/{id}_design.md` |
+| design doc | `shared-skills/genai-apf-pipeline/services/{id}_design.md` |
 | 등록 DB | etap MySQL @ `ogsvm` (see references/db-access-and-diagnosis.md) |
 
 ## Runtime 호출 규약

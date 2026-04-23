@@ -133,4 +133,4 @@ notion_design.md
 DESIGN_SUMMARY.md (this file)
 ```
 
-Note: Original target directory `/sessions/busy-relaxed-wright/mnt/.skills/skills/apf-warning-design/services/` is read-only. Documents should be migrated once write access is available.
+Note: Original target directory `/sessions/busy-relaxed-wright/mnt/.skills/skills/genai-apf-pipeline/services/` is read-only. Documents should be migrated once write access is available.

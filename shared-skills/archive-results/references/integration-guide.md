@@ -15,7 +15,7 @@ genai-apf-pipeline의 자율 실행 루프에서 다음 시점에 archive_result
 ```
 archive-results/lessons/{service}_failures.md
   ↓ (known_issues 섹션)
-apf-warning-design/services/{service}_design.md → Known Issues
+genai-apf-pipeline/services/{service}_design.md → Known Issues
 genai-frontend-inspect/services/{service}_frontend.md → Notes
 ```
 

@@ -1,5 +1,6 @@
 ---
 name: archive-results
+type: B
 description: "테스트 결과를 자동 분류(성공/실패)하고, 실패 케이스에서 lessons를 추출하며, 성공 케이스를 압축 보관하는 아카이브 스킬. 매 실행마다 메트릭을 누적하여 판정 품질을 추적하고, lessons를 warning pipeline 스킬에 환류한다. Use this skill whenever: \"결과 정리\", \"아카이브\", \"archive\", \"테스트 정리\", \"lessons 추출\", \"실패 분석 정리\", \"결과 압축\", \"메트릭 확인\", \"archive results\", \"결과물 정리해줘\", or any request to classify and organize test results from dev_test_sync. Do NOT use for: 실시간 테스트 실행(test-pc-worker), 워크플로우 회고 분석 (workflow-retrospective), 스킬 품질 리뷰(skill-review-deploy)."
 ---
 
@@ -121,7 +122,7 @@ blocked=true + warning_visible=false는 "차단 성공, 경고 실패"로 분류
 4. 실패 원인을 사전에 인지하고 설계에 반영
 
 환류 대상 파일:
-- `apf-warning-design/services/{service_id}_design.md` → Known Issues 섹션
+- `genai-apf-pipeline/services/{service_id}_design.md` → Known Issues 섹션
 - `genai-frontend-inspect/services/{service_id}_frontend.md` → Notes 섹션
 
 ---
@@ -156,8 +157,9 @@ lessons/가 추출되었으므로 원본은 더 이상 필요하지 않다.
 
 ---
 
-## Related Skills
+<!--
+  Related Skills 섹션 제거 (2026-04-23 skill-atomicity 재토론 R3):
+  Type B utility skill 은 IoC (원칙 8.1) 에 따라 caller 목록을 유지하지 않는다.
+  caller 측이 자기 dependency 로 utility 를 참조한다.
+-->
 
-- **genai-apf-pipeline**: 자율 루프에서 이 스킬의 스크립트를 호출
-- **workflow-retrospective**: archive_metrics.jsonl을 분석 입력으로 사용
-- **cowork-remote**: 테스트 완료 후 결과 정리 트리거

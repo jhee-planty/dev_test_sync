@@ -157,5 +157,5 @@ test PC Cowork: PowerShell SendKeys로 test prompt ("Hello") 입력 → Enter
   no=자동화 불가 (WebSocket 전용, CDP만 가능 등), unknown=미확인.
 ```
 
-이 목록이 Phase 2(apf-warning-design)의 입력이 된다.
-Phase 2는 이 중 가장 효과적인 방식을 선택하여 설계한다.
+이 목록이 Phase 5 (warning-design, `references/phase5-warning-design.md` sub-agent prompt)의 입력이 된다.
+Phase 5는 이 중 가장 효과적인 방식을 선택하여 설계한다.

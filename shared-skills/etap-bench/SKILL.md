@@ -1,5 +1,6 @@
 ---
 name: etap-bench
+type: A
 description: "Etap DPDK 브릿지 성능 벤치마크 스킬. Dell 테스트베드에서 pktgen으로 트래픽을 생성하고 모듈 on/off에 따른 처리량(Mpps), 지연(latency), CPU 사용률을 측정한다. Use this skill whenever: \"벤치마크\", \"성능 측정\", \"pktgen\", \"Mpps\", \"throughput\", \"DPDK 성능\", \"모듈별 성능 비교\", \"etap-bench\", \"performance test\". Do NOT trigger for: 기능 테스트(etap-testbed), 빌드/배포(etap-build-deploy)."
 ---
 

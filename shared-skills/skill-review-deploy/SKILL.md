@@ -1,5 +1,6 @@
 ---
 name: skill-review-deploy
+type: A
 description: "커스텀 스킬의 품질 리뷰, 문제 보완, shared-skills 배포, .skill 패키지 생성 및 present_files를 통한 \"내 스킬에 복사\" 버튼 제공까지 전체 사이클을 담당한다. Use this skill whenever: \"스킬 리뷰해줘\", \"스킬 점검\", \"스킬 배포\", \"shared-skills 반영\", \"스킬 품질 확인\", \"스킬 복사\", \"copy to your skill\", \".skill 패키지 만들어줘\", \"스킬 수정 후 반영\", \"리뷰하고 배포까지\", \"전체 스킬 점검\", \"스킬 업데이트\", or any request involving skill quality review, fix, packaging, or deployment. Do NOT trigger for skill creation from scratch — that belongs to skill-creator. Do NOT trigger for workflow retrospective or metric analysis — that belongs to workflow-retrospective."
 ---
 

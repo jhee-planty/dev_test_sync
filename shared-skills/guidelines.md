@@ -70,9 +70,9 @@ Current: SSE event count is now 8 (service added 2 new event types).
 | Experience type | Location |
 |----------------|----------|
 | Frontend structure per service | `genai-frontend-inspect/services/{service_id}_frontend.md` |
-| Warning design per service | `apf-warning-design/services/{service_id}_design.md` |
+| Warning design per service | `genai-apf-pipeline/services/{service_id}_design.md` |
 | Implementation journal per service | `apf-warning-impl/services/{service_id}_impl.md` |
-| Cross-service design patterns | `apf-warning-design/references/design-patterns.md` |
+| Cross-service design patterns | `genai-apf-pipeline/references/design-patterns.md` |
 | Test log templates | `apf-warning-impl/references/test-log-templates.md` |
 | Pipeline status | `genai-apf-pipeline/services/status.md` |
 | Prior APF network-level experience | `_backup_20260317/apf-add-service/services/{service_id}.md` |
@@ -97,7 +97,7 @@ The prior APF pipeline's experience (network-level analysis) is preserved in
 
 | Item | Convention | Example |
 |------|-----------|---------|
-| Skill directory | `lowercase-hyphen` | `apf-warning-design` |
+| Skill directory | `lowercase-hyphen` | `apf-warning-impl` |
 | Service experience file | `{service_id}_suffix.md` | `chatgpt_design.md` |
 | service_id | lowercase + underscore, brand name | `chatgpt`, `clova_x` |
 | Test log marker | `[APF_WARNING_TEST:{service_id}]` | `[APF_WARNING_TEST:chatgpt]` |
@@ -306,7 +306,7 @@ re-read the incoming Phase's SKILL.md before starting work.
 This is a structural safeguard against context decay, not optional behavior.
 
 ```
-Phase 1 complete → Read apf-warning-design/SKILL.md → begin Phase 2
+Phase 1 complete → Read genai-apf-pipeline/references/phase5-warning-design.md → begin Phase 2
 Phase 2 complete → Read apf-warning-impl/SKILL.md → begin Phase 3
 Phase 6 complete → Read etap-build-deploy/SKILL.md → begin Phase 7 (release build)
 ```

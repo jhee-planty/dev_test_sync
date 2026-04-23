@@ -13,7 +13,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 를 C++ generator 함수로 구현 → 빌드·배포 → test 검증 → 결과 반영 iteration.
 
 ### Input
-- `apf-warning-design/services/{service_id}_design.md` — strategy (A/B/C/D), is_http2 값, 예상 동작
+- `genai-apf-pipeline/services/{service_id}_design.md` — strategy (A/B/C/D), is_http2 값, 예상 동작
 
 ### Output
 - 수정된 C++ 소스 (EtapV3 repo)
