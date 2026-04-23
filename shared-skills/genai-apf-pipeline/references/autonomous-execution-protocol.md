@@ -2,7 +2,7 @@
 
 > Injected by PostCompact + SessionStart hooks.
 > This file is the authoritative reference for autonomous mode behavior.
-> **Last major revision 2026-04-23 (11차 session)**: polling protocol v2 — **ScheduleWakeup only** (in-session bash loop deprecated).
+> **Last major revision 2026-04-23 (13차 session)**: Hard Rule #6 added — 선택지 제시 금지 + Autonomous Micro-Discussion Pattern. (11차: polling v2 ScheduleWakeup only.)
 
 ## Hard Rules (위반 시 훅이 교정)
 
@@ -11,6 +11,94 @@
 3. **폴링 체인 끊기 금지** — **ScheduleWakeup** 사용 (아래 Polling Protocol 참조). 외부 스케줄러 (`mcp__scheduled-tasks__*`, cron, launchd, fireAt, Monitor persistent) + **in-session bash loop** 전부 금지.
 4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
 5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다.
+6. **선택지 제시 금지** — 자율 수행 중 복수 valid options 가 있으면 **사용자에게 선택 요구 금지**. 아래 3 모드 중 하나로 처리:
+   - **단순 binary** (A vs B, clear pros/cons) → 15초 내 internal reasoning 후 즉시 실행
+   - **복잡 n-option / non-obvious** → **Autonomous Micro-Discussion Pattern** 수행 후 실행 (본 protocol §Autonomous Micro-Discussion Pattern 참조)
+   - **C9 trigger 해당 critical change** (runtime / 2+ policy docs / filesystem reorg / skill 생성삭제) → `discussion-review` skill full invocation (사용자 gate 포함)
+   - **예외** (user ask 허용): `Decision Authority §사용자 확인 필요` 의 물리적 불가능 항목만 (test PC 로그인 / 파괴적 작업 / 외부 공개 작업)
+
+## Autonomous Micro-Discussion Pattern (Hard Rule 6 실행 수단)
+
+> 사용자 개입 없이 내부 의사결정. Full `discussion-review` skill (6 roles × 5 rounds + Quality Gate) 보다 경량.
+> **C9 trigger 에 해당하는 critical change 는 본 pattern 대신 full `discussion-review` 사용** (기존 프로세스 유지).
+
+### Roles (minimum 2)
+
+- **DF** (Discussion Facilitator) — issue framing + option enumeration + consensus 선언
+- **EC** (External Consultant) — premise challenge + 최소 1개 근본 질문 ("왜 option X 가 더 나은가?", "A 의 가정 실패 시 어떻게?")
+
+(Claude 혼자 양 role play. 사용자 개입 없음.)
+
+### Flow (≤ 2 rounds, sub-minute target)
+
+1. **Issue statement** — 1 sentence ("서비스 S 의 BLOCK_ONLY 처리 방법 선택")
+2. **Options enumerate** — 2-4 valid paths (예: "A: HEADERS frame 수정 재시도 / B: 다른 서비스 전환 / C: SUSPENDED 선언")
+3. **EC challenge** — 핵심 risk / premise 의심 제기 ("A 는 3-strike 위험 + 원인 검증 안 됨. B 는 progress 지연. C 는 sunk cost 수용.")
+4. **DF synthesis** — pick option + 1-sentence rationale ("B 선택: A 는 premise (HEADERS frame 이 원인) 가 코드 레벨 검증 안 됨. B 로 progress 유지하며 A 는 별도 investigation 로 분리.")
+5. **Execute immediately** — 선택된 option 즉시 실행 (선언 후 멈추기 금지 = Hard Rule 4)
+
+### Log (경량)
+
+`pipeline_state.json` 의 `last_decision` field 에 overwrite 기록:
+
+```json
+{
+  "last_decision": {
+    "timestamp": "2026-04-23T17:50:00Z",
+    "issue": "qianwen BLOCK_ONLY 처리",
+    "options": ["A: HEADERS frame fix retry", "B: defer to gamma", "C: SUSPENDED"],
+    "choice": "B",
+    "rationale": "A premise 미검증, B 로 progress 유지"
+  }
+}
+```
+
+- **Last one only** (overwrite). progress.md narrative 불필요 (micro-scale).
+- C9 trigger 해당 결정은 본 field 대신 `progress.md` full narrative + INTENTS §5 append.
+
+### 경계 기준 (어느 mode 를 쓸 것인가)
+
+| 의사결정 성격 | 처리 방식 | 증거 기록 |
+|-------------|----------|---------|
+| 단순 binary (A vs B with clear pros/cons) | 15초 internal reasoning → 즉시 실행 | Log 선택 (추적 가치 낮음) |
+| **복잡 n-option / non-obvious** | **Autonomous Micro-Discussion Pattern** | `pipeline_state.json last_decision` 필수 |
+| C9 trigger (critical change) | Full `discussion-review` skill | `INTENTS.md §5` append + `progress.md` full narrative |
+| 물리적 사용자 개입 필요 | User ask 허용 (예외) | — |
+
+### 예외 (Hard Rule 6 비적용, user ask 허용)
+
+다음 결정은 물리적으로 사용자가 해야 함 (Claude 자율 불가):
+- 로그인 / auth / CAPTCHA / MFA 입력
+- 파괴적 작업 (force push, reset --hard, rm -rf)
+- 외부 공개 (PR 생성, 외부 채널 알림, 메일 발송)
+- 신규 물리 장비 설정
+
+이 목록 외 결정은 **모두 autonomous** — 사용자 selection request 금지.
+
+### Anti-pattern 사례 (2026-04-23 13차 trigger)
+
+Bad (금지):
+```
+옵션 A — qianwen HEADERS frame 수정 재시도
+옵션 B — qianwen defer, gamma 전환
+어느 쪽으로 진행할지 지시 주시면 즉시 수행합니다.
+```
+
+Good (Hard Rule 6 준수):
+```
+[내부 micro-discussion, 30초]
+DF: qianwen BLOCK_ONLY 2nd iter 실패. 3rd 전 HEADERS frame 원인 가설 미검증.
+    Options: A 재시도 / B gamma 전환 / C SUSPENDED
+EC: A 는 원인 미검증 + 3-strike risk. C 는 premature (2 iter 만 소진).
+    B 는 progress 유지 + A 는 design session 후 복귀 가능. B 가 optimal.
+DF: B 선택. Rationale: 원인 검증 분리 + pipeline 정체 방지.
+
+[즉시 실행]
+pipeline_state.json last_decision 기록 → gamma check-warning push.
+사용자에게 결과 보고: "qianwen 을 design review 로 defer, gamma 로 전환. gamma #{id} push 완료."
+```
+
+---
 
 ## Result Processing Protocol (결과 도착 시 6단계)
 
@@ -136,6 +224,8 @@ primary task가 blocked(결과 대기 등)일 때:
 - "다음은 X" 선언인가? → X를 바로 실행한다.
 - 상태 업데이트 보고인가? → 다음 실질 작업을 이어서 한다.
 - "적용하겠습니다" / "기다린다" 인가? → 즉시 실행/확인한다.
+- **옵션 나열 + "어느 쪽으로?"** 패턴인가? → **Hard Rule 6 위반**. Autonomous Micro-Discussion 수행 → pick + execute 로 재작성.
+- **"지시 주시면"** 패턴인가? → 물리적 사용자 개입 필요 사례 (로그인 / 파괴적 / 외부 공개) 아니면 **Hard Rule 6 위반**. 자율 결정 후 실행 보고로 재작성.
 
 ## 과거 해석 오류 (참고)
 

@@ -132,15 +132,21 @@ endwhile
 ## 자율 수행 규칙 (MEMORY.md §11 + §13 준수)
 
 - 질문으로 끝맺지 않음
-- 결과 대기 중 STALLED 자동 전환 없음 (cowork-remote 가 scan 반복)
+- 결과 대기 중 STALLED 자동 전환 없음 (ScheduleWakeup chain 으로 scan 반복)
 - Phase 전환 시 `references/phase{N}-*.md` 필수 Read
 - Single-service focus 유지 (queue-next 결과 하나만)
+- **선택지 제시 금지 (Hard Rule 6)**: 복수 valid options → Autonomous Micro-Discussion Pattern 으로 내부 결정 (DF+EC 2-role, 1-2 round, `pipeline_state.json last_decision` 기록). 사용자 ask 는 물리적 개입 필요 사례만 (로그인/파괴적/외부 공개) + C9 trigger critical change (full `discussion-review`).
+
+→ See `references/autonomous-execution-protocol.md` for Hard Rules 1-6 + Autonomous Micro-Discussion Pattern + Polling Policy v2 usage.
+→ **Canonical** (Polling Policy authoritative source): `~/.claude/memory/user-preferences.md` Polling Policy section. INV-6 Rule-of-3 준수.
 
 ## 제외 기능
 
-- ❌ Scheduled Task / cron polling (MEMORY §13.4)
+- ❌ Scheduled Task / cron / launchd / fireAt / Monitor persistent (Polling Policy v2)
+- ❌ In-session bash loop (11차 제외, Polling Policy v2)
 - ❌ 자동 STALLED escalation
 - ❌ monolithic SKILL.md 의존 (본 skill 이 truth)
+- ❌ 사용자에게 선택지 제시 + 지시 대기 패턴 (Hard Rule 6, 13차 추가)
 
 ## Service Journals (operational artifact)
 
