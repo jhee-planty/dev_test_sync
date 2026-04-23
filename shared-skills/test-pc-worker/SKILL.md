@@ -2,7 +2,7 @@
 name: test-pc-worker
 type: A
 description: Test PC (Windows) 전용 worker. dev 가 push 한 requests/ 를 git pull 로 수신 → PowerShell + windows-mcp 로 Chrome 자동화 실행 → results/ 에 결과 push. Use when on test PC and user says "새 요청 확인", "요청 처리", "check-warning 실행", "check-block 실행", "dev 에서 요청 왔어?", "result push". 결정론 runtime 은 PowerShell script. Claude 는 DOM/Console 판독 + scenario decision 만 담당. 응답 대기 중 자동 에스컬레이션 없음 (cowork-remote 와 pair).
-allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, Bash, Read, Write
+allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, mcp__windows-mcp__Scrape, mcp__windows-mcp__Snapshot, mcp__windows-mcp__Wait, mcp__windows-mcp__Clipboard, mcp__windows-mcp__Scroll, Bash, Read, Write
 ---
 
 # test-pc-worker
@@ -26,7 +26,7 @@ mcp__windows-mcp__PowerShell
   timeout_ms: 120000
 ```
 
-File I/O 는 `mcp__windows-mcp__FileSystem` (read / write / list / create). Chrome 자동화용 GUI 상호작용은 `mcp__windows-mcp__Click` / `Type` / `Screenshot`.
+File I/O 는 `mcp__windows-mcp__FileSystem` (read / write / list / create). Chrome 자동화용 GUI 상호작용은 `mcp__windows-mcp__Click` / `Type` / `Screenshot`. DOM text 추출은 `Scrape`, accessibility tree inspection 은 `Snapshot`, 상태 대기는 `Wait`, 스크롤은 `Scroll`, 대용량 prompt paste 는 `Clipboard` (Type rate-limit 우회).
 
 **Legacy note**: 2026-04-23 11차 이전에는 `mcp__desktop-commander__*` 였음. Test PC 에 desktop-commander MCP 가 없는 환경에서는 windows-mcp 로 대체 (allowed-tools 참조).
 
