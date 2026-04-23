@@ -95,21 +95,31 @@ Cross-skill pattern (본 skill 외에도 반복되는 실수) 은 `research-gath
 
 ---
 
-## 폴링 방식
+## 폴링 방식 (2026-04-23 v2 — 11차 session)
 
 본 skill 이 호출되는 두 가지 패턴:
 
 **(a) 수동 1회 호출**: 사용자 "새 요청 확인해줘" → scan-requests 1회 실행 → 결과 없으면 종료.
 
-**(b) In-session 자율 폴링 (Option 3)**: 사용자가 세션 시작 시 1회 prompt 제공 → Claude 가 자신의 bash turn 안에서 `while true; scan-requests; sleep 30; done` 루프 실행. 세션 종료 = 폴링 종료.
+**(b) ScheduleWakeup 자율 폴링 (Option 3)**: 사용자가 세션 시작 시 1회 prompt 제공 → Claude 가 매 tick 마다 scan-requests 실행 + 신규 request 처리 + ScheduleWakeup 으로 다음 tick 예약. 세션 종료 = pending wakeup 자동 취소 (polling 종료).
 
-→ **Canonical**: `~/.claude/memory/user-preferences.md` Polling Policy (in-session loop only). cron / Scheduled Task / fireAt / Monitor persistent 전부 금지.
+```
+# 예: tick cadence 60s (cache-warm)
+ScheduleWakeup(
+    delaySeconds=60,
+    prompt="git pull. scan-requests.ps1 실행. 신규 ID 있으면 each ID 마다 B. Execute command 흐름 + C. Push results. 그 후 ScheduleWakeup 재예약 (동일 params). 신규 없으면 바로 ScheduleWakeup 재예약.",
+    reason="test-pc-worker autonomous polling for new requests"
+)
+```
+
+→ **Canonical**: `~/.claude/memory/user-preferences.md` Polling Policy (v2: ScheduleWakeup only). cron / Scheduled Task / fireAt / Monitor persistent / in-session bash loop 전부 금지.
 
 ## 제외된 기능 (의도적)
 
-- ❌ Scheduled Task / fireAt / cron — session 외부 persistent trigger (Polling Policy 금지)
-- ❌ Adaptive polling 3-stage (단일 sleep 간격으로 통일)
-- ❌ Heartbeat.json (폴링 loop 자체가 liveness indicator)
+- ❌ Scheduled Task / fireAt / cron / launchd / Monitor persistent — session 외부 persistent trigger
+- ❌ **In-session bash loop** (`while true; sleep N; done` in Claude bash turn) — 11차 제외. 이유: per-iteration Claude reasoning (Chrome DOM 판독 등) 불가능
+- ❌ Adaptive polling 3-stage (단일 ScheduleWakeup delay 로 통일)
+- ❌ Heartbeat.json (tick 자체가 liveness indicator)
 - ❌ GitHub MCP (git CLI only, 단일 transport)
 
 ---

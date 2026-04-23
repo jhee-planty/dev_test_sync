@@ -534,19 +534,20 @@ Key rules from the skill:
 - 사용자에게 "다음 뭐 할까요?" 묻지 않는다 — 할 일이 있으면 바로 한다
 - 할 일이 없을 때만 사용자에게 보고하고 대기한다
 
-### 13.4 Polling Policy (2026-04-23 재정립)
+### 13.4 Polling Policy (2026-04-23 v2 — 11차 session)
 
-→ **Canonical**: `~/.claude/memory/user-preferences.md` 의 "Polling Policy" 섹션
+→ **Canonical**: `~/.claude/memory/user-preferences.md` 의 "Polling Policy" 섹션 (v2)
 
 **핵심 요약**:
-- **유일한 허용 방식**: in-session bash loop
-  (Claude's bash turn 안에서 `while true; do ...; sleep N; done`)
-- **금지 (모두)**: `mcp__scheduled-tasks__create_scheduled_task` / `update_scheduled_task`, OS-level **cron**, **fireAt**, **Monitor** persistent background task, 기타 session 외부 persistent trigger 생성 메커니즘
-- **이유**: session 외부 trigger 는 사용자 workflow 를 reminder 알림으로 방해. in-session loop 하나로 충분.
+- **허용 방식**: `ScheduleWakeup(delaySeconds, prompt, reason)` only — session-internal scheduled re-fire
+- **금지 (모두)**: `mcp__scheduled-tasks__*`, OS-level **cron** / **launchd**, **fireAt**, **Monitor** persistent, **in-session bash loop** (`while true; sleep N; done` in bash turn), 기타 OS 수준 persistent trigger
+- **delay 선택**: 60-270s (short/cache-warm) 또는 1200-1800s (long/idle). **300-1200s 금지 영역** (prompt cache 5min TTL worst-of-both)
+- **필수 조건**: prompt 에 exit condition 명시, reason field 구체, duration cap (expected + 30min) 인지, session lifecycle 인지
 
 **세부 protocol**: `genai-apf-pipeline/references/autonomous-execution-protocol.md`
 
-**과거 확대 해석 주의** (INTENTS D1 사례):
-- "No schedulers" 를 "모든 polling 금지" 로 해석하지 말 것
-- "수동 폴링만" 을 "in-session loop 까지 금지" 로 해석하지 말 것
-- 정확한 경계: **session 외부 persistent task 만 금지**
+**과거 확대/축소 해석 주의** (INTENTS D1 사례):
+- ❌ "No schedulers" → "모든 polling 금지"
+- ❌ "수동 폴링만" → "in-session loop 도 금지"
+- ❌ "bash loop 만 허용" → "ScheduleWakeup = scheduler = 금지" (7차 wording lock)
+- ✅ 정확한 경계: **session-internal scheduled re-fire (ScheduleWakeup) 허용. OS-level + external notification 기반 trigger 금지.**

@@ -126,7 +126,7 @@ runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2)
 
 ## 제외된 기능 (의도적)
 
-- ❌ Scheduled Task / auto-polling mode — **Canonical**: see `~/.claude/memory/user-preferences.md` Polling Policy (in-session loop only)
+- ❌ Scheduled Task / cron / fireAt / Monitor persistent / in-session bash loop — **Canonical**: see `~/.claude/memory/user-preferences.md` Polling Policy (v2: ScheduleWakeup only)
 - ❌ STALLED 자동 에스컬레이션 (2026-04-21 사용자 지시)
 - ❌ GitHub MCP connector (단일 transport 경로 유지)
 - ❌ L3 visual diagnosis (별도 skill 로 분리 예정)
