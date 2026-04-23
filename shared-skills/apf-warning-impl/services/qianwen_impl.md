@@ -190,6 +190,73 @@ data:[DONE]\n\n
 
 ---
 
+## etap.log 분석 (2026-04-23 cycle 91, dev PC SSH)
+
+#529 시점 `2026/04/22 19:40:10-22` 4회 block (4 TCP conn 각각 stream=1):
+
+```
+19:40:10.021 [I] [APF:block] service=qianwen http2=1 stream=1
+19:40:10.021 [I] [APF:envelope] rendered via DB template (is_h2=1)
+19:40:10.021 [I] [APF:h2_params] stream=1 end_stream=1 goaway=0 http1_size=1436
+19:40:10.022 [I] [APF:block_response] service=qianwen size=1414 http2=1
+19:40:10.022 [I] [APF:block_session_h2] h2_mode=2 stream_id=1 h2_end_stream=1
+19:40:10.022 [I] client=[2406:5900:2:42::3a]:50566 server=[2408:4001:f10::3fe]:443
+19:40:10.022 [I] [VTS:vts_pre] len=1414 is_http2=2
+19:40:10.022 [I] [VTS:vts_post] written=1414 expected=1414 (direct SSL_write)
+19:40:10.022 [I] [VTS:vts_keepalive] block response sent, server+client kept alive
+19:40:10.022 [I] [VTS:vts_rst_server] RST_STREAM(CANCEL) sent to server stream=1 written=13
+```
+
+**확증된 사실**:
+- APF 가 envelope 렌더링 → H2 frame 변환 (1414B) → **VTS SSL_write 로 1414B 전체 전송 성공** (written==expected)
+- RST_STREAM 은 **server 방향** 만 (client 연결 유지)
+- H2/HTTP2 관련 에러 로그 **없음** (DB logging error 만 있으나 audit 용 무관)
+
+**Gap**: etap wire 에 1414B 전송 완료 ↔ Chrome DevTools Network 0 bytes. 이 gap 원인은 TLS or HTTP/2 frame parsing 계층.
+
+**후보 재정립 (code-review + etap log 통합)**:
+
+1. **HPACK encoding 문제** — browser 관점에서 HPACK payload 디코드 실패 시 `ERR_HTTP2_COMPRESSION_ERROR`. `literal without indexing (0x00)` + 7-bit prefix 정수 인코딩 — RFC 7541 §6.2.2 호환이나 edge case (value >= 127 표현 등) 존재 가능.
+2. **Envelope template MySQL storage 문제** — `\r\n`, `\n\n` escape sequence 가 MySQL `sql_mode` 설정에 따라 literal 문자로 저장될 수 있음. envelope 의 실제 stored bytes 를 검증 필요.
+3. **Browser-side 상위 레벨 rejection** — HPACK + frame 은 valid 이나 CORS preflight 단계에서 reject. `Access-Control-Allow-Origin: https://qianwen.com` 이 request Origin 과 **정확히** 일치해야 하는데, chat API endpoint 의 실제 origin 이 `qianwen.com` 이 아닐 수 있음.
+
+**Zero-risk next diagnostic (autonomous 수행 가능)**:
+- **[a]** DB 직접 조회로 envelope_template 실제 bytes dump — `SELECT HEX(envelope_template)` 로 escape 처리 결과 확증 → **수행 완료 (cycle 91)**
+- **[b]** 기존 #529 screenshot 재검토 — Request Headers 의 `Origin:` 값 추출 가능 시 hypothesis 3 즉시 확정/부정
+
+---
+
+## DB envelope 실체 확증 (2026-04-23 cycle 91)
+
+SSH `mysql etap` → `SELECT envelope_template FROM ai_prompt_response_templates WHERE response_type='qianwen_sse'`:
+
+**Stored envelope body (1148 bytes total)**:
+```
+HTTP/1.1 200 OK\r\n
+Content-Type: text/event-stream;charset=UTF-8\r\n
+Cache-Control: no-cache\r\n
+Access-Control-Allow-Origin: https://qianwen.com\r\n
+Access-Control-Allow-Credentials: true\r\n
+\r\n
+data:{"error_msg":"","data":{"debug":{},"extra_info":{"agent_name":"AgentProxy"},"messages":[{"mime_type":"multi_load/iframe","meta_data":{"multi_load":[],"ext_info":{}},"action":"","content":"{{ESCAPE2:MESSAGE}}","status":"complete"}],"tracer":{"events":[]},"audit_info":{"result":0,"session_result":0,"stage":2,"problem_code":"blocked","error_code":1,"opinion":"PII_DETECTED"}},"error_code":0,"communication":{"disconnection_signal":1,"sessionid":"","resid":0,"reqid":""}}\n
+\n
+event:complete\n
+data:{...same payload, resid:1...}\n
+```
+
+**관찰**:
+1. `\r\n` / `\n` escape 가 MySQL 에 **실제 LF 로 저장** — 문자열 literal 이 아님. HPACK/frame 분리는 정상 작동.
+2. HTTP headers block 은 **스펙 준수** — `:status`, Content-Type SSE, CORS origin, credentials.
+3. Body mime_type 은 `multi_load/iframe` — qianwen 의 iframe-based 렌더링 전략. v2 SQL 에 정의된 native format (`sessionId/msgId/contents[]`) 아님.
+4. `qianwen_native_sse_v2.sql` 파일 존재하나 **DB 에 미적용** 상태 확증. 다른 iteration 에서 iframe 전략으로 대체된 것으로 추정.
+
+**의의**:
+- "HEADERS frame invalid" 가설 (Test PC 진단) 은 본 조사로 추가 정보 없이 유지 불가
+- 실제 envelope bytes 가 모두 valid → `0 bytes Network + CORS blocked` 증상은 여전히 **transport layer** 또는 **browser-specific rejection** 으로 수렴
+- `multi_load/iframe` mime_type 은 transport 이후 frontend 단계의 rendering 선택 문제 — network 0 bytes 의 원인은 아님
+
+
+
 ## Phase 6 scope 재정의 (cycle 91)
 
 본 서비스는 **apf-warning-impl iteration scope 초과**:
