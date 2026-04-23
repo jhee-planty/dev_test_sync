@@ -20,7 +20,7 @@ from pathlib import Path
 
 REPOS = [
     Path.home() / "Documents/workspace/dev_test_sync",
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills",
     Path.home() / "Documents/workspace/Officeguard/EtapV3",
 ]
 

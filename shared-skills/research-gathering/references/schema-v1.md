@@ -236,7 +236,7 @@ Partial scan 의 상세.
   {
     "node_id": "git_scan",
     "reason": "non-git repository",
-    "target_path": "~/Documents/workspace/claude_cowork",
+    "target_path": "~/Documents/workspace/claude_work",
     "fallback": "skipped, included as missing_action",
     "severity": "low"
   }

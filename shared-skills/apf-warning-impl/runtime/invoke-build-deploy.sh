@@ -8,7 +8,7 @@
 
 set -eu
 
-BD_RUNTIME="${APF_BD_RUNTIME:-/Users/jhee/Documents/workspace/claude_cowork/projects/cowork-micro-skills/runtime/etap-build-deploy/etap-build-deploy.sh}"
+BD_RUNTIME="${APF_BD_RUNTIME:-/Users/jhee/Documents/workspace/claude_work/projects/cowork-micro-skills/runtime/etap-build-deploy/etap-build-deploy.sh}"
 
 if [[ ! -x "$BD_RUNTIME" ]]; then
     echo "[apf-warning-impl] FATAL: etap-build-deploy runtime not executable at $BD_RUNTIME" >&2

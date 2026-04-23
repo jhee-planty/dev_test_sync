@@ -14,7 +14,7 @@
 **해결:** host 경로에서 `mcp__desktop-commander__edit_block` 사용
 ```
 ❌ /sessions/trusting-zen-darwin/mnt/.claude/skills/test-pc-worker/SKILL.md
-✅ /Users/jhee/Documents/workspace/claude_cowork/skills/test-pc-worker/SKILL.md
+✅ /Users/jhee/Documents/workspace/claude_work/skills/test-pc-worker/SKILL.md
 ```
 
 ---

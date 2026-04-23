@@ -96,7 +96,7 @@ genAI_har_files/{service}_{timestamp}/
 ## 분석 결과 파일
 - HAR (정상): {path}
 - HAR (실패): {path}  ← 존재하는 경우
-- 분석 스킬: ~/Documents/workspace/claude_cowork/skills/apf-analysis/services/{service}.md
+- 분석 스킬: ~/Documents/workspace/claude_work/skills/apf-analysis/services/{service}.md
 
 ## 수정 대상 파일
 - `functions/ai_prompt_filter/ai_prompt_filter.cpp`

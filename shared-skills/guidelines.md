@@ -170,9 +170,9 @@ Testing is parallel because each service uses a different endpoint.
 ## 8. Required Paths
 
 ```
-SKILLS_DIR   = ~/Documents/workspace/claude_cowork/skills/
+SKILLS_DIR   = ~/Documents/workspace/claude_work/skills/
 ETAP_ROOT    = ~/Documents/workspace/Officeguard/EtapV3/
-CAPTURE_DIR  = ~/Documents/workspace/claude_cowork/projects/officeguard-etapv3/scripts/capture/
+CAPTURE_DIR  = ~/Documents/workspace/claude_work/projects/officeguard-etapv3/scripts/capture/
 BACKUP_DIR   = SKILLS_DIR/_backup_20260317/
 GIT_SYNC_REPO = ~/Documents/workspace/dev_test_sync/         # dev ↔ test PC 동기화 Git 저장소
 ```
@@ -410,13 +410,13 @@ git 저장소(dev_test_sync)는 dev↔test PC 교환 전용으로만 사용하�
 |----------|----------|----------------|
 | Skill runtime (SKILL.md, references/, services/) | `~/.claude/skills/{skill}/` (plugin managed) | `/mnt/.claude/skills/{skill}/` |
 | Guidelines (single source of truth) | `~/Documents/workspace/dev_test_sync/shared-skills/guidelines.md` | `/mnt/workspace/dev_test_sync/shared-skills/guidelines.md` |
-| Working artifacts (analysis, reports, experiments) | `~/Documents/workspace/claude_cowork/docs/` | `/mnt/workspace/claude_cowork/docs/` |
-| OS release test histories & methods | `~/Documents/workspace/claude_cowork/projects/os-release-tests/` | `/mnt/workspace/claude_cowork/projects/os-release-tests/` |
-| Project-scoped work (non-release) | `~/Documents/workspace/claude_cowork/projects/{project}/` | `/mnt/workspace/claude_cowork/projects/{project}/` |
-| SQL migrations | `~/Documents/workspace/claude_cowork/sql/` | `/mnt/workspace/claude_cowork/sql/` |
-| Pipeline state (handoff, dashboard, state JSON) | `~/Documents/workspace/claude_cowork/state/` | `/mnt/workspace/claude_cowork/state/` |
-| Archive (completed artifacts) | `~/Documents/workspace/claude_cowork/archive/` | `/mnt/workspace/claude_cowork/archive/` |
-| Hook scripts | `~/Documents/workspace/claude_cowork/hooks/` | `/mnt/workspace/claude_cowork/hooks/` |
+| Working artifacts (analysis, reports, experiments) | `~/Documents/workspace/claude_work/docs/` | `/mnt/workspace/claude_work/docs/` |
+| OS release test histories & methods | `~/Documents/workspace/claude_work/projects/os-release-tests/` | `/mnt/workspace/claude_work/projects/os-release-tests/` |
+| Project-scoped work (non-release) | `~/Documents/workspace/claude_work/projects/{project}/` | `/mnt/workspace/claude_work/projects/{project}/` |
+| SQL migrations | `~/Documents/workspace/claude_work/sql/` | `/mnt/workspace/claude_work/sql/` |
+| Pipeline state (handoff, dashboard, state JSON) | `~/Documents/workspace/claude_work/state/` | `/mnt/workspace/claude_work/state/` |
+| Archive (completed artifacts) | `~/Documents/workspace/claude_work/archive/` | `/mnt/workspace/claude_work/archive/` |
+| Hook scripts | `~/Documents/workspace/claude_work/hooks/` | `/mnt/workspace/claude_work/hooks/` |
 | Dev↔Test exchange ONLY | `~/Documents/workspace/dev_test_sync/` | `/mnt/workspace/dev_test_sync/` |
 | C++ source | `~/Documents/workspace/Officeguard/EtapV3/` | `/mnt/Officeguard/` |
 
@@ -424,7 +424,7 @@ git 저장소(dev_test_sync)는 dev↔test PC 교환 전용으로만 사용하�
 
 **Cowork VM filesystem constraints:**
 - `/mnt/.claude/skills/` — **EROFS (read-only)**. Plugin managed. Cannot use Edit/Write tools.
-- `/mnt/workspace/` — writable (claude_cowork/, dev_test_sync/)
+- `/mnt/workspace/` — writable (claude_work/, dev_test_sync/)
 - `/mnt/Officeguard/`, `/mnt/functions/`, `/mnt/apf-db-driven-service/` — **chmod read-only** (SessionStart hook enforced)
 
 **Skill files (services/*_impl.md, *_design.md, *_frontend.md):**
@@ -441,18 +441,18 @@ Officeguard 경로(`/mnt/Officeguard/`)를 사용하면 EACCES 에러가 발생�
 **desktop-commander가 유일한 편집 수단이다.**
 
 **Working artifacts (Cowork Edit/Write 사용 가능):**
-- claude_cowork/state/ — handoff.md, pipeline_state.json
-- claude_cowork/docs/ — analysis, reports, experiments
-- claude_cowork/sql/ — migrations
-- claude_cowork/projects/os-release-tests/releases/*/ — 릴리스별 런타임 기록 (autonomous)
-- claude_cowork/projects/os-release-tests/lessons-learned.md — **append-only** 누적 교훈
+- claude_work/state/ — handoff.md, pipeline_state.json
+- claude_work/docs/ — analysis, reports, experiments
+- claude_work/sql/ — migrations
+- claude_work/projects/os-release-tests/releases/*/ — 릴리스별 런타임 기록 (autonomous)
+- claude_work/projects/os-release-tests/lessons-learned.md — **append-only** 누적 교훈
 
 **User-approval required:**
 - SKILL.md (skill behavior changes)
 - guidelines.md (operational rules)
 - Procedural references (phase*-*.md, protocol files)
-- claude_cowork/projects/os-release-tests/README.md (진입점 + Release Start Checklist)
-- claude_cowork/projects/os-release-tests/test-catalog.md (테스트 ID 추가/변경)
+- claude_work/projects/os-release-tests/README.md (진입점 + Release Start Checklist)
+- claude_work/projects/os-release-tests/test-catalog.md (테스트 ID 추가/변경)
 
 ### 12.3 No Duplicate Masters
 
@@ -460,9 +460,9 @@ Each file has exactly one canonical location. The flow is:
 ```
 ~/.claude/skills/ (master, Mac writable) → shared-skills/ (deploy snapshot) → .skill (package)
 ```
-Never treat dev_test_sync/docs/ as the master for documents that belong in claude_cowork/docs/.
+Never treat dev_test_sync/docs/ as the master for documents that belong in claude_work/docs/.
 guidelines.md는 예외: canonical location은 `dev_test_sync/shared-skills/guidelines.md` (단일 원본).
-claude_cowork/skills/guidelines.md는 삭제됨 (2026-04-20).
+claude_work/skills/guidelines.md는 삭제됨 (2026-04-20).
 
 **Officeguard/EtapV3/.claude/skills/ — 삭제됨 (2026-04-20 토론 합의).**
 중복 사본이 존재하면 Cowork이 잘못된 경로를 편집하므로, .gitignore로 재생성을 방지한다.
@@ -480,8 +480,8 @@ Protected directories:
 
 ### 12.5 Migration from dev_test_sync
 
-- New artifacts → claude_cowork/docs/ (immediately)
-- Active artifacts → move to claude_cowork/ at next use
+- New artifacts → claude_work/docs/ (immediately)
+- Active artifacts → move to claude_work/ at next use
 - Historical artifacts → remain in dev_test_sync/docs/ (read-only)
 
 ---

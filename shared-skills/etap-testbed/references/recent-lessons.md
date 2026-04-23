@@ -3,7 +3,7 @@
 > **Scope**: 스킬 사용자가 알아야 할 **testbed 운영 교훈** (프로세스명/인프라 특이점/패치 등). 범위는 "이 스킬을 쓸 때 곧바로 적용되는 지식".
 >
 > **Cross-release 교훈**(릴리스 간 누적되는 원칙·지식)의 canonical location:
-> `~/Documents/workspace/claude_cowork/projects/os-release-tests/lessons-learned.md`
+> `~/Documents/workspace/claude_work/projects/os-release-tests/lessons-learned.md`
 >
 > 중복 방지를 위해 아래 L-001/L-002/L-003은 포인터만 유지. 전문은 canonical 파일에서 관리.
 

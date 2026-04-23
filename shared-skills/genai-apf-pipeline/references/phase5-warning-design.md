@@ -96,7 +96,7 @@ Output sections:
 
 **Example** (with default paths from guidelines.md):
 ```
-SKILLS_DIR = ~/Documents/workspace/claude_cowork/skills/
+SKILLS_DIR = ~/Documents/workspace/claude_work/skills/
 ETAP_ROOT  = ~/Documents/workspace/Officeguard/EtapV3/
 ```
 

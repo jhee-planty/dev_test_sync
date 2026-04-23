@@ -23,7 +23,7 @@ done
 [[ -n "$SERVICE" ]] || { echo "--service required" >&2; exit 2; }
 [[ -n "$EXPECTED" ]] || { echo "--expected required" >&2; exit 2; }
 
-CR_PUSH="${APF_CR_PUSH:-/Users/jhee/Documents/workspace/claude_cowork/projects/cowork-micro-skills/runtime/cowork-remote/push-request.sh}"
+CR_PUSH="${APF_CR_PUSH:-/Users/jhee/Documents/workspace/claude_work/projects/cowork-micro-skills/runtime/cowork-remote/push-request.sh}"
 [[ -x "$CR_PUSH" ]] || { echo "cowork-remote push-request not found at $CR_PUSH" >&2; exit 2; }
 
 DRAFT=$(mktemp /tmp/awi-draft-XXXXXX.json)

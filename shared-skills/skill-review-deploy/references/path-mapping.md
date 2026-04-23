@@ -6,7 +6,7 @@
 
 | 용도 | 경로 | 읽기 | 쓰기 | 도구 |
 |------|------|------|------|------|
-| Host 스킬 원본 | `/Users/jhee/Documents/workspace/claude_cowork/skills/` | desktop-commander | desktop-commander | edit_block, start_process |
+| Host 스킬 원본 | `/Users/jhee/Documents/workspace/claude_work/skills/` | desktop-commander | desktop-commander | edit_block, start_process |
 | Cowork 스킬 캐시 | `/sessions/.../mnt/.claude/skills/` | △ stale 가능 | ❌ EROFS | Read (참고용) |
 | Cowork 사용자 마운트 | `/sessions/.../mnt/Documents/` | ✅ 실시간 | ✅ 가능 | Read, Write, Bash |
 | shared-skills | `/Users/jhee/Documents/workspace/dev_test_sync/shared-skills/` | desktop-commander | desktop-commander | start_process (cp, zip) |

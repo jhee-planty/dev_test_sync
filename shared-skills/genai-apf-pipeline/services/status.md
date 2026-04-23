@@ -4,7 +4,7 @@
 # Warning Pipeline — Service Status
 
 > Updated: 2026-04-20
-> Generated from: `claude_cowork/docs/apf_pipeline_report_20260420.md`
+> Generated from: `claude_work/docs/apf_pipeline_report_20260420.md`
 > **이 파일은 자동 생성됩니다. 직접 수정하지 마세요.**
 
 ## 전체 등록 상태

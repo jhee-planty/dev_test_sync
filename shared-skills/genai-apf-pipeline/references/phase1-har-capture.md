@@ -67,7 +67,7 @@ har-outputs/{service_id}/{YYYYMMDD_HHMMSS}/
 
 **Script paths (absolute):**
 ```
-~/Documents/workspace/claude_cowork/projects/officeguard-etapv3/scripts/capture/
+~/Documents/workspace/claude_work/projects/officeguard-etapv3/scripts/capture/
 ├── capture_v2.py      ← main execution script
 ├── service_config.py  ← SERVICES configuration list (79 services)
 └── sessions/          ← session cookie and signature files
@@ -75,7 +75,7 @@ har-outputs/{service_id}/{YYYYMMDD_HHMMSS}/
 
 **실행 예시:**
 ```bash
-cd ~/Documents/workspace/claude_cowork/projects/officeguard-etapv3/scripts/capture
+cd ~/Documents/workspace/claude_work/projects/officeguard-etapv3/scripts/capture
 python3 capture_v2.py --list                           # 서비스 목록 확인
 python3 capture_v2.py --id claude --copy-to-etap       # Claude AI 캡처 + EtapV3 복사
 ```

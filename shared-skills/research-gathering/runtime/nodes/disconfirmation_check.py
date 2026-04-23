@@ -57,7 +57,7 @@ ANTONYM_DICT = {
 
 TRANSCRIPT_DIR = Path.home() / ".claude/projects/-Users-jhee-Documents-workspace-Officeguard-EtapV3"
 FS_ROOTS = [
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills",
     Path.home() / "Documents/workspace/dev_test_sync/shared-skills",
 ]
 MAX_COUNTER_EVIDENCE_PER_FINDING = 5

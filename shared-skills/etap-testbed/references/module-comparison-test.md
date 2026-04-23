@@ -2,8 +2,8 @@
 
 Etap 모듈별 오버헤드를 정량적으로 측정하는 절차. `module.xml`에서 모듈을 단계적으로 `<_module>`로 비활성화하며 동일 부하를 가해 비교.
 
-> 원본: `claude_cowork/projects/etap-testbed-tests/TEST_LIST.md §8`
-> 실증: `claude_cowork/projects/os-release-tests/releases/v2.2.2/results.md` (Task 8 APF on/off)
+> 원본: `claude_work/projects/etap-testbed-tests/TEST_LIST.md §8`
+> 실증: `claude_work/projects/os-release-tests/releases/v2.2.2/results.md` (Task 8 APF on/off)
 
 ---
 

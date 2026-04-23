@@ -83,7 +83,7 @@ done
 
 ```bash
 grep -rh '^## L-0\|^## PU-0' ~/.claude/skills/$SKILL/references/ \
-  ~/Documents/workspace/claude_cowork/projects/*/
+  ~/Documents/workspace/claude_work/projects/*/
 # 같은 ID가 여러 파일에 → canonical 결정 + 나머지는 포인터화
 ```
 

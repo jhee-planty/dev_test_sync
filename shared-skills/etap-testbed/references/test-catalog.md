@@ -1,6 +1,6 @@
 # Test Catalog — Canonical Reference
 
-> **Canonical location**: `claude_cowork/projects/etap-testbed-tests/TEST_LIST.md` (86개 상세 테스트 항목)
+> **Canonical location**: `claude_work/projects/etap-testbed-tests/TEST_LIST.md` (86개 상세 테스트 항목)
 >
 > 본 파일은 **요약/인덱스** 역할만 수행한다. 실제 명령어와 기대 결과는 canonical 파일 참조. 중복 정의 방지.
 
@@ -58,7 +58,7 @@
 
 ## 테스트 선택 기준 (Release 관점)
 
-릴리스 테스트 시 모든 86개를 실행할 필요는 없다. `claude_cowork/projects/os-release-tests/test-catalog.md`의 **affected-by 매핑**과 git diff를 교차 확인하여 재실행 대상만 선별:
+릴리스 테스트 시 모든 86개를 실행할 필요는 없다. `claude_work/projects/os-release-tests/test-catalog.md`의 **affected-by 매핑**과 git diff를 교차 확인하여 재실행 대상만 선별:
 
 ```bash
 # 예: 이번 릴리스의 변경 경로 확인
@@ -79,10 +79,10 @@ ssh -p 12222 solution@61.79.198.110 \
 
 ```
 # Mac
-~/Documents/workspace/claude_cowork/projects/etap-testbed-tests/TEST_LIST.md
+~/Documents/workspace/claude_work/projects/etap-testbed-tests/TEST_LIST.md
 
 # Cowork VM
-/mnt/workspace/claude_cowork/projects/etap-testbed-tests/TEST_LIST.md
+/mnt/workspace/claude_work/projects/etap-testbed-tests/TEST_LIST.md
 ```
 
 상세 명령어와 기대 결과는 이 파일에서 직접 `Read`로 로드. 복제본을 스킬에 두지 않는 이유는 single-source-of-truth 유지 및 rot 방지.

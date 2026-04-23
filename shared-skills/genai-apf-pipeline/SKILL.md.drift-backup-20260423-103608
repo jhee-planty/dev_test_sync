@@ -1,6 +1,5 @@
 ---
 name: genai-apf-pipeline
-type: A
 description: APF (ai_prompt_filter) pipeline 최상위 orchestrator. 7-phase lifecycle (HAR capture → analysis → block verify → frontend inspect → warning design → warning impl → release build) 을 서비스 하나에 대해 순차 수행. Use when user says "APF", "서비스 추가", "HAR", "capture", "차단", "block", "경고", "warning", "pipeline", "phase", "전체 현황", "다음 phase", "SQL", "C++", "registration", "{service} 처음부터". 결정론 runtime 이 pipeline_state.json + service_queue + status.md 관리 및 phase advance guard 를 담당. Claude 는 각 phase 내 분석·설계·verdict 담당. Phase 6 은 apf-warning-impl 위임, Phase 7 은 etap-build-deploy 위임. Cross-skill 호출 wrapper 는 runtime 이 제공. Hands-on C++ 디버깅은 apf-warning-impl.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 ---
@@ -13,7 +12,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 
 | 항목 | 값 |
 |------|-----|
-| pipeline_state | `~/Documents/workspace/claude_work/state/pipeline_state.json (fallback: ~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json)` (schema_version=1.0) |
+| pipeline_state | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json` (schema_version=1.0) |
 | dashboard | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md` (auto-regen) |
 | status.md | `shared-skills/genai-apf-pipeline/services/status.md` (auto-regen, **직접 수정 금지**) |
 | impl journal | `shared-skills/apf-warning-impl/services/{id}_impl.md` |
@@ -142,21 +141,6 @@ endwhile
 - ❌ 자동 STALLED escalation
 - ❌ monolithic SKILL.md 의존 (본 skill 이 truth)
 
-## Dev-only Subdirectories (2026-04-23 명시)
-
-본 skill 의 일부 하위 디렉터리는 **Dev 측 전용** (Test PC 에서 사용 안 함):
-
-| 디렉터리 | Dev-only 성격 | Test PC 영향 |
-|---------|-------------|---------|
-| `services/*_design.md` | per-service 설계 문서 (warning strategy, is_http2 등) | 무시됨 |
-| `services/*_frontend.md` | per-service frontend 분석 결과 | 무시됨 |
-| `services/status.md` | 자동 생성 (regen-status 결과) | 무시됨 |
-| `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
-
-본 하위 파일들이 git sync 에 포함돼도 Test PC 는 read 하지 않음 (Test PC 는 test-pc-worker skill 만 직접 사용). 향후 `.skillmeta.json` 구조화 선언 도입 시 기계 식별 가능.
-
----
-
 ## References (on-demand)
 
 - `references/phase1-har-capture.md`
@@ -169,4 +153,3 @@ endwhile
 ## Related
 
 - `cowork-remote`, `test-pc-worker`, `etap-build-deploy`, `apf-warning-impl` — 본 skill 이 wrapper 경유 호출.
-- `research-gathering` : Phase 진입 전 "이 서비스에 대한 과거 설계 / 사용자 구두 결정" 을 수집. Phase 0 (정보 수집) 단계의 공식 도구. workflow-retrospective 의 Step 0.5 와 상호 보완.

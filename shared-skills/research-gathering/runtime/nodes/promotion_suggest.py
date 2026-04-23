@@ -28,10 +28,10 @@ from pathlib import Path
 
 
 OFFICIAL_DOCS = [
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills/INTENTS.md",
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills/lessons.md",
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills/master-plan.md",
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills/README.md",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills/INTENTS.md",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills/lessons.md",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills/master-plan.md",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills/README.md",
 ]
 
 MEMORY_DIR = Path.home() / ".claude/projects/-Users-jhee-Documents-workspace-Officeguard-EtapV3/memory"

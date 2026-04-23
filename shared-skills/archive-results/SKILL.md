@@ -46,19 +46,19 @@ archive_metrics.jsonl ← 실행마다 1줄씩 누적되는 메트릭 로그
 
 ### 수동 실행
 ```bash
-python3 /Users/jhee/Documents/workspace/claude_cowork/skills/archive-results/archive_results.py \
+python3 /Users/jhee/Documents/workspace/claude_work/skills/archive-results/archive_results.py \
   --input /Users/jhee/Documents/workspace/dev_test_sync/local_archive \
   --output /Users/jhee/Documents/workspace/dev_test_sync/local_archive \
-  --rules /Users/jhee/Documents/workspace/claude_cowork/skills/archive-results/rules.json
+  --rules /Users/jhee/Documents/workspace/claude_work/skills/archive-results/rules.json
 ```
 
 ### 라이브 데이터 포함 실행
 아카이브(과거)와 현재 활성 결과를 함께 처리한다. workflow-retrospective의 Step 0에서 사용.
 ```bash
-python3 /Users/jhee/Documents/workspace/claude_cowork/skills/archive-results/archive_results.py \
+python3 /Users/jhee/Documents/workspace/claude_work/skills/archive-results/archive_results.py \
   --input /Users/jhee/Documents/workspace/dev_test_sync/local_archive \
   --output /Users/jhee/Documents/workspace/dev_test_sync/local_archive \
-  --rules /Users/jhee/Documents/workspace/claude_cowork/skills/archive-results/rules.json \
+  --rules /Users/jhee/Documents/workspace/claude_work/skills/archive-results/rules.json \
   --live /Users/jhee/Documents/workspace/dev_test_sync
 ```
 `--live`는 지정 경로의 `requests/` + `results/`를 "live" 네임스페이스로 추가 스캔한다.

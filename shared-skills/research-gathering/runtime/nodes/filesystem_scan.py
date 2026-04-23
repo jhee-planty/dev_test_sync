@@ -6,7 +6,7 @@
 
 규칙:
 - 대상 루트:
-  * claude_cowork/projects/cowork-micro-skills/
+  * claude_work/projects/cowork-micro-skills/
   * dev_test_sync/shared-skills/
   * ~/.claude/skills/
   * ~/.claude/file-history/
@@ -25,14 +25,14 @@ import sys
 from pathlib import Path
 
 ROOTS = [
-    Path.home() / "Documents/workspace/claude_cowork/projects/cowork-micro-skills",
+    Path.home() / "Documents/workspace/claude_work/projects/cowork-micro-skills",
     Path.home() / "Documents/workspace/dev_test_sync/shared-skills",
     Path.home() / ".claude/skills",
     Path.home() / ".claude/file-history",
 ]
 
 ARCHIVED_ROOTS = [
-    Path.home() / "Documents/workspace/claude_cowork/projects",
+    Path.home() / "Documents/workspace/claude_work/projects",
     Path.home() / "Documents/workspace/dev_test_sync",
 ]
 
