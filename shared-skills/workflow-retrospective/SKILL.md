@@ -202,3 +202,4 @@ Git에는 최신 리포트만 유지한다.
 - **`cowork-remote`** (dev/test): 작업 요청/결과의 원본 데이터 소스.
 - **`genai-apf-pipeline`** (dev): APF 전체 파이프라인. 파이프라인 수준 비효율은 여기에 피드백.
 - **`schedule`**: 방안 2 전환 시 자동 회고 스케줄링에 사용.
+- **`research-gathering`** (Type B utility): Step 0.5 (adoption tracker) 와 보완 관계. 회고에서 발견된 개선 제안 중 공식 원칙 문서 (INTENTS / lessons / MEMORY) 미반영 항목을 `research-gathering` 으로 cross-skill scan 해 promotion_proposal 생성 가능. deeper integration (Step 0.5 가 research-gathering 호출) 은 현재 defer, incident 누적 시 재검토.

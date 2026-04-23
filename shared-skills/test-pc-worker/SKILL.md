@@ -1,5 +1,6 @@
 ---
 name: test-pc-worker
+type: A
 description: Test PC (Windows) 전용 worker. dev 가 push 한 requests/ 를 git pull 로 수신 → PowerShell + desktop-commander 로 Chrome 자동화 실행 → results/ 에 결과 push. Use when on test PC and user says "새 요청 확인", "요청 처리", "check-warning 실행", "check-block 실행", "dev 에서 요청 왔어?", "result push". 결정론 runtime 은 PowerShell script. Claude 는 DOM/Console 판독 + scenario decision 만 담당. 응답 대기 중 자동 에스컬레이션 없음 (cowork-remote 와 pair).
 allowed-tools: mcp__desktop-commander__start_process, mcp__desktop-commander__read_file, mcp__desktop-commander__write_file, mcp__desktop-commander__list_directory, mcp__desktop-commander__create_directory, mcp__desktop-commander__kill_process, Read, Write
 ---
@@ -83,6 +84,14 @@ mcp__desktop-commander__start_process
 ```
 
 `write-result.ps1` 가 6 필수 필드 (`overall_status, status_detail, service_name, started_at, completed_at, duration_seconds`) 누락 시 에러 반환.
+
+---
+
+## 학습 (Lessons)
+
+운영 중 발견된 use-case-specific lesson (Chrome quirk, Windows 특이사항, DOM selector 변경 등) 은 `references/lessons.md` 에 **append-only** 로 기록. 기존 entry 수정 금지. 새 lesson 은 `## Lesson YYYY-MM-DD-NN — {제목}` template (lessons.md 첫머리 참조) 으로 추가.
+
+Cross-skill pattern (본 skill 외에도 반복되는 실수) 은 `research-gathering` 으로 scan 해 `promotion_proposal.md` 로 승격 검토 가능.
 
 ---
 

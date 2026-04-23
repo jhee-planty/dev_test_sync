@@ -1,5 +1,6 @@
 ---
 name: apf-warning-impl
+type: A
 description: APF warning hands-on 구현 iteration skill. design doc 에 정의된 HTTP/2 strategy(A/B/C/D) 대로 C++ generator 함수 작성/수정 → etap-build-deploy 로 빌드·배포 → cowork-remote 로 test PC 검증 요청 → 결과 판정 → 다음 iteration. Use when user says "warning 구현", "generator 함수", "blocked=1", "warning 표시 안 됨", "is_http2", "iteration N", "{service} impl 계속", "경고 구현 중", "C++ 수정 후 빌드". 결정론 runtime 은 impl journal 기록, Pre-retest Gate (총 5회/같은 category 3회 제한), 빌드 카운트 추적. Claude 는 C++ 코드 수정 + 결과 verdict 판단 담당. 3-Strike / 빌드 상한 7 회 초과 시 자동 ESCALATE. 의존: etap-build-deploy, cowork-remote.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---

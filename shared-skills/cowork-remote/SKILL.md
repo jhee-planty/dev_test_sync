@@ -1,5 +1,6 @@
 ---
 name: cowork-remote
+type: A
 description: Dev PC (Mac) ↔ Test PC (Windows) 간 Git 기반 비동기 협업. dev 가 request push, test 가 result push. 본 skill 은 dev 쪽 전담 (test 쪽은 test-pc-worker). Use when user says "test PC 에 요청 보내줘", "check-warning {서비스}", "check-block {서비스}", "큐 상태", "결과 확인", "원격 작업", "폴링", "result scan", or any cross-PC coordination. 결정론적 runtime (bash scripts) 으로 git/filesystem 작업 수행, Claude 는 자연어→command 추론 + 결과 성공/실패 판정만 담당. Auto STALLED 에스컬레이션 없음 (응답 도착까지 반복 scan). 3-Strike 는 genai-apf-pipeline 에서 판정.
 allowed-tools: Bash, Read, Write, Edit
 ---

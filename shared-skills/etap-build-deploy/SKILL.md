@@ -1,5 +1,6 @@
 ---
 name: etap-build-deploy
+type: A
 description: EtapV3 빌드·배포 micro-control skill. 로컬 소스 → 컴파일 서버 (solution@61.79.198.110:12222) sync → ninja build → 패키지 생성 → 로컬 다운로드 → 테스트 서버 (solution@218.232.120.58:12222) 배포 → etapd 재시작 + verify. Use when user says "빌드", "deploy", "배포", "ninja", "scp to server", "send to test", "build it", "변경 파일 반영", "pre-install symlink", "post-verify". 결정론 runtime (bash script, JSONL output) 이 8-step 체인 실행. Claude 는 빌드 실패 시 원인 추론·수정 제안, 심볼릭 링크 위험 패턴 판단 에서만 개입. 실제 ssh/scp 는 runtime 이 수행.
 allowed-tools: Bash, Read, Write, Edit, mcp__desktop-commander__start_process, mcp__desktop-commander__read_file
 ---
@@ -78,6 +79,14 @@ runtime 이 JSONL 로 각 step 결과를 출력하므로 Claude 는 stdout parsi
 ```
 
 exit 0 if summary.failed==0 else 1.
+
+## 학습 (Lessons)
+
+8-Step 흐름 중 발견된 use-case-specific lesson (ninja 실패 패턴, scp 타임아웃, 서버 환경 특이사항, pre-install symlink trap 등) 은 `references/lessons.md` 에 **append-only** 로 기록. 기존 entry 수정 금지. 새 lesson 은 `## Lesson YYYY-MM-DD-NN — {제목}` template (lessons.md 첫머리 참조) 으로 추가.
+
+Cross-skill pattern (본 skill 외에도 반복되는 실수) 은 `research-gathering` 으로 scan 해 `promotion_proposal.md` 로 승격 검토 가능.
+
+---
 
 ## 제외된 기능 (의도적)
 

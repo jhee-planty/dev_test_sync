@@ -1,5 +1,6 @@
 ---
 name: genai-apf-pipeline
+type: A
 description: APF (ai_prompt_filter) pipeline 최상위 orchestrator. 7-phase lifecycle (HAR capture → analysis → block verify → frontend inspect → warning design → warning impl → release build) 을 서비스 하나에 대해 순차 수행. Use when user says "APF", "서비스 추가", "HAR", "capture", "차단", "block", "경고", "warning", "pipeline", "phase", "전체 현황", "다음 phase", "SQL", "C++", "registration", "{service} 처음부터". 결정론 runtime 이 pipeline_state.json + service_queue + status.md 관리 및 phase advance guard 를 담당. Claude 는 각 phase 내 분석·설계·verdict 담당. Phase 6 은 apf-warning-impl 위임, Phase 7 은 etap-build-deploy 위임. Cross-skill 호출 wrapper 는 runtime 이 제공. Hands-on C++ 디버깅은 apf-warning-impl.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 ---
