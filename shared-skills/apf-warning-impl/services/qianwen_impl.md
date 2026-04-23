@@ -130,4 +130,76 @@ Reclassifying: BLOCK_ONLY → testing (h2_end_stream=2 trial)
   genspark이 이 패턴으로 DONE 달성.
 - convert_to_http2_response: end_stream=false → `HEADERS(END_HEADERS) + DATA(body, 0x00)` 단일 전송.
   END_STREAM 없으므로 브라우저가 ReadableStream을 열어둠 → SSE 이벤트 순차 처리.
-- #530 check-warning pushed
+- #530 check-warning pushed → **결과: FAIL / NOT_RENDERED** — 동일 증상 (4 chat 요청 all 0-byte CORS, `Failed to load response data`).
+
+### 종합 결과 (#529 + #530 후)
+- h2_end_stream 값 2/1/0 세 변수 모두 NOT_RENDERED — **END_STREAM flag 단독이 원인 아님**.
+- failure_history: qianwen NOT_RENDERED 2/3 strikes (apf-warning-impl 3-strike gate 진입 직전)
+- Test PC DevTools 진단 인용 원문: "APF must emit HEADERS frame with :status=200 + valid CORS + content-type"
+
+---
+
+## Code-Review Findings (2026-04-23, cycle 91 — post 12차 session 재개)
+
+Test PC 진단 후 dev PC 측 APF 소스 레벨 검증 수행. 3-strike 진입 전 blind build 금지.
+
+### 1. HEADERS frame emission — C++ 구현 정상
+`functions/ai_prompt_filter/ai_prompt_filter.cpp:1274-1496` `convert_to_http2_response()`:
+- `:status` — HTTP/1.1 status line 에서 파싱 (L1347-1355). "HTTP/1.1 200 OK" → "200".
+- Non-forbidden headers (content-length/transfer-encoding/connection 제외) HPACK literal encoding (L1399-1430).
+- HEADERS frame = type 0x01, flags END_HEADERS(0x04) (L1464).
+- DATA frame — `h2_end_stream==1` 분기로 2-frame (body + empty ES) or 단일 frame.
+- De-chunk (L1319-1343), CRLF/LF separator 양쪽 지원 (L1284-1305).
+
+**결론**: APF H2 frame 생성 경로는 correct. "HEADERS frame missing" 원인 아님.
+
+### 2. Envelope template (`apf-operation/sql/qianwen_native_sse_v2.sql`) — 스펙 준수
+```
+HTTP/1.1 200 OK
+Content-Type: text/event-stream;charset=UTF-8
+Cache-Control: no-cache
+Access-Control-Allow-Origin: https://qianwen.com
+Access-Control-Allow-Credentials: true
+Content-Length: 0
+\r\n\r\n
+data:{sessionId,msgId,msgStatus:"finished",contents:[...]}\n\n
+data:[DONE]\n\n
+```
+- :status=200, Content-Type SSE, CORS origin 명시, credentials true — 스펙 상 correct
+- Content-Length 는 H2 변환 시 filter 됨 (L1390)
+
+**결론**: envelope 헤더 구성 correct.
+
+### 3. 재진단 — "HEADERS frame invalid" 은 likely misdiagnosis
+
+실제 symptoms ("Failed to load response data" / "CORS blocked" / 0 bytes) 은 **응답 body 가 browser 에 도달했으나 저장 불가** 을 가리킨다. HEADERS 가 아예 없다면 browser 는 "Stream reset" / "NETWORK_ERROR" 로 표시할 것.
+
+재정립된 root cause 후보 (우선순위 순):
+
+**(a) Origin mismatch** — chat API endpoint 가 `qianwen.com` 이 아닌 subdomain (예: `api.qianwen.com` / `tongyi.aliyun.com`) 에서 동작 시, request Origin 과 hardcoded `Access-Control-Allow-Origin: https://qianwen.com` 불일치 → CORS block.
+- **검증**: DevTools Request Headers `Origin:` + `Host:` 확인
+- **위험**: 0 (추가 iteration 없이 기존 #529/#530 screenshot 재검토 가능)
+
+**(b) HEADERS frame 중복** — `h2_hold_request=1` 이지만 APF block 판정 전에 upstream HEADERS 가 이미 client 에 전달된 경우, APF 의 block HEADERS 가 same stream_id 로 재발행 → Chrome HTTP/2 COMPRESSION_ERROR.
+- **검증**: etap VTS 로그 (`/var/log/etap/etap.log` `[APF:H2_*]`) 에서 upstream vs APF HEADERS 시점 비교
+- **위험**: 0 (read-only log 분석)
+
+**(c) VTS frame ordering** — 최근 `etap/core/network_loop.cpp` + `functions/visible_tls/visible_tls_session.cpp` 수정 (d676eb9 "H2 delayed END_STREAM 비블로킹 전환") 관련. APF 생성 HEADERS+DATA 가 VTS SSL_write 시 순서 역전 or 부분 전송.
+- **검증**: VTS code audit + tcpdump capture (Dell testbed 필요)
+- **위험**: 중 (C9 trigger 영역)
+
+---
+
+## Phase 6 scope 재정의 (cycle 91)
+
+본 서비스는 **apf-warning-impl iteration scope 초과**:
+- h2_end_stream 3 변수 모두 실패 → envelope/strategy 단위 수정으론 해결 불가
+- 추가 iteration = 3rd strike → SUSPENDED 위험
+- 실제 수정은 VTS 레벨 (C9 trigger critical infra change) 또는 envelope 동적 Origin 계산 (non-trivial)
+
+**Status**: `needs_architectural_decision` — pipeline_state 에 반영. 다음 action user gate:
+- 옵션 A: etap 로그 분석 (read-only, dev PC 작업) → (b) 확정 시도
+- 옵션 B: DevTools Request Headers diagnostic capture (Test PC 1 run-scenario) → (a) 확정
+- 옵션 C: qianwen defer + 다른 서비스 전환 (queue 상 전부 blocked 인 문제 별도)
+- 옵션 D: VTS 수정 (full discussion-review 필수)
+
