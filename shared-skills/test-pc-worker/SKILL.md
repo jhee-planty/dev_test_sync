@@ -95,12 +95,22 @@ Cross-skill pattern (본 skill 외에도 반복되는 실수) 은 `research-gath
 
 ---
 
+## 폴링 방식
+
+본 skill 이 호출되는 두 가지 패턴:
+
+**(a) 수동 1회 호출**: 사용자 "새 요청 확인해줘" → scan-requests 1회 실행 → 결과 없으면 종료.
+
+**(b) In-session 자율 폴링 (Option 3)**: 사용자가 세션 시작 시 1회 prompt 제공 → Claude 가 자신의 bash turn 안에서 `while true; scan-requests; sleep 30; done` 루프 실행. 세션 종료 = 폴링 종료.
+
+→ **Canonical**: `~/.claude/memory/user-preferences.md` Polling Policy (in-session loop only). cron / Scheduled Task / fireAt / Monitor persistent 전부 금지.
+
 ## 제외된 기능 (의도적)
 
-- ❌ Scheduled Task / auto-polling (MEMORY.md §13.4 준수)
-- ❌ Adaptive polling 3-stage (수동 호출 기반 모델)
-- ❌ Heartbeat.json (cowork-remote 가 scan timing 을 제어하므로 불필요)
-- ❌ GitHub MCP (git CLI only)
+- ❌ Scheduled Task / fireAt / cron — session 외부 persistent trigger (Polling Policy 금지)
+- ❌ Adaptive polling 3-stage (단일 sleep 간격으로 통일)
+- ❌ Heartbeat.json (폴링 loop 자체가 liveness indicator)
+- ❌ GitHub MCP (git CLI only, 단일 transport)
 
 ---
 
