@@ -6,13 +6,15 @@
 
 | 용도 | 경로 | 읽기 | 쓰기 | 도구 |
 |------|------|------|------|------|
-| Host 스킬 원본 | `/Users/jhee/Documents/workspace/claude_work/skills/` | desktop-commander | desktop-commander | edit_block, start_process |
+| 5 APF skills (Triple-Mirror source, 편집용) | `/Users/jhee/Documents/workspace/claude_work/projects/cowork-micro-skills/skills/` | desktop-commander | desktop-commander | edit_block, start_process |
+| 12 skills canonical (Git 배포 대상) | `/Users/jhee/Documents/workspace/dev_test_sync/shared-skills/` | desktop-commander | desktop-commander | start_process (cp, zip) |
+| Installation view (symlinks) | `~/.claude/skills/` | resolved via shared-skills | — | Read |
 | Cowork 스킬 캐시 | `/sessions/.../mnt/.claude/skills/` | △ stale 가능 | ❌ EROFS | Read (참고용) |
 | Cowork 사용자 마운트 | `/sessions/.../mnt/Documents/` | ✅ 실시간 | ✅ 가능 | Read, Write, Bash |
-| shared-skills | `/Users/jhee/Documents/workspace/dev_test_sync/shared-skills/` | desktop-commander | desktop-commander | start_process (cp, zip) |
 | shared-skills (마운트) | `/sessions/.../mnt/Documents/workspace/dev_test_sync/shared-skills/` | ✅ 실시간 | △ git-tracked 삭제 불가 | Read, Write, Bash |
 | outputs | `/sessions/.../mnt/outputs/` | Read, Bash | Write, Bash | present_files |
 | copy_skill.py | `/Users/jhee/Documents/workspace/copy_skill.py` | — | — | start_process |
+| sync-mirrors.sh | `/Users/jhee/Documents/workspace/claude_work/projects/cowork-micro-skills/scripts/sync-mirrors.sh` | — | — | bash (Triple-Mirror + .skill 재생성) |
 
 **마운트 구분 (중요):**
 - `.claude/skills/` = 스킬 캐시. 세션 시작 시 스냅샷. stale할 수 있고 쓰기 불가.

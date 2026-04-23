@@ -93,9 +93,9 @@ Output sections:
   --allowedTools "Bash,Read" --add-dir SKILLS_DIR --add-dir ETAP_ROOT
 ```
 
-**Example** (with default paths from guidelines.md):
+**Example** (with default paths from guidelines.md §8):
 ```
-SKILLS_DIR = ~/Documents/workspace/claude_work/skills/
+SKILLS_DIR = ~/Documents/workspace/claude_work/projects/cowork-micro-skills/skills/
 ETAP_ROOT  = ~/Documents/workspace/Officeguard/EtapV3/
 ```
 

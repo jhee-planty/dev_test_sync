@@ -170,10 +170,11 @@ Testing is parallel because each service uses a different endpoint.
 ## 8. Required Paths
 
 ```
-SKILLS_DIR   = ~/Documents/workspace/claude_work/skills/
+SKILLS_SRC   = ~/Documents/workspace/claude_work/projects/cowork-micro-skills/skills/   # 5 APF skill 의 editable source (Triple-Mirror project 측)
+SKILLS_DEPLOY = ~/Documents/workspace/dev_test_sync/shared-skills/                      # 12 skill canonical deploy (Git 에 push, .skill 번들 origin)
+SKILLS_INSTALL = ~/.claude/skills/                                                      # ~/.claude/ 에 등록된 (symlink) installation view — Claude Code / Cowork 실제 load 경로
 ETAP_ROOT    = ~/Documents/workspace/Officeguard/EtapV3/
 CAPTURE_DIR  = ~/Documents/workspace/claude_work/projects/officeguard-etapv3/scripts/capture/
-BACKUP_DIR   = SKILLS_DIR/_backup_20260317/
 GIT_SYNC_REPO = ~/Documents/workspace/dev_test_sync/         # dev ↔ test PC 동기화 Git 저장소
 ```
 
