@@ -119,6 +119,19 @@ bash $RT/record-iteration.sh --service {id} --event completed --verdict {VERDICT
 
 cross-skill 은 **별도 process** 로 실행 (각 skill 의 runtime script 직접 호출). SKILL 간 직접 호출 없음.
 
+## Dev-only Subdirectories (2026-04-23 명시)
+
+본 skill 의 일부 하위 디렉터리는 **Dev 측 전용** (Test PC 에서 사용 안 함):
+
+| 디렉터리 | Dev-only 성격 | Test PC 영향 |
+|---------|-------------|---------|
+| `services/*_impl.md` | per-service iteration journal (13 파일, DB state / Content-Length / Iteration 결과 기록) | 무시됨 |
+| `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
+
+본 하위 파일들이 git sync 에 포함돼도 Test PC 는 read 하지 않음 (test-pc-worker 가 services/ 참조 안 함, grep 결과 0). 향후 `.skillmeta.json` 구조화 선언 도입 시 기계 식별 가능.
+
+---
+
 ## References
 
 - `references/http2-strategies.md` — Strategy A/B/C/D 정의, 결정 트리, GOAWAY 구현

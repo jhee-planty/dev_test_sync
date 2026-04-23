@@ -142,6 +142,21 @@ endwhile
 - ❌ 자동 STALLED escalation
 - ❌ monolithic SKILL.md 의존 (본 skill 이 truth)
 
+## Dev-only Subdirectories (2026-04-23 명시)
+
+본 skill 의 일부 하위 디렉터리는 **Dev 측 전용** (Test PC 에서 사용 안 함):
+
+| 디렉터리 | Dev-only 성격 | Test PC 영향 |
+|---------|-------------|---------|
+| `services/*_design.md` | per-service 설계 문서 (warning strategy, is_http2 등) | 무시됨 |
+| `services/*_frontend.md` | per-service frontend 분석 결과 | 무시됨 |
+| `services/status.md` | 자동 생성 (regen-status 결과) | 무시됨 |
+| `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
+
+본 하위 파일들이 git sync 에 포함돼도 Test PC 는 read 하지 않음 (Test PC 는 test-pc-worker skill 만 직접 사용). 향후 `.skillmeta.json` 구조화 선언 도입 시 기계 식별 가능.
+
+---
+
 ## References (on-demand)
 
 - `references/phase1-har-capture.md`

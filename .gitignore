@@ -10,6 +10,7 @@ archive/
 local_archive/
 docs/
 sql/
+artifacts/
 
 # OS files
 .DS_Store
