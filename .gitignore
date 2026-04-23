@@ -30,6 +30,9 @@ __pycache__/
 # Skill backups (Git handles versioning)
 _backup_*/
 *.bak
+*.bak-*
+*.disabled-*
+*.drift-backup-*
 
 # Editor
 *.swp
