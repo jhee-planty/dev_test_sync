@@ -1,7 +1,6 @@
 # === Git 공유 대상 ===
 # requests/    — dev→test 작업 요청
 # results/     — test→dev 결과
-# scripts/     — 양쪽 자동화 스크립트
 # shared-skills/ — 스킬 배포 (test PC 참조)
 # .gitignore
 

@@ -13,7 +13,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 
 | 항목 | 값 |
 |------|-----|
-| pipeline_state | `~/Documents/workspace/claude_work/state/pipeline_state.json (fallback: ~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json)` (schema_version=1.0) |
+| pipeline_state | `~/Documents/workspace/claude_work/projects/apf-operation/state/pipeline_state.json (fallback: ~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json)` (schema_version=1.0) |
 | dashboard | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md` (auto-regen) |
 | status.md | `shared-skills/genai-apf-pipeline/services/status.md` (auto-regen, **직접 수정 금지**) |
 | impl journal | `shared-skills/apf-warning-impl/services/{id}_impl.md` |
@@ -142,18 +142,23 @@ endwhile
 - ❌ 자동 STALLED escalation
 - ❌ monolithic SKILL.md 의존 (본 skill 이 truth)
 
-## Dev-only Subdirectories (2026-04-23 명시)
+## Service Journals (operational artifact)
 
-본 skill 의 일부 하위 디렉터리는 **Dev 측 전용** (Test PC 에서 사용 안 함):
+본 skill 의 아래 하위 디렉터리는 **APF pipeline 실행 중 생성되는 per-service artifact** (Dev PC writes, Test PC ignores):
 
-| 디렉터리 | Dev-only 성격 | Test PC 영향 |
-|---------|-------------|---------|
+| 디렉터리 | 성격 | Test PC 영향 |
+|---------|------|---------|
 | `services/*_design.md` | per-service 설계 문서 (warning strategy, is_http2 등) | 무시됨 |
 | `services/*_frontend.md` | per-service frontend 분석 결과 | 무시됨 |
 | `services/status.md` | 자동 생성 (regen-status 결과) | 무시됨 |
 | `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
 
-본 하위 파일들이 git sync 에 포함돼도 Test PC 는 read 하지 않음 (Test PC 는 test-pc-worker skill 만 직접 사용). 향후 `.skillmeta.json` 구조화 선언 도입 시 기계 식별 가능.
+**Current location**: 본 skill bundle 내.
+**Planned migration**: 위 journal 들은 APF pipeline **operational artifact** 이므로, 장기적으로 `~/Documents/workspace/claude_work/projects/apf-operation/service-journals/{service}/{impl,design,frontend}.md` 로 이전 예정 (별도 project: `apf-operation/proposals/services-migration-*.md` 참조).
+
+이전을 지금 수행하지 않는 이유:
+1. in-flight pipeline (active service) 실행 중 이동 시 journal append 충돌 위험
+2. runtime common.sh 의 `STATUS_MD` 등 env var atomic 변경 별도 설계 필요 (symlink bridge 등)
 
 ---
 

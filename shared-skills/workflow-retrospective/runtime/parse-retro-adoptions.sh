@@ -21,7 +21,7 @@ set -eu
 
 # Canonical location (현재 운영) + fallback (구 경로)
 RETRO_DIRS=(
-  "$HOME/Documents/workspace/claude_work/docs/retrospectives"
+  "$HOME/Documents/workspace/claude_work/projects/apf-operation/docs/retrospectives"
   "$HOME/Documents/workspace/dev_test_sync/shared-skills/workflow-retrospective/metrics"
 )
 if [ "${1:-}" = "--dir" ] && [ -n "${2:-}" ]; then

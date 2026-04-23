@@ -269,7 +269,7 @@ etap 로그 진단 등 최근 추가된 절차를 빠뜨린다.
 **핵심 원칙: sync ≠ detect (전송과 탐지 분리)**
 - git pull은 **전송 수단**이다. 출력("Already up to date" 등)은 탐지 판단에 사용하지 않는다.
 - 결과 존재 여부는 **filesystem 스캔**이 권위 있는 소스이다.
-- `scripts/mac/scan_results.sh`가 이 분리를 구현한다.
+- `shared-skills/cowork-remote/scripts/scan_results.sh`가 이 분리를 구현한다.
 
 ```
 시작 시: "자동 폴링 모드를 시작합니다."
@@ -289,7 +289,7 @@ Stage 3: 1시간 간격
   1. git pull (전송 — 출력 무시, 성공/실패만 확인)
   2. scan_results.sh 실행 (탐지 — filesystem이 authority)
      ```bash
-     bash "$GIT_SYNC_REPO/scripts/mac/scan_results.sh" --list
+     bash "$SKILL_DIR/scripts/scan_results.sh" --list
      ```
   3. 새 결과 있으면 (exit 0):
      a. 결과 읽기 → queue.json 업데이트

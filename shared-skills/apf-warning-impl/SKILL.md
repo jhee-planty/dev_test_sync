@@ -119,16 +119,21 @@ bash $RT/record-iteration.sh --service {id} --event completed --verdict {VERDICT
 
 cross-skill 은 **별도 process** 로 실행 (각 skill 의 runtime script 직접 호출). SKILL 간 직접 호출 없음.
 
-## Dev-only Subdirectories (2026-04-23 명시)
+## Service Journals (operational artifact)
 
-본 skill 의 일부 하위 디렉터리는 **Dev 측 전용** (Test PC 에서 사용 안 함):
+본 skill 의 아래 하위 디렉터리는 **APF pipeline 실행 중 생성되는 per-service iteration journal** (Dev PC writes, Test PC ignores):
 
-| 디렉터리 | Dev-only 성격 | Test PC 영향 |
-|---------|-------------|---------|
-| `services/*_impl.md` | per-service iteration journal (13 파일, DB state / Content-Length / Iteration 결과 기록) | 무시됨 |
+| 디렉터리 | 성격 | Test PC 영향 |
+|---------|------|---------|
+| `services/*_impl.md` | per-service iteration journal (DB state / Content-Length / Iteration 결과 기록) | 무시됨 (test-pc-worker 참조 안 함) |
 | `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
 
-본 하위 파일들이 git sync 에 포함돼도 Test PC 는 read 하지 않음 (test-pc-worker 가 services/ 참조 안 함, grep 결과 0). 향후 `.skillmeta.json` 구조화 선언 도입 시 기계 식별 가능.
+**Current location**: 본 skill bundle 내.
+**Planned migration**: 이 journal 들은 APF pipeline **operational artifact** 이므로, 장기적으로 `~/Documents/workspace/claude_work/projects/apf-operation/service-journals/{service}/{impl,design,frontend}.md` 로 이전 예정 (별도 project: `apf-operation/proposals/services-migration-*.md` 참조).
+
+이전을 지금 수행하지 않는 이유:
+1. in-flight pipeline (active service) 실행 중 이동 시 journal append 충돌 위험
+2. `IMPL_JOURNAL_DIR` env var atomic 변경 별도 설계 필요 (symlink bridge 등)
 
 ---
 
