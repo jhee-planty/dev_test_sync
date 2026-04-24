@@ -263,7 +263,7 @@ pipeline_state.json last_decision 기록 → gamma check-warning push.
 6. Begin next substantive action (see Phase Transitions "First Action" column)
 ```
 
-## Polling Protocol — ScheduleWakeup (2026-04-23 v2 — 11차 session)
+## Polling Protocol — ScheduleWakeup (2026-04-24 16차 refined — Behavioral Boundaries 신설)
 
 > **Canonical authority**: `~/.claude/memory/user-preferences.md` Polling Policy (v2)
 > 본 섹션은 APF pipeline 맥락의 구체 protocol.
@@ -277,6 +277,62 @@ ScheduleWakeup(
     prompt="Check results/ for {expected_id}. If found: read + classify (per cowork-remote Result Classification) + update-queue.sh + archive-completed.sh + report to user. Else: call ScheduleWakeup again with same params.",
     reason="polling for request #{id} result (APF {service} {command})"
 )
+```
+
+### Behavioral Boundaries (2026-04-24 16차 신설)
+
+**Polling 의 2 가지 boundary 는 절대적**. 아래 3 sub-rules 위반 = `Hard Rule 3` (폴링 체인 끊기 금지) + `Hard Rule 5` (idle 대기 금지) + `INTENTS D3` (attribution creep) + `D9` (Anti-fabrication) 복합 violation.
+
+#### Termination conditions (exhaustive — 오직 2 조건)
+
+Polling (ScheduleWakeup chain) 종료는 **오직 아래 2 가지만** 허용:
+
+1. **결과 도착** — `results/{id}_result.json` 감지 → 자동 종료 + processing (Result Processing Protocol 6 단계)
+2. **Session 종료** — Claude UI 닫힘 / Ctrl+C / OS 프로세스 종료 → pending wakeup 자동 취소
+
+**위 2 조건 외 self-termination 전부 금지**. 금지 패턴 4 카테고리:
+
+- ❌ **Timeout-based** (N분 초과 → 중단) — 예: "10min 경계 초과 → polling 중단"
+- ❌ **State-assumption-based** — 예: "Test PC offline 확정 → 중단"
+- ❌ **Retry-limit-based** (N tick 초과 → 중단) — 예: "20 tick 까지 결과 없음 → 중단"
+- ❌ **Mode-switch-based** (진단 모드 전환 명분 polling 보류) — 예: "진단 필요 → polling 멈추고 diagnostic"
+
+**Canonical anti-pattern 1호** (2026-04-24 15차 이후 관측):
+> "15:01 (11min 경과, 10min 경계 초과). Test PC offline 확정 — polling 중단, 보고."
+> → 4중 위반 (test PC 단정 금지 / HR3 / HR5 / D3). Anti-fabrication (D9) 첫 사례.
+
+**Legitimate long-polling**: session 이 active 한 동안 **임의로 긴 duration** 의 polling 허용. 24-hour+ 도 valid. 사용자가 session 명시 종료 (Claude UI 닫기 / Ctrl+C) 까지 ScheduleWakeup chain 지속.
+
+#### Test PC State Inference Prohibition
+
+Polling 중 Test PC 상태 추론:
+
+- ✅ **Permitted** (default positive assumption): "Test PC ScheduleWakeup chain 처리 중"
+- ❌ **Prohibited** (negative state assumption): "offline" / "crashed" / "stopped" / "hung" / "session 종료됨" / "무응답" 기타 부정적 상태 단정
+
+**Evidence 있는 경우에도 polling 유지**:
+- 예: git unreachable, ScheduleWakeup 자체 error 반복
+- ScheduleWakeup chain 유지 (termination 조건 여전히 2개만)
+- 사용자에게 **정보 보고만** ("Test PC 도달 불가 — 외부 확인 필요")
+- **Termination 판단 금지**
+
+**원천 Canonical**: `~/.claude/memory/user-preferences.md` Polling Policy §추가 행동 규칙 ("test PC 상태를 단정하지 않는다").
+
+#### 정상 polling 상황 (Q1 사용자 directive, 15차 verbatim)
+
+Request push 완료 후 결과 도착까지의 폴링 행동:
+
+```
+✅ 허용:
+  - git pull 반복 (read-only)
+  - ls results/ check (read-only)
+  - Result 미도착 시 ScheduleWakeup 재호출 (동일 params)
+  - 사용자에게 단순 상태 보고 ("결과 대기 중")
+
+❌ 금지:
+  - Test PC 에 진단 trigger request 재push (Test PC 는 polling 처리만, diagnostic 수행하는 주체 아님)
+  - Dev-side Claude 의 별도 diagnostic action (request 이미 전달됨, 추가 action 없음)
+  - expected + N분 기반 모드 전환 (과거 bash-loop era rule, 11차 ScheduleWakeup 전환 후 obsolete. 15차 사용자 directive 로 공식 삭제.)
 ```
 
 ### Interval 선택 (delaySeconds)
@@ -316,8 +372,8 @@ dev ↔ test PC 양방향 async 통신 성립하려면:
 
 polling/대기 설정 시:
 1. `pipeline_state.json`의 `expected_result_at` 필드에 예상 도착 시각 기록
-2. ScheduleWakeup prompt 에서 매 tick 재개 시 현재 시각 vs expected 비교
-3. expected + 10분 초과 시: 추가 진단 로직 (log 확인 등) trigger
+2. ScheduleWakeup prompt 에서 매 tick 재개 시 현재 시각 vs expected 비교 (**정보 기록만**)
+3. **expected 초과 여부는 사용자 상태 보고용 정보**. polling 행동에 영향 없음. ScheduleWakeup chain 은 termination 2 조건 (결과 / session) 도달까지 유지. (2026-04-23 11차 ScheduleWakeup 전환 후, 구 bash-loop era "diagnostic trigger" rule 은 obsolete. 2026-04-24 15차 Q1 사용자 directive 로 공식 삭제.)
 4. 시각 미확인 상태에서 "기다린다" 선언 금지
 
 ## Command Pattern Rules
@@ -369,19 +425,50 @@ primary task가 blocked(결과 대기 등)일 때:
 - **Monitor tool 의 persistent background task 생성**
 - **In-session bash loop** (`while true; sleep N; done` in Claude bash turn) — 11차 session 에서 제외, ScheduleWakeup 으로 통일
 
-## Self-Check (매 응답 전)
+## Self-Check (매 응답 전) — 4 Categories
 
-내 응답의 마지막 문장을 확인:
-- 질문인가? → 제거하고 작업을 실행한다.
-- "다음은 X" 선언인가? → X를 바로 실행한다.
-- 상태 업데이트 보고인가? → 다음 실질 작업을 이어서 한다.
-- "적용하겠습니다" / "기다린다" 인가? → 즉시 실행/확인한다.
-- **옵션 나열 + "어느 쪽으로?" / "지시 주시면"** 패턴인가? → **Hard Rule 6 위반**. Mode Selection Tree 적용:
-  - Testable + revertible → **M0 Empirical Comparison checklist 로 전환** (default)
+본 list 는 **reference material** (training bias). 매 응답 시 runtime explicit gate 아니라, **internal generation 중 anti-pattern 회피 priming**. 마지막 문장 + critical 섹션 scan 시 카테고리별 우선 적용.
+
+### Category A: 말 끝내기 방식 (Hard Rules 1-5)
+
+- 질문으로 끝맺기? → 제거 + 작업 실행
+- "다음은 X" 선언? → X 바로 실행
+- 상태 정리 보고로 끝? → 다음 실질 작업 이어서
+- "적용하겠습니다" / "기다린다"? → 즉시 실행/확인
+- idle 대기 선언? → Work Selection Algorithm
+
+### Category B: 선택지 제시 (Hard Rule 6 v2)
+
+- 옵션 나열 + "어느 쪽?" / "지시 주시면"? → **Hard Rule 6 위반**. Mode Selection Tree 적용:
+  - Testable + revertible → **M0 Empirical Comparison checklist**
   - Untestable complex → M2 Micro-Discussion
   - C9 critical → M3 full discussion-review
-  - 물리적 개입 필수 → M4 user ask (예외, 유지)
-  재작성: options 나열 → metric 정의 → "테스트 진행합니다" → TodoWrite 생성 + empirical flow.
+  - 물리적 개입 → M4 user ask (예외)
+  - 재작성: options 열거 → metric → "테스트 진행" → TodoWrite
+
+### Category C: Polling Anti-fabrication (2026-04-24 16차)
+
+- **"N분 경과 → Test PC offline"** 단정했는가? → **Behavioral Boundaries 위반**. ScheduleWakeup chain 재개.
+- **"polling 중단, 보고"** 선언했는가? → **Hard Rule 3 + 5 위반**. 즉시 재개 + 보고 보류.
+- **"Test PC {negative state}"** 추론했는가? (offline/crashed/stopped/hung/무응답 등) → **Test PC State Inference Prohibition 위반**. Positive default ("ScheduleWakeup 처리 중") 로 re-frame + polling 유지.
+- **Request 전달 후 "Test PC 에 diagnostic 요청" 재push**? → **Q1 directive 위반**. Request 이미 전달됨. 추가 diagnostic 금지. Polling 유지.
+- **"expected + 10분" 를 termination 근거**로 사용했는가? → **Time-Check Protocol v2 위반**. Expected 는 timing log 정보용만. Termination 은 2 조건 (결과 / session) 외 금지.
+
+### Category D: Prior Directive Retention (2026-04-24 16차)
+
+- 사용자에게 질문하기 전 **관련 주제의 prior directive 검색 수행**했는가? → 미검색 시 사용자 재요청 강제 가능성.
+- 검색 절차:
+  1. `claude_work/projects/cowork-micro-skills/INTENTS.md §5 Append Log` 전수 scan (recent 10 entries)
+  2. `progress.md §2026-04-23` 등 현 project 최근 narrative scan
+  3. `handoff.md` 읽었다면 §Pending Tasks / User Directives 재확인
+  4. 검색어: 현 질문의 주제 키워드 (polling / test-pc / autonomy / rule 등)
+- Prior directive 발견 시:
+  - 답변에 **"prior directive 인용"** (INTENTS verbatim 발화) 포함
+  - 사용자에게 재요청 금지 (이미 답 있음)
+  - 질문 대신 **결정 적용** (prior directive 가 authoritative)
+- **발견 안 됨 이 확증된 후에만** 사용자에게 질문 허용
+
+---
 
 ## 과거 해석 오류 (참고)
 
