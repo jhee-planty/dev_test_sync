@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "baidu",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.baidu.com/",
+    "context": "baidu hook 진단: h2_hold_request 1→0 설정. upstream ERNIE 응답 캡처 목적. APF 는 여전히 차단하나 stream 통과 후 upstream 이 response header 를 client 로 전달할 기회 발생 → on_http2_response hook 이 native ERNIE 포맷 캡처.",
+    "check_details": {
+      "revision": "services=127 (h2_hold=0), templates=23",
+      "change_tested": "baidu h2_hold_request 1→0 + response hook 신규 배포",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. DevTools F12 BEFORE prompt",
+        "2. Network filter 'chat' or 'conversation'",
+        "3. Send prompt 주민등록번호...",
+        "4. Screenshot Network tab (pay attention to /eb/chat/conversation requests)",
+        "5. Screenshot first POST /eb/chat/conversation Request Headers + Response Headers + Response body",
+        "6. Screenshot chat area (blank / error / warning whatever)",
+        "7. Screenshot console tab"
+      ]
+    }
+  },
+  "notes": "baidu response hook deployment verification. etap.log 에서 [APF:H2_RESP] baidu 엔트리 추후 분석 예정.",
+  "id": "535",
+  "created": "2026-04-24T06:34:38Z",
+  "attachments": []
+}
