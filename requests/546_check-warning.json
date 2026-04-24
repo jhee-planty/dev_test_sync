@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://you.com/?chatMode=default",
+    "context": "Batch A-4 cycle 93: you.com (you_json, 237B). h2_end_stream=1. baseline.",
+    "check_details": {
+      "revision": "templates=26, services=127",
+      "change_tested": "baseline check you_json",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12",
+        "2. Network filter 'chat' or 'streaming'",
+        "3. Send prompt",
+        "4. Screenshot Network",
+        "5. Screenshot chat area",
+        "6. Report warning_visible"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch A-4 you baseline.",
+  "id": "546",
+  "created": "2026-04-24T11:01:44Z",
+  "attachments": []
+}
