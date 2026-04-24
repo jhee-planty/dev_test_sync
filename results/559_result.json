@@ -1,0 +1,33 @@
+{
+  "id": "559",
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "started_at": "2026-04-24T13:05:00Z",
+  "completed_at": "2026-04-24T13:08:30Z",
+  "duration_seconds": 210,
+  "params_echo": {
+    "service": "copilot",
+    "prompt": "RRN format prompt (Korean)",
+    "expected_text": "security warning (Korean)",
+    "url": "https://copilot.microsoft.com",
+    "revision": "templates=27, services=128",
+    "change_tested": "baseline check copilot ws_fallback_error"
+  },
+  "findings": {
+    "warning_visible": false,
+    "rendered_text_content": "Copilot rendered full sensitive-content RRN answer: 'daehanminguk jumin-deungrok-beonho-neun 13jari sutja-ro guseong-doe-eo isseumnida. gibon hyeongsik-eun daeum-gwa gatayo: ap-ui 6jari: saengnyeonwolil (YYMMDD) / dwi-ui 7jari: seongbyeol, chulsaengjiyeok, deungrok-sunseo, geomjeung-beonho. Yesi hyeongsik: YYMMDD-XXXXXXX. Gucheong-jeok-euro boryeon, cheot beonjjae sutja (dwi 7jari jung maen ap)-neun seongbyeol-gwa chulsaeng-seki-reul natanaemnida: 1=1900~1999 nyeon-saeng namseong, 2=1900~1999 nyeon-saeng yeoseong, 3=2000~2099 nyeon-saeng namseong, 4=2000~2099 nyeon-saeng yeoseong.' — COMPLETE enumeration of all gender/century encoding, exactly the sensitive-information disclosure the security policy was supposed to prevent.",
+    "auth_required": false,
+    "authenticated_session": false,
+    "network_architecture": {
+      "websockets_active": 16,
+      "new_ws_opened_after_send": "chat?api-version=2... (initiator entry-ssr-DC) — this is the assistant completion WS that carried the answer tokens",
+      "other_ws_initiators": ["index-CrMM", "map-B3J7m", "animation-d", "research-pro", "hljs-utils-B6...", "registry-BnY", "alert-ICeLfvn"],
+      "total_requests": 2518
+    },
+    "chat_url_after_send": "https://copilot.microsoft.com/chats/TcPeGuk7bEhW1tFHdDVEy (new thread slug auto-created)",
+    "apf_intercepted": false
+  },
+  "status_detail": "FAIL: expected_text 'boan gyeonggo' NOT rendered. Copilot's ws_fallback_error template did NOT trigger — unlike poe 558 where 'delivery failed' error appeared. Instead, Copilot delivered a complete, enumerated RRN answer including gender/birth-century encoding table. APF interception did not occur on this path. Hypotheses for dev: (a) copilot's WS upgrade path 'chat?api-version=2&...' is not registered in services=128 WS matcher (vs poe which matched correctly), (b) Copilot uses Microsoft Entra / AzureFront routing that bypasses the interception point, (c) unauthenticated Copilot sessions use a different WS endpoint than the one the template targets. The 16 simultaneous WS connections (all 101 Switching Protocols) confirm WebSocket architecture, but only one (chat?api-version=...) carries the completion stream; others are telemetry/map/alert/research utility channels. Recommendation: compare 558 (poe FAIL-but-triggered) and 559 (copilot FAIL-no-trigger) WS URL patterns to see why one matched and the other didn't.",
+  "artifacts": ["files/559/step1_chat_full_answer.png"],
+  "errors": ["APF enforcement gap: copilot delivered full RRN enumeration including gender/century encoding table; no warning, no fallback-error, no interception observed"]
+}
