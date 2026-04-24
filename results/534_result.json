@@ -1,0 +1,39 @@
+{
+  "id": "534",
+  "status": "done",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "Login modal forced before prompt submission -- unable to evaluate warning. QR code shows scan-failed state. Qianwen blocks chat API for unauthenticated users; 0/87 requests matched api/v2/chat filter.",
+    "service_name": "qianwen",
+    "started_at": "2026-04-24T05:52:05Z",
+    "completed_at": "2026-04-24T05:58:39Z",
+    "duration_seconds": 394,
+    "warning_visible": false,
+    "screenshot": "files/534/step4_chat.png",
+    "screenshots": {
+      "initial": "files/534/step0_initial.png",
+      "network": "files/534/step1_network.png",
+      "headers": "files/534/step2_headers.png",
+      "response": "files/534/step3_response.png",
+      "chat": "files/534/step4_chat.png"
+    },
+    "console_errors": [],
+    "failure_category": "AUTH_REQUIRED",
+    "devtools_evidence": {
+      "network_filter_tested": "api/v2/chat (Fetch/XHR)",
+      "api_v2_chat_matches": 0,
+      "total_requests_observed": 135,
+      "all_observed_status": 200,
+      "dominant_polling_endpoint": "https://api.qianwen.com/api/account/login/v2/qrcode/status",
+      "qrcode_status_response_sample": "{\"status\":\"INIT\",\"errorCode\":null,\"httpCode\":200,\"failed\":false}",
+      "auth_wall": "login modal with phone/verify-code + QR code",
+      "qr_code_state": "scan-failed state (QR generation succeeded; not scanned because no authenticated session available)"
+    },
+    "service_rev": {
+      "services_h2_hold_request": 0,
+      "templates_version": 23,
+      "change_tested": "h2_hold_request 1->0 (T1 exploratory)"
+    }
+  },
+  "notes": "T1 of 4-variant exploration (qianwen_impl.md Phase 6 cycle 91). Result BLOCKED: auth wall preempts chat API invocation regardless of service config. h2_hold_request=0 cannot be observed end-to-end without authenticated session. Recommend T2-T4 with pre-authenticated cookie/session or defer exploration until login automation is implemented. DevTools mandatory instructions all followed: F12 opened BEFORE prompt, Network filter api/v2/chat (Fetch/XHR) set, Preserve log + Disable cache enabled, 4 screenshots captured (initial, network, headers, response, chat). Prompt (Korean SSN question) pasted and submit button clicked, but login modal intercepted before chat API fired."
+}
