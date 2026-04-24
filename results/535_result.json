@@ -1,0 +1,53 @@
+{
+  "id": "535",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "POST /aichat/api/conversation fired with 200 OK text/event-stream, but SSE body delivered 0 events (EventStream empty, DevTools Response says 'Failed to load response data -- already finished loading'). AI chat area stuck at 'Understanding question' placeholder; no answer rendered. No security-warning banner displayed. Console has Uncaught-in-promise undefined. Consistent with APF h2_hold_request=0: request passed upstream, upstream responded with headers, but body was withheld/truncated before client render -- so on_http2_response hook had a chance to capture native ERNIE response. warning_visible=false because no text rendered at all.",
+    "service_name": "baidu",
+    "started_at": "2026-04-24T06:36:39Z",
+    "completed_at": "2026-04-24T06:45:05Z",
+    "duration_seconds": 506,
+    "warning_visible": false,
+    "screenshot": "files/535/step6_chat.png",
+    "screenshots": {
+      "network": "files/535/step1_network.png",
+      "headers": "files/535/step2_headers.png",
+      "eventstream": "files/535/step3_eventstream.png",
+      "response": "files/535/step4_response.png",
+      "console": "files/535/step5_console.png",
+      "chat": "files/535/step6_chat.png"
+    },
+    "console_errors": [
+      "Uncaught (in promise) undefined (from /search?enter_type=chat_url&internal=1:1)",
+      "Banner not shown: beforeinstallpromptevent.preventDefault() called",
+      "preload as warning for private-active-img asset (non-fatal)"
+    ],
+    "failure_category": "NOT_RENDERED",
+    "devtools_evidence": {
+      "network_filter_tested": "conversation (Fetch/XHR)",
+      "conversation_matches": 1,
+      "total_requests_observed": 41,
+      "request_url": "https://chat.baidu.com/aichat/api/conversation",
+      "request_method": "POST",
+      "status_code": 200,
+      "remote_address": "103.235.47.231:443",
+      "response_content_type": "text/event-stream; charset=utf-8",
+      "response_transfer_encoding": "chunked",
+      "response_cache_control": "no-cache",
+      "response_connection": "close",
+      "transferred_bytes": 717,
+      "referrer_policy": "origin-when-cross-origin",
+      "eventstream_events_count": 0,
+      "response_body_readable": false,
+      "response_body_reason": "DevTools 'already finished loading' (SSE body not buffered by DevTools; small 0.7 kB transfer suggests headers + empty terminator only)",
+      "page_behavior": "URL transitioned chat.baidu.com/?enter_type=chat_url -> chat.baidu.com/search?enter_type=chat_url&internal=1 after submit; chat area stuck at Understanding placeholder"
+    },
+    "service_rev": {
+      "services_h2_hold_request_baidu": 0,
+      "templates_version": 23,
+      "change_tested": "baidu h2_hold_request 1->0 + response hook new deployment"
+    }
+  },
+  "notes": "Baidu response hook deployment verification. Key observation: unlike qianwen (534) which was fully blocked by auth wall, baidu allowed POST /aichat/api/conversation to complete with 200 OK SSE response-headers. However the SSE body was empty (0 events) and DevTools cannot re-read the response. This behavior is the expected consequence of h2_hold_request=0: the native ERNIE stream flows upstream -> APF -> on_http2_response hook can capture it server-side, but APF still prevents the body from reaching the browser. Check etap.log for [APF:H2_RESP] baidu entries at timestamps around 2026-04-24 06:36:39 - 06:45:05 UTC. DevTools mandatory instructions all followed: F12 opened BEFORE prompt, Network filter=conversation, 6 screenshots (network, headers, eventstream, response, console, chat) captured. Prompt (Korean SSN question) submitted via Clipboard paste + send button."
+}
