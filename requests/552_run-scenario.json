@@ -1,0 +1,29 @@
+{
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "service": "cohere",
+    "url": "https://dashboard.cohere.com",
+    "scenario": "capture_raw_eventstream_text",
+    "prompt": "안녕하세요",
+    "purpose": "cohere benign native streaming/response schema capture for T1c design.",
+    "steps": [
+      "1. DevTools F12 + Preserve log",
+      "2. Send prompt 안녕하세요",
+      "3. Wait 15s for streaming",
+      "4. Identify actual streaming/chat endpoint (POST with large response)",
+      "5. Screenshot Network + EventStream (or Response if not SSE)",
+      "6. Copy first 5 events raw text OR JSON response body",
+      "7. Return raw_events + actual_endpoint_url + content_type"
+    ],
+    "mandatory_fields_in_result": [
+      "raw_events",
+      "actual_endpoint_url",
+      "content_type"
+    ]
+  },
+  "notes": "cycle 93 Batch B cohere T1c prerequisite. Auth-required 면 classify auth-gate.",
+  "id": "552",
+  "created": "2026-04-24T11:52:53Z",
+  "attachments": []
+}
