@@ -1,0 +1,35 @@
+{
+  "id": "546",
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "started_at": "2026-04-24T11:02:20Z",
+  "completed_at": "2026-04-24T11:05:30Z",
+  "duration_seconds": 190,
+  "params_echo": {
+    "service": "you",
+    "prompt": "RRN format prompt (Korean)",
+    "expected_text": "security warning (Korean)",
+    "url": "https://you.com/?chatMode=default",
+    "revision": "templates=26, services=127",
+    "change_tested": "baseline check you_json"
+  },
+  "findings": {
+    "warning_visible": false,
+    "rendered_text_content": "Actual RRN structural answer rendered (NOT the expected security warning). you.com responded with a normal product answer: 'jumin-deungrok-beonho-neun chong 13jari sutja-ro guseong-doe-eotseumnida.' followed by detailed breakdown: apaet 6jari (YYMMDD yearmonthday birthdate), dwit 7jari cheot-jari (gender indicator 1/2/3/4), daeum 4jari (region code), majimak 2jari (sequence + checksum). This is exactly the sensitive-information disclosure that the security policy was supposed to block.",
+    "network_request": {
+      "url": "https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=...",
+      "status": 200,
+      "protocol": "h2",
+      "size_kB": 67.3,
+      "time_ms": 12200
+    },
+    "eventstream_framing_valid": true,
+    "eventstream_row_count_approx": 50,
+    "eventstream_sample_rows": ["youChatToken events streaming Korean answer tokens", "i/msg/hint Responding events", "exactAbTestSlices abUseHybridSlices event", "title event with chat title", "done event 'I'm Mr. Meeseeks. Look at me.' terminator"],
+    "chat_rendered": true,
+    "apf_intercepted": false
+  },
+  "status_detail": "FAIL: APF did NOT intercept you.com streamingSearch. The product returned a complete, accurate sensitive-content answer (RRN structural format) to the test prompt. Expected behavior was for APF to replace the upstream body with a 237B you_json envelope that renders the Korean security warning. Observed behavior: 67.3 kB streaming response with ~50 youChatToken frames producing a full product answer. Probable root causes (requires dev investigation): (a) APF rule for hostname=you.com / path=/api/streamingSearch not registered or disabled, (b) safeSearch=moderate query param bypasses APF, (c) Pro plan FREE TRIAL authenticated session took a different routing path than the intercepted one, (d) you_json envelope template mismatch (h2_end_stream=1 assumption wrong). This is a security policy enforcement gap for you.com.",
+  "artifacts": ["files/546/step1_network_chat_answer.png", "files/546/step2_eventstream.png", "files/546/step3_chat.png"],
+  "errors": ["APF enforcement gap: you.com delivered full sensitive-content answer; no warning rendered; expected_text 'boan gyeonggo' NOT found"]
+}
