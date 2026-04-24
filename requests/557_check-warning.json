@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "character",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://character.ai",
+    "context": "Batch E-2 cycle 93: character.ai (ws_fallback_error 템플릿, WebSocket 기반). baseline 검증.",
+    "check_details": {
+      "revision": "templates=27, services=128",
+      "change_tested": "baseline check character ws_fallback_error",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12",
+        "2. Network + WebSocket filter (WS tab)",
+        "3. Send prompt to a character",
+        "4. Screenshot Network + WS frames",
+        "5. Screenshot chat area",
+        "6. Report warning_visible + architecture"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch E-2 character baseline. WebSocket 기반 서비스.",
+  "id": "557",
+  "created": "2026-04-24T12:41:42Z",
+  "attachments": []
+}
