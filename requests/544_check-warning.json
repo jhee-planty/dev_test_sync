@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "meta",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://www.meta.ai",
+    "context": "Batch A-2 cycle 93: meta (meta_graphql, 339B envelope, application/json + CORS). h2_mode=2 h2_end_stream=1 h2_goaway=1. 현 envelope 검증 후 fail 시 cycle 92 T1c 방법 (benign capture → captured-verbatim) 적용.",
+    "check_details": {
+      "revision": "templates=26, services=127",
+      "change_tested": "baseline check meta_graphql current state",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 DevTools",
+        "2. Network filter (graphql/api)",
+        "3. Send prompt",
+        "4. Screenshot Network + Request/Response",
+        "5. Screenshot chat area (warning or error?)",
+        "6. Report warning_visible + rendered_text + network evidence"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch A-2 meta baseline.",
+  "id": "544",
+  "created": "2026-04-24T10:46:08Z",
+  "attachments": []
+}
