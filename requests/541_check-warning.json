@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "duckduckgo",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://duckduckgo.com/?q=ai&ia=chat",
+    "context": "Batch A-1 cycle 93: duckduckgo 현 envelope (OpenAI-compat SSE, 362B, message field) 검증. 11일 만의 재시도. Method=SSE envelope. 미렌더 시 HTML block page / redirect 대안 고려.",
+    "check_details": {
+      "revision": "templates=25, services=127",
+      "change_tested": "baseline check (no change, just verify current DB state renders warning)",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. DevTools F12 BEFORE prompt",
+        "2. Network filter ai/chat related",
+        "3. Send prompt",
+        "4. Screenshot Network tab",
+        "5. Screenshot EventStream tab (if SSE)",
+        "6. Screenshot chat area (warning text rendered?)",
+        "7. Report warning_visible + rendered_text"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch A-1. user directive: 경고 방식 고정 X. duckduckgo 는 Category B 추정 (비로그인). SSE envelope 우선 검증 후 실패 시 대안 method.",
+  "id": "541",
+  "created": "2026-04-24T10:01:30Z",
+  "attachments": []
+}
