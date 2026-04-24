@@ -1,0 +1,42 @@
+{
+  "id": "541",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "duckduckgo (duck.ai) current OpenAI-compat SSE envelope (362B, message field) FAILED to render the expected security warning. Prompt submitted successfully -> POST /duckchat/v1/chat received 200 OK (h2, 0.5 kB body, 122 ms). However the chat UI did NOT render the warning text. Instead Duck.ai shows a generic application-level error page: 'Oh! there was a problem. Sorry, it looks like there was a problem loading Duck.ai. Try refreshing the page.' with a 'Reload Duck.ai' button. Interpretation: APF intercept makes the chat API respond 200 with non-empty but truncated/malformed SSE body; duck.ai's client parser treats the parse failure as catastrophic and shows its generic error state rather than inline-rendering a warning message. warning_visible=false (no 보안 경고 text); rendered_text is the generic Korean error page. Same client-side NOT_RENDERED pattern seen in baidu 535/536/539 pre-T1c. Next step: adapt T1c captured-verbatim learning to duckduckgo OpenAI-compat envelope shape (capture native duck.ai successful SSE schema, then inject warning with minimal field mutation).",
+    "service_name": "duckduckgo",
+    "started_at": "2026-04-24T10:03:57Z",
+    "completed_at": "2026-04-24T10:11:25Z",
+    "duration_seconds": 448,
+    "warning_visible": false,
+    "rendered_text_content": "(error-icon) Oh! there was a problem. Sorry, it looks like there was a problem loading Duck.ai. Try refreshing the page. [Reload Duck.ai button]. (Korean original: ireon! munje-ga saenggyeosseumnida. jeongmal joesonghajiman Duck.ai-reul bulleo-oneun jung munje-ga saenggin geot gatseumnida. peijireul saelogochimhae boseyo.)",
+    "screenshot": "files/541/step3_chat.png",
+    "screenshots": {
+      "network_error": "files/541/step1_network_error.png",
+      "chat_details": "files/541/step2_chat_details.png",
+      "chat": "files/541/step3_chat.png"
+    },
+    "console_errors": [],
+    "failure_category": "NOT_RENDERED",
+    "devtools_evidence": {
+      "network_filter_tested": "chat (Fetch/XHR)",
+      "chat_matches": 1,
+      "total_requests_observed": 16,
+      "request_path_approx": "/duckchat/v1/chat (duck.ai backend)",
+      "status_code": 200,
+      "protocol": "h2",
+      "remote_address": "20.43.161... (Azure CDN range)",
+      "transferred_body_kb": 0.5,
+      "duration_ms": 122,
+      "page_state_after_submit": "generic error screen (cannot load Duck.ai) - application bailed out to error boundary",
+      "no_inline_warning_rendered": true
+    },
+    "service_rev": {
+      "templates_version": 25,
+      "services_version": 127,
+      "change_tested": "baseline check (no envelope change vs prior DB state); verify 11-day-old duckduckgo envelope (OpenAI-compat SSE, 362B, message field) still renders",
+      "category_presumed": "B (no login required for duck.ai)"
+    }
+  },
+  "notes": "cycle 93 Batch A-1 FAIL. user directive: envelope method not fixed; if SSE fails consider HTML block page / redirect alternatives. Key finding: duck.ai error-boundary bails to application error screen rather than partially rendering the SSE response - unlike baidu which shows Understanding placeholder indefinitely. This suggests duck.ai parser is stricter about SSE event shape. Recommend next cycle: (a) capture a known-successful duck.ai SSE event via benign prompt similar to 537/538 baidu pattern, (b) study OpenAI-compat delta format (role/content/finish_reason fields), (c) craft T1c-style captured-verbatim envelope with warning text injected at minimal mutation point. Alternative: try HTTP-level redirect to 429 / special-cased block page response as suggested in request context."
+}
