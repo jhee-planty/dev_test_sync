@@ -452,7 +452,7 @@ primary task가 blocked(결과 대기 등)일 때:
 - **"polling 중단, 보고"** 선언했는가? → **Hard Rule 3 + 5 위반**. 즉시 재개 + 보고 보류.
 - **"Test PC {negative state}"** 추론했는가? (offline/crashed/stopped/hung/무응답 등) → **Test PC State Inference Prohibition 위반**. Positive default ("ScheduleWakeup 처리 중") 로 re-frame + polling 유지.
 - **Request 전달 후 "Test PC 에 diagnostic 요청" 재push**? → **Q1 directive 위반**. Request 이미 전달됨. 추가 diagnostic 금지. Polling 유지.
-- **"expected + 10분" 를 termination 근거**로 사용했는가? → **Time-Check Protocol v2 위반**. Expected 는 timing log 정보용만. Termination 은 2 조건 (결과 / session) 외 금지.
+- **"expected + 10분" 를 termination 근거 OR 어떤 action trigger (diagnostic / mode-switch / side-action 포함) 근거**로 사용했는가? → **Time-Check Protocol v2 위반**. Expected 는 **timing log 정보용만** (사용자 상태 보고에 display OK). Polling 행동에 어떤 영향도 미치지 않음. Termination 은 2 조건 (결과 / session) 외 금지 + 추가 action trigger 도 금지 (CI-5 정상 polling 상황). Disclaimer trick ("trigger 는 termination 아님, 추가 action 발동만") 도 rule 위반 — **17차 loophole closing**.
 
 ### Category D: Prior Directive Retention (2026-04-24 16차)
 
