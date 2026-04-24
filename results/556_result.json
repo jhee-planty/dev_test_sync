@@ -1,0 +1,35 @@
+{
+  "id": "556",
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "started_at": "2026-04-24T12:31:00Z",
+  "completed_at": "2026-04-24T12:36:30Z",
+  "duration_seconds": 330,
+  "params_echo": {
+    "service": "gemini3",
+    "prompt": "RRN format prompt (Korean)",
+    "expected_text": "security warning (Korean)",
+    "url": "https://gemini.google.com/app",
+    "revision": "templates=27, services=128",
+    "change_tested": "BLOCK_ONLY retry with new H2 response hook infrastructure (cycle 92) — protobuf upstream capture"
+  },
+  "findings": {
+    "warning_visible": false,
+    "rendered_text_content": "Gemini rendered full, detailed RRN structural answer in Korean: 'daehanminguk jumin-deungrok-beonho-neun chong 13jari-ui sutja-ro guseong-doe-myeo, ap 6jari-wa dwi 7jari sai-e hyphen(-)eul neoheo gubun-haneun geosi ilban-jeok-imnida.' then enumerated breakdown: '1. ap 6jari: saeng-nyeon-wol-il - YYMMDD hyeongsik-euro guseong-doemnida. Example: 95nyeon 10wol 25il-saeng-iramyeon 951025 ga doemnida.' then '2. dwi 7jari: seongbyeol mit jiyeok jeongbo - cheot beonjjae jari (seongbyeol/chulsaeng-seki): 1: 1900nyeondae chulsaeng namseong / 2: 1900nyeondae chulsaeng yeoseong' with concrete example (951025) — full sensitive-content disclosure.",
+    "actual_endpoint_url": "POST https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260422.13_p0&f.sid=73503757778665102&hl=ko&_reqid=3477515&rt=c",
+    "network_response": {
+      "status": 200,
+      "protocol": "h2",
+      "size_kB": 4.5,
+      "time_sec": 5.51,
+      "remote_address": "[2404:6800:4005:826::200e]:443"
+    },
+    "response_body_format_observed": "Google proprietary chunked HTTP streaming format. Each chunk is preceded by a decimal length header (e.g., '1684', '1758', '1819', '1867', '1908', '1992', '2085', '2133', '2153', '2181', '2262', '2288', '2419', ...) followed by a JSON array starting with '[[\"wrb.fr\",null,\"[null,[#\\\"c_0eeea1...'. This is NOT text/event-stream, NOT protobuf, NOT plain JSON — it's Google's 'wrb.fr' (WebRTC-style? or web-rbox.frame) wrapper used by BardFrontendService for XHR streaming. The response headers do not advertise a standard content-type that maps to Chrome's EventStream parser, which is why DevTools shows this as a regular XHR (not a stream with EventStream tab).",
+    "apf_intercepted": false,
+    "new_h2_hook_worked": "indeterminate",
+    "note_on_protobuf": "The context claimed 'protobuf 한계 알려짐' but the actual wire format observed is NOT raw protobuf — it's a length-prefixed chunked framing with JSON body wrapped in the ['wrb.fr', null, <payload>] triple. This matches the google.com internal XHR streaming convention used by Bard/Gemini. If the cycle-92 H2 response hook was designed to parse/modify protobuf bodies, it likely does NOT recognize this wrapped JSON framing, which would explain why BLOCK_ONLY persists across 6 iterations: APF cannot identify warning-insertion points in an unfamiliar wrapper format it wasn't taught to parse."
+  },
+  "status_detail": "FAIL: expected_text 'boan gyeonggo' NOT rendered; full sensitive-content RRN answer delivered uninterrupted. The new H2 response hook infrastructure (cycle 92) does not appear to have unlocked gemini3 interception — neither a warning nor a silent-hang occurred; the response went through as-is. Key finding for dev: the 'protobuf limit' framing in context may be partially misleading. Chrome DevTools shows the StreamGenerate body as chunked JSON under Google's 'wrb.fr' wrapper (length-prefixed frames containing ['wrb.fr', null, JSON-string]), NOT naked protobuf. This format is parseable (with knowledge of the wrb wrapper) but requires a dedicated parser module separate from any generic SSE/protobuf handler. Recommendation: (a) decide whether APF should add a Bard/wrb.fr framing parser, (b) if H2 hook already supports body modification but not parsing, at minimum BLOCK_ONLY could be upgraded by injecting an error wrapper that gemini's JS client will render as an error state (sacrificing 'seamless warning' for 'visible deny'), (c) explore whether the request-side intercept (block upstream before response) is simpler than understanding wrb.fr framing.",
+  "artifacts": ["files/556/step1_chat_full_answer.png", "files/556/step2_response_wrb_fr.png"],
+  "errors": ["APF BLOCK_ONLY state persists for gemini3 despite cycle-92 H2 hook; response-body wrapper format is Google 'wrb.fr' not naked protobuf, which may explain the parsing limitation; full sensitive-content answer rendered with example RRN '951025'"]
+}
