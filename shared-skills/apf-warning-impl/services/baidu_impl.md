@@ -117,3 +117,61 @@ AI prompt blocked: keyword=주민등록번호, category=ssn
 2. **baidu_impl.md §Service Info 정정** — "Protocol: **HTTP/1.1** (historically assumed H2, empirically H1)"
 3. **baidu iteration plan 재설계** — h2_* 조작 배제, HTTP/1.1 envelope / Connection header / Content-Length 관리에 집중
 
+---
+
+## 🏁 DONE 전환 (2026-04-24 cycle 92 M0 empirical complete)
+
+### M0 Empirical Comparison 결과
+
+| Variant | Envelope 값 | 결과 |
+|---------|-----------|-----|
+| **T1a** (baseline: v6_keepalive) | keepalive SSE (기존 6회 iteration 사용) | FAIL — #499/#511-#515 warning 미표시 |
+| **T1b** (guess-based terminal) | state="finished-resp", endTurn=true, isFinished=true, updateTime=ISO8601 | FAIL (#539) — 1.1kB delivered, 0 SSE events, 0 render |
+| **T1c** (captured-verbatim) | state="generating-resp", endTurn=false, isFinished=false, updateTime=unix-ms "1777015942840", userInfo.status=-1, typing.cursor=true | **SUCCESS (#540)** — warning triangle icon + Korean warning text 렌더 |
+
+### 결정적 교훈 (baidu-specific constraint)
+
+**"envelope field values 는 captured-verbatim, NOT guess"** — baidu ERNIE client parser 는 field VALUES 에 민감:
+- Structural field presence 만으로는 부족 (T1b 가 이미 충족)
+- 값이 valid streaming snapshot 이어야 (mid-stream 상태), final state 로 합성하면 rejection
+- "semantically correct final state" (endTurn=true 등) 보단 "syntactically accepted mid-stream snapshot" (endTurn=false) 우선
+
+### Applied WINNER envelope (T1c)
+
+`response_type=baidu_sse_v6_keepalive`, `templates revision_cnt=25`:
+
+```
+HTTP/1.1 200 OK\r\n
+Content-Type: text/event-stream;charset=UTF-8\r\n
+Cache-Control: no-cache\r\n
+Connection: close\r\n        (recalculate 가 keep-alive + Transfer-Encoding:chunked 로 재작성)
+Content-Length: 0\r\n        (recalculate 가 삭제)
+\r\n
+data:{"status":0,"qid":"{{UUID:QID}}","pkgId":"{{UUID:MSG}}_1","sessionId":"{{UUID:QID}}",
+  "isDefault":0,"isShow":0,
+  "data":{"message":{"msgId":"{{UUID:MSG}}","isRebuild":false,"updateTime":"1777015942840",
+    "metaData":{"state":"generating-resp","endTurn":false,"userInfo":{"status":-1},
+      "speedInfo":{"stage":"SPEED_CONTENT_STAGE"}},
+    "content":{"generator":{"text":"","type":"entry","dataType":"","showType":"",
+      "antiFlag":0,"needClearHistory":false,"isSafe":1,"isFinished":false,
+      "component":"markdown-yiyan","group":1,
+      "data":{"value":"{{ESCAPE2:MESSAGE}}","theme":{},
+        "typing":{"cursor":true,"hideMask":true,"mode":"all","speed":1}},
+      "usedModel":{"isShow":true,"modelName":"Search-Lightning"},
+      "modelInfo":{"answer_model":["SEARCH_LIGHTNING","SEARCH_LIGHTNING"]}},
+    "cacheStatus":0}}},
+  "seq_id":1,"product":""}\n\n
+```
+
+SQL source: `apf-operation/sql/baidu_t1c_captured_verbatim_2026-04-24.sql`
+
+### 부속 인프라 (cycle 92 완성)
+
+- `ai_prompt_filter.h/cpp`: `on_http_response` + `on_http_response_content_data` + `on_http2_response` + `on_http2_response_data` 4 hook 추가. 미래 서비스 envelope 역공학에 재사용 가능.
+- H1/H2 protocol 구분 관찰 인프라 확보 (etap.log `[APF:H1_RESP_DATA]` / `[APF:H2_RESP_DATA]` 로 native 포맷 capture).
+- DevTools EventStream 탭이 0 rows 여도 **tolerant client parser 가 렌더 수용**하는 케이스 존재 — 진단 시 DevTools 만 신뢰 금지.
+
+### Status
+
+**baidu → DONE** (total DONE services: 10). pipeline_state service_queue 에서 pending 제거.
+
