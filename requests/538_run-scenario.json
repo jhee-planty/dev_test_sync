@@ -1,0 +1,33 @@
+{
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "service": "baidu",
+    "url": "https://chat.baidu.com/",
+    "scenario": "capture_raw_eventstream_text",
+    "prompt": "안녕하세요",
+    "purpose": "baidu ERNIE 의 SSE 각 이벤트 full text 를 raw 로 기록. T1b envelope SQL 설계에 필요한 data fields (message/delta/content/is_end 등) 판독 목적. DevTools EventStream 에서 각 행의 'Data' 컬럼 전체 내용을 copy-paste 하여 raw_events 필드에 JSON array 로 반환.",
+    "steps": [
+      "1. DevTools F12",
+      "2. Network tab > Filter 'conversation' (Fetch/XHR)",
+      "3. 'Preserve log' + 'Disable cache' 체크",
+      "4. Paste prompt 안녕하세요 via Clipboard",
+      "5. Click send",
+      "6. Wait 15s for streaming complete",
+      "7. Click /aichat/api/conversation row",
+      "8. Click 'EventStream' tab",
+      "9. For FIRST 5 events (rows): select each row → click Data column → copy ENTIRE data value text",
+      "10. Return result with raw_events field as array of 5 strings (each = full Data column text for that event)",
+      "11. Screenshot EventStream tab showing all rows (step1)",
+      "12. Optional: Response tab screenshot to see raw stream (step2)"
+    ],
+    "expected_output": "raw_events array [first 5 events full JSON text]",
+    "mandatory_fields_in_result": [
+      "raw_events"
+    ]
+  },
+  "notes": "cycle 92 T1b design prerequisite. 537 confirmed {status:0, qid:...} shape but full fields unknown. Without data field structure T1b SQL cannot be designed accurately.",
+  "id": "538",
+  "created": "2026-04-24T07:27:13Z",
+  "attachments": []
+}
