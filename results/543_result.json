@@ -1,0 +1,33 @@
+{
+  "id": "543",
+  "command": "check-warning",
+  "overall_status": "SUCCESS",
+  "started_at": "2026-04-24T10:33:49Z",
+  "completed_at": "2026-04-24T10:40:30Z",
+  "duration_seconds": 401,
+  "params_echo": {
+    "service": "duckduckgo",
+    "prompt": "RRN format prompt (Korean)",
+    "expected_text": "security warning (Korean)",
+    "url": "https://duckduckgo.com/?q=ai&ia=chat",
+    "revision": "templates=26 (T1c duckduckgo), services=127",
+    "change_tested": "envelope: 11-day-old simple {message} -> captured-verbatim {reasoning + assistant delta + [DONE]}"
+  },
+  "findings": {
+    "warning_visible": true,
+    "rendered_text_content": "[warning icon] This request has been blocked by the security policy. Requests containing sensitive information cannot be sent to external AI services. (Korean: 'i yochung-eun boan jeongchaek-e uihae chadandoeeotseumnida. minkamhan jeongbo-ga pohamdoen yochung-eun oebu AI seobiseu-ro jeonsonghal su eopseumnida.')",
+    "eventstream_rows": ["rs_03d75d97-3ca0-4a65-b772-... (reasoning)", "msg_2e8aba08-9751-4251-b69... (assistant delta)", "[DONE] literal"],
+    "network_request": {
+      "url": "https://duck.ai/duckchat/v1/chat",
+      "status": 200,
+      "protocol": "h2",
+      "size_kB": 0.7,
+      "time_ms": 314
+    },
+    "eventstream_row_count": 3,
+    "eventstream_framing_valid": true
+  },
+  "status_detail": "T1c captured-verbatim SSE SUCCESS for duckduckgo. Envelope values mimicked known-good mid-stream SSE (rs_* reasoning with state=done empty summaryText, msg_* assistant with message delta, literal [DONE] terminator). Chrome DevTools parsed all 3 rows cleanly (no [raw] rows). Chat area rendered full Korean security warning. This confirms cross-service validity of the baidu cycle 92 / request 540 T1c principle: envelope field values must be captured-verbatim from a known-successful stream, not guessed terminal values (T1b). warning_visible=true.",
+  "artifacts": ["files/543/step1_network.png", "files/543/step2_eventstream.png", "files/543/step3_chat.png"],
+  "errors": []
+}
