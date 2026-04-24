@@ -135,9 +135,12 @@ endwhile
 - 결과 대기 중 STALLED 자동 전환 없음 (ScheduleWakeup chain 으로 scan 반복)
 - Phase 전환 시 `references/phase{N}-*.md` 필수 Read
 - Single-service focus 유지 (queue-next 결과 하나만)
-- **선택지 제시 금지 (Hard Rule 6)**: 복수 valid options → Autonomous Micro-Discussion Pattern 으로 내부 결정 (DF+EC 2-role, 1-2 round, `pipeline_state.json last_decision` 기록). 사용자 ask 는 물리적 개입 필요 사례만 (로그인/파괴적/외부 공개) + C9 trigger critical change (full `discussion-review`).
+- **선택지 제시 금지 (Hard Rule 6 v2)**: 복수 valid options → Mode Selection Tree:
+  - **M0 Empirical Comparison (default)** — testable + revertible 이면 모두 테스트 + 비교 + winner (체크리스트 TodoWrite)
+  - M1 reasoning (단순 binary) / M2 Micro-Discussion (untestable complex) / M3 full `discussion-review` (C9) / M4 user ask (물리적 예외만)
+  - Per-case 기록: `apf-operation/state/decisions/`, all-fail 시 `empirical-fail-reports/`
 
-→ See `references/autonomous-execution-protocol.md` for Hard Rules 1-6 + Autonomous Micro-Discussion Pattern + Polling Policy v2 usage.
+→ See `references/autonomous-execution-protocol.md` for Hard Rules 1-6 v2 + Empirical Comparison Pattern + Micro-Discussion Pattern + Polling Policy v2 usage.
 → **Canonical** (Polling Policy authoritative source): `~/.claude/memory/user-preferences.md` Polling Policy section. INV-6 Rule-of-3 준수.
 
 ## 제외 기능

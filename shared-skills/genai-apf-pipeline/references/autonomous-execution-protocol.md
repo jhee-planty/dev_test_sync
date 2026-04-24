@@ -2,7 +2,7 @@
 
 > Injected by PostCompact + SessionStart hooks.
 > This file is the authoritative reference for autonomous mode behavior.
-> **Last major revision 2026-04-23 (13차 session)**: Hard Rule #6 added — 선택지 제시 금지 + Autonomous Micro-Discussion Pattern. (11차: polling v2 ScheduleWakeup only.)
+> **Last major revision 2026-04-24 (15차 session)**: Hard Rule 6 v2 — **Empirical Comparison (M0) = default**, M1-M4 fallback. Checklist-based execution. (13차: HR6 v1 Micro-Discussion. 11차: polling v2.)
 
 ## Hard Rules (위반 시 훅이 교정)
 
@@ -11,13 +11,165 @@
 3. **폴링 체인 끊기 금지** — **ScheduleWakeup** 사용 (아래 Polling Protocol 참조). 외부 스케줄러 (`mcp__scheduled-tasks__*`, cron, launchd, fireAt, Monitor persistent) + **in-session bash loop** 전부 금지.
 4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
 5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다.
-6. **선택지 제시 금지** — 자율 수행 중 복수 valid options 가 있으면 **사용자에게 선택 요구 금지**. 아래 3 모드 중 하나로 처리:
-   - **단순 binary** (A vs B, clear pros/cons) → 15초 내 internal reasoning 후 즉시 실행
-   - **복잡 n-option / non-obvious** → **Autonomous Micro-Discussion Pattern** 수행 후 실행 (본 protocol §Autonomous Micro-Discussion Pattern 참조)
-   - **C9 trigger 해당 critical change** (runtime / 2+ policy docs / filesystem reorg / skill 생성삭제) → `discussion-review` skill full invocation (사용자 gate 포함)
-   - **예외** (user ask 허용): `Decision Authority §사용자 확인 필요` 의 물리적 불가능 항목만 (test PC 로그인 / 파괴적 작업 / 외부 공개 작업)
+6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback.
 
-## Autonomous Micro-Discussion Pattern (Hard Rule 6 실행 수단)
+### Mode Selection Tree
+
+```
+STEP 1: Testable 평가
+  완전 testable (측정 + 저비용)
+   OR 부분 testable (build+deploy+1회 테스트 가능, irreversible 아님)
+                                                    YES → M0 EMPIRICAL COMPARISON
+                                                     NO → STEP 2
+
+STEP 2: Decision scope 평가 (fallback)
+  C9 trigger (runtime / 2+ policy doc / reorg / skill 생성삭제) YES → M3 FULL DISCUSSION-REVIEW
+                                                                 NO → STEP 3
+  물리적 사용자 개입 필수 (로그인/파괴적/외부)                 YES → M4 USER ASK (예외)
+                                                                 NO → STEP 4
+  복잡 n-option (reasoning 가치)                              YES → M2 MICRO-DISCUSSION
+                                                                 NO → M1 15s INTERNAL REASONING
+```
+
+### M0 — Empirical Comparison (default, testable 시)
+
+→ See §Empirical Comparison Pattern (아래).
+
+### M1 — 15s Internal Reasoning (단순 binary, test 불필요)
+- A vs B, 명백한 pros/cons, test 비용 > test value
+- 15초 내 내부 판단 → 실행
+
+### M2 — Autonomous Micro-Discussion Pattern (untestable complex)
+→ See §Autonomous Micro-Discussion Pattern (아래).
+
+### M3 — Full discussion-review skill (C9 critical)
+- `discussion-review` skill 호출, 5 round + Quality Gate + user gate
+- INTENTS §5 + progress.md narrative 기록
+
+### M4 — User Ask (예외)
+- 물리적 사용자 개입 필수:
+  - 로그인 / CAPTCHA / MFA / OAuth 세션
+  - 파괴적 작업 (force push, reset --hard, DROP TABLE, rm -rf)
+  - 외부 공개 (PR 생성, 외부 채널 알림, 메일 발송)
+  - 신규 물리 장비 설정
+- 이외 user ask 금지
+
+## Empirical Comparison Pattern (Hard Rule 6 M0 — default for testable)
+
+> **Principle**: 복수 options 중 하나를 reasoning 으로 고르지 말고 **모두 한번씩 적용 + 결과 측정 + 최선 선택**. Judgment → Data.
+
+### Preconditions (all must hold)
+
+1. **Testable**: 각 option 이 applicable + 측정 가능한 outcome 가짐
+   - 완전 testable: envelope 전략 apply → same request 재시도 → blocked 성공률 비교
+   - 부분 testable: runtime change build+deploy+1회 테스트 (irreversible 아님)
+2. **Goal metric defined**: objective 별 metric 정의 + 작성 (Q2 답변). 모호 시 정성 평가 지표 (e.g., "warning 가독성 상/중/하")
+3. **Revertible** (irreversible options 제외): 테스트 후 이전 상태 복구 가능. 불가능하면 M3 Full discussion-review 로 escalate.
+4. **Cost budget 내**: N options × per-option cost < budget. 초과 시 일부 options 를 M2 Micro-Discussion 으로 pre-filter.
+
+Precondition 미충족 → Mode Selection Tree STEP 2 로 fallback.
+
+### Flow (checklist-based, TodoWrite 사용)
+
+```
+Step 1: Issue statement + Options enumerate (1 sentence each)
+Step 2: Goal metric 정의 (quantitative or qualitative + higher_is_better 방향)
+Step 3: TodoWrite checklist 생성 — 각 option 1 item (+ baseline 1 item 선택적)
+Step 4: 각 option 에 대해 sequential 실행:
+  a. Apply option (deploy / config change / envelope switch etc)
+  b. 측정: goal metric 적용 → metric_score
+  c. apf-operation/state/decisions/{ts}_M0_{slug}.json 에 per-option result append
+  d. Revert (다음 option 테스트 위해) — option 이 irreversible 면 시퀀스 설계 주의
+Step 5: All options 완료 → 결과 비교 → winner 선택 (highest metric_score, ties 는 secondary criteria)
+Step 6: Winner 재실행 (최종 상태 유지) + revert 불필요 것 정리
+Step 7: pipeline_state.json last_decision 업데이트 (summary + pointer)
+Step 8: 즉시 다음 pipeline action (Hard Rule 4)
+```
+
+### All-options-failed 처리 (Q3 답변)
+
+모든 options 가 fail 또는 metric_score 임계치 미달:
+1. `apf-operation/docs/empirical-fail-reports/{ts}_{slug}.md` 신규 markdown 보고서 작성:
+   - Issue
+   - Options tested + per-option result + metric
+   - 근본 원인 추정 (hypothesis)
+   - 다음 단계 제안 (Claude 의 autonomous next action)
+   - 사용자 검토 필요 사항 (있으면)
+2. `pipeline_state.json last_decision.all_failed = true` + pointer 설정
+3. **사용자 blocking 없이 다음 pipeline action 으로 jump** (Work Selection Algorithm 적용)
+
+### File 저장 규약 (Q5 답변)
+
+**Per-decision 분리 저장** (하나 파일에 aggregate 금지):
+
+```
+apf-operation/state/decisions/
+  {YYYYMMDD_HHMMSS}_M0_{slug}.json   # empirical comparison 결과
+  {YYYYMMDD_HHMMSS}_M2_{slug}.json   # Micro-Discussion 결과
+  {YYYYMMDD_HHMMSS}_M3_{slug}.json   # full discussion-review summary
+  ...
+```
+
+Schema (all modes 공통):
+```json
+{
+  "timestamp": "ISO8601",
+  "mode": "M0 | M1 | M2 | M3 | M4",
+  "issue": "1 sentence",
+  "goal_metric": {
+    "type": "quantitative | qualitative",
+    "definition": "...",
+    "higher_is_better": true
+  },
+  "options": [
+    {
+      "id": "A",
+      "description": "...",
+      "tested": true,
+      "result": {...},
+      "metric_score": 0.85,
+      "notes": "..."
+    }
+  ],
+  "choice": "A",
+  "rationale": "...",
+  "all_failed": false
+}
+```
+
+`pipeline_state.json last_decision` = summary + pointer:
+```json
+"last_decision": {
+  "timestamp": "ISO8601",
+  "mode": "M0",
+  "issue": "1 sentence",
+  "choice": "A",
+  "rationale": "short",
+  "all_failed": false,
+  "report_file": "apf-operation/state/decisions/20260424_HHMMSS_M0_slug.json",
+  "fail_report_file": null
+}
+```
+
+### Anti-pattern (금지)
+
+```
+BAD:
+  "옵션 A 와 B 중 어느 쪽 선호?"
+  "A1 runtime 수정 / A2 envelope 변경 / A3 defer — 어느 방향?"
+
+GOOD (M0 empirical):
+  "Issue: qianwen 차단 성공률 최대화.
+   Options: A multi_load, B native_sse, C v2.
+   Metric: blocked=1 AND warning_visible=true (binary, higher is better).
+   Checklist 생성 → 각각 apply + push request 재시도 + 측정 → 결과 비교 → winner.
+   진행합니다."
+  (바로 TodoWrite + empirical flow 실행)
+```
+
+---
+
+## Autonomous Micro-Discussion Pattern (Hard Rule 6 M2 — untestable complex)
 
 > 사용자 개입 없이 내부 의사결정. Full `discussion-review` skill (6 roles × 5 rounds + Quality Gate) 보다 경량.
 > **C9 trigger 에 해당하는 critical change 는 본 pattern 대신 full `discussion-review` 사용** (기존 프로세스 유지).
@@ -224,8 +376,12 @@ primary task가 blocked(결과 대기 등)일 때:
 - "다음은 X" 선언인가? → X를 바로 실행한다.
 - 상태 업데이트 보고인가? → 다음 실질 작업을 이어서 한다.
 - "적용하겠습니다" / "기다린다" 인가? → 즉시 실행/확인한다.
-- **옵션 나열 + "어느 쪽으로?"** 패턴인가? → **Hard Rule 6 위반**. Autonomous Micro-Discussion 수행 → pick + execute 로 재작성.
-- **"지시 주시면"** 패턴인가? → 물리적 사용자 개입 필요 사례 (로그인 / 파괴적 / 외부 공개) 아니면 **Hard Rule 6 위반**. 자율 결정 후 실행 보고로 재작성.
+- **옵션 나열 + "어느 쪽으로?" / "지시 주시면"** 패턴인가? → **Hard Rule 6 위반**. Mode Selection Tree 적용:
+  - Testable + revertible → **M0 Empirical Comparison checklist 로 전환** (default)
+  - Untestable complex → M2 Micro-Discussion
+  - C9 critical → M3 full discussion-review
+  - 물리적 개입 필수 → M4 user ask (예외, 유지)
+  재작성: options 나열 → metric 정의 → "테스트 진행합니다" → TodoWrite 생성 + empirical flow.
 
 ## 과거 해석 오류 (참고)
 
