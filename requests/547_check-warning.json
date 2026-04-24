@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "wrtn",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://wrtn.ai",
+    "context": "Batch B-1 cycle 93: wrtn (openai_compat_sse 342B, h2_end_stream=1). 한국 서비스.",
+    "check_details": {
+      "revision": "templates=26, services=127",
+      "change_tested": "baseline check wrtn",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12",
+        "2. Network 'chat' or 'api'",
+        "3. Send prompt",
+        "4. Screenshot Network + Response",
+        "5. Screenshot chat area",
+        "6. Report warning_visible + evidence"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch B-1 wrtn baseline.",
+  "id": "547",
+  "created": "2026-04-24T11:11:15Z",
+  "attachments": []
+}
