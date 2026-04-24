@@ -1,0 +1,48 @@
+{
+  "id": "540",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "T1c envelope (captured-verbatim values from #538 raw_events[0] with data.value replaced by MESSAGE) successfully rendered warning text in baidu chat UI. warning_visible=TRUE. Chat displays warning triangle icon + Korean text. This confirms hypothesis that T1b FAIL was due to guess-based field values (state=finished-resp likely unknown to baidu parser) -- T1c uses state=generating-resp + endTurn=false + isFinished=false + userInfo.status=-1 + updateTime=1777015942840 all verbatim from captured seq 59 event.",
+    "service_name": "baidu",
+    "started_at": "2026-04-24T08:13:46Z",
+    "completed_at": "2026-04-24T08:21:03Z",
+    "duration_seconds": 437,
+    "warning_visible": true,
+    "rendered_text_content": "(WARNING-TRIANGLE) Sensitive information request was blocked by security policy (Korean: minkamjeongboga pohamdoen yocheongeun boan jeongchaege uihae chadandoeeosseumnida)",
+    "screenshot": "files/540/step3_chat.png",
+    "screenshots": {
+      "network": "files/540/step1_network.png",
+      "eventstream": "files/540/step2_eventstream.png",
+      "chat": "files/540/step3_chat.png"
+    },
+    "console_errors": [],
+    "devtools_evidence": {
+      "network_filter_tested": "conversation (Fetch/XHR)",
+      "conversation_matches": 1,
+      "total_requests_observed": 43,
+      "request_url": "https://chat.baidu.com/aichat/api/conversation",
+      "request_method": "POST",
+      "status_code": 200,
+      "transferred_body_kb": 1.1,
+      "duration_ms": 57,
+      "eventstream_events_count_in_devtools": 0,
+      "client_rendered_despite_devtools_empty": true,
+      "note_on_eventstream_0": "DevTools EventStream panel shows 0 rows even though the client-side parser processed the response body and rendered the warning. This suggests the envelope format may not fully match SSE (text/event-stream) spec (e.g. missing 'data: ' line prefix or blank-line terminator) but baidu client accepts a looser JSON-body form. Chrome DevTools strict SSE parser rejected it -> 0 rows. Product client tolerant parser accepted it -> rendered.",
+      "comparison_vs_539_T1b": {
+        "same_size_kb": 1.1,
+        "same_network_behavior": true,
+        "difference": "539 used guessed terminal values (state=finished-resp + endTurn=true + isFinished=true), 540 used captured mid-stream values (state=generating-resp + endTurn=false + isFinished=false)",
+        "outcome_539": "warning_visible=false, rendered_text empty",
+        "outcome_540": "warning_visible=true, rendered_text present"
+      }
+    },
+    "service_rev": {
+      "templates_version": 25,
+      "services_version": 127,
+      "change_tested": "envelope values guess(T1b) -> captured-verbatim(T1c); state/endTurn/isFinished/typing.cursor/updateTime/userInfo.status all from #538 captured seq 59 verbatim",
+      "h2_hold_request_baidu": 0
+    }
+  },
+  "notes": "cycle 92 M0 empirical T1c SUCCESS. Key finding: the baidu ERNIE client parser is sensitive to field-VALUES, not just field-structure. Guess-based terminal values (state=finished-resp, endTurn=true) are rejected even though they appear semantically correct for a final single event; mid-stream generating-resp state with endTurn=false is accepted. Implication: the envelope must mimic a VALID STREAMING SNAPSHOT rather than a VALID FINAL STATE. M0 winner is T1c. Recommend: promote T1c to production envelope; document that 'envelope field values must be captured-verbatim, not guessed' as a baidu-specific constraint. Note: DevTools EventStream 0 events despite render suggests opportunity to tighten SSE framing (add data: prefix + blank line) in future for better observability, but not required for functional correctness."
+}
