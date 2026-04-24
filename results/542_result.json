@@ -1,0 +1,42 @@
+{
+  "id": "542",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "duck.ai /duckchat/v1/chat SSE schema captured. Benign prompt annyeonghaseyo succeeded (AI rendered: annyeonghaseyo! eotteohke dowadrillkkayo?). Transfer 8.3 kB, 1.61s, 13+ SSE events visible in DevTools EventStream. Schema: first event role=reasoning (id=rs_*, state=done, summaryText=[], encryptedText=long-base64-blob, sourceUpstreamId/sourceModelId); subsequent events role=assistant (id=msg_*, message=<delta-text-chunk>); terminator is literal [DONE] (not JSON). Model used gpt-5-mini-2025-08-07. Chain-of-thought is server-side encrypted, not exposed to client. Critical for T1c design: assistant delta events use simple {id, action, created, model, role, message} shape. The id is STABLE across all assistant deltas within a single response (0c4d5b55ec80623a0169eb43a2be3c81a281797127f1dc6993). action field always 'success'.",
+    "service_name": "duckduckgo",
+    "started_at": "2026-04-24T10:15:52Z",
+    "completed_at": "2026-04-24T10:27:24Z",
+    "duration_seconds": 692,
+    "warning_visible": false,
+    "screenshot": "files/542/step2_chat.png",
+    "screenshots": {
+      "eventstream": "files/542/step1_eventstream.png",
+      "chat": "files/542/step2_chat.png"
+    },
+    "scenario_completed": true,
+    "raw_events": [
+      "{\"id\":\"rs_0c4d5b55ec80623a0169eb43a2506c81a2b00707b4bb46d5b7\",\"action\":\"success\",\"created\":1777025954899,\"model\":\"gpt-5-mini-2025-08-07\",\"role\":\"reasoning\",\"state\":\"done\",\"summaryText\":[],\"encryptedText\":\"<TRUNCATED_LONG_BASE64_BLOB>\",\"sourceUpstreamId\":\"u10\",\"sourceModelId\":\"gpt-5-mini\"}",
+      "{\"id\":\"msg_0c4d5b55ec80623a0169eb43a2be3c81a281797127f1dc6993\",\"action\":\"success\",\"created\":1777025954912,\"model\":\"gpt-5-mini-2025-08-07\",\"role\":\"assistant\",\"message\":\"an\"}",
+      "{\"id\":\"msg_0c4d5b55ec80623a0169eb43a2be3c81a281797127f1dc6993\",\"action\":\"success\",\"created\":1777025954918,\"model\":\"gpt-5-mini-2025-08-07\",\"role\":\"assistant\",\"message\":\"nyeonghaseyo\"}",
+      "{\"id\":\"msg_0c4d5b55ec80623a0169eb43a2be3c81a281797127f1dc6993\",\"action\":\"success\",\"created\":1777025954921,\"model\":\"gpt-5-mini-2025-08-07\",\"role\":\"assistant\",\"message\":\"!\"}",
+      "{\"id\":\"msg_0c4d5b55ec80623a0169eb43a2be3c81a281797127f1dc6993\",\"action\":\"success\",\"created\":1777025954925,\"model\":\"gpt-5-mini-2025-08-07\",\"role\":\"assistant\",\"message\":\" eotteohke\"}"
+    ],
+    "schema_summary": {
+      "event_types": ["reasoning (rs_*)", "assistant (msg_*)", "[DONE] literal terminator"],
+      "reasoning_event_fields": ["id", "action", "created", "model", "role=reasoning", "state=done", "summaryText[]", "encryptedText (server-only chain-of-thought)", "sourceUpstreamId", "sourceModelId"],
+      "assistant_delta_fields": ["id", "action", "created", "model", "role=assistant", "message (delta-text-chunk)"],
+      "id_uniqueness": "id is STABLE across all assistant deltas in single response. Different id between reasoning and assistant events.",
+      "per_event_counter": "none (no seq_id); events distinguished by created timestamp + position in stream",
+      "terminator": "literal text [DONE] (not JSON)",
+      "model_used": "gpt-5-mini-2025-08-07 (default 'fast' mode)",
+      "t1c_sql_primary_key_candidate": "(id) with role discriminator; or just id+created for deduplication",
+      "t1c_sql_text_accumulator_column": "message (assistant role only)",
+      "t1c_sql_done_predicate_candidate": "event text equals [DONE] (not JSON-parseable)",
+      "transfer_kb_total": 8.3,
+      "transfer_includes_encrypted_reasoning": true,
+      "note_for_warning_envelope": "T1c envelope for duck.ai should: (a) emit one reasoning event with state=done + empty summaryText, (b) emit one assistant delta with message=WARNING_TEXT, (c) emit [DONE] literal. id fields must be unique-per-session but stable-per-event-group. model must match duck.ai accepted set. Values captured verbatim from this 542 run should be the baseline."
+    }
+  },
+  "notes": "cycle 93 Batch A-1 duckduckgo T1c design prerequisite SUCCESS. 5 raw events captured. Schema is much simpler than baidu (no nested metadata/content/generator layers). Key difference from baidu: duck.ai uses OpenAI-compat {role, message} shape. reasoning events carry encryptedText (the chain-of-thought is server-side only). Terminator is literal [DONE] not JSON. Next cycle: craft T1c envelope with 1-2 events (optional reasoning + one assistant delta with warning + [DONE]) using captured-verbatim values, similar to baidu 540 T1c pattern."
+}
