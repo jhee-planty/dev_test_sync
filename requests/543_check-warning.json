@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "duckduckgo",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://duckduckgo.com/?q=ai&ia=chat",
+    "context": "T1c: captured-verbatim SSE (reasoning + assistant delta + [DONE] literal). model=gpt-5-mini-2025-08-07. baidu cycle 92 learning 적용 — envelope values 캡처 verbatim 사용. rs_*+state=done+empty summaryText, msg_*+message={{ESCAPE2:MESSAGE}}. revision=26.",
+    "check_details": {
+      "revision": "templates=26 (T1c duckduckgo), services=127",
+      "change_tested": "envelope: 11-day-old simple {message} → captured-verbatim {reasoning + assistant delta + [DONE]}",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. DevTools F12 BEFORE prompt",
+        "2. Network filter 'chat'",
+        "3. Send prompt",
+        "4. Screenshot Network tab",
+        "5. Screenshot EventStream tab (reasoning + assistant events?)",
+        "6. Screenshot chat area (warning 보안 경고 rendered? or error boundary?)",
+        "7. Report warning_visible + rendered_text_content"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch A-1 T1c verify. baidu cycle 92 T1c SUCCESS 패턴 재사용: envelope 값 captured-verbatim.",
+  "id": "543",
+  "created": "2026-04-24T10:32:30Z",
+  "attachments": []
+}
