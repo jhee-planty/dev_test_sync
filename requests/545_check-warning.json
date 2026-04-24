@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "phind",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://www.phind.com/agent",
+    "context": "Batch A-3 cycle 93: phind (generic_sse 239B, h2_end_stream=1 goaway=0 hold=0). 현 envelope baseline. fail 시 benign capture → T1c.",
+    "check_details": {
+      "revision": "templates=26, services=127",
+      "change_tested": "baseline check phind generic_sse current state",
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12",
+        "2. Network 'chat' or 'api'",
+        "3. Send prompt",
+        "4. Screenshot Network",
+        "5. Screenshot Response tab",
+        "6. Screenshot chat area",
+        "7. Report warning_visible + rendered_text"
+      ]
+    }
+  },
+  "notes": "cycle 93 Batch A-3 phind baseline.",
+  "id": "545",
+  "created": "2026-04-24T10:55:54Z",
+  "attachments": []
+}
