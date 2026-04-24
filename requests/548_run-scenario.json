@@ -1,0 +1,31 @@
+{
+  "command": "run-scenario",
+  "priority": "normal",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai",
+    "scenario": "capture_raw_eventstream_text",
+    "prompt": "안녕하세요",
+    "purpose": "wrtn.ai streaming endpoint + SSE schema capture (T1c design). 547 silent-hang 후 benign 경로 확인. Test PC 가 '/stream', '/generate' filter 에서 0 match — 실제 endpoint 파악 + raw_events 5개.",
+    "steps": [
+      "1. DevTools F12",
+      "2. Network tab (no filter initially) + Preserve log",
+      "3. Paste prompt 안녕하세요 + Send",
+      "4. Wait 15s for streaming",
+      "5. Identify actual streaming endpoint URL (POST + large response)",
+      "6. Click that row → EventStream tab (or Response tab if not SSE)",
+      "7. Copy first 5 events raw text",
+      "8. Return raw_events array + actual_streaming_endpoint_url + content_type"
+    ],
+    "expected_output": "raw_events + actual endpoint path",
+    "mandatory_fields_in_result": [
+      "raw_events",
+      "actual_streaming_endpoint_url",
+      "content_type"
+    ]
+  },
+  "notes": "cycle 93 Batch B-1 wrtn T1c prerequisite. 547 observed wrtn uses api.wrtn.ai subdomain. Find actual streaming endpoint.",
+  "id": "548",
+  "created": "2026-04-24T11:20:56Z",
+  "attachments": []
+}
