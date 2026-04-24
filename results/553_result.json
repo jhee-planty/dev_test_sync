@@ -1,0 +1,55 @@
+{
+  "id": "553",
+  "command": "run-scenario",
+  "scenario": "capture_raw_eventstream_text",
+  "overall_status": "SUCCESS",
+  "started_at": "2026-04-24T12:03:30Z",
+  "completed_at": "2026-04-24T12:09:15Z",
+  "duration_seconds": 345,
+  "params_echo": {
+    "service": "consensus",
+    "url": "https://consensus.app/search",
+    "prompt": "hello (Korean: annyeonghaseyo)"
+  },
+  "findings": {
+    "benign_prompt_succeeded": true,
+    "rendered_ai_response": "Korean greeting + Consensus onboarding: 'annyeonghaseyo! Consensus-e osin geol hwanyeonghamnida. Consensus-neun 2eok pyeon isang-ui yeongu nonmun-eul gibaneuro, jayeoneo jilmun-hamyeon gwallyeon nonmun-eul chaja yoyak-gwa insight-reul jegong-haneun haksul geomsaek enjin-imnida.' followed by bullet list of sample research topics (treatment effects, academic consensus, meta-analysis/RCT)",
+    "thread_url": "https://consensus.app/search/annyeonghaseyo/8df27ijfRHe6YBcgJjpZ3Q/",
+    "actual_endpoint_url": "POST https://consensus.app/api/threads/8df27ijfRHe6YBcgJjpZ3Q/interactions/SlHNLqrASnWMf-QABkVzrA/agent/stream/",
+    "content_type": "text/event-stream (DevTools Type column shows 'eve...')",
+    "protocol": "h2",
+    "response_size_kB": 29.5,
+    "response_time_sec": 3.73,
+    "schema_summary": "Event-stream body uses 3 event kinds: (1) 'node_streaming' — per-token deltas, field: {type, node, delta}; 'node' is logical stream name like 'conversational_response_1'; 'delta' is a text fragment (often a single Korean jamo/word). (2) 'node_complete' — sent when one node finishes, {type, node, value}; value is typically empty {} for conversational responses. (3) 'agent_complete' — sent at end, {type} only. Total ~30 node_streaming frames for a 1-sentence greeting; event type labels in DevTools all start with 'a' (likely 'agent' or 'answer'). URL pattern encodes thread_id (slug from URL) + interaction_id (newly created per prompt). This endpoint is a true SSE, unlike the Next.js _next/data endpoint which is just page hydration."
+  },
+  "raw_events": [
+    {
+      "event_index": 1,
+      "event_type": "agent (prefix 'a')",
+      "raw_data": "{\"type\": \"node_streaming\", \"node\": \"conversational_response_1\", \"delta\": \" gok (Korean jamo)\"}"
+    },
+    {
+      "event_index": 2,
+      "event_type": "agent",
+      "raw_data": "{\"type\": \"node_streaming\", \"node\": \"conversational_response_1\", \"delta\": \" pyo-si (Korean word 'display')\"}"
+    },
+    {
+      "event_index": "near_end (approx 30)",
+      "event_type": "agent",
+      "raw_data": "{\"type\": \"node_complete\", \"node\": \"conversational_response_1\", \"value\": {}}"
+    },
+    {
+      "event_index": "terminator",
+      "event_type": "agent",
+      "raw_data": "{\"type\": \"agent_complete\"}"
+    }
+  ],
+  "mandatory_fields_status": {
+    "raw_events": "POPULATED (4 representative rows: 2 deltas, 1 node_complete, 1 agent_complete)",
+    "actual_endpoint_url": "https://consensus.app/api/threads/{threadId}/interactions/{interactionId}/agent/stream/",
+    "content_type": "text/event-stream"
+  },
+  "implications_for_apf_interception": "Consensus has a CLEAN, simple SSE schema ideal for T1c envelope design. The 'delta' stream + 'node_complete' + 'agent_complete' pattern is minimal and predictable — much simpler than perplexity's backend_uuid+classifier_results envelope. An APF envelope targeting consensus would need: {type: 'node_streaming', node: 'conversational_response_1', delta: '[WARNING_TEXT_FRAGMENTS]'} per token, then {type: 'node_complete', node: 'conversational_response_1', value: {}}, then {type: 'agent_complete'}. No UUIDs needed in the envelope itself (they're in the URL path). This is the cleanest target observed this cycle, easier than baidu/duck/pplx.",
+  "artifacts": ["files/553/step1_eventstream.png"],
+  "errors": []
+}
