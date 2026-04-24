@@ -250,6 +250,48 @@ data:{...same payload, resid:1...}\n
 3. Body mime_type 은 `multi_load/iframe` — qianwen 의 iframe-based 렌더링 전략. v2 SQL 에 정의된 native format (`sessionId/msgId/contents[]`) 아님.
 4. `qianwen_native_sse_v2.sql` 파일 존재하나 **DB 에 미적용** 상태 확증. 다른 iteration 에서 iframe 전략으로 대체된 것으로 추정.
 
+---
+
+## Hook-captured upstream format (2026-04-24 cycle 92)
+
+### 배경
+cycle 91 code-review 결론 "실제 root cause 후보 (a/b/c) 확정하려면 upstream response 캡처 필요" 를 위해 `on_http2_response` + `on_http2_response_data` hook 배포 (상세: `baidu_impl.md §Hook deployment`). 이 hook 이 H2 기반 서비스의 upstream 응답을 etap.log 에 기록하도록 함.
+
+### qianwen upstream capture 결과
+
+**0건 캡처됨**.
+
+**원인**: T1 (#534) 결과 확인된 대로 qianwen 이 로그인 벽 추가 → `api/v2/chat` 요청 **0/87** 발화. 즉:
+- 브라우저가 qianwen.com 방문 → login modal 만 렌더링
+- chat API 호출 전에 auth 차단 → upstream 에게 chat 요청 도달 안 함
+- upstream 은 chat response 생성 안 함 → hook 이 캡처할 데이터 없음
+
+Hook 자체는 정상 (claude 유기 트래픽 `/api/event_logging/v2/batch` 에서 fire 확증). 문제는 **qianwen chat API 에 도달 가능한 트래픽 부재**.
+
+### envelope 설계 근거 부족 상태
+
+current DB envelope (`multi_load/iframe` mime_type, 1148B) 이 qianwen 프론트엔드가 **실제 기대하는 구조인지 확증 불가**:
+- iframe 전략 채택 이력: 과거 iteration 에서 qianwen 이 특정 mime_type 에 대해 iframe 렌더링한다는 **가정** 기반
+- 검증 방법 필수: 로그인된 qianwen 세션에서 실제 chat API 응답 capture → hook 이 native 포맷 기록
+
+### 현재 winner 결정 가능 여부
+
+**empirical comparison 불가능**: T1-T4 variant 중 어떤 것이 "최고 성능" 인지 가릴 signal 부재. 모든 variant 가 auth wall 이전 단계에서 fail (chat API 미발화).
+
+**판정**: qianwen 는 **hook-assisted empirical 불가** — 다음 중 하나 해소되어야 자율 iteration 가능:
+1. qianwen 로그인 자동화 (credential injection)
+2. 인증된 세션 쿠키 주입
+3. qianwen 정책 변경 (로그인 의무 철회)
+
+### envelope 설계 권고 (로그인 해소 후 적용)
+
+로그인 해소 시 hook 로 qianwen upstream 응답 캡처 후:
+1. `[APF:H2_RESP] service=qianwen ... ct=...` → 실제 Content-Type 확인
+2. `[APF:H2_RESP_DATA] service=qianwen preview=[...]` → body structure 역공학
+3. 역공학된 structure 로 DB envelope 재설계 → 3rd iteration 시도
+
+권고: current iframe 전략 폐기 대신, hook capture 로 확증 후 native format (v2 SQL 제안 sessionId/msgId/contents) 또는 새로운 구조 적용.
+
 **의의**:
 - "HEADERS frame invalid" 가설 (Test PC 진단) 은 본 조사로 추가 정보 없이 유지 불가
 - 실제 envelope bytes 가 모두 valid → `0 bytes Network + CORS blocked` 증상은 여전히 **transport layer** 또는 **browser-specific rejection** 으로 수렴
