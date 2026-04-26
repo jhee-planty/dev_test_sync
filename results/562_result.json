@@ -1,0 +1,24 @@
+{
+  "id": "562",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "chatglm.cn now REACHABLE from KR (previous REGION_INACCESSIBLE classification outdated). Anonymous prompt accepted but response silent-hung 40s+ — ChatGLM AI label rendered with no content body. Neither answer nor warning rendered.",
+    "service_name": "chatglm",
+    "started_at": "2026-04-27T08:35:30Z",
+    "completed_at": "2026-04-27T08:38:00Z",
+    "duration_seconds": 150,
+    "warning_visible": false,
+    "screenshot": "files/562/silent_hang.png",
+    "console_errors": [],
+    "failure_category": "NOT_RENDERED",
+    "auth_state": "anonymous_guest_1dfd98",
+    "page_state": "loaded",
+    "url_observed": "chatglm.cn/main/alltoolsdetail?lang=zh",
+    "model": "GLM-5",
+    "render_path": "label-only (ChatGLM AI label appeared, content body empty after 40s)",
+    "previous_classification": "REGION_INACCESSIBLE — UPDATE: now reachable",
+    "test_progression": "page_load=OK, modal_dismissed=OK, prompt_send=OK, response_render=FAIL"
+  },
+  "notes": "Batch F-3 chatglm baseline. Region accessibility upgraded (KR can reach). Silent-hang on response — possible APF intercept without warning template rendering, or anonymous-mode rate limit, or model-server unreachable from KR IP."
+}
