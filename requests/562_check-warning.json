@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatglm",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://chatglm.cn",
+    "context": "Batch F-3: chatglm baseline. Previously classified REGION_INACCESSIBLE (China). Confirming current accessibility state and APF entry conditions. If unreachable: BLOCKED_NO_AI_UI. If reachable: standard warning render check.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Open https://chatglm.cn",
+        "2. F12 → Network",
+        "3. Send prompt (or report region/auth block at landing)",
+        "4. Capture response + warning render",
+        "5. Report"
+      ]
+    }
+  },
+  "notes": "Batch F-3 chatglm baseline state confirmation.",
+  "id": "562",
+  "created": "2026-04-26T23:34:47Z",
+  "attachments": []
+}
