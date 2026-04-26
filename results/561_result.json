@@ -1,0 +1,20 @@
+{
+  "id": "561",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "chatgpt2 (chatgpt_sse template duplicate) — warning rendered: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다'. Same as chatgpt DONE; duplicate entry verified.",
+    "service_name": "chatgpt2",
+    "started_at": "2026-04-27T08:28:00Z",
+    "completed_at": "2026-04-27T08:29:30Z",
+    "duration_seconds": 90,
+    "warning_visible": true,
+    "screenshot": "files/561/warning.png",
+    "console_errors": [],
+    "expected_text_match": false,
+    "expected_text_note": "expected_text='보안 경고' but rendered text contains '보안 정책에 의해 차단되었습니다' — spec phrasing mismatch (test-spec issue, not service issue). Warning IS rendered by chatgpt_sse template.",
+    "auth_state": "anonymous",
+    "render_path": "non-streaming inline warning (no SSE bypass)"
+  },
+  "notes": "Batch F-2 chatgpt2 duplicate verification. chatgpt already DONE; chatgpt2 shares chatgpt_sse template. Anonymous chatgpt.com session, no login required for warning to trigger. APF interception working at template level."
+}
