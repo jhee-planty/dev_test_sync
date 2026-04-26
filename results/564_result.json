@@ -1,0 +1,23 @@
+{
+  "id": "564",
+  "status": "done",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "meta.ai landing page reachable from KR (rendered Korean UI '무엇을 도와드릴까요?' with Meta AI input), but actual chat usage is region-restricted (KR not supported). User manually confirmed: '메타는 사용할 수 없음. 한국에서 사용 제한'. No prompt could be processed; region block enforced at usage layer (not landing).",
+    "service_name": "meta",
+    "started_at": "2026-04-27T08:46:30Z",
+    "completed_at": "2026-04-27T08:51:00Z",
+    "duration_seconds": 270,
+    "warning_visible": false,
+    "screenshot": "files/564/region_block.png",
+    "console_errors": [],
+    "failure_category": "INFRASTRUCTURE",
+    "auth_state": "anonymous",
+    "page_state": "landing_loaded_but_usage_blocked",
+    "url_observed": "meta.ai",
+    "previous_classification": "REGION_INACCESSIBLE — CONFIRMED (landing page is reachable now, but chat usage still KR-blocked)",
+    "test_progression": "page_load=OK, prompt_input_visible=OK, actual_usage=KR_BLOCKED",
+    "user_confirmation": "메타는 사용할 수 없음. 한국에서 사용 제한"
+  },
+  "notes": "Batch F-5 meta. Distinction from earlier classification: landing page now accessible (vs full-block), but chat functionality remains KR-restricted. APF testing not possible without VPN/region change. BLOCKED_NO_AI_UI (effective)."
+}
