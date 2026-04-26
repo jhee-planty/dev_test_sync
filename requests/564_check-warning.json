@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "meta",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://meta.ai",
+    "context": "Batch F-5: meta (Meta AI) baseline. Previously REGION_INACCESSIBLE (KR blocked). Re-check accessibility — chatglm precedent showed REGION classification can become outdated. If reachable: standard warning render check + capture protocol. If unreachable (region block landing page or VPN required): confirm REGION_INACCESSIBLE.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Open https://meta.ai",
+        "2. Check landing — region block message or chat UI?",
+        "3. If chat UI: F12 → Network → send prompt → capture",
+        "4. If region block: capture screenshot of block page",
+        "5. Report"
+      ]
+    }
+  },
+  "notes": "Batch F-5 meta baseline + REGION re-check (chatglm precedent).",
+  "id": "564",
+  "created": "2026-04-26T23:47:05Z",
+  "attachments": []
+}
