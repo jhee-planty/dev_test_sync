@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "poe",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://poe.com",
+    "context": "Batch F-6: poe re-check. Cycle 93 #558 result: ws_fallback_error TRIGGERED but warning text generic 'delivery failed' (not 보안 경고). Verifying current state — confirm whether ws_fallback_error path still triggers and whether template text injection is feasible. If FAIL same as #558: re-confirm BLOCK_ONLY-like state. If different: investigate diff.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Open https://poe.com (login likely required for chat)",
+        "2. F12 → Network → WS tab",
+        "3. Send prompt + capture ws frames + visible UI text",
+        "4. Note: previous #558 saw ws_fallback_error trigger but warning text was generic",
+        "5. Report whether actual warning text or generic delivery error"
+      ]
+    }
+  },
+  "notes": "Batch F-6 poe re-check (cycle 93 #558 was FAIL ws_fallback_error).",
+  "id": "565",
+  "created": "2026-04-26T23:55:56Z",
+  "attachments": []
+}
