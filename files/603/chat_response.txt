@@ -1,0 +1,22 @@
+=== POST /api/chat — NOT FIRED ===
+
+After sending PII prompt: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+
+Network panel (filter "chat", Fetch/XHR, Preserve log ON) showed:
+  1 / 7 total requests during the send/response window
+  Visible chat-related request: ONLY message.newChat?batch=1 (200 OK, 0.9 kB)
+
+NO /api/chat (Stage 2) request was issued by the client at any point during
+the observation window (~30 seconds).
+
+This is the critical behavioural difference vs #599/#602 runs:
+  - In #599/#602 the path was narrowed to '/api/chat', so newChat (Stage 1)
+    completed normally with the real upstream's chatId, and Stage 2 (/api/chat)
+    delivered the full PII analysis stream.
+  - In #603 the path is reverted to '/', so newChat (Stage 1) is intercepted
+    and returns the APF mistral_trpc_sse envelope. The client treats that as
+    a complete tRPC response (started→data→stopped) and DOES NOT proceed to
+    fire the Stage 2 /api/chat call.
+
+CONCLUSION: chat endpoint origin = "not_present" — Stage 2 was suppressed
+because Stage 1 returned a complete (synthetic) SSE termination.

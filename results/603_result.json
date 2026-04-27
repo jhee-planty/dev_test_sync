@@ -1,0 +1,62 @@
+{
+  "id": "603",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "INTERCEPT_RESTORED -- newChat 200 SSE (started/data/stopped), /api/chat NOT fired, UI blank (envelope payload shape mismatch)",
+    "service_name": "mistral",
+    "started_at": "2026-04-27T09:25:10Z",
+    "completed_at": "2026-04-27T09:32:25Z",
+    "duration_seconds": 435,
+    "warning_visible": false,
+    "screenshot": "files/603/chat_render_clean.png",
+    "console_errors": ["4 console (likely React Tooltip warnings + downstream effects of Stage 2 not firing)"],
+    "console_errors_count": 4,
+    "confidence": "high",
+    "auth_state": "guest",
+    "envelope_template_active": "mistral_trpc_sse (875B, path reverted to '/')",
+    "outcome": "PARTIAL_intercept_envelope_mismatch",
+    "newchat_intercepted": true,
+    "newchat_response_origin": "APF_envelope",
+    "newchat_response_status": "200",
+    "newchat_response_size_bytes": 900,
+    "newchat_response_protocol": "h2",
+    "newchat_response_content_type": "text/event-stream",
+    "newchat_response_event_pattern": "started/data/stopped 3-frame triplet (canonical APF SSE envelope)",
+    "newchat_response_body_path": "files/603/newchat_response.txt",
+    "chat_endpoint_fired": false,
+    "chat_endpoint_status": "not_fired",
+    "chat_response_origin": "not_present",
+    "chat_response_body_path": "files/603/chat_response.txt",
+    "rendered_text_in_chat_area": "(empty -- no user bubble, no AI bubble, only Mistral logo + Ask-anything input)",
+    "warning_keywords_matched": [],
+    "error_6002_present": false,
+    "real_pii_analysis_present": false,
+    "comparison_to_602": "Intercept FULLY RETURNED after path revert: newChat now serves the 0.9kB synthetic SSE envelope (started/data/stopped) and the client suppresses Stage 2 /api/chat. Opposite of #602 which let real upstream complete and stream PII analysis (25.3KB).",
+    "implication_for_engine_hypothesis": "CONFIRMS the path-narrowing to '/api/chat' (Stage 2, no PII text) was the SOLE bypass cause for #599/#602. Root path '/' restores intercept on Stage 1 (newChat) where prompt PII is detectable. Engine intercept layer is HEALTHY. QUIC/cert/intercept-rule-deletion theories all REFUTED. Remaining work: envelope payload shape inside data frame must match what Le Chat client subscribes to for streaming text rendering.",
+    "diagnostic_for_dev_team": "Cycle 94 R-23 ROOT CAUSE CONFIRMED. The bypass observed in #599 and #602 was caused entirely by APF path narrowing to '/api/chat' which carries no PII text (Stage 2 only delivers stream; prompt is in Stage 1 newChat per #594 ground truth). With path reverted to '/', APF intercepts newChat correctly: 200 OK + text/event-stream + 0.9kB synthetic envelope (started/data/stopped 3-frame triplet) observed in DevTools EventStream. Critically, the Le Chat client RESPECTS the synthetic termination and does NOT fire Stage 2 /api/chat at all -- so user gets no PII analysis even though our payload doesn't render a warning. This is acceptable failure mode (PII protected, just no visible warning text). Next iteration: enrich tRPC SSE data frame with proper SuperJSON-wrapped message structure containing chatId / messageId / contentChunks[0].text per #597 ground truth, so the warning text actually renders in the chat bubble. Recommend mistral_trpc_sse_v2 (path stays '/', body shape upgraded). Critical hypothesis ratification: keep PATH at '/' for all future mistral templates -- never narrow to '/api/chat'.",
+    "screenshots_inventory": [
+      {"path": "files/603/chat_render_clean.png", "description": "Final chat UI state with DevTools closed -- empty (no bubble, no warning, no error, no PII analysis)"},
+      {"path": "files/603/chat_render.png", "description": "Chat UI mid-test with DevTools open showing newChat response Headers (Content-Type: text/event-stream, 200 OK)"},
+      {"path": "files/603/network_overview.png", "description": "Network panel -- only message.newChat?batch=1 (200, h2, 0.9kB, 38ms); EventStream shows 3 frames started/data/stopped"},
+      {"path": "files/603/newchat_response.txt", "description": "Verbatim newChat response body -- the APF-served 0.9kB SSE envelope (started/data/stopped triplet)"},
+      {"path": "files/603/chat_response.txt", "description": "Diagnostic note: /api/chat (Stage 2) was NOT fired this run -- client respected synthetic termination from newChat"}
+    ],
+    "next_iteration_recommendation": "Build mistral_trpc_sse_v2: path STAYS '/', body upgraded to include SuperJSON-wrapped message with chatId (extracted from request body) + synthetic messageId + contentChunks[0].text containing warning text. Reference #597 captured 29-field message structure for the data frame payload. Goal: render warning text in chat bubble while preserving the intercept benefits demonstrated here.",
+    "obstacles_encountered": [
+      "DevTools 'Response' tab said 'Nothing to preview' for SSE -- had to use EventStream tab to confirm 3-frame triplet",
+      "Data frame inner JSON was truncated in DevTools list view; payload identifiable as tRPC data.json wrapper but inner data.j... not fully extractable without expanding row",
+      "Initial page load showed stale rendered PII response from prior #602 run (6:01pm timestamp); navigated to fresh /chat to start clean test"
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 62,
+      "duration_ms": 437083,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "Yes (437s > 300s soft); within 8min hard cap"
+    }
+  },
+  "notes": "Cycle 94 R-23 mistral path REVERT verify: **INTERCEPT_RESTORED**. Path narrowing from '/' to '/api/chat' was the SOLE cause of #599/#602 bypass (Stage 2 has no PII text per #594 ground truth). Path reverted to '/' restored Stage 1 newChat intercept: 200 OK, text/event-stream, 0.9kB synthetic SSE envelope (started/data/stopped triplet). Critically Stage 2 /api/chat NOT fired at all -- client respected termination -- so PII protected even though warning text not rendered. UI blank (no warning, no Error 6002, no PII analysis). QUIC/cert/intercept-rule-deletion theories all REFUTED. Engine intercept layer HEALTHY. Next: mistral_trpc_sse_v2 with proper SuperJSON message body (per #597) inside data frame so warning renders. CRITICAL: keep PATH at '/' for all future mistral templates. 5 artifacts in files/603/. Processed via Subagent Dispatch (7m17s, 62 tool uses)."
+}
