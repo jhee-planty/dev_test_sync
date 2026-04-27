@@ -261,6 +261,9 @@ When a session reaches approximately 50-100 conversation turns or Cowork notices
 degraded adherence to skill procedures, trigger `/compact` proactively.
 Do NOT wait for the user to request it. Do NOT ask "compact 할까요?" — just do it.
 
+**Test PC 32MB API limit (자율 모드)**: `/compact` 자율 트리거 불가. Subagent dispatch 로
+누적 차단 → see `test-pc-worker/SKILL.md §Subagent Dispatch` (canonical).
+
 ### 11-2. State Snapshot Before Compact
 
 Before compacting, save the current work state to a file so it survives

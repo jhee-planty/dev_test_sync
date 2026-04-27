@@ -1,0 +1,17 @@
+{
+  "_comment": "Skeleton template for F-A failure mode (subagent timeout). Copy this file to results/{id}_result.json with field substitution. Used when in-flight subagent exceeds 5min soft / 10min hard timeout without returning a verdict. See test-pc-worker/SKILL.md §Subagent Dispatch for failure mode handling.",
+  "id": "{id}",
+  "status": "error",
+  "result": {
+    "overall_status": "TIMEOUT",
+    "status_detail": "Subagent did not return verdict within timeout budget",
+    "service_name": "{service_name}",
+    "started_at": "{ISO8601_started_at}",
+    "completed_at": "{ISO8601_completed_at}",
+    "duration_seconds": 0,
+    "warning_visible": null,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "F-A subagent timeout (5min soft / 10min hard). Main session pushed skeleton TIMEOUT verdict to unblock pipeline. Manual re-verification required if accuracy critical."
+}

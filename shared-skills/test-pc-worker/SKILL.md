@@ -32,6 +32,102 @@ File I/O 는 `mcp__windows-mcp__FileSystem` (read / write / list / create). Chro
 
 ---
 
+## Subagent Dispatch (32MB Protection — 2026-04-27 discussion-review consensus)
+
+> **Canonical** for context-size protection on Test PC. `/compact` 자율 트리거가 공식·비공식
+> 모두 불가능 (claude-code-guide 확인) → 누적 차단이 유일한 방어선. Subagent 컨텍스트는
+> main session 과 분리되며 독립 32MB 한도를 가짐 + 종료 시 중간 결과 완전 폐기.
+
+### 원칙 — **무엇을 main 에서 호출 / 무엇을 subagent 에 위임**
+
+| Tool | 호출 위치 | 이유 |
+|------|---------|------|
+| `mcp__windows-mcp__Screenshot` | **반드시 subagent 안** | base64 PNG 1-2MB / 장. 누적 시 32MB 초과 주범 |
+| `mcp__windows-mcp__Snapshot` | **반드시 subagent 안** | accessibility tree, 복잡 SPA 에서 ~1MB |
+| `mcp__windows-mcp__Scrape` | main 호출 OK | DOM text 수십~수백 KB. 일반적 안전 |
+| `mcp__windows-mcp__Click/Type/Wait/Scroll` | main 호출 OK | status text ~100 byte |
+| `mcp__windows-mcp__PowerShell` (결정론 ps1) | main 호출 OK | stdout 작음 (수 KB) |
+| `mcp__windows-mcp__FileSystem` read | 5MB 이하만 main, 초과 예상 시 subagent | 파일 크기 추정 후 분기 |
+
+### 추가 금지 (side-channel 차단)
+
+- ❌ **Main session 이 screenshot/PNG 파일 (`.png`/`.jpg`) 을 `Read` tool 로 읽는 것 금지**.
+  결과 검증이 필요하면 → 새 subagent spawn 으로 위임.
+- ❌ Main 에서 Screenshot 호출 → "한 번만이니 괜찮다" 같은 예외 금지. Always wrap.
+
+### Subagent 호출 패턴
+
+```
+Agent({
+  description: "Verify warning visible — {service}",
+  subagent_type: "general-purpose",
+  prompt: """
+    Check if {service} 차단 경고가 화면에 표시되는지 검증.
+    1. mcp__windows-mcp__Screenshot 으로 Chrome 캡처
+    2. mcp__windows-mcp__Snapshot 으로 accessibility tree (필요시)
+    3. screenshot 을 results/files/{id}/step1.png 로 save
+    4. 검증 기준: warning_visible (DOM 에 경고 텍스트 + 시각적 노출)
+    5. internal_timeout_minutes: 5 (이 시간 안에 결과 못 내면 TIMEOUT verdict 반환)
+    6. 다음 schema 로 정확히 반환:
+       WINDOWS_MCP_VERDICT
+       overall_status: SUCCESS|FAIL|PARTIAL|BLOCKED|TIMEOUT
+       warning_visible: true|false
+       status_detail: <≤80 chars>
+       screenshot_file_path: results/files/{id}/step1.png
+       console_errors_count: <int>
+       confidence: high|medium|low
+       notes: <≤200 chars optional>
+       END_VERDICT
+  """
+})
+```
+
+### 반환 schema (verbatim — main 이 deterministic parse)
+
+```
+WINDOWS_MCP_VERDICT
+overall_status: SUCCESS|FAIL|PARTIAL|BLOCKED|TIMEOUT
+warning_visible: true|false
+status_detail: <≤80 chars one-line>
+screenshot_file_path: results/files/{id}/stepN.png
+console_errors_count: <int>
+confidence: high|medium|low
+notes: <≤200 chars optional>
+END_VERDICT
+```
+
+총 약 500 byte. main session 누적 부담 무시 가능.
+
+### Subagent 실패 처리 (6 modes)
+
+| Mode | 조건 | Main fallback |
+|------|------|--------------|
+| F-A | Subagent 응답 없음 (5min soft / 10min hard timeout) | `runtime/skeleton-timeout-result.json` 사용 → `overall_status=TIMEOUT` 결과 push |
+| F-B | 텍스트 반환 but `WINDOWS_MCP_VERDICT...END_VERDICT` schema 깨짐 | 1회 재시도 (prompt 에 "STRICT FORMAT" 강조). 2번째도 실패 → F-D 경로 |
+| F-C | Schema parse OK but 필수 필드 누락 (overall_status 등) | 누락 필드 한정 supplementary subagent |
+| F-D | 동일 task 가 ≥3 회 실패 | **ESCALATE** — `result.json` 에 `error_INFRASTRUCTURE` + notes "subagent unstable" + ScheduleWakeup polling 중지 |
+| F-E | Agent tool 자체 error (rate limit / auth) | 1회 retry → 지속되면 F-D |
+| F-F | Verdict 반환 정상이지만 factually 의심 (silent drift) | **OPT-IN spot-check** (default OFF) — 매 5번째 verification 마다 parallel 검증 subagent. 두 verdict 불일치 시 escalate |
+
+**모든 retry hard cap = 2 (총 3 attempts).** F-D = 자동 복구 불가, 사용자 attention 필요.
+
+### Hard Rule 6/7 호환
+
+- **HR6 (M0 Empirical Comparison)**: Subagent 텍스트 verdict 가 metric_score 입력으로 그대로 사용 가능. 시각 비교 (예: before/after warning) 가 필요하면 **단일 비교-subagent** 가 두 screenshot 모두 찍고 비교 결과만 텍스트 반환. Main 이 두 PNG 동시 보유 금지.
+- **HR7 (Idle Gate)**: **In-flight subagent 가 있으면 idle 선언 금지**. Subagent return 까지 대기 후 work-selection 재실행.
+
+### ScheduleWakeup 통합
+
+- **Agent 호출은 synchronous** — Agent tool 은 subagent return 까지 main turn 을 block.
+- **ScheduleWakeup 은 Agent 반환 후에만 재예약**. Pending Agent call 있는 상태에서 wakeup 예약 금지 (논리적 race 방지).
+- Subagent 프롬프트 안에 `internal_timeout_minutes: 5` soft budget 명시 (Agent tool 자체 timeout 은 10min hard).
+
+### Lessons (append-on-discovery)
+
+운영 중 발견되는 새 failure mode (F-G, F-H...) 는 `references/lessons.md §Subagent failure modes` 섹션에 append. catalog 가 exhaustive 하다고 가정하지 않음.
+
+---
+
 ## 3 기본 작업 흐름
 
 ### A. Scan new requests

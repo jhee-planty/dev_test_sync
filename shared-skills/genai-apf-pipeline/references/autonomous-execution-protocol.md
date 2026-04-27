@@ -12,7 +12,7 @@
 4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
 5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다.
 6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback.
-7. **Idle Gate** (2026-04-27 discussion-review consensus) — **ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행**. service_queue 의 autonomous-doable next_action (defer: 시작 안 함) 1개라도 있으면 long-idle 금지 → 즉시 해당 next_action 실행. Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수. **Premature completion 차단**: cycle summary 작성 ≠ 작업 종료. 목표 (37/37 DONE) 미달성 시 다음 push.
+7. **Idle Gate** (2026-04-27 discussion-review consensus) — **ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행**. service_queue 의 autonomous-doable next_action (defer: 시작 안 함) 1개라도 있으면 long-idle 금지 → 즉시 해당 next_action 실행. Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수. **Premature completion 차단**: cycle summary 작성 ≠ 작업 종료. 목표 (37/37 DONE) 미달성 시 다음 push. **Subagent in-flight 이면 idle 선언 금지** (subagent return 까지 대기 — 2026-04-27 Subagent Dispatch consensus 보강).
 
 ### Mode Selection Tree
 
@@ -318,6 +318,19 @@ Polling 중 Test PC 상태 추론:
 - **Termination 판단 금지**
 
 **원천 Canonical**: `~/.claude/memory/user-preferences.md` Polling Policy §추가 행동 규칙 ("test PC 상태를 단정하지 않는다").
+
+#### Subagent Dispatch Boundary (32MB Protection — 2026-04-27 discussion-review)
+
+Test PC 의 32MB API request 한도 보호. `/compact` 자율 트리거 불가 (claude-code-guide
+확인) → 누적 차단이 유일 방어선. **Canonical** rule body: `test-pc-worker/SKILL.md §Subagent Dispatch`.
+
+핵심 규칙 (요약):
+- `mcp__windows-mcp__Screenshot` / `Snapshot` → **반드시 subagent 안에서 호출**. Main session 직접 호출 금지.
+- **Main session 의 PNG/`.jpg` `Read` tool 호출 금지** — 재검증 필요 시 새 subagent spawn.
+- **Agent 호출은 synchronous** — ScheduleWakeup 은 Agent 반환 후에만 재예약 (pending Agent call 있는 상태에서 wakeup 예약 금지).
+- HR7 (Idle Gate) 보강: in-flight subagent 있으면 idle 선언 금지.
+
+세부 (반환 schema, 6 failure modes, retry cap, ScheduleWakeup 통합) → `test-pc-worker/SKILL.md §Subagent Dispatch`.
 
 #### 정상 polling 상황 (Q1 사용자 directive, 15차 verbatim)
 

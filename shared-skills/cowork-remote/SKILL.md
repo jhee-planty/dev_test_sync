@@ -113,6 +113,8 @@ Result JSON 의 `status` 와 `result` 필드를 읽고 다음 분기:
 
 **summary** 한 줄 (60자 이내) 필수. 예: "gemini warning visible + text match"
 
+**Dev-side context-size 보호** (2026-04-27 discussion-review): Result JSON 의 `screenshot` 필드 (예: `files/{id}/step1.png`) 가 가리키는 PNG 파일을 **Dev 세션이 직접 `Read` 하지 않는다**. 재검증 필요 시 새 `check-*` request 를 push (또는 Test PC 측에서 새 subagent spawn). → Canonical: `test-pc-worker/SKILL.md §Subagent Dispatch`.
+
 ---
 
 ## Rate Limit Gate
