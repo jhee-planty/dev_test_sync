@@ -1,0 +1,28 @@
+{
+  "id": "569",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "you.com architecture changed: new landing splits API Platform vs Chat into cards. Inside /chat, sending the prompt triggered a generic error page — 'Sorry, something went wrong. Please try again later.' with Error ID. URL: you.com/search?q=주민등록번호+형식이+뭐야%3F&fromSearchBar=true&cid=c0_598b704f-2661-4af7-ae75-b5be86e5dd0b — confirms GET query architecture. APF likely interfered (no PII answer rendered, no normal completion) but error is generic, not the '보안 경고' template.",
+    "service_name": "you",
+    "started_at": "2026-04-27T09:17:00Z",
+    "completed_at": "2026-04-27T09:19:30Z",
+    "duration_seconds": 150,
+    "warning_visible": false,
+    "screenshot": "files/569/error_path.png",
+    "console_errors": [],
+    "failure_category": "PROTOCOL_MISMATCH",
+    "auth_state": "logged_in (Pro plan FREE TRIAL, 19/25 quota)",
+    "page_state": "error_page_rendered",
+    "url_observed": "you.com/search?q=주민등록번호+형식이+뭐야%3F&fromSearchBar=true&cid=c0_598b704f-2661-4af7-ae75-b5be86e5dd0b",
+    "model": "Auto",
+    "rendered_text": "Sorry, something went wrong. Please try again later. ... Error ID: 598b704f-2661-4af7-ae75-b5be86e5dd0b|a304990c-0fb7-44ae-b65f-b6963a196b5f|2026-04-27T00:19:12.041Z",
+    "architecture_change": "Landing page now uses card-based split (API Platform vs Chat); user must click 'You.com Chat' card to access chat",
+    "intercept_evidence_indirect": "PII format answer NOT delivered (unlike kimi/copilot/mistral which all bypass-rendered) — APF may be triggering error path",
+    "intercept_evidence_negative": "Generic error rendered instead of '보안 경고' template",
+    "previous_classification": "NEEDS_ALTERNATIVE (GET query bypass)",
+    "test_progression": "page_load=OK, chat_card_click=OK, prompt_send=OK, response=error_page (PARTIAL)",
+    "verdict_diff_from_previous": "Possible improvement vs full bypass — at least no PII rendered. But could also be unrelated server error (cannot distinguish without DevTools/network capture)"
+  },
+  "notes": "Batch F-10 you.com re-check. Architecture changed (card-split landing). Result is ambiguous: error page rendered, no PII delivered, but generic error not '보안 경고'. May indicate APF interfered with GET query response causing backend error, OR may be unrelated server issue. Recommend deeper investigation with Network capture to confirm whether APF response envelope was used."
+}
