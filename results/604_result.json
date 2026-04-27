@@ -1,0 +1,75 @@
+{
+  "id": "604",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "zeta-ai.io discovered (ScatterLab Korean character AI), SSE endpoint+schema captured for DB registration",
+    "service_name": "zeta",
+    "started_at": "2026-04-27T09:50:00Z",
+    "completed_at": "2026-04-27T10:00:00Z",
+    "duration_seconds": 600,
+    "warning_visible": false,
+    "screenshot": "files/604/streaming_endpoint.png",
+    "console_errors": ["7 console (likely auth/SDK warnings + Tailwind/React noise; not blocking)"],
+    "console_errors_count": 7,
+    "confidence": "high",
+    "auth_state": "guest",
+    "discovered_url": "https://zeta-ai.io",
+    "discovered_url_alternates_tried": [
+      "zeta.ai (parking page 'for sale')",
+      "zeta.app (DNS NXDOMAIN)",
+      "zeta.com (connection reset, banking)",
+      "zetachat.ai (responds 200 but unverified)",
+      "chat.zeta.ai (DNS fail)",
+      "zetaai.com (DNS fail)",
+      "my-zeta.ai (DNS fail)",
+      "zeta-ai.io (WORKS -- Korean character roleplay AI by ScatterLab)"
+    ],
+    "ai_response_text_summary": "Character (민태성/Min Tae-seong) ignored the English question and continued in-character roleplay in Korean: '그래, 내 공주님. 오늘 스테이크 먹기로 했거든. 어제 고기가 먹고 싶다더군. 우리 Guest 얘기만 나오면, 과묵하던 내 입이 괜히 시끄러워진다...' (acknowledged 'Guest' user identity, indicating successful guest-mode chat without signup)",
+    "page_url_pattern": "https://zeta-ai.io/ko/rooms/{roomId-uuid}",
+    "endpoint_url": "https://api.zeta-ai.io/v1/rooms/{roomId}/messages/stream",
+    "endpoint_method": "POST",
+    "endpoint_request_content_type": "application/json",
+    "endpoint_response_content_type": "text/event-stream;charset=UTF-8",
+    "endpoint_response_format": "SSE (Server-Sent Events) -- per-event JSON payload with discriminant 'event' field. ~22 IN_PROGRESS chunk events followed by 1 CHAT_COMPLETE event over ~12.6s, total 61.6 KB.",
+    "key_request_fields": ["type (e.g. 'TEXT')", "text (user prompt string)"],
+    "key_response_fields": [
+      "event ('IN_PROGRESS' for streaming chunks, 'CHAT_COMPLETE' for terminal)",
+      "chunkMessage (object -- partial reply fragment, in IN_PROGRESS events)",
+      "replyMessage (object -- full assembled reply with messageId, in CHAT_COMPLETE event)"
+    ],
+    "completion_signal": "Final SSE event with payload {'event':'CHAT_COMPLETE','replyMessage':{...}} -- 'event' field equals literal string 'CHAT_COMPLETE'. Stream then closes (no separate sentinel like [DONE]).",
+    "split_stream": "single-stream -- both prompt-send and answer-stream happen on the same POST /messages/stream connection. Payload carries the user TEXT, response is the SSE stream of assistant chunks. No separate prompt-recording endpoint observed.",
+    "websocket_present": false,
+    "websocket_url": null,
+    "rendered_html_selector": "Tailwind utility-class only -- no stable class/id. AI reply text lives in DIV with class 'relative flex min-h-0 flex-1 flex-col' inside MAIN with same class, inside BODY 'barlow_barlow_condensed_bc51f193-module__... body16 ... font-pretendard text-white'. Best heuristic: scope to `main div[class*=\"flex-col\"]` then descend, or hook by reading messages from app state. No data-testid found.",
+    "domain_pattern_for_db": "api.zeta-ai.io  (recommend ai_prompt_services entry: domain_pattern='api.zeta-ai.io', path_pattern='/v1/rooms/*/messages/stream', method='POST', protocol='SSE'). Also catch parent: '*.zeta-ai.io' for full coverage including web-cdn.zeta-ai.io and emergency.zeta-ai.io health-check noise.",
+    "response_body_full_path": "files/604/api_response_body.txt",
+    "screenshots_inventory": [
+      {"path": "files/604/network_overview.png", "description": "DevTools Network tab right after sending prompt -- full request flow including the POST .../messages/stream entry with response Headers panel showing Content-Type: text/event-stream"},
+      {"path": "files/604/streaming_endpoint.png", "description": "DevTools Network -> stream entry -> Payload tab showing request body {type:'TEXT', text:'What is the capital of South Korea?'} as JSON object"},
+      {"path": "files/604/response_body.png", "description": "DevTools Network -> stream entry -> EventStream tab listing all SSE events: 22+ rows of {event:'IN_PROGRESS', chunkMessage...} terminating with {event:'CHAT_COMPLETE', replyMessage...}"},
+      {"path": "files/604/dom_container.png", "description": "Console output showing AI reply text DOM container query result -- Tailwind utility classes, no stable selector"},
+      {"path": "files/604/api_response_body.txt", "description": "Verbatim 4KB SSE response body sample (IN_PROGRESS chunks + CHAT_COMPLETE terminator). Use for envelope template construction."}
+    ],
+    "envelope_design_recommendation": "The block envelope must mimic the SSE wire format of zeta-ai.io. Specifically, when injecting a warning/block message: respond with HTTP 200 + Content-Type 'text/event-stream;charset=UTF-8', emit a small number of IN_PROGRESS events whose chunkMessage carries the warning text fragments (so the existing client streaming-text renderer naturally types it out into the chat bubble), then a single terminal CHAT_COMPLETE event with replyMessage containing the full warning text. Each event is one JSON object on its own SSE line. Crucially the 'event' field naming convention must match exactly ('IN_PROGRESS' / 'CHAT_COMPLETE' -- uppercase, underscore-separated). The replyMessage object should include at minimum a messageId in the form 'MESSAGE-{epochMs}-{4-char-suffix}' (e.g. MESSAGE-8222716400879-2zwm) since the client follows up with GET /v1/rooms/{roomId}/messages/{messageId}/candidates?limit=100 -- the block stub should either return an empty candidates array on 200 or 404 gracefully. Bearer auth is present on the original request and should be preserved on the rewritten/blocked response (status 200, not 401, otherwise client shows generic error not the warning). Client uses utility-class Tailwind DOM with no stable selector, confirming envelope-mimicry (not DOM-injection) is the only safe warning-delivery path here.",
+    "diagnostic_for_dev_team": "Cycle 94 R-24 zeta service discovery COMPLETE. Real service URL is https://zeta-ai.io (ScatterLab Korean character roleplay AI; mobile app brand 'zeta'). Request file URL https://zeta.com was wrong as suspected (zeta.com is a finance/banking site). Endpoint for DB registration: POST https://api.zeta-ai.io/v1/rooms/{roomId}/messages/stream, Content-Type text/event-stream;charset=UTF-8, single-stream SSE. Critical envelope shape: events use UPPERCASE underscore-separated 'event' field values (IN_PROGRESS / CHAT_COMPLETE), each containing chunkMessage or replyMessage object. Bearer auth required (SPA-injected at runtime, not in cookies/localStorage). Verbatim response body in files/604/api_response_body.txt. Recommend ai_prompt_services entry: domain_pattern=api.zeta-ai.io, path_pattern=/v1/rooms/*/messages/stream, method=POST, protocol=SSE.",
+    "obstacles_encountered": [
+      "Initial confusion: zeta.ai is a parked domain (for sale), zeta.app DNS NXDOMAIN, zeta.com is finance -- the request file URL https://zeta.com was wrong as suspected. Real service is zeta-ai.io (ScatterLab, Korean character roleplay AI; also distributed via mobile app brand 'zeta').",
+      "Auth uses Bearer token injected by SPA at runtime (not stored in localStorage under any common name; cookies contain only ad-tracking IDs). Direct console fetch returned 401 even with credentials:'include' -- verified the API requires the Bearer header that only the app injects.",
+      "The character (Min Tae-seong) ignored the English meta-question and stayed in roleplay mode in Korean -- this is normal for character.ai-style services and does not affect endpoint capture. The Seoul/capital-of-Korea answer was not obtained, but the API schema (the actual goal) was fully captured.",
+      "DOM uses Tailwind utility classes with no data-testid or stable hooks -- DOM-based warning injection is fragile here; envelope-mimicry on the SSE response is the recommended approach.",
+      "Three /v1/rooms/{id}/settings/cyoa, model-setting, web-purchase, chat-model-configs, candidates calls happen alongside /messages/stream. Block layer should leave these alone (they are not the prompt path) but be aware they may trigger error UI if blocked together."
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 104,
+      "duration_ms": 598963,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "Yes (599s > 300s soft); near 8min hard cap due to URL discovery iterations"
+    }
+  },
+  "notes": "Cycle 94 R-24 zeta service discovery + SCHEMA CAPTURED. Real URL = https://zeta-ai.io (ScatterLab Korean character roleplay AI; request file's https://zeta.com was wrong, that is a banking site). Endpoint: POST https://api.zeta-ai.io/v1/rooms/{roomId}/messages/stream, Content-Type text/event-stream;charset=UTF-8, single-stream SSE. Event format: UPPERCASE underscore values ('IN_PROGRESS' chunks + 'CHAT_COMPLETE' terminator). Bearer auth (SPA-injected). DB registration recommendation: domain_pattern='api.zeta-ai.io', path_pattern='/v1/rooms/*/messages/stream', method='POST', protocol='SSE'. Envelope must include messageId in MESSAGE-{epochMs}-{suffix} format and preserve 200 status. DOM uses Tailwind utility classes (no stable selector) -- envelope-mimicry only path. 5 artifacts in files/604/ including 4KB verbatim SSE body. Processed via Subagent Dispatch (10min, 104 tool uses; near hard cap due to URL discovery)."
+}

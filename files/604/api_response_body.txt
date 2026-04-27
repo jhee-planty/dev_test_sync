@@ -1,0 +1,90 @@
+# zeta-ai.io chat API streaming endpoint response body
+# Captured 2026-04-27 R-24 (Cycle 94)
+# Endpoint: POST https://api.zeta-ai.io/v1/rooms/{roomId}/messages/stream
+# Response Content-Type: text/event-stream;charset=UTF-8
+# HTTP/2 200 OK
+# Format: SSE (Server-Sent Events) — each event is a single JSON line, no `data:` prefix shown in DevTools EventStream tab.
+# In DevTools EventStream view, Type column shows "message" and Data column shows the JSON payload directly.
+# This implies the wire format is either:
+#   (a) standard SSE with `data: {...json...}\n\n` lines (DevTools strips the `data:` prefix and shows only payload), OR
+#   (b) NDJSON pretending to be event-stream (each line is a JSON object).
+# Given Content-Type is text/event-stream, (a) is most likely.
+
+## Event sequence (observed for prompt "What is the capital of South Korea?", 22+ chunks over ~12.6s, total 61.6 KB)
+
+# Event #1..#N (streaming chunks):
+data: {"event":"IN_PROGRESS","chunkMessage":{ ... partial reply text fragment ... }}
+
+# Last event (completion):
+data: {"event":"CHAT_COMPLETE","replyMessage":{ ... full assembled message object with id, role, text, timestamp, etc ... }}
+
+## Verbatim event lines visible in DevTools EventStream tab (truncated by column width):
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"IN_PROGRESS","chunkMess...
+{"event":"CHAT_COMPLETE","replyMess...
+
+## Inferred chunk schema (typical SSE chat pattern; field name "chunkMessage" suggests a nested object containing the delta text):
+{
+  "event": "IN_PROGRESS",
+  "chunkMessage": {
+    "text": "<delta string fragment>",
+    // possibly: "id", "messageId", "index", "role", etc.
+  }
+}
+
+## Inferred completion schema:
+{
+  "event": "CHAT_COMPLETE",
+  "replyMessage": {
+    "id": "MESSAGE-XXXXXXXXXXXX-XXXX",   // matches the candidates?limit=100 URL pattern observed: /messages/MESSAGE-8222716400879-2zwm/candidates
+    "text": "<full assembled reply>",
+    "role": "assistant" | "character",
+    // additional metadata
+  }
+}
+
+## Completion signal
+The terminal event is `{"event":"CHAT_COMPLETE", ...}` carrying `replyMessage`. Stream then closes (no further data).
+The `event` field acts as the discriminant. Possible additional event types not observed in this benign run:
+  - "ERROR" (likely, for failures)
+  - "BLOCKED" / "FILTERED" (possible content moderation)
+
+## Request payload (verified from DevTools Payload tab)
+POST https://api.zeta-ai.io/v1/rooms/{roomId}/messages/stream
+Content-Type: application/json
+Body: {"type":"TEXT","text":"What is the capital of South Korea?"}
+
+## Auth
+Bearer token (likely Authorization header, observed by 401 UNAUTHORIZED when token-less fetch is replayed
+even with credentials:'include'). Token is injected by SPA at runtime (not visible in localStorage under
+common names; possibly stored in mmkv-prefixed keys or held only in memory).
+Guest sessions are auto-issued — no signup wall encountered (chat worked immediately on first character open).
+
+## Response Headers (verified)
+HTTP/2 200
+content-type: text/event-stream;charset=UTF-8
+access-control-allow-credentials: true
+access-control-allow-origin: https://zeta-ai.io
+access-control-expose-headers: *
+referrer-policy: strict-origin-when-cross-origin
+remote-address: 43.202.91.140:443  (AWS ap-northeast-2 / Korea)
+date: Mon, 27 Apr 2026 09:53:10 GMT
