@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "notion",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://www.notion.so",
+    "context": "Cycle 94 R-12: notion_ndjson v3 verify — single tool-call NDJSON envelope (toolName=compose_response, state=applied, result.output=warning text + result.headerLabel=보안 경고). New schema based on #590 benign capture (tool-call agent architecture). Hypothesis: client recognizes single terminal tool-call as final answer, renders warning text in chat UI.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 Network",
+        "2. Notion AI chat — send prompt",
+        "3. Watch /api/v3/runInferenceTranscript response",
+        "4. UI: warning text rendering? Or silent_hang like #570?",
+        "5. Report"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-12 notion_ndjson v3 verify (tool-call envelope).",
+  "id": "591",
+  "created": "2026-04-27T03:25:51Z",
+  "attachments": []
+}
