@@ -1,0 +1,25 @@
+16:{"json":{"disclaimers":[]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"replace","path":"/","value":{"role":"assistant","content":"","contentChunks":null,"turn":1,"createdAt":"2026-04-27T07:35:51.618Z","agentId":null,"agentsApiAgentId":null,"chatId":"23c1712a-04e6-48f1-91fa-a04bf59fc6a8","createdById":null,"files":[],"id":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","isAcceleratedAnswer":false,"moderationCategory":null,"reaction":"neutral","references":null,"memories":null,"followups":[],"status":"active","generationStatus":"in-progress","parentId":"bec6ddfb-e0c1-4ee4-a594-fd142ee3f8c7","parentVersion":0,"version":0,"nextVersion":null,"prevVersion":null,"versionCount":1,"visibility":"private","model":null,"quotedContent":null,"workflowExecution":null}}]},"meta":{"values":{"patches.0.value.createdAt":["Date"]}}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"replace","path":"/contentChunks","value":[{"type":"text","text":"The","_context":null}]}]},"meta":{"values":{"patches.0.value.0._context":["undefined"]}}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" largest"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" planet in"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" our solar system is"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" **Jupiter**."}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" It’s"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" a"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" gas"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" giant,"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" famous"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" for its"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" Great"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" Red"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" Spot and many"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" mo"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"ons. Would you"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" like to learn"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" more about Jupiter"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" or its fascinating"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" features?"}]}}
+15:{"json":{"type":"message","messageId":"f4d9ffc9-2827-4f2b-a80d-9e912a96766d","messageVersion":0,"patches":[{"op":"replace","path":"/generationStatus","value":"success"}]}}
+8:null
+15:{"json":{"type":"message","messageId":"bec6ddfb-e0c1-4ee4-a594-fd142ee3f8c7","messageVersion":0,"patches":[{"op":"replace","path":"/moderationCategory","value":"safe"}]}}
