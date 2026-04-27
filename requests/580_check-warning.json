@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.openai.com",
+    "context": "Cycle 94 R-1: chatgpt regression test — DONE service. Verify that 2026-04-27 10:58 deploy (REQUEST_BODY substitution token addition) didn't break existing chatgpt_sse template behavior. Backward-compatible expected (no template change, only engine extension).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 Network",
+        "2. Send prompt",
+        "3. Verify warning '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다' renders (same as #561)",
+        "4. Report"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-1 chatgpt regression check (post-engine-change verify).",
+  "id": "580",
+  "created": "2026-04-27T02:02:09Z",
+  "attachments": []
+}
