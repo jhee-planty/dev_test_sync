@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai",
+    "context": "Cycle 94 R-22: mistral re-verify post-QUIC-disable confirmation. Test PC #601 confirmed Chrome QUIC=Disabled for ENTIRE prior session (not just newly disabled). Implications: #599 mistral_jsonpatch_v3 FAIL/bypass diagnosis was WRONG to attribute to H3 — actual root cause unknown. Current template state: rolled back to mistral_ndjson_v2 (429B, flat {type:message, message:{}} wrapper, Stage-2-only on /api/chat). This re-test isolates: if #596-style Error 6002 fallback returns → APF intercept healthy + parser-only issue. If full bypass like #599 → some OTHER bypass mechanism active. Critical empirical data for engine diagnosis.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Open chat.mistral.ai (guest mode OK)",
+        "3. Send the PII prompt",
+        "4. CRITICAL: capture Network panel showing /api/chat request — note the Protocol column (must be h2, not h3)",
+        "5. Check Response: does it look like our APF envelope (16:/15:/8: NDJSON pattern with our warning) OR a real Mistral upstream response (with full PII analysis)?",
+        "6. SUCCESS criteria: chat shows our warning text (improbable since flat wrapper still wrong)",
+        "7. Most likely outcome A — Error 6002 returns: APF intercept WORKING, just template wrapper still broken (matches #596 pattern). Confirms QUIC was red herring, focus on parser.",
+        "8. Outcome B — Full PII bypass: APF intercept STILL not working, despite QUIC disabled. Different bypass mechanism (cert? content-type filter? something else). Critical for engine debug.",
+        "9. Capture etap-side: console error count, /api/chat response headers count, full /api/chat response body (first 500B)"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-22 mistral re-verify post-QUIC-confirmed-disable. Empirical isolation of #599 bypass cause.",
+  "id": "602",
+  "created": "2026-04-27T08:58:55Z",
+  "attachments": []
+}
