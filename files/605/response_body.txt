@@ -1,0 +1,73 @@
+APF #605 (Cycle 94 R-25) — zeta /v1/rooms/.../messages/stream response capture
+================================================================================
+
+REQUEST
+- URL:  POST https://api.zeta-ai.io/v1/rooms/fb92e0e1-b3fe-4acd-b6fa-eeae4c46407c/messages/stream
+- Method: POST
+- :authority: api.zeta-ai.io
+
+RESPONSE — General
+- Status Code:    200 OK
+- Remote Address: 3.36.134.207:443
+- Referrer Policy: strict-origin-when-cross-origin
+
+RESPONSE — Headers
+- Access-Control-Allow-Origin: https://zeta-ai.io
+- Cache-Control:               no-cache
+- Content-Type:                text/event-stream;charset=UTF-8
+
+RESPONSE BODY
+- Size on wire:  ~1.0 kB (very small — far smaller than a real upstream
+                 ScatterLab character roleplay stream which produces ~22+
+                 IN_PROGRESS chunks totalling many kB).
+- Time:          ~8 ms (intercept latency, not real upstream latency).
+- DevTools "EventStream" tab: showed Id/Type/Data columns with NO PARSED EVENTS
+                              ⇒ chunk delimiter / event format does NOT match
+                              what EventSource parser expects. Body bytes were
+                              transmitted but were not framed as parseable
+                              `event:` / `data:` lines (or the chunk encoding
+                              broke parsing).
+- Response tab: "Failed to load response data — Request with the provided ID
+                has already finished loading." (DevTools could not retain
+                body for re-display.)
+
+FRONTEND (zeta-ai.io React app) BEHAVIOR
+- Console error (RE-PRODUCIBLE on every send, twice in a row):
+    TypeError: Cannot read properties of undefined (reading '0')
+        at 0m797_i69-2c~.js:3:47929
+        at i_ (113b2qcua4vkz.js:50:58662)
+        at oO (113b2qcua4vkz.js:50:78919)
+        at oG (113b2qcua4vkz.js:50:77368)
+        at lu (113b2qcua4vkz.js:50:94107)
+        at uf (113b2qcua4vkz.js:50:133761)
+        at    113b2qcua4vkz.js:50:133606
+        at ud (113b2qcua4vkz.js:50:133614)
+        at ue (113b2qcua4vkz.js:50:129535)
+        at uW (113b2qcua4vkz.js:50:155312)
+        at MessagePort.O (113b2qcua4vkz.js:50:3470)
+- Sentry envelope POSTs fired: 2x sentry envelope/?sentry_version=7&...
+                                ⇒ Sentry telemetry confirms client-side error.
+- UI render: chat bubble area replaced by error fallback popup
+             "일시적인 오류가 발생했어요"  ("A temporary error occurred")
+             "잠시 후 다시 시도해주세요"  ("Please try again shortly")
+             [확인] (OK) button — clicking it routes user back to /ko home.
+- NO warning text rendered ([경고] / 민감 / 보안 keywords absent from chat area).
+- NO real upstream character roleplay rendered (intercept did fire — body too
+  small + only 1 round-trip + 0 parsed SSE events confirm it is NOT real
+  ScatterLab upstream).
+
+VERDICT
+- overall_status:  PARTIAL
+- classification:  intercept_envelope_mismatch
+- evidence:        intercept fired (200 OK, text/event-stream;charset=UTF-8,
+                   ~1kB short body, no real upstream traffic) BUT envelope
+                   shape causes frontend TypeError on `[0]` index access of
+                   an undefined value — 0 SSE events parsed, no replyMessage
+                   /messageId/ESCAPE2:MESSAGE warning text rendered.
+- next action:     APF zeta envelope needs to ensure the field that frontend
+                   reads as `something[0]` is present (likely the events array
+                   or messages/chunks array inside CHAT_COMPLETE replyMessage).
+                   Per #604 capture, real upstream sends 22+ IN_PROGRESS events
+                   then 1 CHAT_COMPLETE — our envelope may be sending only the
+                   CHAT_COMPLETE without the prior IN_PROGRESS sequence (or
+                   missing a nested array inside replyMessage).
