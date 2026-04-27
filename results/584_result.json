@@ -1,0 +1,31 @@
+{
+  "id": "584",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "Cycle 94 R-5 perplexity Experiment 3 (answer:null → answer:'{{ESCAPE2:MESSAGE}}', 4 occurrences, on top of Exp2 empty thread_url_slug). Result: SAME AS 583. Routing still works (no toast, no redirect, /search/new/{uuid} stable, follow-up input visible) but content render UNCHANGED — answer body remains empty after 50s+ '사고' Thinking persistence. The 'answer' field populated alone is INSUFFICIENT to trigger client UI render of the warning text.",
+    "service_name": "perplexity",
+    "started_at": "2026-04-27T11:30:00Z",
+    "completed_at": "2026-04-27T11:33:00Z",
+    "duration_seconds": 180,
+    "warning_visible": false,
+    "screenshot": "files/584/thinking_persist.png",
+    "console_errors": [],
+    "failure_category": "NOT_RENDERED",
+    "auth_state": "logged_in",
+    "page_state": "thread_alive_thinking_persistent (same as 583)",
+    "url_observed": "perplexity.ai/search/new/7b45c603-96fe-41cf-89bd-6f3924fa11b3 (STABLE, fresh UUID)",
+    "experiment": "Experiment 3: answer field = '{{ESCAPE2:MESSAGE}}' (4 occurrences) ON TOP OF Exp2 empty slug",
+    "verdict": "Populating answer field alone does NOT advance UI from '사고' (Thinking) to render warning. Client appears to require additional/different signal to transition to Complete state.",
+    "next_experiment_recommendations": [
+      "Experiment 4: Add final_sse_message=true + status='COMPLETE' to envelope — explicit stream-end signal may help client transition out of Thinking",
+      "Experiment 5: Set message_mode='COMPLETE' (vs current 'STREAMING') — indicates response is final",
+      "Experiment 6: Inspect content blocks structure — perplexity client may need blocks array with specific intended_usage values (e.g. 'answer_block') containing prose markdown, not just a top-level 'answer' string",
+      "Experiment 7: Capture a SUCCESSFUL non-blocked perplexity response via DevTools EventStream tab — see what frames the client actually renders (e.g. for safe prompt 'hello'). Match that schema precisely.",
+      "Experiment 8: 'sources' / 'related_queries' / blocks order — client may render answer only after seeing certain block types in sequence"
+    ],
+    "regression_check_baseline": "#583 (Exp2: routing breakthrough, content empty)",
+    "diff_from_583": "URL routing remains stable (good), answer rendering still blocked (no improvement from adding answer field)"
+  },
+  "notes": "Cycle 94 R-5 perplexity Experiment 3: answer-field substitution did not unblock content render. Hypothesis updated: perplexity client renders warning text from a specific block schema, not from a top-level 'answer' string. Recommend baseline capture of successful response for schema reference (Experiment 7)."
+}
