@@ -1,0 +1,88 @@
+=== EVIDENCE: cue.search.naver.com SERVICE DECOMMISSIONED ===
+Captured: 2026-04-27 (Cycle 94 R-28, request 608)
+
+=== Step 1: Direct HTTP GET / on cue.search.naver.com (no redirect follow) ===
+HTTP/1.1 302 Found
+date: Mon, 27 Apr 2026 11:25:47 GMT
+content-type: text/html; charset=utf-8
+content-length: 42
+set-cookie: _naver_usersession_=L4S6rE9AqcAatKNfWKcTcqUP; Path=/; Domain=.naver.com; max-age=300
+location: https://www.naver.com
+access-control-allow-methods: GET, POST, OPTIONS, PUT, PATCH, DELETE
+access-control-allow-credentials: true
+access-control-allow-headers: Content-Type
+access-control-max-age: 86400
+referrer-policy: unsafe-url
+server: nfront
+alt-svc: h3=":443"; ma=3600
+
+<a href="https://www.naver.com">Found</a>.
+=== Step 2: Verbose connection trace ===
+*   Trying 110.93.159.35:443...
+* Established connection to cue.search.naver.com (110.93.159.35 port 443) from 1.214.24.181 port 61560 
+* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: cue.search.naver.com
+> User-Agent: curl/8.18.0
+> Accept: */*
+> 
+* schannel: renegotiating SSL/TLS connection
+* schannel: SSL/TLS connection renegotiated
+* schannel: renegotiating SSL/TLS connection
+* schannel: SSL/TLS connection renegotiated
+< HTTP/1.1 302 Found
+< date: Mon, 27 Apr 2026 11:25:48 GMT
+< content-type: text/html; charset=utf-8
+< content-length: 42
+< set-cookie: _naver_usersession_=kWaLpP/L1Eem/VcvI1BHb9tK; Path=/; Domain=.naver.com; max-age=300
+< location: https://www.naver.com
+< access-control-allow-methods: GET, POST, OPTIONS, PUT, PATCH, DELETE
+< access-control-allow-credentials: true
+< access-control-allow-headers: Content-Type
+< access-control-max-age: 86400
+< referrer-policy: unsafe-url
+< server: nfront
+< alt-svc: h3=":443"; ma=3600
+< 
+
+=== Step 3: Multiple paths checked ===
+  / -> HTTP 302  
+  /p/csa -> HTTP 404  
+  /api -> HTTP 404  
+  /m -> HTTP 404  
+  /cue -> HTTP 404  
+  /q -> HTTP 404  
+  /qna -> HTTP 404  
+  /conv -> HTTP 404  
+  /chat -> HTTP 404  
+  /stream -> HTTP 404  
+
+=== Step 4: Alt hostname cue.naver.com ===
+DNS resolution: NXDOMAIN (Could not resolve host)
+
+=== Step 5: naver.com homepage scan for AI service references ===
+naver.com 'cue' string matches: 0
+naver.com 'clova' string matches: 0
+(both = 0 -- Naver Cue is no longer surfaced from the main homepage)
+
+=== Step 6: clova-x.naver.com (active Naver chat service) ===
+HTTP/1.1 200 OK
+content-length: 6869
+content-type: text/html
+
+
+Page title: <title>CLOVA X</title>
+
+=== Conclusion ===
+Naver Cue at https://cue.search.naver.com/ is DECOMMISSIONED.
+  - All paths return 302 -> https://www.naver.com (root) or 404 (subpaths)
+  - Server header: nfront (Naver's standard edge LB; hostname still in DNS)
+  - Body: <a href="https://www.naver.com">Found</a>. (42 bytes)
+  - No chat UI, no streaming endpoint, no API surface, no DOM container
+
+Naver's active AI chat service is now CLOVA X at https://clova-x.naver.com/
+
+DB registration recommendation:
+  (a) DELETE/DEPRECATE 'naver_cue' service entry, OR
+  (b) RENAME to 'clova_x' and update URL pattern to 'clova-x.naver.com'
+      (would require a fresh phase-1 HAR capture for clovax_x)
