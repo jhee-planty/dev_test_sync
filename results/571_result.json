@@ -1,0 +1,25 @@
+{
+  "id": "571",
+  "status": "done",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "Both URLs unreachable from KR. doubao.com → '该页面暂时不可用' (page temporarily unavailable, redirected to doubao.com/chat/, region/auth gate). dola.ai (fallback) → parked domain via GoDaddy/Afternic 'This domain is registered, but may still be available' with 'Get this domain' button (domain effectively decommissioned for AI service). Note: cycle 93 #554 captured working patch_op events for dola — may have been before the URL was parked OR may still work via direct app URL not currently testable.",
+    "service_name": "dola",
+    "started_at": "2026-04-27T09:29:30Z",
+    "completed_at": "2026-04-27T09:31:00Z",
+    "duration_seconds": 90,
+    "warning_visible": false,
+    "screenshot": "files/571/dola_for_sale.png",
+    "console_errors": [],
+    "failure_category": "INFRASTRUCTURE",
+    "auth_state": "anonymous",
+    "page_state_doubao": "region_unavailable_message",
+    "page_state_dola": "parked_domain_for_sale",
+    "url_observed_doubao": "doubao.com/chat/ (redirected from www.doubao.com)",
+    "url_observed_dola": "afternic.com/forsale/dola.ai?utm_source=TDFS_DASLNC&...",
+    "previous_classification": "NEEDS_ALTERNATIVE (Doubao patch_op architecture — ID echo required)",
+    "test_progression": "doubao_load=BLOCKED, dola_load=DECOMMISSIONED",
+    "verdict_diff_from_previous": "Service entry points are non-functional from KR — doubao.com region-blocks, dola.ai is parked. Cycle 93 #554 may have been the last successful test before the parking event. Cannot validate APF on this service architecture without VPN/region change OR direct IP/app URL."
+  },
+  "notes": "Batch F-12 dola/Doubao. Both primary and fallback URLs blocked: doubao.com regional, dola.ai parked. doubao patch_op schema test cannot proceed without alternative entry point. Consider removing from active service list OR finding the actual mobile app/SDK endpoint for testing."
+}
