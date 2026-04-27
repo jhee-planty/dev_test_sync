@@ -1,0 +1,45 @@
+{
+  "id": "585",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Cycle 94 R-6 perplexity BENIGN schema capture COMPLETE. Safe prompt 'What is the capital of South Korea?' returned real answer 'The capital of South Korea is Seoul.' with britannica citation. EventStream tab captured 13 message events + 1 end event ({}). Three key events copied verbatim: first PENDING event, mid-STREAMING event with diff text patches, final COMPLETED event. Schema for envelope reverse-engineering FULLY DOCUMENTED.",
+    "service_name": "perplexity",
+    "started_at": "2026-04-27T11:36:00Z",
+    "completed_at": "2026-04-27T11:42:00Z",
+    "duration_seconds": 360,
+    "warning_visible": true,
+    "screenshot": "files/585/eventstream_capture.png",
+    "console_errors": [],
+    "auth_state": "logged_in (Pro free preview activated)",
+    "endpoint_url": "https://www.perplexity.ai/rest/sse/perplexity_ask",
+    "endpoint_status": "200",
+    "url_observed_thread": "perplexity.ai/search/3b0c48ca-384b-4aca-b7c4-13aafb2714e2",
+    "thread_url_slug_value": "3b0c48ca-384b-4aca-b7c4-13aafb2714e2 (= backend_uuid; NOT empty)",
+    "schema_finding_1_url_slug": "thread_url_slug field MUST equal backend_uuid value (URL is /search/{backend_uuid}). Empty slug works because then client uses /search/new/{generated} fallback.",
+    "schema_finding_2_uuids": "4 UUIDs in response, all REAL/persistent: backend_uuid (= URL slug), context_uuid, uuid (per-event), frontend_context_uuid (echo from request body). Per-event 'uuid' changes; backend_uuid + context_uuid + frontend_context_uuid stable across events.",
+    "schema_finding_3_streaming_pattern": "Mid-stream events use 'diff_block' with JSON Patch operations (op: 'add', path: '/chunks/N', value: 'text fragment'). Text accumulates incrementally via patches.",
+    "schema_finding_4_block_types_in_final_event": [
+      "plan (plan_block)",
+      "ask_text_0_markdown (markdown content)",
+      "ask_text (markdown_block — main answer container)",
+      "workflow_root (workflow data)",
+      "web_results (sources)",
+      "answer_tabs (UI tabs config)",
+      "sources_answer_mode (sources mode)",
+      "pending_followups (suggested follow-up questions)"
+    ],
+    "schema_finding_5_terminal_signals": "Final event has: status='COMPLETED', final=true, final_sse_message=true, text_completed=true, message_mode='FULL' (vs 'STREAMING' in intermediate events).",
+    "schema_finding_6_first_event_minimum": "First event is minimal — has just backend_uuid + context_uuid + uuid + frontend_context_uuid + thread_url_slug + blocks=[{intended_usage:'pending_followups',pending_followups_block:{followups:[]}}] + message_mode:'STREAMING' + status:'PENDING' + final_sse_message:false. This is the 'thread shell' event.",
+    "first_event_verbatim": "{\"backend_uuid\":\"3b0c48ca-384b-4aca-b7c4-13aafb2714e2\",\"context_uuid\":\"e78cb1bc-a9b9-40e3-8091-62f1afb40278\",\"uuid\":\"01c14034-1584-4f07-b974-de9e278675c1\",\"frontend_context_uuid\":\"d523806c-308f-4be9-afd1-31dd2b8e513e\",\"display_model\":\"turbo\",\"mode\":\"COPILOT\",\"search_focus\":\"internet\",\"source\":\"default\",\"attachments\":[],\"thread_url_slug\":\"3b0c48ca-384b-4aca-b7c4-13aafb2714e2\",\"expect_search_results\":\"false\",\"gpt4\":false,\"text_completed\":false,\"blocks\":[{\"intended_usage\":\"pending_followups\",\"pending_followups_block\":{\"followups\":[]}}],\"message_mode\":\"STREAMING\",\"answer_modes\":[],\"reconnectable\":true,\"cursor\":\"069eecc2-5cde-7f14-8000-eb313c4e7e2c\",\"search_mode\":\"SEARCH\",\"status\":\"PENDING\",\"final_sse_message\":false}",
+    "midstream_event_verbatim_excerpt": "blocks: [{\"intended_usage\":\"ask_text_0_markdown\",\"diff_block\":{\"field\":\"markdown_block\",\"patches\":[{\"op\":\"add\",\"path\":\"/chunks/1\",\"value\":\"l of South Kore\"}]}}, {\"intended_usage\":\"ask_text\",\"diff_block\":{\"field\":\"markdown_block\",\"patches\":[{\"op\":\"add\",\"path\":\"/chunks/1\",\"value\":\"l of South Kore\"}]}}]; mode:CONCISE; classifier_results present",
+    "final_event_terminal_status": "status=COMPLETED, final=true, final_sse_message=true, text_completed=true, message_mode=FULL, country=KR (in _extras), core_elapsed=3.29s",
+    "envelope_design_recommendation_for_warning": {
+      "minimal_strategy": "Send 2 events: (1) PENDING shell event with thread_url_slug=backend_uuid + intended_usage:pending_followups + status:PENDING + final_sse_message:false; (2) COMPLETED event with intended_usage:ask_text containing markdown_block.chunks=['보안 경고: 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다'] + status:COMPLETED + final:true + final_sse_message:true + text_completed:true + message_mode:FULL",
+      "uuid_strategy": "backend_uuid = generate fresh UUID server-side; context_uuid = generate fresh; frontend_context_uuid = REQUEST_BODY:params.frontend_context_uuid (echo); uuid = per-event fresh; thread_url_slug = backend_uuid (same value, NOT empty)",
+      "expected_outcome": "Client navigates to /search/{backend_uuid}, recognizes thread, applies blocks, renders 보안 경고 markdown text in answer area, marks complete after final_sse_message"
+    },
+    "regression_baseline": "#583, #584 (empty thread_url_slug + answer field both insufficient — were missing intended_usage:ask_text + markdown_block + COMPLETED final state)"
+  },
+  "notes": "Cycle 94 R-6 perplexity Experiment 7 SUCCESS — full response schema captured. KEY INSIGHT: warning text must go in blocks[].intended_usage='ask_text'.markdown_block.chunks[]. Plus terminal event needs status='COMPLETED' + final=true + final_sse_message=true to release client from Thinking state. thread_url_slug should equal backend_uuid (not empty). With this schema, perplexity_sse template can be redesigned to actually render the warning."
+}
