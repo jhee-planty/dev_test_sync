@@ -1,0 +1,61 @@
+{
+  "id": "598",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Gamma SSE captured: event:content x12 + event:done(data:stop) completion signal IDENTIFIED",
+    "service_name": "gamma",
+    "started_at": "2026-04-27T07:47:00Z",
+    "completed_at": "2026-04-27T07:54:10Z",
+    "duration_seconds": 430,
+    "warning_visible": false,
+    "screenshot": "files/598/streaming_endpoint.png",
+    "console_errors": ["4 console errors (intercom + gamma /graphql websocket warnings, unrelated to AI generation flow)"],
+    "console_errors_count": 4,
+    "confidence": "high",
+    "auth_state": "logged_in",
+    "ai_response_text_summary": "Korean outline of 10 cards about Seoul as the capital of South Korea, in markdown ``` ... ``` block. First chunk: '저는 서울이 대한민국의 수도라는 사실을 중심으로, 서울의 역사적 배경과 현재의 중요성을 간략하게 소개하는 프레젠테이션을 구성하겠습니다.'",
+    "page_url_pattern": "https://gamma.app/create/generate/{generationId}  (e.g. /create/generate/bqs9ace6omi413i)",
+    "endpoint_url": "https://ai.api.gamma.app/ai/v2/generation",
+    "endpoint_method": "POST",
+    "endpoint_request_content_type": "application/json",
+    "endpoint_response_content_type": "text/event-stream",
+    "endpoint_response_format": "SSE",
+    "key_request_fields": ["interactionId", "promptKey (= 'GenerateOutlineStory')", "variables.topic (user prompt)", "workspaceId"],
+    "key_response_fields": ["event (content|done)", "id (sequential int starting at 1)", "data (text chunk; can repeat across multiple data: lines per event per SSE spec)"],
+    "event_sequence": "Sequence over a single POST that holds connection open as text/event-stream:\n  1) event: content, id: 1, data: <first text chunk> (introductory prose)\n  2..N) event: content, id: 2..N, data: <streaming text chunks>, content gradually emits intro prose then a fenced ```md ... ``` block containing card slides delimited by '--- {n}'\n  Final) event: done, id: N+1, data: stop  <-- COMPLETION SIGNAL\nEvery SSE block is delimited by a blank line. Multiple data: lines within one event must be joined per the SSE spec to reconstruct the chunk. Observed in our capture: 12 'content' events + 1 'done' event = 13 total.",
+    "completion_signal_field_or_event": "event: done   with payload   data: stop   (this is the unambiguous terminator; the connection then closes)",
+    "completion_signal_examples_observed": ["event: done\\nid: 13\\ndata: stop\\n\\n"],
+    "response_body_full_path": "files/598/api_response_body.txt",
+    "rendered_html_selector": "div.react-renderer.node-card  (one per slide/card; outer wrapper is div.chakra-stack.card.css-bxg6n7; per-card heading is h1.block.block-heading.first-block.first-block-in-card)",
+    "websocket_present": true,
+    "websocket_url": "wss://api.gamma.app/graphql  (observed but failed/closed early; secondary channel; AI generation itself is purely SSE over HTTPS)",
+    "screenshots_inventory": [
+      {"path": "files/598/network_overview.png", "description": "Initial gamma /create/generate page after prompt typed, before submit; Network panel cleared with Preserve log ON"},
+      {"path": "files/598/streaming_endpoint.png", "description": "Network EventStream tab for generation request showing 13 events: 12x type 'content' (Korean text) + final type 'done' with data 'stop'"},
+      {"path": "files/598/response_body.png", "description": "Headers tab showing Content-Type: text/event-stream, Status 200 OK, Cache-Control no-cache no-store, Server cloudflare"},
+      {"path": "files/598/dom_container.png", "description": "DevTools Console showing querySelectorAll output enumerating div.react-renderer.node-card and h1.block.block-heading nodes for the rendered AI outline"},
+      {"path": "files/598/api_response_body.txt", "description": "VERBATIM SSE response body (13 events, 3.5KB). Use to rebuild gamma_sse template."}
+    ],
+    "envelope_design_recommendation": "Gamma client expects pure SSE (Content-Type: text/event-stream) on POST https://ai.api.gamma.app/ai/v2/generation. The envelope MUST emit framed events of the form 'event: content\\nid: <int>\\ndata: <chunk>\\n\\n' for each token batch, then terminate with the EXACT sentinel 'event: done\\nid: <int>\\ndata: stop\\n\\n'. The completion-detection field gamma_sse template was missing is the named SSE event 'done' with body 'stop' (NOT a JSON {type:done}, NOT [DONE], NOT a render_complete field, NOT just a stream-close). Each chunk's data: value can span multiple data: lines that the SSE parser concatenates with newlines. The body emitted by 'content' events is plain UTF-8 text, initially natural-language prose, then a fenced ```md ... ``` block whose interior uses '--- {n}' as card delimiters and '# heading\\n- bullet' as card body. Request payload uses promptKey='GenerateOutlineStory' + variables.topic + interactionId + workspaceId; response status is 200 (not 201, despite render-generation peer endpoint being 201). To make the client render an APF block warning, emit one or two 'content' events containing the warning text, then immediately the 'done'/'stop' terminator, the client will treat that as a complete generation and render whatever text was streamed. CRITICAL: do NOT close the connection without emitting 'event: done\\ndata: stop' first or the client treats it as an error/incomplete and shows a retry/spinner state.",
+    "previous_classification": "gamma_sse template (etap.log diagnostic): block_but_no_render. APF block fires correctly but envelope shape mismatched. 13+ build iterations on guessed schema all failed at completion-signal detection.",
+    "diff_from_previous_understanding": "ROOT CAUSE IDENTIFIED. Previous gamma_sse guesses for completion signal (likely tried [DONE], render_complete:true, type:done JSON, finished:true, etc.) were ALL wrong. Real completion signal = the named SSE event 'done' with body 'stop' (literally 'event: done\\ndata: stop\\n\\n'). Also identifies the request endpoint precisely (POST https://ai.api.gamma.app/ai/v2/generation, distinct from gamma.app main domain) and confirms standard SSE transport (text/event-stream, not custom NDJSON). Now have everything for first-shot envelope rewrite.",
+    "diagnostic_for_dev_team": "MAJOR FINDING for cycle 94 R-18: completion signal is 'event: done\\ndata: stop' (literal SSE event name 'done' + literal payload 'stop'). All 13+ prior gamma_sse template iterations were missing this exact terminator. Recommend new gamma_sse_v2 template emitting: 'event: content\\nid: 1\\ndata: <warning text>\\n\\nevent: done\\nid: 2\\ndata: stop\\n\\n' with Content-Type: text/event-stream. Endpoint match path: POST https://ai.api.gamma.app/ai/v2/generation (NOT gamma.app/api/...). Verbatim 13-event response in files/598/api_response_body.txt for diff. Render container is div.react-renderer.node-card (visual confirmation should target this).",
+    "obstacles_encountered": [
+      "Already-logged-in session on test PC, no auth wall hit",
+      "First click on prompt examples list happened to land on a description that pre-populated the prompt, switched to typing prompt directly into the textarea instead",
+      "EventStream Type column was truncated to 'c...' / 'd...'; resolved by using right-click > Copy > Copy response which yielded the full SSE text including the 'event: done' / 'data: stop' terminator",
+      "WebSocket warnings (intercom + gamma /graphql) appeared in console but were unrelated to the AI generation flow"
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 53,
+      "duration_ms": 430281,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "Yes (430s > 300s soft); SUCCESS within 8min hard cap"
+    }
+  },
+  "notes": "Cycle 94 R-18 gamma.app SCHEMA CAPTURED. **MAJOR FINDING for 13+ build iterations**: completion signal = literal SSE event 'done' with body 'stop' ('event: done\\ndata: stop\\n\\n'). Endpoint = POST https://ai.api.gamma.app/ai/v2/generation (subdomain ai.api), Content-Type text/event-stream, request promptKey='GenerateOutlineStory'. 12 content events + 1 done event observed. Verbatim 13-event response in files/598/api_response_body.txt. Render selector div.react-renderer.node-card. Recommend gamma_sse_v2 template = 1-2 'event: content' chunks (warning text) + 'event: done' / 'data: stop' terminator. 4 PNGs + 1 verbatim txt in files/598/. Processed via Subagent Dispatch (7m10s, 53 tool uses, soft timeout exceeded but within hard cap)."
+}
