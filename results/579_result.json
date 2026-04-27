@@ -1,0 +1,29 @@
+{
+  "id": "579",
+  "status": "done",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "Phase 1 aidot probe: NAMESPACE COLLISION + SERVICE MOBILE-ONLY. (1) aidot.ai REACHABLE but is NOT SKT 에이닷 — it is 'AIDOT' a separate Korean healthcare AI company (Open Healthier Tomorrow with AI; nav: About US/R&D/Products/Healthcare Info Center/NEWS-PR/Contact). Marketing site only, no chat. (2) adot.skt.com → DNS_PROBE_FINISHED_NXDOMAIN (no public web endpoint). The actual SKT 에이닷 (A.) AI 비서 is mobile-app-only (SKT smartphone subscribers; no public web channel). aidot.skt.com (last fallback) presumed same NXDOMAIN. APF web-channel testing not feasible.",
+    "service_name": "aidot",
+    "started_at": "2026-04-27T10:17:00Z",
+    "completed_at": "2026-04-27T10:19:30Z",
+    "duration_seconds": 150,
+    "warning_visible": false,
+    "screenshot": "files/579/skt_nxdomain.png",
+    "console_errors": [],
+    "failure_category": "INFRASTRUCTURE",
+    "auth_state": "anonymous_unable",
+    "page_state": "primary_url_wrong_service / fallback_NXDOMAIN",
+    "url_attempts": {
+      "aidot.ai": "REACHABLE — but DIFFERENT COMPANY (healthcare AI 'AIDOT', not SKT 에이닷)",
+      "www.aidot.com": "not tested (likely yet another company)",
+      "adot.skt.com": "DNS_PROBE_FINISHED_NXDOMAIN",
+      "aidot.skt.com": "presumed NXDOMAIN (not tested to save time)"
+    },
+    "previous_classification": "APF NOT YET REGISTERED — Phase 1 probe (last of 5 NEEDS_HAR_CAPTURE batch)",
+    "test_progression": "namespace_collision_observed + mobile-only_service_confirmed",
+    "next_phase_recommendation": "(1) Service is MOBILE-FIRST — SKT 에이닷 only available via SKT mobile app for SKT smartphone subscribers; no anonymous web entry point. (2) APF cannot intercept this service via web channel. (3) Recommend EITHER (a) deferring registration until SKT releases web channel, OR (b) treating as out-of-scope (mobile-app-only services).",
+    "namespace_note": "Two distinct services share 'aidot' name: AIDOT healthcare AI company (.ai TLD) vs SKT 에이닷 AI 비서 (no public web). Service registry should use 'skt_adot' or 'adot_skt' naming to avoid collision."
+  },
+  "notes": "Batch F-20 aidot Phase 1 probe (last of NEEDS_HAR_CAPTURE batch). Service identification issue: 'aidot' name collision between AIDOT healthcare company (web-only marketing) and SKT 에이닷 (mobile-app-only). Neither provides anonymous-friendly web AI chat entry point. Recommend reclassifying as OUT_OF_SCOPE for web-channel APF, or rename service entry to 'skt_adot' and defer until web channel exists."
+}
