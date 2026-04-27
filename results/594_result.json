@@ -1,0 +1,125 @@
+{
+  "id": "594",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Mistral chat API schema fully captured: tRPC newChat (send) + numbered-prefix NDJSON stream (receive)",
+    "service_name": "mistral",
+    "started_at": "2026-04-27T06:58:50Z",
+    "completed_at": "2026-04-27T07:08:00Z",
+    "duration_seconds": 550,
+    "warning_visible": false,
+    "screenshot": "files/594/trpc_payload.png",
+    "console_errors": ["React controlled/uncontrolled tooltip warning (x2, not errors)"],
+    "console_errors_count": 2,
+    "confidence": "high",
+    "auth_state": "guest",
+    "ai_response_text_summary": "The capital of South Korea is Seoul. Would you like to know more about the city or its history?",
+    "page_url_pattern": "https://chat.mistral.ai/chat",
+    "split_stream_analysis": "CONFIRMED SPLIT-STREAM. Mistral splits send and receive across two distinct endpoints (unlike OpenAI/Anthropic which use a single POST). FLOW: (1) Frontend calls tRPC POST /api/trpc/message.newChat?batch=1 with the user prompt text in body -- server creates chat+message records and returns IDs. (2) Frontend then calls POST /api/chat with ONLY chatId+mode='start' (no prompt text) -- server looks up the just-created message and streams the AI response back as numbered-prefix NDJSON. (3) Post-stream, frontend GETs /api/trpc/chat.byId,message.all,canva.all and message.get for canonical state. Two requests correlated by chatId UUID. To block effectively, APF must intercept BOTH request bodies -- prompt is in message.newChat, streaming response is in /api/chat.",
+    "trpc_batch_pattern": "https://chat.mistral.ai/api/trpc/<proc1>[,<proc2>,...]?batch=1&input=<urlencoded-JSON>  where input={'0':{'json':<args>,'meta':{'values':{...}}},'1':...}. POST body uses same envelope. Response is JSON array: [{'result':{'data':{'json':<result>}}},...]. SuperJSON transformer in use (meta.values lists undefined keys).",
+    "websocket_present": false,
+    "websocket_url": null,
+    "rendered_html_selector": "div[data-message-author-role='assistant'] (also has data-message-id=<UUID> and data-message-version='0'; wrapper class includes 'group/message'). To target latest: div[data-message-author-role='assistant']:last-of-type",
+    "chat_requests": [
+      {
+        "role": "send",
+        "url": "https://chat.mistral.ai/api/trpc/message.newChat?batch=1",
+        "method": "POST",
+        "request_content_type": "application/json",
+        "response_content_type": "application/json (compressed: zstd)",
+        "response_format": "tRPC-batch",
+        "key_request_fields": [
+          "0.json.content[0].text (= prompt text)",
+          "0.json.content[0].type='text'",
+          "0.json.agentId=null",
+          "0.json.features=['beta-websearch']",
+          "0.json.libraries=[]",
+          "0.json.projectId=null",
+          "0.json.incognito=false",
+          "0.meta.values (lists which keys are 'undefined' per superjson)"
+        ],
+        "key_response_fields": ["tRPC batch result with chat/message IDs"],
+        "completion_signal": "HTTP 200 + JSON body (synchronous, ~277ms)",
+        "notes": "Classic tRPC v10 httpBatchLink with superjson transformer. URL has comma-separated procedure names. Body = {'0':{'json':<payload>,'meta':{'values':{...}}}}. THIS IS THE PROMPT-CARRYING REQUEST."
+      },
+      {
+        "role": "receive",
+        "url": "https://chat.mistral.ai/api/chat",
+        "method": "POST",
+        "request_content_type": "application/json",
+        "response_content_type": "text/plain or application/octet-stream (chunked, zstd-encoded)",
+        "response_format": "numbered-prefix NDJSON (Vercel AI SDK / Next.js RSC stream format: each line = '<numId>:<JSON>')",
+        "key_request_fields": [
+          "chatId (UUID linking to message.newChat)",
+          "mode='start'",
+          "disabledFeatures=['memory-inference']",
+          "clientPromptData.currentDate",
+          "clientPromptData.userTimezone",
+          "stableAnonymousIdentifier (guest fingerprint)",
+          "shouldAwaitStreamBackgroundTasks=true",
+          "shouldUseMessagePatch=true",
+          "shouldUsePersistentStream=true",
+          "NOTE: this body does NOT contain prompt text -- prompt was already sent via tRPC message.newChat"
+        ],
+        "key_response_fields": [
+          "Line format: <opcode>:<JSON> e.g. '15:{\"json\":{\"type\":\"message\",\"message\":{...}}}'",
+          "opcode 16 = disclaimers/init",
+          "opcode 15 = message chunk (most frequent -- token deltas)",
+          "opcode 8 = null (heartbeat/end-of-stream marker)",
+          "Each chunk wrapped in {'json': {...}} envelope (superjson)"
+        ],
+        "completion_signal": "Connection closes; preceded by '8:null' line; ~1.40s total stream duration",
+        "notes": "NOT standard SSE (no 'data:' prefix, no event: lines). DevTools shows EventStream tab but it's empty -- confirms it's chunked text not SSE. Format = Vercel AI SDK 'data stream protocol' with numeric opcodes. Stream IS the AI answer delivery."
+      },
+      {
+        "role": "other",
+        "url": "https://chat.mistral.ai/api/trpc/chat.byId,message.all,canva.all?batch=1&input=<urlencoded-json>",
+        "method": "GET",
+        "response_format": "tRPC-batch (multi-procedure GET)",
+        "notes": "Polling/refresh request -- fetches updated chat state after streaming completes. Not on critical path for blocking."
+      },
+      {
+        "role": "other",
+        "url": "https://chat.mistral.ai/api/trpc/user.limits?batch=1&input=...",
+        "method": "GET",
+        "response_format": "tRPC-batch",
+        "notes": "Background quota check, fired multiple times."
+      },
+      {
+        "role": "other",
+        "url": "https://chat.mistral.ai/api/trpc/message.get?batch=1&input=...",
+        "method": "GET",
+        "response_format": "tRPC-batch",
+        "notes": "Fired after stream completion -- fetches canonical final message text."
+      }
+    ],
+    "screenshots_inventory": [
+      {"path": "files/594/network_overview.png", "description": "Full Network panel showing all chat-related requests in order: metrics, message.newChat?batch=1, chat.byId/message.all/canva.all (multi-proc GET), chat (POST stream), user.limits, terms, message.get, chat.byId"},
+      {"path": "files/594/chat_headers.png", "description": "/api/chat POST 200 OK headers -- Request URL, Method, Status, Remote Address, Content-Encoding=zstd"},
+      {"path": "files/594/chat_payload.png", "description": "/api/chat parsed payload showing chatId, mode='start', clientPromptData, stableAnonymousIdentifier, shouldUsePersistentStream -- confirms NO prompt text in this request"},
+      {"path": "files/594/trpc_payload.png", "description": "CRITICAL -- tRPC message.newChat?batch=1 raw request body showing the {'0':{'json':{'content':[{'type':'text','text':'<PROMPT>'}],...},'meta':{'values':{...}}}} envelope. This is where the prompt text actually lives."},
+      {"path": "files/594/chat_response_stream.png", "description": "/api/chat Response tab raw text showing numbered-prefix stream format (lines like '16:{json}', '15:{...}', '8:null'). Confirms NDJSON-style format, not SSE."},
+      {"path": "files/594/dom_inspector.png", "description": "Console querySelectorAll result confirming the AI answer DOM container: div[data-message-author-role='assistant'] with data-message-id UUID matching the API response"}
+    ],
+    "envelope_design_recommendation": "To block Mistral with a synthesized warning that the frontend renders correctly, APF must produce a TWO-STAGE replacement. STAGE 1 (tRPC POST /api/trpc/message.newChat?batch=1 response): Reply with the standard tRPC batch result array [{'result':{'data':{'json':{'id':<fake-msg-id-uuid>,'chatId':<fake-chat-id-uuid>,'role':'user','content':[{'type':'text','text':<original-prompt>}],'createdAt':<iso-ts>,...minimal fields...}}}}] -- frontend uses these IDs for the next call. STAGE 2 (POST /api/chat response): Reply with chunked text body using the numbered-prefix NDJSON protocol: send '16:{\"json\":{\"disclaimers\":[]}}\\n' then ONE OR MORE '15:{\"json\":{\"type\":\"message\",\"message\":{\"id\":<asst-msg-id>,\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"<WARNING TEXT>\"}],...}}}\\n' followed by '8:null\\n' to terminate. Headers must include Content-Encoding compatible with what client expects (zstd negotiation may need stripping -- easier to omit zstd and send identity). Critical: every payload object is wrapped in {'json':<body>} (superjson envelope) and opcode '15' carries message chunks while '8:null' signals end. Alternative simpler approach: skip Stage 1 interception and instead inject warning at Stage 2 only by replacing the streamed content with a single full-message chunk + 8:null. Note: NO WebSockets -- pure HTTP, easier to MITM than WS-based services. Same chatId UUID must thread through both stages if Stage 1 is intercepted.",
+    "previous_classification": "mistral_trpc_sse template (904B) APF DID block correctly per cycle 94 etap.log -- but real answer still rendered. Hypothesis was split-stream (similar to kimi).",
+    "diff_from_previous_understanding": "Hypothesis CONFIRMED for mistral (vs REFUTED for kimi). Mistral genuinely uses split send/receive across /api/trpc/message.newChat (prompt) and /api/chat (stream). Template name 'mistral_trpc_sse' is half-right (tRPC yes, SSE no -- it's numbered-prefix NDJSON / Vercel AI SDK data-stream-protocol). Block must intercept BOTH endpoints (or just the /api/chat receive endpoint to inject warning at Stage 2).",
+    "obstacles_encountered": [
+      "Initial Snapshot UI annotation overlays caused some misclicks -- switched to plain Screenshot for cleaner reads",
+      "DevTools EventStream tab is empty even though stream uses numbered-prefix format -- DevTools doesn't auto-detect Vercel AI SDK protocol as SSE; had to use Response tab to see raw stream text",
+      "Some response header values (CSP) are very long, requiring scrolling, but Content-Encoding=zstd was clearly visible",
+      "Guest mode imposes 9-message limit but successfully served the test prompt without login wall"
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 81,
+      "duration_ms": 550585,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "Yes (550s > 300s soft); SUCCESS verdict still returned within hard cap"
+    }
+  },
+  "notes": "Cycle 94 R-14 mistral.ai schema CAPTURED. KEY FINDING: mistral DOES use split-stream architecture (CONFIRMED, opposite of kimi which was REFUTED). Two distinct endpoints: tRPC POST /api/trpc/message.newChat?batch=1 (carries prompt) + POST /api/chat (delivers stream as numbered-prefix NDJSON / Vercel AI SDK protocol). NO websocket. Template 'mistral_trpc_sse' is half-right -- it's tRPC + NDJSON, not SSE. Block envelope must be TWO-STAGE: stage 1 returns synthetic chat+message IDs via tRPC batch result, stage 2 streams '16:{json}\\n15:{json with warning}\\n8:null\\n'. Alternative: intercept /api/chat only and inject single warning chunk. Processed via 19th governance Subagent Dispatch pattern (subagent took 9m10s, 81 tool uses, 6 PNGs saved without main-session 32MB pressure)."
+}
