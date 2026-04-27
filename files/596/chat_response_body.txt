@@ -1,0 +1,13 @@
+/api/chat response body (POST, status 200, content-type: text/plain; charset=utf-8):
+==========================================================================
+16:{"json":{"disclaimers":[]}}
+15:{"json":{"type":"message","message":{"id":"eff5688a-1d2e-43f4-888c-e42bc811ab3e","role":"assistant","content":[{"type":"text","text":"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."}]}}}
+8:null
+==========================================================================
+Warning keywords matched: ⚠️, 민감, 보안
+Envelope structure: 16:disclaimers + 15:message + 8:null terminator (mistral_ndjson_v2 spec)
+
+UI rendering: Mistral fell back to "Something went wrong" error page (Error code: 6002, Retry button)
+              instead of parsing the {"type":"message","message":{...}} structure into a chat bubble.
+
+Verdict: PARTIAL — APF envelope delivered correctly per Network, but UI parser rejected it.
