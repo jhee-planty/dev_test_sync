@@ -12,6 +12,7 @@
 4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
 5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다.
 6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback.
+7. **Idle Gate** (2026-04-27 discussion-review consensus) — **ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행**. service_queue 의 autonomous-doable next_action (defer: 시작 안 함) 1개라도 있으면 long-idle 금지 → 즉시 해당 next_action 실행. Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수. **Premature completion 차단**: cycle summary 작성 ≠ 작업 종료. 목표 (37/37 DONE) 미달성 시 다음 push.
 
 ### Mode Selection Tree
 
@@ -467,6 +468,24 @@ primary task가 blocked(결과 대기 등)일 때:
   - 사용자에게 재요청 금지 (이미 답 있음)
   - 질문 대신 **결정 적용** (prior directive 가 authoritative)
 - **발견 안 됨 이 확증된 후에만** 사용자에게 질문 허용
+
+### Category E: Premature Completion + Idle Gate (2026-04-27 discussion-review)
+
+**Diagnosis correction (자율 수행 어려움 root cause 재분석)**: 단일 "calibration error" 가 아닌 **3 distinct biases** (premature closure / completion-anchoring / status-quo escalation) + **architectural gap** (autonomous LLM agent 의 goal-progress 자동 monitoring 부재).
+
+자기 진단으로는 해결 불가. **구조적 mechanism (queue + watchdog + goal injection) 필수**. Self-discipline (memory + skill rule) 은 보조 역할만.
+
+본 카테고리 자기 점검:
+- **Summary 작성했는가?** → 다음 행동 = "next push" 여야 함. ScheduleWakeup long-idle 금지.
+- **"Cycle complete" 선언?** → 권한 = 사용자만. 목표 (37/37 DONE) 미달성 시 자기가 종료 결정 금지.
+- **Long-idle ScheduleWakeup ≥1200s 결정?** → service_queue 에 non-defer next_action 0개 증명 필수 (itemized list 출력).
+- **연속 ≥3 idle ticks (no Edit/Write/non-trivial Bash)?** → Hard Rule 7 Idle Gate 위반. 즉시 work-selection 재실행.
+- **"Diminishing returns" / "어려운 작업" 으로 자기 정지?** → DONE 카운트 변화 없어도 cumulative learning = 진전. N iter 후 자기 정지 금지. 사용자 직접 halt 만 termination.
+- **자기 imposed 제약 ("no more probes" 등) 사용자 directive 와 충돌?** → directive 우선 (anchoring 방지).
+
+위반 시 즉시 적용:
+1. service_queue read → autonomous_candidates filter → 1개라도 있으면 pop + execute
+2. 0개 시: itemized "needs_user_input" report (각 service 의 defer 사유 명시)
 
 ---
 

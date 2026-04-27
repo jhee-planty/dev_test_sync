@@ -140,7 +140,46 @@ endwhile
   - M1 reasoning (단순 binary) / M2 Micro-Discussion (untestable complex) / M3 full `discussion-review` (C9) / M4 user ask (물리적 예외만)
   - Per-case 기록: `apf-operation/state/decisions/`, all-fail 시 `empirical-fail-reports/`
 
-→ See `references/autonomous-execution-protocol.md` for Hard Rules 1-6 v2 + Empirical Comparison Pattern + Micro-Discussion Pattern + Polling Policy v2 usage.
+→ See `references/autonomous-execution-protocol.md` for Hard Rules 1-7 v3 + Empirical Comparison Pattern + Micro-Discussion Pattern + Polling Policy v2 usage.
+
+## Work Selection Algorithm v2 (2026-04-27 discussion-review consensus)
+
+> Push-based decision making → Pull-based queue processing.
+> Idle 가 자율 수행 의 자연 종료 신호가 아닌, **service_queue 가 autonomous-doable next_action 미보유** 시에만 허용되는 명시 상태.
+
+### Loop (매 polling tick 또는 result 처리 후)
+
+```
+1. Read pipeline_state.json service_queue
+2. Filter entries where next_action does NOT start with 'defer:'
+   → autonomous_candidates list
+3. If autonomous_candidates non-empty:
+   - Sort by priority asc
+   - Pop head
+   - Execute next_action (한 step만)
+   - Update entry next_action OR status as result dictates
+   - Commit pipeline_state.json
+   - Push request if next_action requires test PC, else return to loop
+4. If autonomous_candidates empty (all defer:):
+   - Compose explicit "needs_user_input" status report
+   - Report to user with itemized defer reasons
+   - Allow long-idle ScheduleWakeup
+5. Empty queue (no entries at all):
+   - Goal achieved OR user has not enqueued more services
+   - Report to user
+```
+
+### Idle Gate (Hard Rule 7 enforcement)
+
+ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks (no Edit/Write/non-trivial Bash):
+- **Mandatory work-selection re-run**
+- Output: itemized list of service_queue with next_action + autonomous_doable count
+- Long-idle 허용 = autonomous_doable count == 0 증명
+
+### next_action Vocabulary
+
+`apf-operation/state/pipeline_state.json` 의 `_next_action_vocabulary` 필드 참조.
+새 next_action 도입 시 vocabulary 에 정의 추가.
 → **Canonical** (Polling Policy authoritative source): `~/.claude/memory/user-preferences.md` Polling Policy section. INV-6 Rule-of-3 준수.
 
 ## 제외 기능
