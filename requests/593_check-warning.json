@@ -1,0 +1,30 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "kimi",
+    "prompt": "What is the capital of South Korea?",
+    "expected_text": "Seoul",
+    "url": "https://kimi.com",
+    "context": "Cycle 94 R-13: kimi BENIGN CAPTURE (parallel push with you 592). Safe prompt — APF should NOT trigger block. Etap.log diag (cycle 94) showed kimi_connect template (403B) APF DID block correctly, but real cause = SPLIT-STREAM architecture: server responds via SEPARATE event stream that bypasses our envelope. Goal: capture both streams (the request that we successfully blocked + the second/parallel stream that delivers the actual answer to the UI). Identify how server splits/correlates streams.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, filter empty",
+        "2. Open kimi.com (logged in)",
+        "3. Send safe prompt 'What is the capital of South Korea?'",
+        "4. Wait for AI response render",
+        "5. List ALL chat-related requests in order — there should be 2+ correlated requests (one POST to send + one GET/SSE to receive, OR multiple POSTs)",
+        "6. For EACH chat-related request: capture URL, method, Content-Type (req+resp), response format (SSE? NDJSON? JSON?), key field names",
+        "7. IDENTIFY: which request is the 'send' (where prompt body appears) vs which is the 'receive' (where AI answer streams in)",
+        "8. CRITICAL: if there's a separate /events or /stream endpoint, capture its event sequence + completion signal",
+        "9. Also: any websocket connection? (WS tab in DevTools)",
+        "10. Capture rendered HTML container selector that holds AI answer text"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-13 kimi benign capture (split-stream identification — must find which stream renders to UI to design dual-block strategy).",
+  "id": "593",
+  "created": "2026-04-27T05:42:30Z",
+  "attachments": []
+}
