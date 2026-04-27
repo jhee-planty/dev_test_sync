@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://gemini.google.com",
+    "context": "Batch F-15: gemini3 last-resort re-check. Previously BLOCK_ONLY confirmed 6 iterations (cycle 93 #493 final state, 2026-04-20). protobuf format only accepted (status code irrelevant). Re-checking after dramatic environment changes since (chatglm reclass, dola dead, multiple PARTIAL findings). One more empirical data point before declaring final BLOCK_ONLY.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Open https://gemini.google.com",
+        "2. F12 → Network",
+        "3. Login required (Google account)",
+        "4. Send prompt + capture response (wrb.fr wrapped JSON?)",
+        "5. Capture warning render result + screenshot"
+      ]
+    }
+  },
+  "notes": "Batch F-15 gemini3 last-resort re-check (BLOCK_ONLY 6 iter exhausted).",
+  "id": "574",
+  "created": "2026-04-27T00:46:14Z",
+  "attachments": []
+}
