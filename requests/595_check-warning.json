@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://you.com",
+    "context": "Cycle 94 R-15: you_sse_v2 envelope verification. Just applied (id=30, response_type=you_sse_v2, 264B): SSE format with {youChatToken: <ESCAPE2:MESSAGE>} + 'I am Mr. Meeseeks. Look at me.' done sentinel. Both reload_templates + reload_services succeeded. Need test PC verify: send PII prompt → APF blocks → response should now render explicit warning text via youChatToken (not generic SSP error page as before).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Open you.com (logged in or guest)",
+        "3. Send the PII prompt",
+        "4. Observe rendered AI answer area (markdown div with [[1]] citations style)",
+        "5. SUCCESS criteria: chat shows our explicit warning text (must contain '[경고]' or '민감' or '보안') NOT a generic error page",
+        "6. PARTIAL criteria: APF block works (DB log shows blocked=1) but you UI shows generic error / blank / fallback — that means envelope not parsed",
+        "7. FAIL criteria: full Seoul answer streamed (envelope completely bypassed)",
+        "8. Capture: Network panel → /api/streamingSearch response → Body / EventStream tab → confirm our SSE youChatToken event present + Mr. Meeseeks done line"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-15 you_sse_v2 verification — first test of new SSE envelope built from #592 captured schema.",
+  "id": "595",
+  "created": "2026-04-27T07:06:13Z",
+  "attachments": []
+}
