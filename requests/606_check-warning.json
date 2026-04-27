@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "zeta",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://zeta-ai.io",
+    "context": "Cycle 94 R-26: zeta_sse_v2 envelope verification. v1 #605 PARTIAL (intercept fired but TypeError [0]). v2 changes: replyMessage.messageId → id (per #604 inferred schema), added role:assistant, kept IN_PROGRESS+CHAT_COMPLETE events. Both reloads OK.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Open zeta-ai.io and navigate into a character chat (any room)",
+        "3. Send the PII prompt",
+        "4. Network /v1/rooms/{roomId}/messages/stream → EventStream tab → check if events parse now (≥1 IN_PROGRESS + 1 CHAT_COMPLETE)",
+        "5. SUCCESS: warning text rendered in chat bubble",
+        "6. PARTIAL: events parse but UI still shows error popup → indicates additional missing fields beyond id/role",
+        "7. FAIL same TypeError: schema still mismatched, capture exact missing field via stack trace",
+        "8. Verify [APF:block] in etap.log for service=zeta"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-26 zeta_sse_v2 verify (v1 TypeError [0] fix attempt — schema id/role corrections).",
+  "id": "606",
+  "created": "2026-04-27T10:29:32Z",
+  "attachments": []
+}
