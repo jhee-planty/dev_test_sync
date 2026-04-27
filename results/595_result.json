@@ -1,0 +1,50 @@
+{
+  "id": "595",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "APF intercept fires (streamingSearch failed/0B) but envelope never reaches client; generic error rendered, NOT warning text",
+    "service_name": "you",
+    "started_at": "2026-04-27T07:12:15Z",
+    "completed_at": "2026-04-27T07:16:30Z",
+    "duration_seconds": 255,
+    "warning_visible": false,
+    "screenshot": "files/595/chat_render.png",
+    "console_errors": ["15 console errors observed (likely you.com fallback error path triggered by aborted streamingSearch)"],
+    "console_errors_count": 15,
+    "confidence": "high",
+    "auth_state": "logged_in",
+    "envelope_template_tested": "you_sse_v2 (id=30, 264B, applied via reload_templates+reload_services)",
+    "verdict_classification": "PARTIAL -- APF intercept fires (streamingSearch failed, no body), but you.com client cannot parse our envelope; falls back to generic 'Sorry, something went wrong' error page with Error ID. Envelope bytes never reach the chat render layer.",
+    "rendered_text_in_chat_area": "Sorry, something went wrong. Please try again later. Our team is looking into it. If you would like to follow up on this issue, please visit our Feedback Portal or let us know on our Discord. Please include the following Error ID in your message: ea3303d9-3edc-4488-a93f-156a9bab4e89|8943434b-6f0a-49b6-bf44-b7dad3219605|2026-04-27T07:14:15.031Z",
+    "warning_keywords_matched": [],
+    "envelope_bytes_observed": false,
+    "done_sentinel_observed": false,
+    "endpoint_url_observed": "https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=ea3303d9-3edc-4488-a93f-156a9bab4e89&conversationTurnId=8943434b-6f0a-49b6-bf44-b7dad3219605&pastChatLength=0&selectedChatMode=smart_routing&queryTraceId=ea3303d9-3edc-4488-a93f-156a9bab4e89&traceId=ea3303d9-3edc-4488-a93f-156a9bab4e89|8943434b-6f0a-49b6-bf44-b7dad3219605|2026-04-27T07:14:15.031Z&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true",
+    "endpoint_response_status": "(failed) -- net::ERR_*; DevTools shows 'Failed to load response data -- No data found for resource with given identifier' in Preview tab; size 0.0",
+    "endpoint_response_content_type": "unknown -- no response body delivered to client",
+    "screenshots_inventory": [
+      {"path": "files/595/chat_render.png", "description": "Full-screen capture showing you.com chat answer area with 'Sorry, something went wrong' generic error message and Error ID -- NOT the expected Korean warning text. DevTools Network tab visible on left with streamingSearch in red (failed)."},
+      {"path": "files/595/network_envelope.png", "description": "DevTools Network panel with streamingSearch row selected, showing Headers tab General section with Request URL -- confirms APF intercepted the streaming endpoint; status='(failed)', size=0.0."},
+      {"path": "files/595/eventstream_tokens.png", "description": "DevTools Network Preview tab for streamingSearch showing 'Failed to load response data -- No data found for resource with given identifier' -- proves no SSE body reached client (no youChatToken events, no Mr. Meeseeks done sentinel)."}
+    ],
+    "diagnostic_for_dev_team": "APF appears to RST/drop the streaming connection rather than substitute the SSE body. Symptoms: (1) Network row shows '(failed)' status with size 0.0 instead of 200 + body; (2) DevTools Preview tab returns 'No data found for resource' -- meaning the response body was never received by the client at all, not even partially; (3) you.com's frontend treats the aborted connection as a server error and renders its built-in fallback ('Sorry, something went wrong') with an Error ID. The you_sse_v2 template content (youChatToken events + Mr. Meeseeks sentinel) is correct per #592 capture, but the substitution path is not actually delivering bytes -- the 264B envelope never reaches the wire on the client side. Suggests checking: (a) whether APF's response handler closes the connection before flushing the substituted body, (b) whether the substituted SSE response is missing required HTTP headers (Content-Type: text/event-stream, Transfer-Encoding: chunked, etc.), (c) whether you.com client's EventSource parser requires HTTP/2 framing that APF isn't providing. Recommend dev-side: dump Etap response bytes for this request to confirm whether they leave the box, AND inspect Etap.log for any stream-write errors during template emission.",
+    "previous_classification": "Pre-595: you_sse_v2 envelope was applied (id=30, 264B) but never tested end-to-end. This is the FIRST test of the new template built from #592 captured schema.",
+    "diff_from_previous_understanding": "Template content design is correct (matches #592 captured youChatToken/Mr. Meeseeks schema), BUT delivery layer is broken -- substituted body never reaches client. Different failure mode from previous you_json template (which delivered a generic-error JSON body). Now even less is delivered (zero bytes vs 443B JSON error). Need infrastructure-layer investigation, not envelope-content tweaking.",
+    "obstacles_encountered": [
+      "DevTools showed no EventStream tab option -- Preview tab was used instead since the request failed before any SSE frames were collected",
+      "Connection aborted: streamingSearch + threads + allowlist all show 'request failed' status -- APF appears to RST/drop rather than substitute the SSE envelope body",
+      "If APF substituted body with you_sse_v2 SSE bytes, the client's EventSource parser never saw them -- chat falls back to its own internal error UI instead of our injected warning"
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 42,
+      "duration_ms": 255136,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "No (255s within 300s soft budget)"
+    }
+  },
+  "notes": "Cycle 94 R-15 you_sse_v2 envelope verification: PARTIAL. APF intercept fires (streamingSearch failed/0B body), but envelope bytes never reach client. you.com renders its built-in 'Sorry, something went wrong' fallback with Error ID instead of our [경고] text. Diagnostic: APF appears to RST/drop the connection rather than substitute SSE body -- DevTools Preview returns 'No data found for resource'. Template content design (per #592 capture: youChatToken + Mr. Meeseeks) is correct; delivery layer broken. Recommend dev-side: dump Etap response bytes + check Etap.log for stream-write errors during template emission. 3 screenshots in files/595/. Processed via 19th governance Subagent Dispatch pattern (4m15s, 42 tool uses)."
+}
