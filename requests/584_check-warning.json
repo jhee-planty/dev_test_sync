@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "perplexity",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://www.perplexity.ai",
+    "context": "Cycle 94 R-5: perplexity Experiment 3 — 'answer':null → 'answer':'{{ESCAPE2:MESSAGE}}' (4 occurrences) on top of Exp2 empty slug. Hypothesis: Exp2 already resolved routing (URL stable); now content render needs answer field populated (vs null). Combined effect: thread renders with warning text in answer body.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 Network",
+        "2. Send prompt",
+        "3. URL should stay /search/new/{uuid}",
+        "4. Watch for warning text rendering in answer body (vs '사고' Thinking persistence)",
+        "5. Report: warning visible? Or still Thinking? Or new state?"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-5 perplexity Exp3 (answer field populated).",
+  "id": "584",
+  "created": "2026-04-27T02:30:22Z",
+  "attachments": []
+}
