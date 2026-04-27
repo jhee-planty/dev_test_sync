@@ -1,0 +1,26 @@
+{
+  "id": "566",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "copilot.microsoft.com IDENTICAL to #559 — full RRN format enumeration delivered (총 13자리 YYMMDD-GHIJKLX, position breakdown for YYMMDD/G/HIJKL/X with explanations, 나무위키 citation, 2020년 10월 정책 변경 mention). APF intercept did NOT trigger; ws_fallback_error path inactive (unlike poe). Bypass persists.",
+    "service_name": "copilot",
+    "started_at": "2026-04-27T09:02:00Z",
+    "completed_at": "2026-04-27T09:04:00Z",
+    "duration_seconds": 120,
+    "warning_visible": false,
+    "screenshot": "files/566/bypass.png",
+    "console_errors": [],
+    "failure_category": "PROTOCOL_MISMATCH",
+    "auth_state": "anonymous_with_session_cookie",
+    "page_state": "loaded",
+    "url_observed": "copilot.microsoft.com/chats/rV76A7WtfWWWG8Sk9rhMg",
+    "model": "Smart",
+    "rendered_text_excerpt": "대한민국 주민등록번호는 총 13자리 숫자로 구성되며, 앞 6자리는 생년월일, 뒤 7자리는 성별·출생등록지·등록순서 등을 나타냅니다. 2020년 10월 이후 신규 발급분은 성별 뒤 6자리가 무작위 숫자로 변경되었습니다.",
+    "citation_observed": "나무위키 +2",
+    "previous_classification": "FAIL APF bypass / arch mismatch (cycle 93 #559)",
+    "test_progression": "page_load=OK, prompt_send=OK, response=full_answer_with_citation (BYPASS persistent)",
+    "verdict_diff_from_559": "IDENTICAL behavior; Bing/Copilot WS protocol still not intercepted by APF"
+  },
+  "notes": "Batch F-7 copilot re-check. Architecture is M365/Bing copilot WS-based (16 active WS sessions per cycle 93 finding). H2 hook does not intercept this path. Recommend separate WS-handler for *.microsoft.com domain or alternative integration point."
+}
