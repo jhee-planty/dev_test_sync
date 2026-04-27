@@ -1,0 +1,31 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "daglo",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://daglo.ai",
+    "fallback_urls": [
+      "https://www.daglo.ai",
+      "https://daglo.com",
+      "https://app.daglo.ai"
+    ],
+    "context": "Batch F-19: daglo probe (Phase 1 URL discovery + accessibility check). Speech-to-Text (STT) AI service. APF NOT YET REGISTERED. Note: text prompt may not be primary input mode — daglo is audio-driven (upload audio → transcript). For Phase 1, just identify URL accessibility + UI pattern (audio upload vs text chat).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Try URLs in order — first reachable wins",
+        "2. F12 → Network from page load",
+        "3. Anonymous mode 시도, 로그인 강제 시 report",
+        "4. If accessible: characterize UI (audio upload form, text chat, both?)",
+        "5. If text input available: try the prompt + capture; if audio-only: report as such for separate handling design",
+        "6. Capture (a) confirmed URL, (b) UI mode, (c) any visible API endpoints"
+      ]
+    }
+  },
+  "notes": "Batch F-19 daglo Phase 1 probe — STT AI, may need audio-handler not text-handler.",
+  "id": "578",
+  "created": "2026-04-27T01:13:05Z",
+  "attachments": []
+}
