@@ -17,13 +17,14 @@ test PC(Windows)에서 Cowork가 수행하는 작업 흐름.
 | OS | Windows |
 | 파일 도구 | PowerShell |
 | 웹 테스트 도구 | desktop-commander (Windows MCP) |
-| Git 저장소 | `C:\workspace\dev_test_sync\` |
+| Git 저장소 | 환경별 (per-user). 예: `C:\Users\최장희\Documents\dev_test_sync\` |
 
 **Cowork에서 사용 시:** Git 저장소가 로컬에 clone 되어 있어야 한다.
+Canonical path doc: `test-pc-worker/references/git-push-guide.md`
 
 ```powershell
-# Cowork VM 안에서는 마운트 경로 사용
-$base = "C:\workspace\dev_test_sync"
+# common.ps1 가 후보 경로 자동 탐색 (legacy / USERPROFILE\Documents / USERPROFILE\workspace)
+$base = $env:USERPROFILE + "\Documents\dev_test_sync"  # 현 deployment 패턴
 ```
 
 ---

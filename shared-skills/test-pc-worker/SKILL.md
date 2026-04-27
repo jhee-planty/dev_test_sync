@@ -11,7 +11,11 @@ Test PC (Windows) 전용 micro-control skill. Pair of `cowork-remote` (dev 쪽).
 
 ## 기본 인프라
 
-- **Git repo**: `C:\workspace\dev_test_sync` (default)
+- **Git repo**: 환경별 (per-user). `runtime/common.ps1` 가 후보 경로 자동 탐색:
+  1. `C:\workspace\dev_test_sync` (legacy)
+  2. `$env:USERPROFILE\Documents\dev_test_sync` (현 deployment, 예: `C:\Users\최장희\Documents\dev_test_sync`)
+  3. `$env:USERPROFILE\workspace\dev_test_sync`
+  → **Canonical path doc**: `references/git-push-guide.md` (Korean path 인코딩 주의 + git_sync.bat 사용 규약).
 - **Runtime 스크립트 위치**: `$BASE\skills\test-pc-worker\runtime\*.ps1` 또는 프로젝트 배포 시 동일 경로
 - **쓰기 규칙**: `results/` 에만 write. `requests/`, `queue.json` 수정 금지.
 - **State**: `local_archive/state.json` — `{last_processed_id, last_delivered_id, updated_at, schema_version}`

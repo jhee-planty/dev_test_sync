@@ -17,7 +17,9 @@ test PC의 Cowork에 아래 내용을 전달하여 역할을 인식시킨다.
 - 테스트에 사용할 민감 키워드: **한글날** (APF 차단 테스트용)
 
 ## Git 저장소 경로
-C:\workspace\dev_test_sync\
+환경별 (per-user). 일반적으로 `%USERPROFILE%\Documents\dev_test_sync\`
+(예: `C:\Users\최장희\Documents\dev_test_sync\`).
+Canonical path doc: `test-pc-worker/references/git-push-guide.md`
 
 이 저장소의 구조는:
 - requests/ : dev PC가 보낸 작업 요청이 들어있어. 읽기만 해.
@@ -118,7 +120,7 @@ APF 관련:
 
 1. test PC에서 Cowork 새 대화 열기
 2. 공유 폴더를 Cowork에 마운트 (폴더 선택):
-   `C:\workspace\dev_test_sync\`
+   `%USERPROFILE%\Documents\dev_test_sync\` (예: `C:\Users\최장희\Documents\dev_test_sync\`)
 3. 위 프롬프트 붙여넣기
 4. Cowork가 requests/ 폴더를 확인하고 새 요청을 처리하기 시작
 

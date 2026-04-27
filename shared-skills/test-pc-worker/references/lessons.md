@@ -24,7 +24,29 @@
 
 ## Entries (새 lesson 은 여기 이후에 추가)
 
-(현재 entry 없음 — skill 운영 중 발견 시 위 template 로 기록)
+## Lesson 2026-04-27-01 — Test PC dev_test_sync 경로 가정 오류
+
+**발생 맥락**: 19차 governance update 적용용 프롬프트를 dev PC 에서 작성할 때, Test PC 의 git repo 경로를 `C:\workspace\dev_test_sync` 로 가정 (test-pc-worker/SKILL.md line 14 의 "default" 표기 그대로 인용).
+
+**관찰된 증상**: Test PC 가 프롬프트 step 1 수행 시, 해당 경로 부재 발견 → 실제 deployment 경로 (`C:\Users\최장희\Documents\dev_test_sync`) 로 정정하여 진행.
+
+**원인 (확인됨)**: 
+1. `test-pc-worker/SKILL.md:14` 가 `C:\workspace\dev_test_sync` 를 "default" 로 표기. 그러나 실제 Test PC deployment 는 `%USERPROFILE%\Documents\dev_test_sync` 패턴 (Windows 기본 폴더 구조).
+2. `runtime/common.ps1` 는 이미 후보 자동 탐색 로직 보유 (3 candidates, USERPROFILE\Documents 포함) → runtime 은 정상 동작.
+3. 그러나 **인간/LLM 이 SKILL.md 의 "default" 단어를 신뢰**하여 프롬프트 / docs 를 작성. 이게 drift 원인.
+
+**대응**: SKILL.md + 4 reference docs 의 hardcoded `C:\workspace\dev_test_sync` 를 "환경별 (per-user)" + `%USERPROFILE%\Documents\dev_test_sync` 예시 + `git-push-guide.md` canonical pointer 로 변경. (2026-04-27 sync commit)
+
+**재발 방지**: 
+- Test PC 경로 관련 작성 시 **canonical = `test-pc-worker/references/git-push-guide.md`** 만 신뢰. 다른 docs 는 pointer.
+- INV-6 적용: 단일 canonical (git-push-guide.md) + 다른 곳은 portable expression (`%USERPROFILE%\...`) + canonical pointer.
+- Dev → Test PC 프롬프트 작성 시 경로를 hardcoded 하지 말고 git-push-guide.md 를 참조 + Test PC 측이 자체 적용 (auto-detect via common.ps1 도 fallback).
+
+**관련 request ID**: 없음 (dev PC governance directive)
+
+---
+
+(이후 새 lesson append)
 
 ---
 
