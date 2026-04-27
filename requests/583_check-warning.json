@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "perplexity",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://www.perplexity.ai",
+    "context": "Cycle 94 R-4: perplexity Experiment 2 — thread_url_slug set to empty string (5 occurrences). Hypothesis: empty slug prevents client navigation to non-existent /search/blocked-XXX → client renders inline on home page → warning appears.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 Network",
+        "2. Send prompt",
+        "3. Observe URL — does it stay on perplexity.ai/ (no navigation)? Does the warning text render inline?",
+        "4. If success: warning visible without redirect",
+        "5. If fail: report URL trail + console messages"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-4 perplexity Experiment 2 (empty thread_url_slug).",
+  "id": "583",
+  "created": "2026-04-27T02:23:36Z",
+  "attachments": []
+}
