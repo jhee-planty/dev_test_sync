@@ -142,7 +142,7 @@ endwhile
 
 → See `references/autonomous-execution-protocol.md` for Hard Rules 1-7 v3 + Empirical Comparison Pattern + Micro-Discussion Pattern + Polling Policy v2 usage.
 
-## Work Selection Algorithm v2 (2026-04-27 discussion-review consensus)
+## Work Selection Algorithm v2 (2026-04-27 18차 + 2026-04-28 20차 consensus)
 
 > Push-based decision making → Pull-based queue processing.
 > Idle 가 자율 수행 의 자연 종료 신호가 아닌, **service_queue 가 autonomous-doable next_action 미보유** 시에만 허용되는 명시 상태.
@@ -176,10 +176,45 @@ ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks (no Edit/Write/non-trivial Bas
 - Output: itemized list of service_queue with next_action + autonomous_doable count
 - Long-idle 허용 = autonomous_doable count == 0 증명
 
-### next_action Vocabulary
+## Service Status & Goal Accounting (2026-04-28 20차)
 
-`apf-operation/state/pipeline_state.json` 의 `_next_action_vocabulary` 필드 참조.
-새 next_action 도입 시 vocabulary 에 정의 추가.
+### Status enum (canonical schema: `cowork-remote/references/pipeline-state-schema.md`)
+
+```
+DONE | BLOCKED_diagnosed | BLOCKED_undiagnosed | NEEDS_LOGIN | TERMINAL_UNREACHABLE
+```
+
+**핵심 원칙 (D14 a/b/c)**:
+- **(a) 디버깅 = 작업 출력** — `BLOCKED_undiagnosed → BLOCKED_diagnosed` transition 이 진전 (DONE 만 진전 아님).
+- **(b) Architectural 한계 → engine extension / etap 기능 우회** — H3/QUIC 같은 한계는 force_h2 로 우회. 영구 EXCEPTION 금지.
+- **(c) Service characterization = 모든 발견 통합** — `cause_pointer` 가 가리키는 single per-service analysis doc 에 envelope/content-type/decoder/transport/auth 모든 발견 통합. secondary 분리 금지.
+
+### Goal accounting (single ratio)
+
+```
+Reachable progress = DONE / (TOTAL - TERMINAL_UNREACHABLE)
+```
+
+EXCEPTION subtraction 없음. H3 services 는 reachable (force_h2 적용 후 정상 inspect path).
+
+### next_action Vocabulary v2 (4 families)
+
+`apf-operation/state/pipeline_state.json` 의 `_next_action_vocabulary_v2` 필드 참조.
+
+```
+debug_envelope:*    — har_capture | envelope_diff | etap_log_diagnose | content_type_probe
+                    | schema_revise | server_log_inspect (/var/log/ai_prompt/ 분석)
+
+debug_decoder:*     — wrb_fr_layer | ws_body_layer | h2_streaming_body
+
+debug_http_layer:*  — transport_probe | force_h2 (etap QUIC blocking / alt-svc strip)
+
+apply_engine_fix:*  — wrb_fr_decoder | ws_body_inspector | (other engine work)
+
+defer:*             — *_user_har / user_login_provisioning / vpn_or_region_change / ...
+```
+
+새 verb 도입 시 vocabulary v2 에 정의 추가. v1 verbs 는 `[deprecated]` 표기.
 → **Canonical** (Polling Policy authoritative source): `~/.claude/memory/user-preferences.md` Polling Policy section. INV-6 Rule-of-3 준수.
 
 ## 제외 기능

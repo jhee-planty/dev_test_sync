@@ -69,18 +69,44 @@
 compact나 세션 재시작으로 대화 컨텍스트가 소실되어도, 이 필드에서 "마지막으로 뭘 했고
 다음에 뭘 해야 하는지" 복구할 수 있다. Phase 3 iteration 시작/완료 시 갱신한다.
 
-### service_queue status 값
+### service_queue status 값 (2026-04-28 v2 — 20차 discussion-review consensus)
 
-| status | 의미 |
-|--------|------|
-| `pending_check` | check-warning 테스트 대기 중 (자동 진행 가능) |
-| `waiting_result` | 요청 전송 완료, 결과 대기 중 |
-| `test_fail` | 테스트 실패 (수동 개입 필요) |
-| `needs_manual_action` | 자동 수정 불가, 사용자 개입 필요 |
-| `strike_3_review` | 3회 연속 실패, 전략 재검토 필요 |
-| `warning_shown_artifact_issue` | 경고 표시 성공이나 부수적 이슈 잔존 |
-| `excluded` | 자동화 불가 또는 구조적 제약으로 제외 |
-| `suspended` | Auto-SUSPEND — 같은 실패 3회 연속. 빌드 변경 시 해제 |
-| `done` | 완료 (done_services로 이동) |
+| status | 의미 | next_action 패밀리 |
+|--------|------|-------------------|
+| `DONE` | 완료 (사용자 화면에 경고 visible + envelope match). done_services 로 이동 | — |
+| `BLOCKED_diagnosed` | 진단 완료, fix path 정의됨. `cause_pointer` 필수 (per-service analysis doc 경로) | `apply_engine_fix:*` / `debug_envelope:schema_revise` / `debug_http_layer:force_h2` |
+| `BLOCKED_undiagnosed` | 진단 미완. 디버깅 verbs 큐잉 | `debug_envelope:*` / `debug_decoder:*` / `debug_http_layer:transport_probe` |
+| `NEEDS_LOGIN` | 로그인/인증 필요 (M4 user-required). 자율 진행 불가 | `defer:user_login_provisioning` |
+| `TERMINAL_UNREACHABLE` | 영구 도달 불가. `terminal_reason` 필수 ("possible reachable" 에서 제외) | — |
+
+`terminal_reason` enum (TERMINAL_UNREACHABLE 시):
+- `service_dead` (서비스 종료 / 호스트 deadkey)
+- `region_blocked_KR` (한국 region 접근 불가)
+- `decommissioned_replaced_by:{name}` (다른 서비스로 대체됨)
+- `mobile_only_no_web_endpoint` (web 엔드포인트 부재)
+- `out_of_scope_explicit` (사용자 명시 제외)
+
+**필드 schema (status entry)**:
+```json
+{
+  "service": "{service_id}",
+  "priority": 5,
+  "status": "BLOCKED_diagnosed",
+  "next_action": "debug_http_layer:force_h2",
+  "cause_pointer": "apf-operation/services/{service_id}_analysis.md",
+  "terminal_reason": null,
+  "task_id": null
+}
+```
+
+> **Out-of-scope D14 (a/b/c) 원칙** (INTENTS §5 2026-04-28 20차):
+> (a) 디버깅 활동 = 작업 출력. status transition (undiagnosed → diagnosed) 가 진전.
+> (b) Architectural 한계 → engine extension / etap 기능 우회 (영구 EXCEPTION 금지).
+> (c) Service characterization = 모든 발견 통합 (secondary 분리 금지).
+> 본 enum 이 (a)(b) 를 schema 에서 강제. (c) 는 cause_pointer 가 가리키는 single doc 으로 강제.
+
+**Goal accounting**: `DONE / (TOTAL - TERMINAL_UNREACHABLE)`. Single ratio. EXCEPTION 미사용.
+
+> 과거 9-status enum (`pending_check`, `waiting_result`, `test_fail`, `needs_manual_action`, `strike_3_review`, `warning_shown_artifact_issue`, `excluded`, `suspended`, `done`) 은 2026-04-28 v2 로 위 5-enum 에 통합됨. `done` → `DONE`. 나머지는 BLOCKED_* / NEEDS_LOGIN / TERMINAL_UNREACHABLE 로 매핑. `pending_check` / `waiting_result` 는 request lifecycle (pending_requests 필드) 로 분리됨.
 
 > `stalled` status 는 2026-04-22 policy α 로 제거됨 (skill 이 "결과 도착까지 반복" 로 대체).
