@@ -46,6 +46,37 @@
 
 ---
 
+## Lesson 2026-04-27-02 — write-result.ps1 PowerShell 5.1 read 가 UTF-8 한글/이모지 파괴
+
+**발생 맥락**: 19차 governance Subagent Dispatch 패턴으로 593/594/595/596 처리 중. Subagent 가 verdict + STRUCTURED_FINDINGS 반환 → main 이 Write tool 로 result.json (UTF-8 인코딩) 작성 → `write-result.ps1` validation 실행. 특히 596 결과는 한글+이모지 (`⚠️`, `민감`, `보안`) 포함.
+
+**관찰된 증상**:
+- 593: em-dash (`—`) 가 `??` 로 치환 (덜 심각)
+- 596: 한글 + 이모지가 cp949 mojibake 로 파괴 — `⚠️` → `?좑툘`, `민감` → `誘쇨컧`, `보안` → `蹂댁븞`. 의미 완전 손실. 다음에 dev PC 가 result 분석 시 keyword match 불가능 (warning_keywords_matched 가 mojibake 문자열 array 가 됨).
+- write-result.ps1 자체는 6 필수 필드 validation 통과 + state.last_processed_id 갱신 정상 → script 는 "성공" 반환.
+- 따라서 만약 main 이 자동 write-result 결과를 신뢰하고 push 하면, 깨진 한글이 dev PC 로 전달.
+
+**원인 (확인됨)**:
+- `write-result.ps1` line 21: `$raw = Get-Content $ResultJsonPath -Raw` — Windows PowerShell 5.1 의 `Get-Content` 기본 인코딩이 시스템 코드페이지 (한국어 Windows = cp949 / EUC-KR). UTF-8 BOM 없는 파일은 cp949 로 해석되어 mojibake.
+- 그 후 `ConvertFrom-Json` → `ConvertTo-Json` round-trip 으로 mojibake 문자열이 그대로 직렬화되어 다시 disk 에 쓰임 (`Set-Content -Encoding UTF8` 이 적용되지만 source 가 이미 깨진 상태).
+- 결과: input UTF-8 → mid cp949-as-UTF-8 (mojibake) → output UTF-8-encoded mojibake. 데이터 lossy.
+- 부수 증상: ASCII-safe 텍스트도 single-quote (`'`) 가 `'` unicode escape 로 verbose 직렬화 (PowerShell `ConvertTo-Json` 기본 동작). 무해하지만 가독성 떨어짐.
+
+**대응**:
+- write-result.ps1 실행 후 main 이 즉시 Write tool 로 원본 UTF-8 내용을 다시 덮어쓰기 (state.last_processed_id 는 이미 갱신되어 그대로 유지).
+- 593: em-dash → `--` 로 사전 치환해서 corruption 회피 시도 (effective for em-dash, but doesn't prevent 한글 손실).
+- 596: 즉시 Write 로 원본 복원.
+
+**재발 방지**:
+- **즉각 (workaround)**: Subagent dispatch 패턴 사용 시, write-result.ps1 호출 후 항상 Write tool 로 result.json 을 UTF-8 로 재기록. 이 단계를 SKILL §3 B.4 흐름에 명시하면 좋음.
+- **근본 해결 (suggested patch)**: write-result.ps1 line 21 을 `Get-Content $ResultJsonPath -Raw -Encoding UTF8` 로 변경. (Set-Content 는 이미 -Encoding UTF8 사용 중이므로 일관성 회복.)
+- **추가 hardening**: ConvertTo-Json 에 `-EscapeHandling EscapeNonAscii:$false` 옵션 (PS 7+ 만 지원) — 5.1 환경에서는 효과 없음. 5.1 호환을 위해서는 한글/이모지 보존 위해 read 측 -Encoding UTF8 만 fix 하면 충분.
+- **대안**: write-result.ps1 의 round-trip 자체를 validation-only 로 단순화 (input 파일 변형 금지). 6 필수 필드 검증 + state 갱신만 수행하고 disk write skip. 이러면 인코딩 round-trip 문제 자체가 사라짐.
+
+**관련 request ID**: #593 (em-dash), #596 (한글+이모지 — most severe), #594/595 (verbose unicode escapes 무해)
+
+---
+
 (이후 새 lesson append)
 
 ---
