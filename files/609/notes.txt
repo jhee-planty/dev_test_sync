@@ -1,0 +1,50 @@
+Cycle 95 R-1 — gamma_sse_v3 verification (request #609)
+=============================================================
+
+VERDICT: FAILED — engine v3 still does NOT deliver visible response headers to the browser,
+AND we now have the actual root cause from the Console.
+
+SMOKING GUN (Console error):
+  Access to fetch at 'https://ai.api.gamma.app/ai/v2/generation' from origin
+  'https://gamma.app' has been blocked by CORS policy:
+  The value of the 'Access-Control-Allow-Credentials' header in the response is ''
+  which must be 'true' when the request's credentials mode is 'include'.
+
+  POST https://ai.api.gamma.app/ai/v2/generation net::ERR_FAILED
+  Uncaught (in promise) TypeError: Failed to fetch (ai.api.gamma.app)
+
+WHY DEVTOOLS SHOWS 0 RESPONSE HEADERS:
+  This is NOT proof that the engine emits 0 headers.
+  When Chrome blocks a CORS preflight/credentialed-mode failure at the network layer,
+  it surfaces the request as "(failed) CORS error" and the response-headers section
+  reads "(0)" because Chrome refuses to expose them to the page (and to DevTools).
+  v2's "0 headers" symptom was the SAME root cause (CORS), not an engine emission bug.
+
+WHAT v3 ACTUALLY CHANGED (and didn't fix):
+  v3 simplified Cache-Control / removed X-Accel-Buffering / added X-Content-Type-Options.
+  But the missing piece is Access-Control-Allow-Credentials: true.
+  The engine likely strips it (or never injects it) on the intercepted PII-block response,
+  while the request rides on credentials: 'include' (cookies/session).
+  Browser-side strict CORS check: ACAC must equal 'true' for credentialed fetches.
+  Without it, Chrome wipes the entire response — body AND headers — from JS.
+
+EXPECTED SECONDARY EVIDENCE:
+  - render-generation request also failed (CORS) immediately after — same origin.app pattern.
+  - 6 console errors total, all variants of the same Failed to fetch / TypeError chain.
+
+WHY WARNING DIDN'T RENDER:
+  gamma SSE handler never received the warning event because the entire fetch promise
+  rejected with TypeError before any chunk was readable. There is no schema/parsing path
+  the engine can take here — the issue is purely in the response-header layer.
+
+NEXT-STEP HYPOTHESIS for v4:
+  Engine PII-block path must inject:
+    Access-Control-Allow-Origin: https://gamma.app (echo Origin, not "*")
+    Access-Control-Allow-Credentials: true
+    (plus any Vary: Origin already there)
+  Compare with chatgpt working response — chatgpt likely sets ACAC=true OR uses
+  credentials: 'omit' on its request (so the constraint doesn't apply).
+
+FIRST-RESPONSE-FROM-ORIGIN check:
+  Initial gamma.app/create/generate page load returned 200 (h2) — engine is NOT
+  generally broken, only the AI v2 endpoint's PII-block response is missing CORS headers.

@@ -1,0 +1,11 @@
+=== Response tab ===
+"Failed to load response data
+No data found for resource with given identifier"
+
+=== EventStream ===
+Not present (no events received — request was CORS-blocked before body could be parsed).
+
+=== Page render ===
+Outline section ("윤곽선") shows a single empty card with only the literal text "1".
+Footer reads "총 카드 1개" (1 total card).
+Browser ctrl+F search for "보안 경고" returns 0/0 matches — warning NOT rendered anywhere on the page.

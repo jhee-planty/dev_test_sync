@@ -1,0 +1,37 @@
+{
+  "request_id": "609",
+  "service_name": "gamma",
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "status_detail": "v3 header-simplification fix did NOT solve the problem -- but root cause is finally diagnosed. v2's '0 response headers' symptom was NOT an engine H2 emission bug; it is browser CORS rejection. Chrome console explicitly: \"Access to fetch at 'https://ai.api.gamma.app/ai/v2/generation' from origin 'https://gamma.app' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Credentials' header in the response is '' which must be 'true' when the request's credentials mode is 'include'.\" Both /ai/v2/generation and /ai/v2/render-generation now labeled '(failed) CORS error' in Network panel. Because gamma frontend uses credentials: 'include', Chrome strict-CORS strips entire response (body + headers) when ACAC is not exactly 'true' -- so v2 also showed 0 headers for the same reason, NOT because of Cache-Control / X-Accel-Buffering. v3's changes (Cache-Control: no-store, removed X-Accel-Buffering, added X-Content-Type-Options: nosniff) were therefore irrelevant.",
+  "started_at": "2026-04-28T07:50:00Z",
+  "completed_at": "2026-04-28T07:56:00Z",
+  "duration_seconds": 360,
+  "verdict_subagent": "FAILED",
+  "warning_rendered": false,
+  "response_headers_count": 0,
+  "header_names_seen": [],
+  "eventstream_events_seen": "no (0 events -- fetch promise rejected before any chunk readable)",
+  "errors_observed": [
+    "Console: Access to fetch at 'https://ai.api.gamma.app/ai/v2/generation' from origin 'https://gamma.app' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Credentials' header in the response is '' which must be 'true' when the request's credentials mode is 'include'.",
+    "POST https://ai.api.gamma.app/ai/v2/generation net::ERR_FAILED",
+    "Uncaught (in promise) TypeError: Failed to fetch",
+    "Network panel labels both /ai/v2/generation and /ai/v2/render-generation as '(failed) CORS error'"
+  ],
+  "root_cause_hypothesis": "Real missing piece is `Access-Control-Allow-Credentials: true` (and likely `Access-Control-Allow-Origin: https://gamma.app` echoing the Origin instead of '*'). Because gamma's frontend uses credentials: 'include', Chrome strict-CORS strips the entire response (body + headers) when ACAC is not exactly 'true'. Engine v4 must inject ACAC=true on the PII-block intercepted response. ChatGPT likely works because it either sets ACAC=true or its frontend uses credentials: 'omit'.",
+  "recommendation_for_dev": "Engine v4 for gamma must add Access-Control-Allow-Credentials: true on the intercepted PII-block response, and Access-Control-Allow-Origin should echo Origin (https://gamma.app) instead of '*'. Compare with chatgpt intercept response headers as the working baseline.",
+  "artifacts": [
+    "files/609/01_before.png",
+    "files/609/02_devtools_network.png",
+    "files/609/03_response_headers.png",
+    "files/609/04_eventstream.png",
+    "files/609/05_after.png",
+    "files/609/06_warning_check.png",
+    "files/609/response_headers.txt",
+    "files/609/response_body.txt",
+    "files/609/notes.txt"
+  ],
+  "notes": "Cycle 95 R-1 -- v3 header simplification verify. Result is FAIL but extremely informative: re-frames the entire problem from 'engine emits 0 headers' to 'browser strips them due to missing ACAC'. Subagent duration 6m exceeded 5min soft, within 8min hard.",
+  "request_received_at": "2026-04-27T23:16:18Z",
+  "git_pull_at": "2026-04-28T07:50:00Z"
+}
