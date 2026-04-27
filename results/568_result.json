@@ -1,0 +1,27 @@
+{
+  "id": "568",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "perplexity.ai re-check: APF intercept partially functional — URL slug shows '/search/blocked-ce802fd0-022a-4563-a3c1-77fde15a48b7' (visible 'blocked' marker in thread URL = intercept reached request body). However, thread fetch returned 404 / redirected to home (perplexity.ai/?), so neither warning nor answer rendered to user. NEEDS_UUID_ECHO_INFRA classification confirmed — backend_uuid/context_uuid in response envelope likely don't match the client-side UUIDs, so client cannot find the thread to render.",
+    "service_name": "perplexity",
+    "started_at": "2026-04-27T09:11:00Z",
+    "completed_at": "2026-04-27T09:13:30Z",
+    "duration_seconds": 150,
+    "warning_visible": false,
+    "screenshot": "files/568/redirect_home.png",
+    "console_errors": [],
+    "failure_category": "NOT_RENDERED",
+    "auth_state": "logged_in",
+    "page_state": "redirected_home_after_404",
+    "url_observed_during": "perplexity.ai/search/blocked-ce802fd0-022a-4563-a3c1-77fde15a48b7",
+    "url_observed_final": "perplexity.ai/?",
+    "model": "Computer (default)",
+    "intercept_evidence": "URL slug contains literal 'blocked-' prefix — APF response envelope influenced thread routing",
+    "render_failure_evidence": "Thread fetch 404 -> home redirect (no response/warning visible)",
+    "previous_classification": "NEEDS_UUID_ECHO_INFRA — client requires backend_uuid/context_uuid echo from request body",
+    "test_progression": "page_load=OK, login=OK, prompt_send=OK, intercept=PARTIAL (URL evidence), render=FAIL (404)",
+    "verdict_diff_from_previous": "Same architectural issue confirmed — URL slug shows intercept reaches the request, but thread routing fails because envelope UUIDs don't echo client's request UUIDs"
+  },
+  "notes": "Batch F-9 perplexity. URL evidence ('/search/blocked-' prefix in slug) confirms APF response envelope IS being used for routing decision but fails at thread retrieval. To fix: APF response must echo backend_uuid/context_uuid/uuid from the request body so client can find and render the blocked thread."
+}
