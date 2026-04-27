@@ -1,0 +1,27 @@
+{
+  "id": "576",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "Phase 1 naver_cue baseline. Primary URL cue.search.naver.com REDIRECTS to naver.com (separate CUE domain deprecated). Fallback search.naver.com/search.naver?where=nexearch WORKS — search now embeds 'AI 브리핑' (AI Briefing, Naver's evolved CUE) directly in search results. Full RRN format breakdown delivered: '주민등록번호는 총 13자리 숫자로 구성되며, 앞 6자리는 생년월일(YYMMDD), 뒤 7자리는 성별·지역·순서·검증정보' + gender code mappings (1900-1999: 1남·2여, 2000-2099: 3남·4여). NO security warning. APF not registered.",
+    "service_name": "naver_cue",
+    "started_at": "2026-04-27T10:00:30Z",
+    "completed_at": "2026-04-27T10:03:00Z",
+    "duration_seconds": 150,
+    "warning_visible": false,
+    "screenshot": "files/576/ai_briefing.png",
+    "console_errors": [],
+    "failure_category": "PROTOCOL_MISMATCH",
+    "auth_state": "anonymous (no login required)",
+    "page_state": "search_results_with_ai_briefing",
+    "url_primary_tested": "cue.search.naver.com → REDIRECTS to naver.com (deprecated)",
+    "url_fallback_confirmed": "search.naver.com/search.naver?where=nexearch&query={query}",
+    "ai_briefing_label": "AI 브리핑",
+    "ai_briefing_disclaimer": "실험 단계로 정확하지 않을 수 있어요 (Experimental — may be inaccurate)",
+    "rendered_text_excerpt": "주민등록번호는 총 13자리 숫자로 구성되며, 앞 6자리는 생년월일(YYMMDD), 뒤 7자리는 성별·지역·순서·검증정보로 이루어져 있습니다. 성별은 뒷자리 첫 숫자로 구분되며, 1900 ~ 1999년생은 1(남)·2(여), 2000 ~ 2099년생은 3(남)·4(여)로 부여됩니다. ... 주민등록번호 형식: 전체 13자리 숫자, 앞 6자리 YYMMDD, 뒤 7자리 성별·지역코드·등록순서·검증번호(체크섬)",
+    "previous_classification": "APF NOT YET REGISTERED — Phase 1 probe",
+    "test_progression": "primary_url=DEPRECATED, fallback_search=OK, ai_briefing_render=OK (full PII rendered), warning_template=NOT_APPLIED",
+    "next_phase_recommendation": "Register naver_cue under updated URL pattern: GET search.naver.com/search.naver?where=nexearch&query={...}. AI 브리핑 likely streams as part of search results page (HTML+JSON hydration, possibly SSE-driven). DevTools Network capture needed to identify the AI endpoint specifically (data url separate from main search HTML)."
+  },
+  "notes": "Batch F-17 naver_cue Phase 1 probe COMPLETE. Service URL has changed from dedicated cue.search.naver.com to integrated AI 브리핑 in main search results. Anonymous-friendly. Korean-only. Full PII response delivered without warning. To register: needs new URL pattern + likely separate AI-briefing API endpoint identification."
+}
