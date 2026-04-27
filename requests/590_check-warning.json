@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "notion",
+    "prompt": "What is the capital of South Korea?",
+    "expected_text": "Seoul",
+    "url": "https://www.notion.so",
+    "context": "Cycle 94 R-11: notion BENIGN CAPTURE (parallel pivot from perplexity iteration). Safe prompt — APF should NOT trigger block. Goal: capture FULL successful notion AI response schema via DevTools EventStream/Network → identify required fields for notion_ndjson envelope rewrite. This applies the SAME ground-truth methodology that gave us perplexity v3/v5 templates.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Open notion.so/chat (logged in)",
+        "3. Send safe prompt 'What is the capital of South Korea?'",
+        "4. Wait for AI response render",
+        "5. Find the chat API request → inspect Response/Stream tab",
+        "6. Capture: Content-Type, response format (NDJSON? SSE? JSON array?)",
+        "7. List event/line sequence + key field names per event",
+        "8. ESPECIALLY: identify completion-signal fields (status/done/finished?) and content-render fields (text/answer/markdown?)"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-11 notion benign capture (Exp7 ground truth for notion_ndjson rewrite).",
+  "id": "590",
+  "created": "2026-04-27T03:12:26Z",
+  "attachments": []
+}
