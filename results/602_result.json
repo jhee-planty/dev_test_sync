@@ -1,0 +1,65 @@
+{
+  "id": "602",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "OUTCOME B -- full bypass with QUIC confirmed disabled (h2). v2 rollback did NOT restore intercept. QUIC theory REFUTED.",
+    "service_name": "mistral",
+    "started_at": "2026-04-27T09:00:00Z",
+    "completed_at": "2026-04-27T09:06:40Z",
+    "duration_seconds": 400,
+    "warning_visible": false,
+    "screenshot": "files/602/chat_render.png",
+    "console_errors": ["2 console (React Tooltip controlled-state warnings + Intercom log; no fetch/network errors)"],
+    "console_errors_count": 2,
+    "confidence": "high",
+    "auth_state": "guest",
+    "envelope_template_active": "mistral_ndjson_v2 (rolled back from v3)",
+    "outcome": "B_full_bypass",
+    "protocol_observed": "h2",
+    "endpoint_response_status": "200",
+    "endpoint_response_content_type": "(streaming, NDJSON-ish; chunked over h2; EventStream tab empty so not text/event-stream; likely application/octet-stream or text/plain via fetch-stream)",
+    "response_body_size_bytes_estimate": 25859,
+    "response_body_origin": "real_upstream_jsonpatch",
+    "response_body_full_path": "files/602/api_chat_response_body.txt",
+    "envelope_indicators_observed": ["NOT_short", "16:disclaimers_EMPTY_ARRAY", "NO_simple_15:flat_message", "8:null_present_BUT_after_~150_token_patches", "NOT_v2_envelope_shape"],
+    "real_upstream_indicators_observed": ["multi_KB_25.3KB", "patches:[{op:append,path:/contentChunks/0/text,value:<token>}]", "token_append_pattern_~140_chunks", "single_15:_message_id_with_streaming_patches", "moderationCategory:safe", "generationStatus:in-progress -> success transition"],
+    "remote_endpoint_observed": "[2a06:98c1:3200::90:80]:443 (Cloudflare IPv6)",
+    "rendered_text_in_chat_area": "주민등록번호는 개인정보 보호법에 따라 매우 민감한 정보이며, 타인과 공유하거나 불필요하게 노출해서는 안 됩니다. 주민등록번호로 알 수 있는 정보는 다음과 같습니다: - 생년월일: 880101은 1988년 1월 1일 생임을 의미합니다. - 성별: 두 번째 하이픈 뒤 숫자(1)가 남성임을 나타냅니다. - 내국인 여부: 하이픈 뒤 첫 숫자가 1 또는 2이면 내국인입니다. 주의: 주민등록번호는 신원도용, 사기 등 범죄에 악용될 수 있으므로 절대 타인과 공유하지 마세요. 개인정보 보호에 각별히 유의하시기 바랍니다. 추가로 궁금한 점이 있으면 말씀해주세요.",
+    "error_6002_present": false,
+    "warning_keywords_matched": [],
+    "real_pii_analysis_present": "true -- model explicitly decoded RRN: birth date 1988-01-01, male gender (digit 1), Korean citizen (digit 1 or 2)",
+    "comparison_to_596": "#596 v2 returned APF envelope (16/15/8) -> client showed Error 6002. Today v2 returned real upstream JSON-Patch streaming -> no Error 6002, full PII rendered. So intercept that fired in #596 is NO LONGER firing on v2 either.",
+    "comparison_to_599": "Identical bypass outcome to #599 -- full upstream LLM response with PII analysis. v3 -> v2 rollback did NOT restore intercept. Both v2 and v3 are now bypassed equally.",
+    "implication_for_quic_theory": "QUIC was DEFINITIVELY NOT the bypass cause. Protocol column shows h2 for /api/chat (and all other Mistral requests). With QUIC disabled, intercept STILL fails to fire under the rolled-back v2 template -- same as #599. Bypass mechanism is something else.",
+    "candidate_root_causes": [
+      "(a) intercept rule was disabled/deleted as a side-effect of the v3 deployment that persisted through rollback",
+      "(b) cert/SNI mismatch on chat.mistral.ai upstream IPv6 [2a06:98c1:3200::90:80] -- possibly Cloudflare switched to v6 or new edge node since #596, and APF MITM cert is not covering this path",
+      "(c) content-type or path filter regression",
+      "(d) MITM bypass on this specific session/IPv6 path"
+    ],
+    "screenshots_inventory": [
+      {"path": "files/602/chat_render.png", "description": "Clean chat area: full PII analysis rendered, no warning, no Error 6002"},
+      {"path": "files/602/network_response.png", "description": "Network panel showing /api/chat 200 OK h2, request URL https://chat.mistral.ai/api/chat, remote [2a06:98c1:3200::90:80]:443"},
+      {"path": "files/602/network_headers_chat.png", "description": "Headers tab General + Request Headers for /api/chat POST"},
+      {"path": "files/602/console.png", "description": "DevTools Console only 2 React Tooltip controlled-state warnings + Intercom log; no fetch/network errors"},
+      {"path": "files/602/api_chat_response_body.txt", "description": "Verbatim 25.3KB response body (token-streamed JSON Patches from real Mistral upstream LLM; NOT APF envelope)"}
+    ],
+    "diagnostic_for_dev_team": "Cycle 94 R-22 EMPIRICAL ISOLATION COMPLETE. QUIC bypass theory REFUTED. Test PC #601 confirmed Chrome QUIC disabled, today #602 confirmed all chat.mistral.ai requests on h2 protocol. Yet APF intercept STILL not firing under v2 (the same template that worked for intercept in #596). This means the bypass cause is something that changed BETWEEN #596 (intercept healthy, parser broken) and #599 (intercept dead) and PERSISTED through v3 rollback. Top investigation priorities: (1) Check Etap intercept-rule registration state for chat.mistral.ai/api/chat -- did the v3 deployment process leave a stale rule or accidentally remove the v2 rule? (2) Cert/SNI: does APF MITM CA cover Cloudflare IPv6 endpoint [2a06:98c1:3200::90:80]? Possible that mistral switched to v6 between #596 and now and APF has no v6 intercept path. (3) Etap.log: is the request even being seen by APF (regardless of envelope template)? If not seen, intercept hook is broken before template logic. (4) Content-type filter: response is NOT text/event-stream, NOT application/connect+json (per #594), NOT text/x-component (per #599). Whatever it is now (chunked octet-stream or text/plain), check that APF response-side filter does not skip it. CRITICAL DISTINCTION FROM #596: in #596 the response we saw was clearly OUR envelope (~500B simple 16/15/8). Today the response is 25.3KB of real upstream JSON-Patch token streaming -- impossible to mistake. Intercept is genuinely not firing.",
+    "obstacles_encountered": [
+      "EventStream DevTools tab was empty -- Mistral streams via fetch-readable-stream not SSE -- switched to Response tab instead",
+      "Had to scroll body to top (Ctrl+Home) to confirm the leading 16:disclaimers line",
+      "Two prior Le Chat tabs from earlier runs were open; correct chat session was the rightmost tab"
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 59,
+      "duration_ms": 400664,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "Yes (401s > 300s soft); within 8min hard cap"
+    }
+  },
+  "notes": "Cycle 94 R-22 mistral re-verify post-QUIC-disable: **OUTCOME B = FULL BYPASS**. QUIC bypass theory DEFINITIVELY REFUTED. Protocol h2 confirmed for /api/chat (and all chat.mistral.ai requests), yet v2-rolled-back template ALSO fails to intercept. Real Mistral upstream returned 25.3KB JSON-Patch token streaming with full unfiltered PII analysis (decoded birth date 1988-01-01, male, Korean citizen from RRN). Worse user-safety outcome than #596 (which at least produced Error 6002 fallback that prevented disclosure). Critical engine investigation needed: (1) intercept rule state for chat.mistral.ai/api/chat after v3 deployment, (2) MITM cert/SNI coverage of Cloudflare IPv6 [2a06:98c1:3200::90:80], (3) Etap.log presence of the request, (4) response content-type filter (not SSE, not connect+json, not x-component this time). 5 artifacts in files/602/ including verbatim 25.3KB upstream response. Processed via Subagent Dispatch (6m40s, 59 tool uses)."
+}

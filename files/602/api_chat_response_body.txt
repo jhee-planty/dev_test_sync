@@ -1,0 +1,144 @@
+﻿16:{"json":{"disclaimers":[]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"replace","path":"/","value":{"role":"assistant","content":"","contentChunks":null,"turn":0,"createdAt":"2026-04-27T09:01:21.578Z","agentId":null,"agentsApiAgentId":null,"chatId":"aff4239e-a01d-48ae-9a84-fa6775f14d8b","createdById":null,"files":[],"id":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","isAcceleratedAnswer":false,"moderationCategory":null,"reaction":"neutral","references":null,"memories":null,"followups":[],"status":"active","generationStatus":"in-progress","parentId":"00ffde7a-fc9d-4f0a-9701-00a00e5adb9f","parentVersion":0,"version":0,"nextVersion":null,"prevVersion":null,"versionCount":1,"visibility":"private","model":null,"quotedContent":null,"workflowExecution":null}}]},"meta":{"values":{"patches.0.value.createdAt":["Date"]}}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"replace","path":"/contentChunks","value":[{"type":"text","text":"주","_context":null}]}]},"meta":{"values":{"patches.0.value.0._context":["undefined"]}}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"민"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"등"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"록번호는"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 개인"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"정"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"보"}]}}
+15:{"json":{"type":"message","messageId":"00ffde7a-fc9d-4f0a-9701-00a00e5adb9f","messageVersion":0,"patches":[{"op":"replace","path":"/moderationCategory","value":"safe"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 보호"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"법"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"에"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 따라"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 매우"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 민"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"감"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"한 정보"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"이며,"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 타"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"인과"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 공"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"유"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"하거나"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 불"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"필"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"요"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"하게"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 노"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"출"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"해서"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"는"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 안 됩니다"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":". 주민"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"등"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"록번호로"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 알"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 수"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 있는"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 정보"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"는"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 다음과"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 같습니다"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":":\n\n"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"-"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" **생"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"년"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"월"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"일"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"**:"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 8"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"801"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"01은 "}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"1988"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"년 "}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"1월 1"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"일 생"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"임을"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 의미"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"합니다"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":".\n"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"- **성"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"별"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"**: 두"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 번째"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 하"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"이"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"픈"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 뒤"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 숫"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"자"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"("}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"1)가"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 남성"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"임을"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 나타"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"냅니다"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":".\n"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"- **내"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"국"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"인"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 여"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"부"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"**: 하"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"이"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"픈"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 뒤"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 첫"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 숫자가"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 1"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 또는"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 2이면"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 내"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"국인"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"입니다"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":".\n\n"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"**주의"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"**:"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 주민"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"등"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"록번호는"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 신"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"원"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"도"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"용"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":", 사"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"기"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 등"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 범죄"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"에 악"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"용될"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 수 있"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"으므로"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 절대"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 타"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"인과"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 공"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"유하지"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 마"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"세요"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":". 개인"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"정보"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 보호"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"에"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 각"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"별"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"히"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 유의"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"하"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"시기"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 바"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"랍"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"니다"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"."}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 추가"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"로"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 궁금"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"한 점이"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 있으면"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":" 말씀"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"해주"}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"append","path":"/contentChunks/0/text","value":"세요."}]}}
+15:{"json":{"type":"message","messageId":"6368f0bf-7ddf-4b70-9647-fe7cac7cb210","messageVersion":0,"patches":[{"op":"replace","path":"/generationStatus","value":"success"}]}}
+8:null
