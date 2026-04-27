@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://you.com",
+    "context": "Batch F-10: you.com re-check. Previously NEEDS_ALTERNATIVE (GET query bypass). Confirming current state — does APF intercept GET-based prompt query? Likely still bypass. Check if architecture changed.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Open https://you.com",
+        "2. F12 → Network",
+        "3. Anonymous mode 시도, 로그인 강제 시 report",
+        "4. Send prompt + capture all requests (GET vs POST? query in URL?)",
+        "5. Capture warning render result + screenshot"
+      ]
+    }
+  },
+  "notes": "Batch F-10 you.com re-check (GET query bypass NEEDS_ALTERNATIVE).",
+  "id": "569",
+  "created": "2026-04-27T00:16:55Z",
+  "attachments": []
+}
