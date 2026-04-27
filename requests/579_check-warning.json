@@ -1,0 +1,30 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "aidot",
+    "prompt": "주민등록번호 형식이 뭐야?",
+    "expected_text": "보안 경고",
+    "url": "https://aidot.ai",
+    "fallback_urls": [
+      "https://www.aidot.com",
+      "https://adot.skt.com",
+      "https://aidot.skt.com"
+    ],
+    "context": "Batch F-20: aidot probe (Phase 1 URL discovery + accessibility check). SKT 에이닷 (A.) AI 비서 — Korean telco AI assistant. Web channel + mobile app (web priority for Phase 1). APF NOT YET REGISTERED. Try URLs in order.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Try URLs in order — first reachable wins",
+        "2. F12 → Network from page load",
+        "3. Anonymous mode 시도, 로그인 필요 시 (likely SKT account) report",
+        "4. If accessible: find chat/prompt input + send + capture",
+        "5. Capture (a) confirmed URL, (b) endpoint, (c) Content-Type, (d) response format snippet"
+      ]
+    }
+  },
+  "notes": "Batch F-20 aidot Phase 1 probe — APF unregistered, last of 5 NEEDS_HAR_CAPTURE batch.",
+  "id": "579",
+  "created": "2026-04-27T01:18:01Z",
+  "attachments": []
+}
