@@ -1,0 +1,26 @@
+{
+  "id": "570",
+  "status": "done",
+  "result": {
+    "overall_status": "PARTIAL",
+    "status_detail": "notion AI accessible (logged in) — new chat URL generated (notion.so/chat?t=34f7e0fa91d480d7a58900a99f4d0c96&wfv=chat). User prompt rendered in chat as user bubble, but AI response area remained EMPTY for 15s+ (silent hang). No warning, no answer, no error. Confirms NEEDS_ALTERNATIVE / H2 multi-stream classification — APF interaction with notion's H2 multi-stream pattern yields silent block.",
+    "service_name": "notion",
+    "started_at": "2026-04-27T09:21:00Z",
+    "completed_at": "2026-04-27T09:25:00Z",
+    "duration_seconds": 240,
+    "warning_visible": false,
+    "screenshot": "files/570/silent_hang.png",
+    "console_errors": [],
+    "failure_category": "NOT_RENDERED",
+    "auth_state": "logged_in",
+    "page_state": "chat_open_with_user_message_no_response",
+    "url_observed": "notion.so/chat?t=34f7e0fa91d480d7a58900a99f4d0c96&wfv=chat",
+    "model": "자동 (auto)",
+    "send_method_note": "First Type+Enter attempt: input cleared but no message rendered; explicit Click + retry second time succeeded (user bubble appeared)",
+    "render_path": "user-bubble-only (AI response area blank after 15s+)",
+    "previous_classification": "NEEDS_ALTERNATIVE (H2 multi-stream)",
+    "test_progression": "page_load=OK, login=OK, ai_chat_open=OK, prompt_send=OK (after retry), ai_response=SILENT_HANG",
+    "verdict_diff_from_previous": "Same architectural issue confirmed — H2 multi-stream (multiple parallel streams) prevents APF from injecting response, AI server output also blocked from rendering = silent block"
+  },
+  "notes": "Batch F-11 notion AI. User prompt visible but AI response empty — silent hang. notion.so uses HTTP/2 multi-stream pattern where AI completion arrives via parallel streams; APF response envelope cannot be assembled correctly. To fix: separate H2 multi-stream handler or pre-completion intercept point."
+}
