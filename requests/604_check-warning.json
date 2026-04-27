@@ -1,0 +1,30 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "zeta",
+    "prompt": "What is the capital of South Korea?",
+    "expected_text": "Seoul",
+    "url": "https://zeta.com",
+    "context": "Cycle 94 R-24: zeta phase2 registration HAR capture (autonomous-doable per pipeline queue pri 18). Zeta needs DB registration (currently not in ai_prompt_services). Goal: capture full HAR + identify endpoint/path/protocol/format for service entry creation. Note: 'zeta' may refer to zeta.ai or another zeta service — please discover the correct URL during the test.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Find zeta AI service: try zeta.ai, zeta.app, etc. — discover correct domain",
+        "3. Send safe prompt 'What is the capital of South Korea?'",
+        "4. Wait for AI response render",
+        "5. Capture: full URL of streaming endpoint, request method, request headers (Content-Type, Accept), response Content-Type, response format",
+        "6. Identify: prompt-carrying endpoint vs answer-streaming endpoint (split-stream or single-stream)",
+        "7. Capture full response body sample (first ~3KB)",
+        "8. List event/chunk sequence + completion signal (done event? terminator?)",
+        "9. Record domain_patterns for DB INSERT (likely zeta.ai or similar)",
+        "10. Capture rendered HTML container selector for AI text"
+      ]
+    }
+  },
+  "notes": "Cycle 94 R-24 zeta service discovery + benign HAR capture for DB registration. 처음 등록되는 서비스이므로 endpoint discovery 필요.",
+  "id": "604",
+  "created": "2026-04-27T09:45:45Z",
+  "attachments": []
+}
