@@ -1,0 +1,27 @@
+[Captured from chat.mistral.ai/api/chat Response tab — abridged head + key markers]
+
+Line 1: 16:{"json":{"disclaimers":[]}}
+Line 2-3: Initial 15: patches with op:replace path:/ value:{full message obj with role, content="", contentChunks=null, chatId, parentId="8383fa59-..." (NOT null — populated by Mistral itself), id="9f57ac8e-..." messageId, generationStatus:"in-progress", createdAt:"2026-04-27T07:58:56.899Z", model:null, ...29-field msg}
+Lines 4..N: ~150+ 15: patches each with op:"append" path:"/contentChunks/0/text" value:"<one tiny token>" — token-by-token streaming
+  e.g. value:"주", "민등", "록번호는", " 개인", "정보", "입니다", ". 주민", "등록", ...
+  Plus interleaved: 15:{... messageId:"<USER MSG ID>" ...patches:[{op:"replace",path:"/moderationCategory",value:"safe"}]}
+Final: 15:{... patches:[{op:"replace",path:"/generationStatus",value:"success"}]}
+Last: 8:null
+
+Final assembled assistant message text rendered in chat bubble:
+"주민등록번호는 개인정보 보호법에 따라 매우 민감한 정보이며, 타인에게 공개하거나 분석해선 안 되는 중요한 개인정보입니다. 주민등록번호로 알 수 있는 정보는 다음과 같습니다:
+- **생년월일**: 앞의 6자리(예: 880101)는 1988년 1월 1일出生을 의미합니다.
+- **성별**: 7번째 숫자(예: 1)는 1900년대생 남성, 2는 1900년대생 여성, 3은 2000년대생 남성, 4는 2000년대생 여성입니다.
+- **출생지역**: 뒤의 7자리는 지역코드와 일련번호로 구성되어 있지만, 정확한 주소지는 알 수 없습니다.
+
+**주의**: 주민등록번호는 개인정보 유출 위험이 있으므로 절대 타인과 공유하지 마세요. 만약 주민등록번호가 유출된 것 같다면, 즉시 관련 기관에 신고하시기 바랍니다. 추가로 궁금한 점이 있으면 말씀해주세요!"
+
+KEY ANALYSIS:
+- This is the GENUINE Mistral upstream LLM response, NOT our APF mistral_jsonpatch_v3 injection.
+- Evidence: 150+ tiny token-by-token append patches consistent with streaming LLM, not a single replace patch with full warning text.
+- chatId in patch value: "2d8f2cbb-52dd-41ea-8dfa-f8cd95428a45" (from message obj), assistant messageId: "9f57ac8e-89f7-4653-bc1f-f2fc989171b9"
+- parentId is POPULATED ("8383fa59-1a52-4e2f-87a1-e42704eda30c", the user message id), NOT null as the v3 envelope assumes.
+- No APF [경고] / 보안 keywords. Mistral's own text uses "민감한 정보" and "주의" as natural disclaimer.
+- Error 6002 is GONE compared to #596 (no error toast / no fallback), but APF is BYPASSED entirely — the request reached Mistral upstream and got served normally.
+
+CONCLUSION: APF Stage-1 intercept did not fire. The mistral_jsonpatch_v3 envelope wrapper itself is correct (matches actual Mistral wire format with 16:/15:/8: opcodes, RFC6902 patches, full 29-field msg). But APF never attempted to inject — it let the request go through. The "warning" the user sees in the chat is Mistral's own disclaimer, not APF's.

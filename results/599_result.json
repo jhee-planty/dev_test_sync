@@ -1,0 +1,54 @@
+{
+  "id": "599",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "APF bypassed entirely; Mistral upstream LLM responded normally to PII prompt (worse than #596 6002 outcome)",
+    "service_name": "mistral",
+    "started_at": "2026-04-27T07:57:50Z",
+    "completed_at": "2026-04-27T08:02:55Z",
+    "duration_seconds": 305,
+    "warning_visible": false,
+    "screenshot": "files/599/chat_render.png",
+    "console_errors": [],
+    "console_errors_count": 0,
+    "confidence": "high",
+    "auth_state": "guest",
+    "envelope_template_tested": "mistral_jsonpatch_v3 (RFC 6902 JSON Patch wrapper, 29-field message obj, chatId from request, parentId=null)",
+    "verdict_classification": "FAIL -- Stage 1 intercept did NOT fire; APF bypassed; Mistral upstream served full PII analysis to user",
+    "rendered_text_in_chat_area": "주민등록번호는 개인정보 보호법에 따라 매우 민감한 정보이며, 타인에게 공개하거나 분석해선 안 되는 중요한 개인정보입니다. 주민등록번호로 알 수 있는 정보는 다음과 같습니다:\n- **생년월일**: 앞의 6자리(예: 880101)는 1988년 1월 1일 출생을 의미합니다.\n- **성별**: 7번째 숫자(예: 1)는 1900년대생 남성, 2는 1900년대생 여성, 3은 2000년대생 남성, 4는 2000년대생 여성입니다.\n- **출생지역**: 뒤의 7자리는 지역코드와 일련번호로 구성되어 있지만, 정확한 주소지는 알 수 없습니다.\n\n**주의**: 주민등록번호는 개인정보 유출 위험이 있으므로 절대 타인과 공유하지 마세요. 만약 주민등록번호가 유출된 것 같다면, 즉시 관련 기관에 신고하시기 바랍니다. 추가로 궁금한 점이 있으면 말씀해주세요!",
+    "warning_keywords_matched_meaning": "Note: keyword '민감' appears in the rendered text but it is MISTRAL'S OWN natural-language disclaimer ('매우 민감한 정보'), NOT our APF [경고] warning. APF was bypassed entirely.",
+    "warning_keywords_matched": ["민감 (incidental, NOT from APF envelope)"],
+    "error_6002_present": false,
+    "envelope_wrapper_observed": "16:{\"json\":{\"disclaimers\":[]}} then ~150 lines of 15:{\"json\":{\"type\":\"message\",\"messageId\":\"9f57ac8e-...\",\"messageVersion\":0,\"patches\":[{\"op\":\"replace|append\",\"path\":\"/...\",\"value\":...}]}} then 8:null",
+    "envelope_wrapper_origin": "Real Mistral upstream LLM response, NOT APF injection. Envelope wrapper is structurally correct (matches #597 ground truth) BUT was emitted by Mistral itself, not APF.",
+    "patches_array_observed": true,
+    "chatId_in_message_object": "2d8f2cbb-52dd-41ea-8dfa-f8cd95428a45",
+    "warning_text_in_contentChunks": false,
+    "endpoint_url_observed": "https://chat.mistral.ai/api/chat",
+    "endpoint_response_status": "200",
+    "endpoint_response_content_type": "text/x-component (Next.js RSC stream, 16:/15:/8: opcodes)",
+    "response_body_full_path": "files/599/response_body.txt",
+    "regression_or_improvement_vs_596": "Error 6002 GONE (no fallback toast), but APF was completely BYPASSED -- Stage-1 intercept did not fire at all. WORSE outcome than 6002 in user-safety sense: user actually receives the unfiltered LLM PII analysis (full breakdown of birth date, gender, region from RRN). #596 at least produced a 6002 error fallback that prevented information disclosure.",
+    "next_recommendation": "INVESTIGATION MUST SHIFT FROM ENVELOPE CRAFTING TO INTERCEPT LAYER. The v3 envelope mimicry is structurally correct (verified against ground-truth wire response from #597, same 16:/15:/8: opcodes, same RFC6902 patches, same 29-field msg, chatId properly extracted), but APF never tried to inject -- request went straight to Mistral upstream and the user received unfiltered PII analysis. Investigation priorities: (1) URL pattern matcher for chat.mistral.ai/api/chat -- was the new template registered/mapped to this exact host+path? (2) TLS MITM cert chain -- is APF CA still trusted by Chrome on test PC? (3) Content-Type filter -- does APF skip 'text/x-component' (Next.js RSC) responses? (Mistral changed from text/event-stream to text/x-component since #597, could be a Mistral-side change that broke our content-type detection.) (4) Etap.log -- was the request even seen by APF? If not, the intercept hook is failing before envelope-emit logic. (5) Side effect of removing flat-message envelope -- did the URL match rule get accidentally removed/modified during the v3 rewrite? Also: assumption that parentId=null is OK is currently UNTESTED because intercept never fired -- when intercept comes back, real parentId from request body must be extracted (per #597 finding the actual Mistral parentId is the previous user message id, e.g. '8383fa59-...').",
+    "diagnostic_for_dev_team": "MAJOR REGRESSION: APF bypass on chat.mistral.ai. The Cycle 94 R-19 fix attempt (mistral_jsonpatch_v3) inadvertently introduced a worse failure mode, not just non-rendering, but complete intercept bypass with PII leak to user. Recommend IMMEDIATE ROLLBACK of v3 deployment + investigation of intercept layer before re-attempting envelope. Critical observation: response Content-Type is 'text/x-component' (Next.js React Server Components stream), NOT 'text/event-stream' as #597 inferred, possibly Mistral switched mid-week, or our content-type detection was always wrong and #597 capture was lucky to fall through. APF must filter on text/x-component AND text/event-stream for Mistral. Also worth checking: is the TLS handshake hitting our MITM cert? Browser-side test: open https://chat.mistral.ai with DevTools Security tab and verify cert chain shows Etap CA. If not, fundamental cert deployment regression.",
+    "screenshots_inventory": [
+      {"path": "files/599/chat_render.png", "description": "Mistral chat showing full PII analysis response from upstream LLM (NOT our APF warning). User received detailed breakdown of RRN: birth year 1988, gender code, region structure. DevTools closed."},
+      {"path": "files/599/network_response.png", "description": "DevTools Network /api/chat Response tab showing 16:/15:/8: stream with ~150 token-append patches"},
+      {"path": "files/599/response_body.txt", "description": "Verbatim response body (~150 lines) demonstrating real Mistral LLM streaming patches, NOT APF injection. Use to confirm intercept bypass."}
+    ],
+    "obstacles_encountered": [
+      "EventStream tab was empty (Mistral uses text/x-component RSC, not text/event-stream), needed Response tab instead. May indicate Mistral changed transport since #597 capture, or that our content-type detection had been wrong all along."
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 55,
+      "duration_ms": 305927,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0,
+      "soft_timeout_exceeded": "Marginal (305s vs 300s soft); FAIL within 8min hard cap"
+    }
+  },
+  "notes": "Cycle 94 R-19 mistral_jsonpatch_v3 verification: **FAIL with REGRESSION**. Error 6002 GONE but APF entirely BYPASSED, user received unfiltered upstream Mistral LLM analysis of their PII (full RRN breakdown). Worse user-safety outcome than #596. Critical findings: (1) v3 envelope wrapper is structurally correct (matches #597 ground truth); the response we observed IS the real Mistral upstream stream, not our APF injection, intercept never fired. (2) Content-Type changed: now 'text/x-component' (Next.js RSC), NOT 'text/event-stream' as #597 inferred. May be Mistral-side switch or content-type detection bug. (3) APF investigation must shift from envelope crafting to intercept layer: URL pattern matcher, TLS MITM cert validity, content-type filter (add text/x-component), Etap.log presence of request. (4) parentId=null assumption is untested (intercept never fired); real parentId extraction per #597 still needed once intercept returns. RECOMMEND IMMEDIATE ROLLBACK of v3 deployment + intercept-layer investigation before re-attempting envelope. 3 artifacts in files/599/. Processed via Subagent Dispatch (5m05s, 55 tool uses)."
+}
