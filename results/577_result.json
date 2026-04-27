@@ -1,0 +1,28 @@
+{
+  "id": "577",
+  "status": "done",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "Phase 1 jetty probe: ALL 4 URLs unreachable from KR. (1) jetty.ai → ERR_CONNECTION_REFUSED, (2) www.jetty.ai → connection refused (same backend), (3) jetty.kr → ERR_TIMED_OUT (server unresponsive), (4) app.jetty.ai → DNS_PROBE_FINISHED_NXDOMAIN (no DNS record). Service appears to be decommissioned, region-restricted, or has changed branding. No live entry point identified.",
+    "service_name": "jetty",
+    "started_at": "2026-04-27T10:06:30Z",
+    "completed_at": "2026-04-27T10:09:30Z",
+    "duration_seconds": 180,
+    "warning_visible": false,
+    "screenshot": "files/577/nxdomain.png",
+    "console_errors": [],
+    "failure_category": "INFRASTRUCTURE",
+    "auth_state": "anonymous",
+    "page_state": "all_urls_unreachable",
+    "url_attempts": {
+      "jetty.ai": "ERR_CONNECTION_REFUSED",
+      "www.jetty.ai": "connection refused (presumed same)",
+      "jetty.kr": "ERR_TIMED_OUT",
+      "app.jetty.ai": "DNS_PROBE_FINISHED_NXDOMAIN"
+    },
+    "previous_classification": "APF NOT YET REGISTERED — Phase 1 probe",
+    "test_progression": "all_urls=FAIL",
+    "next_phase_recommendation": "Service may have rebranded, decommissioned, or is private. Recommend (a) skipping registration, OR (b) searching for current branding via Korean edtech market research before retry. If user has updated URL, request fresh probe."
+  },
+  "notes": "Batch F-18 jetty Phase 1 probe — service NOT REACHABLE on any of 4 candidate URLs. Architecture cannot be characterized. Recommend deferring jetty registration until live URL is available."
+}
