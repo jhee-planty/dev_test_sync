@@ -1,0 +1,89 @@
+{
+  "id": "593",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "kimi Connect-RPC streaming captured; single-stream architecture confirmed (split-stream hypothesis REFUTED)",
+    "service_name": "kimi",
+    "started_at": "2026-04-27T06:47:38Z",
+    "completed_at": "2026-04-27T06:55:00Z",
+    "duration_seconds": 442,
+    "warning_visible": false,
+    "screenshot": "files/593/network_chat_headers.png",
+    "console_errors": [],
+    "console_errors_count": 0,
+    "confidence": "high",
+    "auth_state": "logged_in",
+    "ai_response_text_summary": "The capital of South Korea is Seoul.",
+    "page_url_pattern": "https://www.kimi.com/chat/{chat_uuid}?chat_enter_method=home",
+    "endpoint_url": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat",
+    "endpoint_method": "POST",
+    "endpoint_request_content_type": "application/connect+json",
+    "endpoint_response_content_type": "application/connect+json",
+    "endpoint_response_format": "Connect-RPC server-streaming (length-prefixed JSON frames separated by binary framing bytes)",
+    "key_request_fields": [
+      "chat_id",
+      "scenario (SCENARIO_K2D5)",
+      "tools[].type (TOOL_TYPE_SEARCH)",
+      "message.parent_id",
+      "message.role (user)",
+      "message.blocks[].text.content",
+      "message.scenario",
+      "options.thinking"
+    ],
+    "key_response_fields": [
+      "op (set)",
+      "mask (message|event|heartbeat)",
+      "eventOffset",
+      "message.id",
+      "message.parentId",
+      "message.role (assistant)",
+      "message.status (MESSAGE_STATUS_*)",
+      "message.scenario",
+      "message.createTime",
+      "heartbeat"
+    ],
+    "completion_signal": "Connect-RPC end-of-stream trailer frame (final frame with high-bit-set length prefix containing JSON trailer with grpc-status/grpc-message); also message.status transitions to a completed state",
+    "split_stream_analysis": "single-stream -- kimi does NOT use split send/receive. The same POST /Chat connection that carries the prompt body in its request body also delivers the streaming AI answer in its response body, using Buf Connect-RPC server-streaming framing. There is no separate /events, /stream, or WebSocket. Cycle 94 R-13 'split-stream' hypothesis is REFUTED. The 'kimi_connect template' name in APF likely reflects the Connect-RPC protocol (not 'connect template' as in two-stream coordination). If APF blocks /Chat the answer cannot render; if APF returned 403 but the answer rendered, the 403 was likely on a different host/path (e.g. ListChats or a CDN telemetry endpoint), not on /Chat itself.",
+    "websocket_present": false,
+    "websocket_url": null,
+    "rendered_html_selector": "div.chat-content-item.chat-content-item-assistant > div.segment.segment-assistant > div.segment-content > div.segment-content-box",
+    "sibling_unrelated_endpoints": [
+      {
+        "url": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/ListChats",
+        "method": "POST",
+        "purpose": "sidebar chat list refresh, fires after Chat completes -- NOT part of answer stream"
+      },
+      {
+        "url": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/GetSubscription",
+        "method": "POST",
+        "purpose": "quota/subscription tier check, unrelated to answer rendering"
+      }
+    ],
+    "screenshots_inventory": [
+      {"path": "files/593/network_overview.png", "description": "Network panel Fetch/XHR filter showing Chat, ListChats, GetSubscription, list requests with timing"},
+      {"path": "files/593/network_chat_headers.png", "description": "Chat request Headers tab showing POST /apiv2/kimi.gateway.chat.v1.ChatService/Chat, status 200, Content-Type application/connect+json"},
+      {"path": "files/593/network_chat_payload.png", "description": "Chat request Payload showing JSON body with chat_id, scenario, tools, message.blocks[].text.content='What is the capital of South Korea?'"},
+      {"path": "files/593/network_chat_response_preview.png", "description": "Chat response Preview showing length-prefixed Connect-RPC JSON frames with op:set, mask:message, heartbeat events, and assistant message deltas"},
+      {"path": "files/593/network_socket_empty.png", "description": "Network panel Socket filter showing 0 WebSocket/WebTransport connections -- confirms no WS"},
+      {"path": "files/593/console_dom_selector.png", "description": "Console output identifying the rendered answer container CSS selectors (chat-content-item-assistant, segment-content-box)"}
+    ],
+    "envelope_design_recommendation": "APF must intercept the POST to https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat and return a Connect-RPC server-streaming response -- NOT a plain JSON 200 nor a 403 short-body. Required envelope: (1) HTTP 200 with Content-Type 'application/connect+json' and 'Connect-Accept-Encoding: gzip' header; (2) body = sequence of Connect-RPC framed messages: each frame = 1-byte flags (0x00 = data, 0x02 = end-of-stream trailer) + 4-byte big-endian length + JSON payload; (3) emit at least one data frame with shape {\"op\":\"set\",\"mask\":\"message\",\"eventOffset\":1,\"message\":{\"id\":\"<uuid>\",\"parentId\":\"<from req>\",\"role\":\"assistant\",\"status\":\"MESSAGE_STATUS_COMPLETED\",\"scenario\":\"SCENARIO_K2D5\",\"createTime\":\"<ISO>\",\"blocks\":[{\"text\":{\"content\":\"<warning text>\"}}]}}; (4) close with end-of-stream trailer frame (flag byte 0x02) carrying JSON {\"metadata\":{},\"error\":null} or grpc-status:0. The frontend reads via @bufbuild/connect-web; a malformed body or wrong content-type will cause it to error silently and fall back to retry -- which is likely what cycle 94 saw as 'block worked but answer still rendered'. Block at HTTP layer must NOT use 4xx status because the Connect client treats 4xx as transport error and may retry or hang; use 200 + valid Connect frames containing the warning message instead.",
+    "previous_classification": "kimi_connect template (403B) APF DID block correctly per cycle 94 etap.log -- but real answer still rendered. Hypothesis was split-stream architecture (a second/parallel stream bypassing the envelope).",
+    "diff_from_previous_understanding": "Architecture clarified: NOT split-stream. Single bidirectional Connect-RPC streaming POST. The 'block worked but answer rendered' symptom is explainable by either (a) the 403 actually hitting a sibling endpoint (ListChats/GetSubscription) instead of /Chat, OR (b) /Chat got 403 but the Connect-RPC client treated it as transport error and silently retried/recovered. Recommend re-checking WHICH URL the cycle 94 etap.log 403 hit, and adopting the new envelope strategy (200 + valid Connect frames) regardless.",
+    "obstacles_encountered": [
+      "Initial Network panel had only telemetry/ping requests (gator.volces.com) under default view -- needed Fetch/XHR filter to see Connect-RPC calls",
+      "Connect-RPC framing bytes render as NUL/control characters in DevTools Preview, making per-frame boundaries hard to read but JSON payloads are visible",
+      "Two consecutive identical answers in chat (one from prior session reload, one from the test prompt) -- both visible, both contain 'Seoul'"
+    ],
+    "subagent_dispatch_meta": {
+      "pattern": "19th governance Subagent Dispatch (32MB Protection)",
+      "subagent_type": "general-purpose",
+      "tool_uses": 65,
+      "duration_ms": 442208,
+      "verdict_schema": "WINDOWS_MCP_VERDICT + STRUCTURED_FINDINGS",
+      "main_session_png_reads": 0
+    }
+  },
+  "notes": "Cycle 94 R-13 kimi.com schema CAPTURED. KEY FINDING: kimi uses single-stream Connect-RPC (Buf Connect server-streaming on POST /apiv2/kimi.gateway.chat.v1.ChatService/Chat with application/connect+json, length-prefixed JSON frames). Split-stream hypothesis REFUTED -- no separate /events, /stream, or WebSocket. Envelope rewrite must produce HTTP 200 + valid Connect-RPC framed messages (1-byte flags + 4-byte big-endian length + JSON payload) terminated with 0x02 trailer frame. 4xx status will cause client retry, not visible block. Processed via 19th governance Subagent Dispatch pattern (subagent took 7m22s, 65 tool uses, 6 PNGs saved without main-session 32MB pressure)."
+}
