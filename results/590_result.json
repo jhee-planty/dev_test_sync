@@ -1,0 +1,43 @@
+{
+  "id": "590",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Cycle 94 R-11 notion BENIGN capture COMPLETE. Safe prompt 'What is the capital of South Korea?' returned answer 'The capital of South Korea is Seoul.' with Seoul highlighted. Notion AI architecture and endpoint identified.",
+    "service_name": "notion",
+    "started_at": "2026-04-27T12:18:00Z",
+    "completed_at": "2026-04-27T12:22:00Z",
+    "duration_seconds": 240,
+    "warning_visible": true,
+    "screenshot": "files/590/runInferenceTranscript.png",
+    "console_errors": [],
+    "auth_state": "logged_in",
+    "endpoint_url": "https://www.notion.so/api/v3/runInferenceTranscript",
+    "endpoint_method": "POST",
+    "endpoint_status": "200",
+    "endpoint_protocol": "h2",
+    "url_thread_pattern": "notion.so/chat?t={hex_token}&wfv=chat (e.g. t=34f7e0fa91d480bf96ba00a9075eab6d)",
+    "response_content_type": "application/x-ndjson",
+    "response_content_encoding": "zstd (compressed)",
+    "key_finding_1_format": "NDJSON streaming (newline-delimited JSON, one event per line) — NOT SSE (no 'data:' prefix). Each line is a complete JSON object representing a state update.",
+    "key_finding_2_compression": "Response body is zstd-compressed. Worker / APF must handle Content-Encoding: zstd OR negotiate to identity / gzip.",
+    "key_finding_3_architecture": "Notion AI uses TOOL-CALL agent architecture. Visible response object schema: {toolName, toolType, traceId, startedAt, input{function, args}, state:'applied', result{output, headerLabel}, moduleInfo{id, name:'fs-mo...' (file system module), type:'fs'}, finishedAt}. This is an agent execution log — NOT pure LLM token stream. Final user-visible answer is composed from tool-call results.",
+    "key_finding_4_chat_url": "After response, page URL becomes notion.so/chat?t={hex_token}&wfv=chat with thread persistent.",
+    "key_finding_5_initial_url": "Pre-chat URL is notion.so/ai (chat homepage)",
+    "key_finding_6_request_count": "Single chat prompt produces 138+ network requests (lots of supporting calls — getInferenceTranscript, getAvailableModels, checkEmailEligibility, etc.). The runInferenceTranscript is the central one.",
+    "envelope_design_implications": {
+      "format": "Worker/APF must produce NDJSON output with newline delimiter, NOT SSE 'data:' frames",
+      "compression": "Either decompress request to apply rules then re-encode, OR negotiate accept-encoding: identity",
+      "schema": "Tool-call envelope needs to mimic the agent execution log structure with toolName/state/result rather than streaming text patches",
+      "warning_injection_strategy": "(a) Replace tool-call result.output with warning text JSON; OR (b) Inject a synthetic terminal tool-call with state:'applied' and result.output containing '보안 경고: 민감정보 차단' as text; OR (c) Block at input layer (before runInferenceTranscript fires) and return alternative NDJSON with single tool-call result"
+    },
+    "next_phase_recommendations": [
+      "Capture FULL NDJSON response body (not just preview) — use right-click 'Copy Response' or HAR export to get all raw lines for schema completeness",
+      "Inspect REQUEST PAYLOAD of runInferenceTranscript — what fields are sent? May contain user_id, conversation_id, prompt, etc.",
+      "Identify the FINAL synthesis tool call (the one that produces the visible answer text) — likely a different toolName like 'compose_response' or 'final_answer'",
+      "Test if APF can intercept POST /api/v3/runInferenceTranscript and inject pre-canned NDJSON response with warning"
+    ],
+    "regression_baseline": "#570 cycle 93 (silent_hang for sensitive prompt) — now know architecture is NDJSON tool-call agent, not direct text streaming"
+  },
+  "notes": "Cycle 94 R-11 notion benign capture: SUCCESS. Identified NDJSON content-type, zstd encoding, tool-call agent architecture. Endpoint is POST /api/v3/runInferenceTranscript. This is a SIGNIFICANT architectural finding — notion uses agentic execution log streaming, not LLM token streaming. APF design for notion will require NDJSON tool-call envelope, not standard SSE template. Recommend follow-up capture of full response body + request payload for complete schema."
+}
