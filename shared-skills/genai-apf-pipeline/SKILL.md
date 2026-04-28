@@ -130,25 +130,35 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
 ### Loop (매 polling tick 또는 result 처리 후)
 
 ```
-1. Read pipeline_state.json service_queue
-2. Filter entries where next_action does NOT start with 'defer:'
+1. (Session start only) Run infra_unblock_check:smoke_test for any infra_blocked entries.
+   If smoke test passes → re-classify infra_blocked → standard verbs.
+2. Read pipeline_state.json service_queue
+3. Filter entries where next_action does NOT start with 'defer:'
                                 AND does NOT start with 'terminate:'
+                                AND does NOT start with 'infra_blocked:'
+                                AND status is NOT in {NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE}
    → autonomous_candidates list
-3. If autonomous_candidates non-empty:
+4. If autonomous_candidates non-empty:
    - Sort by priority asc
    - Pop head
+   - Pre-deploy check: if next_action starts with 'apply_engine_fix:' AND
+     entry.unverified_deploys >= 3 → force entry.next_action = 'defer:awaiting_verification', loop
    - Execute next_action (한 step만)
+   - On 'apply_engine_fix:*' deploy → entry.unverified_deploys += 1
+   - On successful verify → entry.unverified_deploys = 0
    - Update entry next_action OR status as result dictates
    - Commit pipeline_state.json
    - Push request if next_action requires test PC, else return to loop
-4. If autonomous_candidates empty (all defer: / terminate:):
+5. If autonomous_candidates empty (all defer: / terminate: / infra_blocked:):
    - Compose explicit "needs_user_input" status report
-   - Report to user with itemized defer / terminate reasons
+   - Report to user with itemized defer / terminate / infra_blocked reasons
    - Allow long-idle ScheduleWakeup
-5. Empty queue (no entries at all):
+6. Empty queue (no entries at all):
    - Goal achieved OR user has not enqueued more services
    - Report to user
 ```
+
+**Stop hook (D16(a), 22차)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시, `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 마지막 메시지에 termination keyword (stop / 정지 / 종료 / 그만 / wait / pause / 잠시 / 보고해 / summarize / 검토 / 일단 / 끝 / halt) 없음 → stop block + system-reminder emit. Cycle summary doc 작성 후 stop / premature completion / fatigue stop / M4 overgeneralization 모두 catch.
 
 ### Idle Gate (Hard Rule 7 enforcement)
 
@@ -192,12 +202,19 @@ debug_http_layer:*  — transport_probe | force_h2 (etap visible_tls._block_quic
                                                   / DPDK-level QUIC drop)
 
 apply_engine_fix:*  — wrb_fr_decoder | ws_body_inspector | (other engine work)
+                      [unverified_deploys ≥ 3 → defer:awaiting_verification 강제]
 
-defer:*             — *_user_har / user_login_provisioning / vpn_or_region_change / ...
+defer:*             — *_user_har / user_login_provisioning / vpn_or_region_change /
+                      awaiting_verification / ...
 
 terminate:*         — block_only_accepted (architectural BLOCK_ONLY, all approaches in
                       apf-technical-limitations.md tried/rejected per cause_pointer doc)
                     | user_decommissioned | replaced_by:{service}
+
+infra_blocked:*     — test_pc (windows-mcp Snapshot/Chrome focus/CDP) | (extensible)
+                      [WSA filter excludes; infra_unblock_check:* re-classifies on recovery]
+
+infra_unblock_check:* — smoke_test (session start probe; on success → infra_blocked re-classify)
 ```
 
 새 verb 도입 시 vocabulary v2 에 정의 추가. v1 verbs 는 `[deprecated]` 표기.

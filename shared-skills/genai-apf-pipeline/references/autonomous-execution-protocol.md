@@ -12,7 +12,14 @@
 4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
 5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다.
 6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback.
-7. **Idle Gate** (2026-04-27 discussion-review consensus) — **ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행**. service_queue 의 autonomous-doable next_action (defer: 시작 안 함) 1개라도 있으면 long-idle 금지 → 즉시 해당 next_action 실행. Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수. **Premature completion 차단**: cycle summary 작성 ≠ 작업 종료. 목표 (37/37 DONE) 미달성 시 다음 push. **Subagent in-flight 이면 idle 선언 금지** (subagent return 까지 대기 — 2026-04-27 Subagent Dispatch consensus 보강).
+7. **Idle Gate + Stop Hook** (2026-04-27 18차 + 2026-04-29 22차 amendment) — **이중 enforcement**:
+   - **(7-1) Watchdog Idle Gate** (post-tool-use): ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행. service_queue 의 autonomous-doable next_action 1개라도 있으면 long-idle 금지.
+   - **(7-2) Stop Hook (D16(a), 22차)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시 `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 메시지에 termination keyword 없음 → **stop block + 재engagement 강제**. Watchdog 의 "active→stop transition 미감지" 구조적 gap 보완.
+   - autonomous-doable next_action filter: `not startswith('defer:') AND not startswith('terminate:') AND not startswith('infra_blocked:')` + status NOT IN {NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE}.
+   - Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수.
+   - **Premature completion 차단**: cycle summary 작성 ≠ 작업 종료. 목표 미달성 시 다음 push.
+   - **Subagent in-flight** 이면 idle 선언 금지 (subagent return 까지 대기 — 19차 보강).
+   - **M4 overgeneralization 차단** (22차 cycle95 incident): M4 user-required task 만 defer/infra_blocked, 다른 candidate 영향 없음. 일부 task 의 M4 가 전체 stop 정당화 X.
 
 ### Mode Selection Tree
 
@@ -499,6 +506,12 @@ primary task가 blocked(결과 대기 등)일 때:
 위반 시 즉시 적용:
 1. service_queue read → autonomous_candidates filter → 1개라도 있으면 pop + execute
 2. 0개 시: itemized "needs_user_input" report (각 service 의 defer 사유 명시)
+
+### Category E 추가 점검 (22차 cycle95 incident 반영)
+
+- **Cycle summary doc (예: cycle{N}_master_summary) 작성 후 stop 시도?** → **Stop hook 가 reminder 발동**. 그러나 priming-level 자가 점검: autonomous_candidates 0 증명 후만 stop. summary doc 자체는 OK, doc-write-then-stop pattern 차단.
+- **M4 (user-required) encounter (예: Test PC infra 실패) 발견?** → 해당 task 만 `defer:*` 또는 `infra_blocked:*`, **다른 candidate 영향 없음**. 일부 task 의 M4 = 전체 stop 정당화 X (cycle95 의 "Test PC infra 실패" → 모든 work stop overgeneralization 사례).
+- **7시간+ long-running session 끝 즈음 reasoning 약화 감지?** → 확실치 않으면 마지막 candidate 1개 더 실행 후 stop. fatigue analog 의 stop bias 차단.
 
 ---
 
