@@ -1,0 +1,12 @@
+EventStream tab inspected for /backend-anon/f/conversation request.
+
+Result: EventStream tab is EMPTY (no SSE events parsed).
+
+This is consistent with the warning being delivered as a synchronous non-streaming
+response body that does not follow the SSE event framing. Chrome detected the
+text/event-stream Content-Type but found no parseable "data: ..." events.
+
+The page-level warning ("민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.")
+was rendered correctly by the chatgpt frontend, indicating the warning payload
+was either delivered through the response body in a format the frontend handles
+specially, or via the prepare endpoint metadata.
