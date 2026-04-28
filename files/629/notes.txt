@@ -1,0 +1,116 @@
+# Request 629 - PII block verify (B35 hex IDs + handshake chunk)
+# Service: gemini3
+# Date: 2026-04-28 ~ 15:14 KST
+# Build version (bl): boq_assistant-bard-web-server_20260426.11_p0
+
+# === SESSION IDS ===
+f.sid: 5988947537586948552
+_reqid (first/welcome init): 3354731 (initial page-load StreamGenerate, occurred BEFORE prompt send)
+_reqid (PII prompt): 3554731 (the StreamGenerate that carried the PII prompt and got the BLOCKED response)
+batchexecute _reqid: 3054731 (rpcids=aPya6c, secondary call, request body unavailable in panel)
+
+# === PROMPT SEND METHOD ===
+Method 1: typed prompt + Enter key  -> Did fire StreamGenerate (_reqid=3554731 appeared)
+Method 2: clicked Send button (1842,928) - clicked but second attempt may have been duplicate
+Two StreamGenerate rows captured:
+  - 3354731 (welcome init)
+  - 3554731 (PII prompt → BLOCKED)
+
+# === RESPONSE BODY STRUCTURE (B35 ENGINE) ===
+Format: standard Google chunked response with size prefix
+)]}'
+147           <- size of first chunk (handshake)
+[handshake JSON]
+869           <- size of second chunk (content)
+[content JSON]
+
+Chunk 1 (handshake, 147 bytes):
+  outer: [["wrb.fr",null,"<inner>"]]
+  inner: [null,[null,"r_3a7fe73c8e5a4eea"],{"18":"r_3a7fe73c8e5a4eea","21":["e794b89e255c4299b11d559dcbc24970"],"44":false}]
+
+Chunk 2 (content, 869 bytes):
+  outer: [["wrb.fr",null,"<inner>"]]
+  inner: [null,["c_ec00930860fd4c46","r_3a7fe73c8e5a4eea"],null,null,[["rc_2cdee894c7cf4e55",["⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected."],null,null,null,null,true,null,[1],"ko",null,null,[null,null,null,null,null,null,[0],[]],null,null,true,null,null,null,null,null,[false],null,false,[],true,null,null,[]]],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,false,[[[[null,[null,0,"⚠️ ... detected."]]]]],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,false,[],null,1,0]
+
+# === ID FORMAT VERIFICATION ===
+ids_format: hex 16 char (B35 recommendation A applied successfully)
+  - r_3a7fe73c8e5a4eea  (16 hex chars after "r_")
+  - c_ec00930860fd4c46  (16 hex chars after "c_")
+  - rc_2cdee894c7cf4e55 (16 hex chars after "rc_")
+  - token (in handshake "21"): e794b89e255c4299b11d559dcbc24970 (32 hex chars - separate token field)
+  - "44":false present in handshake - matches recommendation D
+
+# === CHUNK COUNT VERIFICATION ===
+chunk_count: 2 (handshake + content)
+handshake_chunk_present: YES (first 147-byte chunk with [null,[null,"r_<hex>"],{...token...,"44":false}])
+content_chunk_present: YES (second 869-byte chunk with full warning text)
+
+# === UI OBSERVATION (CRITICAL) ===
+warning_rendered: NO
+warning_text_visible_on_page: NO
+The Gemini UI remained on the welcome/landing screen throughout:
+  - "쓰기/계획/조사/학습" suggestion buttons still visible at center
+  - The PII prompt text remains in the input textarea (not consumed)
+  - No chat thread / no message bubbles
+  - Send button restored to "메시지 보내기" state (not "stop generation")
+  - No 보안 경고 / no warning text rendered anywhere
+
+bypass_normal_answer: NO (no normal Gemini answer rendered either - the request IS blocked
+                           at the network level, the warning content IS in the response,
+                           but the UI's response parser does not surface it)
+
+# === COMPARISON VS #628 ===
+#628 PARTIAL findings:
+  - native shape was correct
+  - IDs were literal "BLOCKED" / "BLOCKED_..." strings -> UI rejected
+  - UI stayed on welcome screen
+#629 (B35) findings:
+  - native shape STILL correct
+  - IDs ARE NOW hex 16-char (recommendation A applied: c_/r_/rc_ + 16hex)
+  - handshake chunk is present (recommendation D applied: 2-chunk emission with init meta)
+  - UI STILL stays on welcome screen
+  - NO JS exception parsing envelope (silent drop, not crash)
+
+progress_vs_628: better (engine schema upgrade succeeded - hex IDs + handshake chunk both
+                          confirmed in wire data) BUT same UI symptom (no render)
+
+# === HYPOTHESIS FOR PERSISTENT UI FAILURE ===
+The native chunk shape is now wire-correct, but the UI parser may need additional
+fields beyond what B35 provides. Candidates worth investigating in follow-up engine
+revision (B36):
+  1. The handshake "21" array currently has ONE token; real Gemini handshakes may
+     emit additional metadata keys ("18", "21", "23", "33", "44" etc.) - we have
+     "18", "21", "44" only.
+  2. The content envelope's massive trailing-null array may require specific non-null
+     entries (e.g., model name, conversation flags, render hints) that the UI checks
+     before mounting a ConversationModel.
+  3. The conversation/route_id may need to be present in the URL path / referer
+     to associate the response with a chat-thread mount point. Current URL has
+     no /chat/<route_id> segment.
+  4. The two chunks may need an additional terminator/EOF chunk that the UI uses
+     to commit the conversation update.
+  5. Possible HMAC/signature field expected in handshake - the "21" hex token may
+     need server-side signing the UI verifies before processing rc_ items.
+
+breakthrough_status: hex IDs but UI still broken (B35 schema delta done, UI parse
+                     gating still rejects)
+
+# === ARTIFACTS SAVED ===
+01_before.png       (DevTools Network with empty log + welcome screen)
+02_devtools_network.png (StreamGenerate request listed in Network panel + Headers tab)
+03_status.png       (= 02 - status visible alongside)
+04_response_headers.png (Headers tab open showing 200 OK + query/form params)
+05_response_body.png (Response tab showing the 2-chunk JSON envelope)
+06_console.png      (Console tab - 3rd party errors, no envelope-parse exception)
+07_after.png        (after Send pressed - DevTools open, welcome screen still)
+08_warning_check.png (DevTools closed - confirmed welcome screen, no warning bubble)
+response_headers.txt
+response_body.txt   (verbatim 2-chunk envelope)
+status_line.txt
+console_errors.txt
+notes.txt           (this file)
+
+# === DURATION ===
+Start: ~15:11 KST (chrome launch)
+Capture done: ~15:15 KST
+Total: ~4-5 minutes (within 5min soft limit)

@@ -1,0 +1,36 @@
+# Console errors observed (10 errors, 1 warning per DevTools indicator)
+# Errors are mostly third-party/Google framework noise (feedback API, maps, youtube,
+# uservoice surveys, googleads conversion endpoints not loading) - NOT JavaScript
+# exceptions parsing the StreamGenerate envelope.
+#
+# Visible URLs in console error log:
+# - https://www.google.com/tools/feedback/load.js
+# - https://www.google.com/tools/feedback/open.js
+# - https://www.google.com/tools/feedback/open_to_help_guide_lazy.js
+# - https://www.gstatic.com/feedback/js/help/prod/service/lazy.min.js
+# - https://www.gstatic.com/inproduct_help/api/main.min.js
+# - https://www.gstatic.com/inproduct_help/chatsupport/chatsupport_button_v2.js
+# - https://www.gstatic.com/inproduct_help/service/lazy.min.js
+# - https://www.gstatic.com/uservoice/feedback/client/web/live/
+# - https://www.gstatic.com/uservoice/surveys/resources/prod/js/survey/
+# - https://maps.googleapis.com/maps/api/js
+# - https://gemini.gstatic.com/_/mss/boq-bard-web/_/js/k=boq-bard-web.BardChatUi.ko.NbTTl7v40PQ.2018.O/...
+# - app:1 (https://gemini.google.com/app)
+# - https://www.google.co.kr/ads/ga-audiences (analytics tag)
+# - batchexecute (rpcids=aPya6c, _reqid=3054731) - request unavailable in network panel
+# - https://www.googleadservices.com/pagead/conversion/11160585753/?random=...&category=acrcp_v1_512&fmt=7
+#   (multiple gcl_ctr=1~0~0~0 / 2~0~1~0 variations - ad conversion pings)
+#
+# CSP / Permissions-Policy related URLs:
+# - https://*.google.com, https://*.googleusercontent.com, https://*.gstatic.com,
+#   https://*.youtube.com, https://*.youtube-nocookie.com, https://*.ytimg.com,
+#   https://*.ggpht.com, https://bard.datacommons.org, https://*.googleapis.com,
+#   https://*.googletagmanager.com, https://www.google.com, https://google.com,
+#   https://googleads.g.doubleclick.net
+#
+# CRITICAL OBSERVATION:
+# No explicit JS exception was visible matching the StreamGenerate envelope parse.
+# Errors look like generic CSP / unauthorized-origin / network-availability issues
+# typical of incognito Gemini load - NOT envelope parse exceptions.
+# This means the UI silently dropped the response (no exception thrown), suggesting
+# the parser sees the response as "no renderable content" rather than crashing.

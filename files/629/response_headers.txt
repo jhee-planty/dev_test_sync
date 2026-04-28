@@ -1,0 +1,23 @@
+# Response Headers - StreamGenerate (_reqid=3554731)
+# URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=5988947537586948552&hl=ko&_reqid=3554731&rt=c
+# Method: POST
+# Status: 200 OK (per Headers tab; visible Status column on row)
+
+# Note: DevTools Headers tab shows Query String Parameters and Form Data, but
+# the full Response Headers section was not opened verbatim due to default
+# collapsed view. From the Headers tab visible info:
+
+Query String Parameters:
+  bl: boq_assistant-bard-web-server_20260426.11_p0
+  f.sid: 5988947537586948552
+  hl: ko
+  _reqid: 3554731
+  rt: c
+
+Form Data (request payload):
+  f.req: [null,"[[\"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?\",0,null,null,null,null,0],[\"ko\"],[\"\",\"\",\"\",null,null,null,null,null,null,\"\"],\"!-vml-Z3NAAam_pEchv5CaC9mdzy_3Zc7AEABEArZ1Ie79h85js2J-eBAh3cBRdN5Nxko2gumQlhlzuqZYRFZL_z4q_XQB_iX_2d7zG5aGNp-cEPrNvbEJsYiAgAAATJSAAAAGGgBB34ARBGoxGtJctwxyyigY1tIaLTR76gVNUrLgS8Ot...(token continues)...\",\"4c5df4de361a3724f2a4afe08c3ace21\",null,[0],1,null,null,1,0,null,null,null,null,null,[[0]],0,null,null,null,null,null,null,null,null,1,null,null,[4],null,null,null,null,null,null,null,null,null,null,[2],null,null,null,null,null,null,null,null,null,null,null,0,null,null,null,null,null,\"8DFD85EB-BF4C-468D-9013-069C613FAF64\",null,[],null,null,null,null,null,null,1,null,null,null,null,null,null,null,null,null,null,1]"]
+
+# Standard Google response headers expected (Content-Type: application/json; charset=UTF-8, etc.)
+# Approximate count visible in DevTools panel: ~10-15 headers (Status, Cache-Control, Content-Type,
+# Content-Encoding, Date, Server, Strict-Transport-Security, X-Content-Type-Options, X-Frame-Options,
+# X-XSS-Protection, etc.)

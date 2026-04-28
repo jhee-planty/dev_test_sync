@@ -1,0 +1,2 @@
+HTTP/1.1 200 OK
+URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=5988947537586948552&hl=ko&_reqid=3554731&rt=c
