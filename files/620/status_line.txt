@@ -1,4 +1,0 @@
-HTTP/2 200 OK
-Endpoint: POST /apiv2/kimi.gateway.chat.v1.ChatService/Chat
-Remote: [2606:4700:6812:15f6]:443 (Cloudflare)
-Protocol: h2

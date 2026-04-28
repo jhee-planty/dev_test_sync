@@ -1,6 +1,0 @@
-EventStream tab observed: empty (no SSE events listed).
-- Status was 200 OK with Content-Type text/event-stream
-- However the EventStream view in DevTools displayed an empty table (no rows under Id/Type/Data/Time columns)
-- Etap engine has injected the warning content; the page rendered the warning bubble regardless
-
-This matches expected behavior for the Etap-injected block path (response body replaced with warning content rather than streaming actual SSE events).
