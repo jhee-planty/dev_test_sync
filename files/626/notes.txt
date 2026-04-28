@@ -1,0 +1,59 @@
+CYCLE 95 PHASE B — Native wrb.fr inner_json Schema Capture (Request 626)
+
+OUTCOME: SUCCESS. Gemini answered 'hello' normally with a friendly greeting.
+Verbatim Gemini answer: "Hey there! How's it going? I'm Gemini, your friendly neighborhood AI collaborator. \n\nWhether you're looking to brainstorm some ideas, solve a tricky problem, or just need a witty take on something, I'm ready when you are. What's on your mind today?"
+
+CAPTURE METHOD:
+- Chrome incognito + DevTools F12, Network panel, Preserve log ON, filter "StreamGenerate".
+- One StreamGenerate request was emitted.
+- Status: 200 OK, h2 (HTTP/2), Content-Type: application/json; charset=utf-8.
+- Server header: ESF (Google Edge Service Framework) — confirms native Google response, not engine intercept.
+- Body fetched verbatim from DevTools Response tab via UI tree extraction (preserves all 11 wrb.fr chunks).
+
+BODY STATISTICS:
+- Total body size: ~17 KB (decompressed). 1.7 kB transferred over wire (gzip-encoded).
+- Prelude: )]}' followed by length-prefixed chunks.
+- Chunk count (length-prefixed wrb.fr blocks): 11.
+  Lengths: 160, 1525, 1545, 1593, 1723, 1825, 1895, 1953, 2023, 2025, 2078, 134, 60.
+  - Chunk #1 (160 bytes): r_id assignment / handshake — `[null,[null,"r_..."],{"18":"r_...","21":[...],"44":false}]`
+  - Chunks #2-11: streaming text with same envelope (described below); each chunk progressively appends more text.
+  - Chunk #12 (134 bytes): completion marker — `[null,["c_...","r_..."],{"26":"...","44":false}]`
+  - Chunk #13 (60 bytes): `[["di",2897],["af.httprm",2896,...]]` (telemetry tail).
+
+CRITICAL — NATIVE INNER_JSON SCHEMA OBSERVED (the schema dev needs to align engine emit to):
+
+Outer envelope per chunk: `[["wrb.fr", null, "<inner_json_string>"]]`
+  - rpcid: "wrb.fr" (string)
+  - second tuple slot: null
+  - inner_json: a JSON-stringified payload (escaped quotes inside).
+
+Inner JSON parsed structure (the key Phase B finding):
+  Top-level: 5-element-or-more list:
+    [0] = null
+    [1] = [c_id, r_id]   ← conversation+response identifiers (e.g. ["c_30cbd457bbd5863b","r_1a87213c34728ef2"])
+    [2] = null  (or metadata dict on first/last chunk)
+    [3] = null
+    [4] = [ candidate_list, location_block, ... long tail ... ]
+        where candidate_list[0] = ["rc_<hash>", [<text_string>], null, null, null, null, true, null, [1], "en", null, null, [...meta...], ...]
+
+  This CONTRADICTS the engine framer in #625 which emits inner_json as
+  `[[<text>,null,null,[],[]]]` (5-tuple flat). The native schema is NOT a single 5-tuple — it is a deeply nested, multi-element record where the text appears at `inner[4][0][0][1][0]`.
+
+KEY SCHEMA REFERENCE FOR DEV:
+- Native inner_json[1] = [c_id_string, r_id_string]   (two strings, not a flat tuple)
+- Native inner_json[4] = candidates_array; first candidate is a long list with text at index [1][0].
+- Engine #625 emit shape `[[<text>,null,null,[],[]]]` is WRONG — needs to be wrapped as the multi-slot envelope shown above.
+
+ARTIFACTS:
+- 01_before.png: Gemini home with DevTools open, StreamGenerate filter set, Preserve log on.
+- 02_devtools_network.png: post-send network panel showing StreamGenerate 200 h2 1.7kB 3.05s.
+- 03_status.png / 04_response_headers.png: Headers panel showing 200 OK and full response headers (Server: ESF).
+- 05_response_body.png: Response tab pretty-printed showing all 11 wrb.fr chunks.
+- 06_console.png: Console tab.
+- 07_after.png: post-response page state with Gemini's answer.
+- response_body.txt: FULL VERBATIM body, all length-prefixed wrb.fr chunks.
+- response_headers.txt: full response headers.
+- status_line.txt: HTTP status + URL.
+- console_errors.txt: console summary.
+
+CAPTURE COMPLETE: yes.

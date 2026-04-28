@@ -1,0 +1,4 @@
+Console badge: "Open Console to view 5 errors, 1 warning"
+- Errors are pre-existing Gemini SPA CSP/init errors not related to the StreamGenerate flow.
+- No engine intercept errors (this is benign/native capture path).
+- See 06_console.png for verbatim console output.

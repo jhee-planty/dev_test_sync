@@ -1,0 +1,27 @@
+General:
+Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=-3997538021725433940&hl=ko&_reqid=3351537&rt=c
+Request Method: POST
+Status Code: 200 OK
+Remote Address: [2404:6800:4005:827::200e]:443
+Referrer Policy: origin
+
+Response headers:
+Accept-Ch: Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version
+Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Content-Disposition: attachment; filename="response.bin"; filename*=UTF-8''response.bin
+Content-Encoding: gzip
+Content-Security-Policy: require-trusted-types-for 'script';report-uri /_/BardChatUi/cspreport
+Content-Type: application/json; charset=utf-8
+Cross-Origin-Opener-Policy: same-origin-allow-popups
+Cross-Origin-Resource-Policy: same-site
+Date: Tue, 28 Apr 2026 05:19:33 GMT
+Expires: Mon, 01 Jan 1990 00:00:00 GMT
+Permissions-Policy: ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*
+Pragma: no-cache
+Server: ESF
+Server-Timing: gfet4t7; dur=221
+Vary: Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 0
