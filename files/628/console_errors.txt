@@ -1,0 +1,9 @@
+Console panel (id=672 status: "Open Console to view 6 errors, 1 warning")
+"Open Issues to view 7 issues: 5 page errors, 1 breaking change, 1 possible improvement"
+
+Console mostly populated by Content Security Policy (CSP) directive listings (gstatic, googleapis, googleusercontent, youtube, youtube-nocookie, googletagmanager, ggpht, googlevideo, datacommons, etc.) — these are typical Gemini frontend CSP echo, NOT block-related errors.
+
+No 'block_session' / 'gemini3' / 'APF' explicit error strings observed in the visible console area.
+6 errors total — typical baseline noise count when Gemini loads (CSP + tracking blocks). No new error after PII send observed in the visible window beyond the CSP echo.
+
+Full visual record in 06_console.png.

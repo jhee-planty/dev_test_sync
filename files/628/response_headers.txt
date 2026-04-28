@@ -1,0 +1,14 @@
+[Headers tab was visually captured to 04_response_headers.png]
+[DevTools UI does not expose header values via accessibility/DOM — extract from screenshot]
+
+General (visible in panel):
+- Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=1196592496495539357&hl=ko&_reqid=3353702&rt=c
+- Request Method: POST
+- Status Code: 200
+- Remote Address: (not extracted — see PNG)
+- Referrer Policy: (not extracted — see PNG)
+
+Response Headers section was expanded; complete list visible only via PNG (04_response_headers.png).
+Critical determination based on response BODY content (842 bytes wrb.fr c_BLOCKED/r_BLOCKED) — intercept fired.
+server header: presence not determinable from DOM, must be read from PNG.
+Body size 842 bytes (intercept signature, not bypass 4kB+).

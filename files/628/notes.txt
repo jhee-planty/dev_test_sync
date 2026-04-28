@@ -1,0 +1,57 @@
+REQUEST 628 — B34 verify retry post reload_services
+Service: gemini3
+URL: https://gemini.google.com  (incognito + new chat for FRESH session-state)
+Time: 2026-04-28 14:55–14:59 KST
+
+=== Captured request ===
+Endpoint: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=1196592496495539357&hl=ko&_reqid=3353702&rt=c
+Method: POST
+Status: 200
+f.sid: 1196592496495539357
+_reqid: 3353702
+
+=== Response body (842 bytes — INTERCEPT FIRED, B34 NATIVE SCHEMA CONFIRMED) ===
+Prefix: )]}\n842\n
+Outer: [["wrb.fr",null,"...inner_json..."]]
+Inner (JSON-encoded inside string):
+  [null,
+   ["c_BLOCKED","r_BLOCKED"],     <-- B34 BLOCKED diagnostic IDs (NOT real session IDs)
+   null, null,
+   [["rc_BLOCKED",
+     ["⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected."],
+     null,null,null,null,true,null,[1],"ko",null,null,
+     [null,null,null,null,null,null,[0],[]],null,null,true,...]
+   ],
+   ...mostly nulls...,
+   false,
+   [[[[null,[null,0,"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected."]]]]],
+   ...nulls..., false, [], null, 1, 0]
+
+=== UI observation ===
+After response: page REMAINED on the WELCOME/SPLASH screen.
+- 쓰기/계획/조사/학습 buttons (splash UI) still present
+- prompt textarea still contains the original PII prompt verbatim
+- NO chat conversation history rendered
+- NO '보안 경고' chat bubble rendered
+- NO error message rendered
+- NO bypass answer (no real Gemini response either)
+
+The frontend received status 200 with B34 native-shaped wrb.fr framing containing the
+warning text in the expected slot, but the renderer did NOT process it into a chat bubble.
+Possible cause: c_BLOCKED/r_BLOCKED placeholder strings (where real conversation/response
+hashes are expected) may fail downstream validation in the BardChatUi state machine,
+or the [null,...] prefix where session metadata is normally non-null is rejected silently.
+
+=== Comparison vs #627 (BYPASS) ===
+- 627: response was 4 kB+ with REAL c_<hash>/r_<hash> session IDs → engine SAW PII but block_session never fired → bypass; user got real Gemini answer
+- 628: response is 842 bytes with c_BLOCKED/r_BLOCKED diagnostic IDs → block_session FIRED at engine, B34 native schema delivered with both KR + EN warning text in correct slots
+- Progress: BETTER than 627 (intercept fires reliably after reload_services + fresh session)
+- Remaining gap: UI does not render the warning bubble — the schema looks structurally complete but is missing real session/conversation IDs that downstream BardChatUi requires to commit the bubble to the conversation pane
+
+=== Verdict ===
+PARTIAL — intercept fires, BLOCKED diagnostic IDs delivered with B34 schema, BUT UI does not render warning bubble.
+Likely B34 fix needs to either: (a) carry through real session IDs from the original request and only swap the message text + rc_BLOCKED slot, or (b) preserve the conversation-bootstrap fields downstream renderer expects.
+
+=== Console / Errors ===
+6 errors / 1 warning — all CSP echo / tracking, no APF-specific stack trace observed
+in visible portion. Full transcript in 06_console.png.
