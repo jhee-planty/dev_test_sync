@@ -1,0 +1,82 @@
+[
+  {
+    "requestId": "17012.2871",
+    "url": "https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=b252248e-2c39-48f5-a84a-18240f5ea0e0&conversationTurnId=423fb40b-3e6c-4",
+    "events": [
+      {
+        "method": "Network.requestWillBeSent",
+        "type": "XHR",
+        "errorText": null,
+        "canceled": null,
+        "blockedReason": null,
+        "corsErrorStatus": null,
+        "status": null,
+        "statusText": null,
+        "headers": null,
+        "mimeType": null,
+        "fromCache": null,
+        "fromServiceWorker": null,
+        "timing": null,
+        "response": null
+      },
+      {
+        "method": "Network.requestWillBeSentExtraInfo",
+        "type": null,
+        "errorText": null,
+        "canceled": null,
+        "blockedReason": null,
+        "corsErrorStatus": null,
+        "status": null,
+        "statusText": null,
+        "headers": {
+          ":authority": "you.com",
+          ":method": "POST",
+          ":path": "/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=b252248e-2c39-48f5-a84a-18240f5ea0e0&conversationTurnId=423fb40b-3e6c-42bc-903b-612d6633be9f&pastChatLength=0&selectedChatMode=default&queryTraceId=b252248e-2c39-48f5-a84a-18240f5ea0e0&traceId=b252248e-2c39-48f5-a84a-18240f5ea0e0|423fb40b-3e6c-42bc-903b-612d6633be9f|2026-04-28T07:54:20.834Z&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true",
+          ":scheme": "https",
+          "accept": "*/*",
+          "accept-encoding": "gzip, deflate, br, zstd",
+          "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+          "content-length": "107",
+          "content-type": "text/plain;charset=UTF-8",
+          "cookie": "signals-sdk-user-id=4caf885a-1252-4e38-aa87-291b7814f739; signals-sdk-session-id=b1508748-cdc8-49d4-8d38-efa1db89b403; cf_clearance=N.C7pG_OWNCHBachZJusZQ7V1uR67Ng1ttjrlgDikt4-1777362267-1.2.1.1-inBOlnzjnbWNZ9_2Rum19MdsVW2a1aTOvARacKJdyRJ2OeaquYjUwLyFsFtvzLhALdwRa6CrRUaEp0qam6XOgAdMgJ6DFHTfUg2grfuy6jyo2nBzNoHB0bz4wu2ArGhqdw6g_.XI8Rsm1uBVSCEKrr6.ULsPWi.Nx3Xejjo5yukdBEYYSIx_pC0c.gaUZbmRJrQNiosXHAhGoSx3Jr7NfJHK_c5qBrCtzUqUFCHCq_fOW47yRm5olOsFJ3BvkPAZVRvgpS8Z.i8MzlBsqQhuOrUJ05gFHI.Qby4xa2KJKH8Y8690lBjfFpM6xu0xP12uNMNrLBP3uYouX9NUa6J6IQ; __cf_bm=4NyUcyZaZ4.S5PNw_RBcBJkr0taVItfgg6BQec.5wBU-1777362267.2925975-1.0.1.1-.h0PYl.WuKUJ9HfEWLOYsklSGgiU7gsc7a1U8D80hcF5Fyllo16pGYIJIQvFVjuxCSnfPiOu33uyKjkGRxBgipK6QatdgXCZIsKfeO0NWDalroYvxg5tyl2XCzU2KX1TKJT7QeVOXBFUCFI94nrvjA; __hstc=118907862.fdfec9f483db7e6bd7b9460522469867.1777362269509.1777362269509.1777362269509.1; hubspotutk=fdfec9f483db7e6bd7b9460522469867; __hssrc=1; __hssc=118907862.1.1777362269510; osano_consentmanager_uuid=ec8f7e2b-0987-4772-9907-795f7cf5047e; osano_consentmanager=TUWSP2Ld6KrCyQ7QNwnES365R87Jgr0ujlQnXako-_44RwerE1nbnkH-G-TBoRGuKrxzV2hjOO5YK6H3VbwlM_sAOIRa8pj0t2dXnYH1yYGqV3Ej_eRWEFVr45sxeMi_ANG8XcKiRl5E9gxbmJBGk3Hxayw2cJDSc5-cBt1YN-C0C1-AK2BvWs3IJo3ZhSGnv1MkQsYcNXavnUA9EKBiDazp35D52qzZZslTgEAaBCg7fORHzDhsuV_wYu8p7Tuxzzp41z9NyHIP7Pxfq_lMfkfxyzNBZUqT5lrMIfmSwkuvXjk9Hgn_2SEV6naw0IOD; uuid_guest=19690e33-58b6-4fc9-8153-dff72e8bacac; uuid_guest_backup=19690e33-58b6-4fc9-8153-dff72e8bacac; uuid_guest=19690e33-58b6-4fc9-8153-dff72e8bacac; total_query_count=0; DFN-3Cyf97tuSWRzxKy9LVd43eJDyfN-1777362626764=MbWpsBYZl3zO5dPKz5eDvcJWA5izBq4Cjb1PMiDrxWF; DSR=eyJhbGciOiJSUzI1NiIsImtpZCI6IlNLMmpJbnU3SWpjMkp1eFJad1psWHBZRUpQQkFvIiwidHlwIjoiSldUIn0.eyJhbXIiOlsib2F1dGgiXSwiYXV0aDBJZCI6bnVsbCwiY3JlYXRlVGltZSI6MTc3NzM2MjYyNCwiZHJuIjoiRFNSIiwiZHYiOjEsImVtYWlsIjoicGxhbnR5bmV0YWl0ZXN0QGdtYWlsLmNvbSIsImV4cCI6MTgwODgxMjIyNiwiZnRpIjoiSjNDeWZGWGtJc3hiQm1qODhsUXRLQlJPWnpTayIsImdpdmVuTmFtZSI6Iuyepe2drCIsImlhdCI6MTc3NzM2MjYyNiwiaXNzIjoiUDJqSW50dFJNdVhweVlaTWJWY3NjNEM5WjBSVCIsImp0aSI6IkozQ3lmRlhrSXN4YkJtajg4bFF0S0JST1p6U2siLCJsYXN0TmFtZSI6Iuy1nCIsImxvZ2luSWRzIjpbImdvb2dsZS0xMTY5MTc1MDY1ODk3MDM0OTEyNTAiLCJwbGFudHluZXRhaXRlc3RAZ21haWwuY29tIl0sIm5hbWUiOiLstZzsnqXtnawiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jSlZaSGcwQTQza2xWZU0xclhYYlZVTkg3QndBRUdHNlNfalJabVZ6LVVkYzVtNmdRPXM5Ni1jIiwic3R5dGNoSWQiOm51bGwsInN1YiI6IlUzQ3lmRkJVSnFOZFFmMjQwdWxZN3R1ZjBVSVYiLCJzdWJzY3JpcHRpb25UaWVyIjpudWxsLCJ0ZW5hbnRDdXN0b21BdHRyaWJ1dGVzIjp7ImlzRW50ZXJwcmlzZSI6Int7dGVuYW50LmN1c3RvbUF0dHJpYnV0ZXMuaXNFbnRlcnByaXNlfX0iLCJuYW1lIjoie3t0ZW5hbnQubmFtZX19In0sInRlbmFudEludml0YXRpb24iOm51bGwsInRlbmFudEludml0ZXIiOm51bGwsInVzZXJJZCI6IlUzQ3lmRkJVSnFOZFFmMjQwdWxZN3R1ZjBVSVYiLCJ2ZXJpZmllZEVtYWlsIjp0cnVlfQ.MwaXnHTRI5f4HYllMvG1ZgmbnCbr4R_ZAEQBfTJoU-2UDaBLNQ1PHr_7aJapv5QY14GxMViLxEhD-d5lGMMdbPZJQUx3OhX1Moy-tnYwrZvCiXuTYiCv44xazNsb5tbImxxOMt9NS7_6lpoIzIwXQERx_7WGH9MnqwQEC4YpbM4qcUw8Fe4lQo3Yun_4maoklT6zJd6g-xj6_9f7dwZXdfQmhDnTe8eRLYB1XN0aMf8jSo96m3axwgjN1BJSZ_2EkfWuI0k6_YZBGqYY_rzyUuWt1Tq0-6OEK7__UpjT7vu88N1Y4LiYDuMMQVc08JjwAuJf1UY1M4ts8B-meQnmkA; theme=system; youpro_subscription=false; you_subscription=freemium; ld_context=%7B%22kind%22%3A%22user%22%2C%22key%22%3A%2219690e33-58b6-4fc9-8153-dff72e8bacac%22%2C%22email%22%3A%22plantynetaitest%40gmail.com%22%2C%22country%22%3A%22KR%22%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F147.0.0.0%20Safari%2F537.36%22%2C%22secUserAgent%22%3A%22%5C%22Google%20Chrome%5C%22%3Bv%3D%5C%22147%5C%22%2C%20%5C%22Not.A%2FBrand%5C%22%3Bv%3D%5C%228%5C%22%2C%20%5C%22Chromium%5C%22%3Bv%3D%5C%22147%5C%22%22%2C%22tenantId%22%3A%22UNKNOWN%22%2C%22subscriptionTier%22%3A%22freemium%22%7D; DS=eyJhbGciOiJSUzI1NiIsImtpZCI6IlNLMmpJbnU3SWpjMkp1eFJad1psWHBZRUpQQkFvIiwidHlwIjoiSldUIn0.eyJhbXIiOlsib2F1dGgiXSwiYXV0aDBJZCI6bnVsbCwiY3JlYXRlVGltZSI6MTc3NzM2MjYyNCwiZHJuIjoiRFMiLCJlbWFpbCI6InBsYW50eW5ldGFpdGVzdEBnbWFpbC5jb20iLCJleHAiOjE3Nzg1NzI0NTEsImdpdmVuTmFtZSI6Iuyepe2drCIsImlhdCI6MTc3NzM2Mjg1MSwiaXNzIjoiUDJqSW50dFJNdVhweVlaTWJWY3NjNEM5WjBSVCIsImxhc3ROYW1lIjoi7LWcIiwibG9naW5JZHMiOlsiZ29vZ2xlLTExNjkxNzUwNjU4OTcwMzQ5MTI1MCIsInBsYW50eW5ldGFpdGVzdEBnbWFpbC5jb20iXSwibmFtZSI6Iuy1nOyepe2drCIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NKVlpIZzBBNDNrbFZlTTFyWFhiVlVOSDdCd0FFR0c2U19qUlptVnotVWRjNW02Z1E9czk2LWMiLCJyZXhwIjoiMjAyNy0wNC0yN1QwNzo1NDoxMVoiLCJzdHl0Y2hJZCI6bnVsbCwic3ViIjoiVTNDeWZGQlVKcU5kUWYyNDB1bFk3dHVmMFVJViIsInN1YnNjcmlwdGlvblRpZXIiOm51bGwsInRlbmFudEN1c3RvbUF0dHJpYnV0ZXMiOnsiaXNFbnRlcnByaXNlIjoie3t0ZW5hbnQuY3VzdG9tQXR0cmlidXRlcy5pc0VudGVycHJpc2V9fSIsIm5hbWUiOiJ7e3RlbmFudC5uYW1lfX0ifSwidGVuYW50SW52aXRhdGlvbiI6bnVsbCwidGVuYW50SW52aXRlciI6bnVsbCwidXNlcklkIjoiVTNDeWZGQlVKcU5kUWYyNDB1bFk3dHVmMFVJViIsInZlcmlmaWVkRW1haWwiOnRydWV9.oAs06lHjklxcCE0NPHNvau6UaWiQUplUbq15sLmcQ9UN8DbngT2ScWrqWuukqMQRmfVyrEwg4dOx3o3djeyIICE2rS5n71iASTby8Vak14ctH3ezSJPEuhLUZ4exe6jowMqZNJPqcBm9h5-rRnc4-TYX4CgnPqCrVgT88a4K7vi2hBCBHRr4fxkDNmp75bomgmcRcouL7AHu_jLg9tfvrXLAlFdiuooaE5WGKkplTmrz1PbA6RHKbnteXySeuWreFXhz4-LHHEk0j0BvZls5dabrw9E8AeLlDfRe5CmeghDwbc5Y9bkbZZtqoQpFrO6mhXuLSqLnheBqtmJVYDG0OA",
+          "origin": "https://you.com",
+          "priority": "u=1, i",
+          "referer": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=default",
+          "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+          "sec-ch-ua-arch": "\"x86\"",
+          "sec-ch-ua-bitness": "\"64\"",
+          "sec-ch-ua-full-version": "\"147.0.7727.102\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-model": "\"\"",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "sec-ch-ua-platform-version": "\"19.0.0\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+        },
+        "mimeType": null,
+        "fromCache": null,
+        "fromServiceWorker": null,
+        "timing": null,
+        "response": null
+      },
+      {
+        "method": "Network.loadingFailed",
+        "type": "XHR",
+        "errorText": "net::ERR_CONNECTION_CLOSED",
+        "canceled": false,
+        "blockedReason": null,
+        "corsErrorStatus": null,
+        "status": null,
+        "statusText": null,
+        "headers": null,
+        "mimeType": null,
+        "fromCache": null,
+        "fromServiceWorker": null,
+        "timing": null,
+        "response": null
+      }
+    ]
+  }
+]

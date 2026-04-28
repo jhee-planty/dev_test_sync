@@ -1,0 +1,2 @@
+HTTP Status: NONE (connection closed)
+Network error: net::ERR_CONNECTION_CLOSED

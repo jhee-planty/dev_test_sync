@@ -1,0 +1,27 @@
+{
+  "request_id": 634,
+  "service": "you",
+  "engine_fix_under_test": "Cycle 95 — SSE v3 CRLF fix (envelope_template stored with CHAR(13,10))",
+  "wire_level_outcome": "FAIL — net::ERR_CONNECTION_CLOSED",
+  "intercept_endpoint": "https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=b252248e-2c39-48f5-a84a-18240f5ea0e0&conversationTurnId=423fb40b-3e6c-4",
+  "request_status": null,
+  "network_loadingFailed_error": "net::ERR_CONNECTION_CLOSED",
+  "ui_outcome": "Generic error: '🤖 Sorry, something went wrong. Please try again later.' (with Error ID)",
+  "warning_rendered_보안경고": false,
+  "youChatToken_event_present": false,
+  "done_event_present": false,
+  "bypass_normal_answer": false,
+  "verdict": "FAILED — same wire-level failure as #633. CRLF fix in envelope did NOT resolve the issue. Browser receives 0 bytes; TCP connection closed by APF/proxy before any HTTP response.",
+  "delta_vs_633": "SAME (still ERR_CONNECTION_CLOSED, no SSE bytes delivered, generic error UI)",
+  "engineering_hypotheses": [
+    "Engine convert_to_http2_response may still return size=0 — confirm stored body actually starts with 'HTTP/1.1 200 OK\\r\\n' bytes (not literal backslash-n)",
+    "CHAR(13,10) UPDATE may have been applied to wrong row OR template not picked up due to cache/version",
+    "HTTP/2 frame emitter may reject body when content-length header missing (chunked SSE) — possibly DATA frame with END_STREAM never sent",
+    "Possible TLS-level RST from APF before any HTTP layer kicks in"
+  ],
+  "recommended_next_steps": [
+    "etap log: tcpdump on egress to confirm whether engine sent any HTTP/2 DATA frames or just RST/FIN",
+    "DB hex check: SELECT HEX(envelope_template) WHERE service='you' — confirm starts with 485454 (=H'HTTP'), 0D0A appears at correct positions",
+    "Compare with copilot/perplexity engine output where similar SSE flow may already work"
+  ]
+}

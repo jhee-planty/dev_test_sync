@@ -1,0 +1,33 @@
+(empty — 0 bytes received)
+
+Browser-level diagnostic (CDP Network domain):
+  Network.loadingFailed.errorText = "net::ERR_CONNECTION_CLOSED"
+  Network.loadingFailed.canceled = false
+  Status code: NONE (no Network.responseReceived event)
+  Bytes received: 0
+
+Engine fix applied (Cycle 95):
+  envelope_template UPDATE used CHAR(13,10) explicit CRLF
+  hex 4F4B0D0A 'OK\r\n' verified stored
+  LENGTH=343 bytes
+  Body uses LF for SSE (per spec)
+
+Conclusion:
+  The CRLF DB-storage fix did NOT propagate to the wire. The browser still
+  receives ZERO bytes from /api/streamingSearch and the TCP connection is
+  closed before any HTTP response headers arrive. This is the same
+  end-to-end symptom as request #633 (TCP RST / CONNECTION_CLOSED).
+
+  Hypothesis ranking (highest first):
+  1. convert_to_http2_response() still returns size=0 — the engine never
+     emits any DATA frame even though the DB row is fixed. (Possible cache,
+     wrong row, or template not re-read after restart.)
+  2. HTTP/2 framer rejects body when content-length is missing (chunked SSE)
+     and instead RST_STREAMs the connection.
+  3. TLS-level RST from upstream APF before any HTTP layer kicks in.
+
+  Recommended next probe:
+  - tcpdump on engine egress to confirm whether ANY HTTP/2 DATA frame leaves
+    the box, or just RST/FIN.
+  - SELECT HEX(envelope_template) WHERE service='you' — confirm starts
+    with 485454 (=H'HTTP') and 0D0A appears at correct positions.

@@ -1,0 +1,33 @@
+URL: https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=b252248e-2c39-48f5-a84a-18240f5ea0e0&conversationTurnId=423fb40b-3e6c-4
+HTTP Status (CDP Network domain): None
+Network.loadingFailed errorText: net::ERR_CONNECTION_CLOSED
+
+--- Response Headers ---
+(none — connection closed before response)
+
+--- Request Headers (sent) ---
+:authority: you.com
+:method: POST
+:path: <redacted/long>
+:scheme: https
+accept: */*
+accept-encoding: gzip, deflate, br, zstd
+accept-language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+content-length: 107
+content-type: text/plain;charset=UTF-8
+cookie: <redacted/long>
+origin: https://you.com
+priority: u=1, i
+referer: https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=default
+sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"
+sec-ch-ua-arch: "x86"
+sec-ch-ua-bitness: "64"
+sec-ch-ua-full-version: "147.0.7727.102"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-model: ""
+sec-ch-ua-platform: "Windows"
+sec-ch-ua-platform-version: "19.0.0"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-origin
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
