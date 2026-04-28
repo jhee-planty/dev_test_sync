@@ -1,0 +1,5 @@
+REQUEST: POST https://you.com/api/streamingSearch
+RESULT: net::ERR_CONNECTION_CLOSED (no HTTP response received)
+NO STATUS LINE - connection terminated before response headers arrived
+NO content-type - server sent nothing
+9 simultaneous failed requests in same time window (entire chat API surface dropped)

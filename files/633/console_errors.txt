@@ -1,0 +1,487 @@
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e.reportInternalEvent (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:146504)
+    at uT (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:171021)
+    at Object.init (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:189511)
+    at O (https://you.com/_next/static/chunks/0cdb7jhd5suc0.js:1:67512)
+    at ad (https://you.com/_next/static/chunks/15tklufay_yxa.js:1:62359)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at https://you.com/_next/static/chunks/00x.yl86v~r34.js:1:5755
+    at p (https://you.com/_next/static/chunks/00x.yl86v~r34.js:1:8394)
+    at Object.post (https://you.com/_next/static/chunks/00x.yl86v~r34.js:1:9060)
+[warning] [LaunchDarkly] LaunchDarkly client was initialized with bootstrap data that did not include flag metadata. Events may not be sent correctly. Please see https://docs.launchdarkly.com/sdk/client-side/javascript#initialize-the-client for instructions on SDK initialization.
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.open (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60342
+    at Object.httpRequest (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60746)
+    at c (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:35880)
+[warning] [LaunchDarkly] The waitForInitialization function was called without a timeout specified. In a future version a default timeout will be applied.
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+    at z (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:18568)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.open (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60342
+    at Object.httpRequest (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60746)
+    at t (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:24436)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60342
+    at Object.httpRequest (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60746)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at window.fetch (<anonymous>:42:26)
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at window.fetch (<anonymous>:42:26)
+    at p (https://you.com/_next/static/chunks/0zvn_j87lor.f.js:1:5202)
+    at E (https://you.com/_next/static/chunks/0zvn_j87lor.f.js:1:5464)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at window.fetch (<anonymous>:42:26)
+    at p (https://you.com/_next/static/chunks/0zvn_j87lor.f.js:1:5202)
+    at E (https://you.com/_next/static/chunks/0zvn_j87lor.f.js:1:5464)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at window.fetch (<anonymous>:42:26)
+    at https://you.com/_next/static/chunks/00x.yl86v~r34.js:1:5755
+    at p (https://you.com/_next/static/chunks/00x.yl86v~r34.js:1:8394)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at window.fetch (<anonymous>:42:26)
+    at p (https://you.com/_next/static/chunks/0zvn_j87lor.f.js:1:5202)
+    at E (https://you.com/_next/static/chunks/0zvn_j87lor.f.js:1:5464)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45124
+    at new Promise (<anonymous>)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at t.stream (https://you.com/_next/static/chunks/0i9_12~nllcfm.js:1:11554)
+    at https://you.com/_next/static/chunks/0i9_12~nllcfm.js:1:26320
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45124
+    at new Promise (<anonymous>)
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] AxiosError: Network Error
+    at m.onerror (https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45457)
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60342
+    at Object.httpRequest (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60746)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45124
+    at new Promise (<anonymous>)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45124
+    at new Promise (<anonymous>)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45124
+    at new Promise (<anonymous>)
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:79903)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:81034
+    at window.fetch (<anonymous>:42:26)
+    at e (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17008)
+    at d (https://you.com/_next/static/chunks/08k.bghx_z1tq.js:4:17175)
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:87382
+[error] routeToApi error AxiosError: Network Error
+    at m.onerror (https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45457)
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] routeToApi error AxiosError: Network Error
+    at m.onerror (https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45457)
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] AxiosError: Network Error
+    at m.onerror (https://you.com/_next/static/chunks/0ckt.etmu9nr4.js:1:45457)
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[error] Failed to load resource: net::ERR_CONNECTION_CLOSED
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:87382
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:87382
+[warning] missing base element for component descope-tooltip
+[warning] missing base element for component descope-tooltip
+[warning] missing base element for component descope-tooltip
+[warning] missing base element for component descope-tooltip
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:87382
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:87382
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:87382
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t._getEventTypeContext (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:176895)
+    at t._mapToCxSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:174235)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:172043)
+    at t.onEnd (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63688)
+    at t.end (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:54978)
+    at https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:80763
+[warning] Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+    at sJ (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:152188)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:181196)
+    at t.onStart (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:63461)
+    at new t (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:52731)
+    at t.startSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:62057)
+    at e._createSpan (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86458)
+    at XMLHttpRequest.<anonymous> (https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js:1:86892)
+    at XMLHttpRequest.open (<anonymous>:49:28)
+    at https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60342
+    at Object.httpRequest (https://you.com/_next/static/chunks/0v33j1vydf-ly.js:1:60746)

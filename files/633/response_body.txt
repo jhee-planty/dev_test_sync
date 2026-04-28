@@ -1,0 +1,9 @@
+(EMPTY - 0 bytes)
+
+The fetch/XHR interceptor captured zero bytes of body content.
+No SSE chunks (no 'event: youChatToken', no 'event: done').
+No JSON, no text, nothing.
+
+This is consistent with net::ERR_CONNECTION_CLOSED before response headers.
+The promised v3 SSE envelope (text/event-stream with youChatToken + done events
+carrying the warning text) was NOT emitted by the engine for you.com.

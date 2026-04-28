@@ -1,0 +1,90 @@
+Request #633 — you.com PII block verify (Cycle 95 WSA v2 / SSE envelope v3)
+Date: 2026-04-28
+Result: FAILED — same TCP RST behavior as #632, NO improvement
+
+=== Summary ===
+The promised SSE envelope v3 substitution (template id=80: 200 OK + text/event-stream
++ youChatToken event with warning + done event) was NOT delivered to the you.com
+client. The connection is killed at the TCP layer just like #632.
+
+=== Captured evidence ===
+Method: Chrome DevTools Protocol (CDP) via remote-debugging-port 9222.
+Driver: C:\Users\최장희\Documents\dev_test_sync\files\633\cdp_driver.py
+Two complementary captures:
+  1. fetch/XHR interceptor injected into page (window.__sse_capture)
+  2. CDP Network domain events (requestWillBeSent, responseReceived, loadingFailed)
+
+Outcome from interceptor:
+  status = 0
+  chunks = [""]   (zero bytes)
+  headers = {}
+  error = "XHR error" (XHR readystate=4 with status 0)
+
+Outcome from CDP Network events for /api/streamingSearch:
+  Network.requestWillBeSentExtraInfo  (request was about to leave)
+  Network.requestWillBeSent           (request sent)
+  Network.loadingFailed               errorText=net::ERR_CONNECTION_CLOSED canceled=false
+  (NO Network.responseReceived event ever fired)
+
+In a separate observation window 9 simultaneous requests to you.com APIs all
+failed with net::ERR_CONNECTION_CLOSED — the entire chat surface is being
+torn down at the TCP layer (this is broader than just streamingSearch).
+
+Performance API (performance.getEntriesByType('resource')) shows ZERO entries
+for streamingSearch — confirming the request never reached responseStart, i.e.
+the server side never sent any response bytes.
+
+=== UI behavior ===
+The chat bubble shows the generic error: "Sorry, something went wrong. Please
+try again later. ... Error ID: cd259712-...". This is you.com's own catch-all
+error UI when the streaming endpoint dies.
+
+  warning_rendered (보안 경고): NO
+  generic_error_ui shown:        YES ("Sorry, something went wrong")
+  TypeError in DOM:              NO (no React error this time, just polite error UI)
+  bypass_normal_answer:          NO (no normal answer either)
+
+=== Comparison vs #632 ===
+SAME (no progress):
+  - Network: still net::ERR_CONNECTION_CLOSED (TCP RST family)
+  - Body: still 0 bytes
+  - User experience: still gets a "something went wrong" message in chat
+  - No warning text reaches the user
+
+DIFFERENT (cosmetic only):
+  - #632 reportedly showed React TypeError in console; this run shows a
+    cleaner you.com-native error bubble. Could be either a frontend you.com
+    update OR a different code path. Either way, the warning is not delivered.
+
+=== Root cause hypothesis ===
+The new template id=80 (SSE envelope) is not being applied for the you.com
+service. Possibilities:
+  (a) Template registration didn't pick up id=80 for service=you on the engine
+  (b) you.com uses HTTP/2 or HTTP/3 multiplexing, and the engine's substitution
+      hook fires before headers can be injected, falling through to TCP close
+  (c) you.com's request URL pattern (POST /api/streamingSearch) isn't matching
+      the template URL pattern in the engine config
+
+Recommendation: verify on engine side that:
+  - Template id=80 is loaded for the youchat domain
+  - The match pattern includes POST /api/streamingSearch
+  - The engine handler can write SSE headers on the negotiated HTTP version
+
+=== Artifacts ===
+  01_before.png             — chat page before send (sidebar + textarea)
+  02..06 (copies of 07)     — DevTools panel screenshots not separately
+                              capturable via CDP without UI manipulation
+  07_after.png              — chat page after send showing generic error
+  08_warning_check.png      — same as 07 (no warning visible)
+  response_headers.txt      — explanation: no headers received
+  response_body.txt         — explanation: zero bytes
+  status_line.txt           — explanation: no HTTP status line
+  console_errors.txt        — captured console errors during the run
+  cdp_events_streamingSearch.json — raw CDP event chain for the request
+  cdp_driver.py             — automation driver used
+  notes.txt                 — this file
+
+=== Verdict ===
+WINDOWS_MCP_VERDICT: FAILED
+progress_vs_632: same
+breakthrough_status: not achieved

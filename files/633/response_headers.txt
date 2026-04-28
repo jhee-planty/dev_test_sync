@@ -1,0 +1,12 @@
+Status: 0 (no response - connection closed)
+URL: https://you.com/api/streamingSearch?...&domain=youchat&selectedChatMode=custom&selectedAiModel=gpt_5_1_instant
+Network error: net::ERR_CONNECTION_CLOSED (Network.loadingFailed event)
+XHR readyState=4 status=0 -> 'XHR error' event fired in client
+canceled: false
+blockedReason: (none)
+
+NO RESPONSE HEADERS RECEIVED.
+The engine did NOT deliver a 200 OK / text/event-stream envelope.
+The TCP connection was closed by the server (or middlebox) before any HTTP response was sent.
+
+Behavior is TCP-level termination, identical to the failure mode reported in #632.

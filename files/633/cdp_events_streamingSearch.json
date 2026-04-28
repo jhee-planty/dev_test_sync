@@ -1,0 +1,537 @@
+[
+  {
+    "method": "Network.requestWillBeSentExtraInfo",
+    "params": {
+      "requestId": "7732.1509",
+      "associatedCookies": [
+        {
+          "cookie": {
+            "name": "__cf_bm",
+            "value": "PZXd9Sa2m1cuPTrRa1IZ0UmB2WTvB8ZTE1G1YJtK3sQ-1777360729.9982421-1.0.1.1-Wrg3WrHy6aej90sxqXy4bUL9fq9Ki_bETtezRDW5df0Bm_vdBmIDfmPhpnh9S.RkiCHZTvfhsboTuca8g0CbGyh3sLCsNVjsXjPbfITYURsuK8SHzzWCIXxRffACNw2c",
+            "domain": ".auth.you.com",
+            "path": "/",
+            "expires": 1777362529.986028,
+            "size": 206,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [
+            "DomainMismatch"
+          ],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "_cfuvid",
+            "value": "2hE4uTf7ym1BacbP_ki48w5.6d3CIi1NFMPD8kleewY-1777360729.9982421-1.0.1.1-.evoleOj.gkCbGLbGXicVFddbPKMsk.icQCKAlThqOs",
+            "domain": ".auth.you.com",
+            "path": "/",
+            "expires": -1,
+            "size": 121,
+            "httpOnly": true,
+            "secure": true,
+            "session": true,
+            "sameSite": "None",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [
+            "DomainMismatch"
+          ],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "uuid_guest",
+            "value": "88ca3d7d-dab3-4f32-a252-4d4ec09248b7",
+            "domain": "you.com",
+            "path": "/",
+            "expires": -1,
+            "size": 46,
+            "httpOnly": false,
+            "secure": false,
+            "session": true,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "uuid_guest_backup",
+            "value": "88ca3d7d-dab3-4f32-a252-4d4ec09248b7",
+            "domain": "you.com",
+            "path": "/",
+            "expires": 1808897222.928082,
+            "size": 53,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "uuid_guest",
+            "value": "88ca3d7d-dab3-4f32-a252-4d4ec09248b7",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1808897222.927848,
+            "size": 46,
+            "httpOnly": false,
+            "secure": true,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "total_query_count",
+            "value": "0",
+            "domain": "you.com",
+            "path": "/",
+            "expires": 1779952729.586363,
+            "size": 18,
+            "httpOnly": false,
+            "secure": true,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "cf_clearance",
+            "value": "rtXQJy4XM1CYRY12rYdVVQE1vfT2JAvDqW5PR2JtHNc-1777360730-1.2.1.1-yMhsfJNo_uN5vC8uROtDncwh35BRKM95VNlSZUojAyu_cS1XPfq5.pn3P_Fwk7jBp9wOx6E69ZF1v7rTHAXXf_QRQev75HVt1vRzaRTBPWlcL68xTHzcFwYZWN3HHpvMyNjvUFFhBjVHOfHUbFgtQuux3_olqz6J2yjVfjortzTzVknfwGlH_SItmFQ7I0IMGbR.Ux1upYExt691lz6Sx80uk0n7oBwY.wpb2z4h6Ci2qzlYArc8yQ6LkLbVytM79Wayrenjgdiov8.Mz464uEpycEt2tJO4cqyYhwjzAU2WPKW_GMEjEfne3M8Dq5.vgidCHsDAO8bh37CikSKIhA",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1808896730.164362,
+            "size": 417,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "sameSite": "None",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443,
+            "partitionKey": {
+              "topLevelSite": "https://you.com",
+              "hasCrossSiteAncestor": false
+            }
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "__cf_bm",
+            "value": "pHs5sGx9kWBcM5uf3cXdXD0g7fGNPFOcHNV1xPyxkLQ-1777360730.1721706-1.0.1.1-RR2NeeFHFyBDdBslVFC7G5iWtkBGiOMrYNzLkJ_5uWjonDaG7l83.fmPv3c6Zp09lRoNpz0pRcOq1GgbcmpiPLONsD0eHLiPcEsrQX2krj4UFk3AhGMa0rJQEQe1TyBkfTVzzK.8w8GNu5XtQC2Z0g",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1777362530.164787,
+            "size": 228,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "osano_consentmanager_uuid",
+            "value": "dd8c19be-ab79-4296-a718-07d22e9505a7",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1808897144.134612,
+            "size": 61,
+            "httpOnly": false,
+            "secure": true,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "osano_consentmanager",
+            "value": "C77LW4hw_5ajXEEa2x-ruIy1iM1o485pTBAy8Lo32BNK0ymA0Fa--32rCIbNYOyT8j6KWW-ZDS5Bd-ZHK95wleHJpvtL-GjgyNsKUTabdG-COBfiuQPGEf7roDphLweq9E9DWsc0ZnGyleDfZYcA-TKb5L8Plc5w3OD6nuyk0yIGmugUjwdHpg6qBzLDbOtsO6CwIDYV_AlOW41I7yeYhcmN9U5CJvv7NHfK3WTCk6hLne-jFFBRY1XsYjLPVJ25fhLf8lKzn8MkJ20ON_wjrUgCPIe4L-Mf97EhvUQD36joB8ChE-u9vi1zVY8TtpK-",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1808897144.13522,
+            "size": 340,
+            "httpOnly": false,
+            "secure": true,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "ld_context",
+            "value": "%7B%22kind%22%3A%22user%22%2C%22key%22%3A%2288ca3d7d-dab3-4f32-a252-4d4ec09248b7%22%2C%22country%22%3A%22KR%22%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F147.0.0.0%20Safari%2F537.36%22%2C%22secUserAgent%22%3A%22%5C%22Google%20Chrome%5C%22%3Bv%3D%5C%22147%5C%22%2C%20%5C%22Not.A%2FBrand%5C%22%3Bv%3D%5C%228%5C%22%2C%20%5C%22Chromium%5C%22%3Bv%3D%5C%22147%5C%22%22%2C%22subscriptionTier%22%3A%22UNKNOWN%22%7D",
+            "domain": "you.com",
+            "path": "/",
+            "expires": -1,
+            "size": 516,
+            "httpOnly": false,
+            "secure": false,
+            "session": true,
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "DFN-3CybzjIPJhmWnNPlbpZzW6SCRj4-1777361020893",
+            "value": "fAzrGLuBZo8OwZaWzfueG7LfrVOhk49v9KMAqKHsWHh",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1777533820.95495,
+            "size": 88,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "DFN-3CycHKt3DcanrfIP7mWbvCv7vCd-1777361161293",
+            "value": "3nloNMPr1Pr5FyAZQw4qKSofHce63vbt752zj7wwvKJ",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1777533961.357073,
+            "size": 88,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "_cfuvid",
+            "value": "jbQS1bINFQ9WNrgkYQaoD4bsJ5ipdrEx_7KtifYzXIQ-1777361162.5499964-1.0.1.1-tEo8.ExeJZ.mZt4RZCUqIjpr5Ls2u8O9xfFOd1BzOUM",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": -1,
+            "size": 121,
+            "httpOnly": true,
+            "secure": true,
+            "session": true,
+            "sameSite": "None",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        },
+        {
+          "cookie": {
+            "name": "DFN-3CycPK45CFMZxqMgzKf5R9zeopl-1777361224072",
+            "value": "i54FS6UypTvcJZYGjbG9vtdwjcwdAqQKo0cF9DrP72W",
+            "domain": ".you.com",
+            "path": "/",
+            "expires": 1777534024.135587,
+            "size": 88,
+            "httpOnly": true,
+            "secure": true,
+            "session": false,
+            "sameSite": "Lax",
+            "priority": "Medium",
+            "sourceScheme": "Secure",
+            "sourcePort": 443
+          },
+          "blockedReasons": [],
+          "exemptionReason": "None"
+        }
+      ],
+      "headers": {
+        ":authority": "you.com",
+        ":method": "POST",
+        ":path": "/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=cd259712-13cc-4c56-98cc-3c4c48b6ecaa&conversationTurnId=aea6e9b7-13d5-4b88-bab8-9153618bef92&pastChatLength=2&isSmallMediumDevice=true&selectedChatMode=custom&selectedAiModel=gpt_5_1_instant&queryTraceId=cd259712-13cc-4c56-98cc-3c4c48b6ecaa&traceId=cd259712-13cc-4c56-98cc-3c4c48b6ecaa|aea6e9b7-13d5-4b88-bab8-9153618bef92|2026-04-28T07:27:46.048Z&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true",
+        ":scheme": "https",
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "content-length": "107",
+        "content-type": "text/plain;charset=UTF-8",
+        "cookie": "uuid_guest=88ca3d7d-dab3-4f32-a252-4d4ec09248b7; uuid_guest_backup=88ca3d7d-dab3-4f32-a252-4d4ec09248b7; uuid_guest=88ca3d7d-dab3-4f32-a252-4d4ec09248b7; total_query_count=0; cf_clearance=rtXQJy4XM1CYRY12rYdVVQE1vfT2JAvDqW5PR2JtHNc-1777360730-1.2.1.1-yMhsfJNo_uN5vC8uROtDncwh35BRKM95VNlSZUojAyu_cS1XPfq5.pn3P_Fwk7jBp9wOx6E69ZF1v7rTHAXXf_QRQev75HVt1vRzaRTBPWlcL68xTHzcFwYZWN3HHpvMyNjvUFFhBjVHOfHUbFgtQuux3_olqz6J2yjVfjortzTzVknfwGlH_SItmFQ7I0IMGbR.Ux1upYExt691lz6Sx80uk0n7oBwY.wpb2z4h6Ci2qzlYArc8yQ6LkLbVytM79Wayrenjgdiov8.Mz464uEpycEt2tJO4cqyYhwjzAU2WPKW_GMEjEfne3M8Dq5.vgidCHsDAO8bh37CikSKIhA; __cf_bm=pHs5sGx9kWBcM5uf3cXdXD0g7fGNPFOcHNV1xPyxkLQ-1777360730.1721706-1.0.1.1-RR2NeeFHFyBDdBslVFC7G5iWtkBGiOMrYNzLkJ_5uWjonDaG7l83.fmPv3c6Zp09lRoNpz0pRcOq1GgbcmpiPLONsD0eHLiPcEsrQX2krj4UFk3AhGMa0rJQEQe1TyBkfTVzzK.8w8GNu5XtQC2Z0g; osano_consentmanager_uuid=dd8c19be-ab79-4296-a718-07d22e9505a7; osano_consentmanager=C77LW4hw_5ajXEEa2x-ruIy1iM1o485pTBAy8Lo32BNK0ymA0Fa--32rCIbNYOyT8j6KWW-ZDS5Bd-ZHK95wleHJpvtL-GjgyNsKUTabdG-COBfiuQPGEf7roDphLweq9E9DWsc0ZnGyleDfZYcA-TKb5L8Plc5w3OD6nuyk0yIGmugUjwdHpg6qBzLDbOtsO6CwIDYV_AlOW41I7yeYhcmN9U5CJvv7NHfK3WTCk6hLne-jFFBRY1XsYjLPVJ25fhLf8lKzn8MkJ20ON_wjrUgCPIe4L-Mf97EhvUQD36joB8ChE-u9vi1zVY8TtpK-; ld_context=%7B%22kind%22%3A%22user%22%2C%22key%22%3A%2288ca3d7d-dab3-4f32-a252-4d4ec09248b7%22%2C%22country%22%3A%22KR%22%2C%22userAgent%22%3A%22Mozilla%2F5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F147.0.0.0%20Safari%2F537.36%22%2C%22secUserAgent%22%3A%22%5C%22Google%20Chrome%5C%22%3Bv%3D%5C%22147%5C%22%2C%20%5C%22Not.A%2FBrand%5C%22%3Bv%3D%5C%228%5C%22%2C%20%5C%22Chromium%5C%22%3Bv%3D%5C%22147%5C%22%22%2C%22subscriptionTier%22%3A%22UNKNOWN%22%7D; DFN-3CybzjIPJhmWnNPlbpZzW6SCRj4-1777361020893=fAzrGLuBZo8OwZaWzfueG7LfrVOhk49v9KMAqKHsWHh; DFN-3CycHKt3DcanrfIP7mWbvCv7vCd-1777361161293=3nloNMPr1Pr5FyAZQw4qKSofHce63vbt752zj7wwvKJ; _cfuvid=jbQS1bINFQ9WNrgkYQaoD4bsJ5ipdrEx_7KtifYzXIQ-1777361162.5499964-1.0.1.1-tEo8.ExeJZ.mZt4RZCUqIjpr5Ls2u8O9xfFOd1BzOUM; DFN-3CycPK45CFMZxqMgzKf5R9zeopl-1777361224072=i54FS6UypTvcJZYGjbG9vtdwjcwdAqQKo0cF9DrP72W",
+        "origin": "https://you.com",
+        "priority": "u=1, i",
+        "referer": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=custom",
+        "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-arch": "\"x86\"",
+        "sec-ch-ua-bitness": "\"64\"",
+        "sec-ch-ua-full-version": "\"147.0.7727.102\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-model": "\"\"",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua-platform-version": "\"19.0.0\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+      },
+      "connectTiming": {
+        "requestTime": 1325339.598289
+      },
+      "clientSecurityState": {
+        "initiatorIsSecureContext": true,
+        "initiatorIPAddressSpace": "Public",
+        "localNetworkAccessRequestPolicy": "PermissionBlock"
+      },
+      "siteHasCookieInOtherPartition": false
+    }
+  },
+  {
+    "method": "Network.requestWillBeSent",
+    "params": {
+      "requestId": "7732.1509",
+      "loaderId": "028672A9E94E80A97534A42B2A49626D",
+      "documentURL": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=custom",
+      "request": {
+        "url": "https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=cd259712-13cc-4c56-98cc-3c4c48b6ecaa&conversationTurnId=aea6e9b7-13d5-4b88-bab8-9153618bef92&pastChatLength=2&isSmallMediumDevice=true&selectedChatMode=custom&selectedAiModel=gpt_5_1_instant&queryTraceId=cd259712-13cc-4c56-98cc-3c4c48b6ecaa&traceId=cd259712-13cc-4c56-98cc-3c4c48b6ecaa|aea6e9b7-13d5-4b88-bab8-9153618bef92|2026-04-28T07:27:46.048Z&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true",
+        "method": "POST",
+        "headers": {
+          "sec-ch-ua-platform": "\"Windows\"",
+          "Referer": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=custom",
+          "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+          "sec-ch-ua-bitness": "\"64\"",
+          "sec-ch-ua-model": "\"\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-arch": "\"x86\"",
+          "sec-ch-ua-full-version": "\"147.0.7727.102\"",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+          "Content-Type": "text/plain;charset=UTF-8",
+          "sec-ch-ua-platform-version": "\"19.0.0\""
+        },
+        "postData": "{\"query\":\"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?\",\"chat\":\"[]\"}",
+        "hasPostData": true,
+        "postDataEntries": [
+          {
+            "bytes": "eyJxdWVyeSI6IuuCtCDso7zrr7zrk7HroZ3rsojtmLjripQgODgwMTAxLTEyMzQ1Njcg7J24642wIOydtOqxuOuhnCDrrLTsl4fsnYQg7JWMIOyImCDsnojslrQ/IiwiY2hhdCI6IltdIn0="
+          }
+        ],
+        "mixedContentType": "none",
+        "initialPriority": "High",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "isSameSite": true
+      },
+      "timestamp": 1325339.596165,
+      "wallTime": 1777361266.059724,
+      "initiator": {
+        "type": "script",
+        "stack": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "193",
+              "url": "https://you.com/_next/static/chunks/0kn-z-2ki~m0q.js",
+              "lineNumber": 0,
+              "columnNumber": 88385
+            },
+            {
+              "functionName": "XMLHttpRequest.send",
+              "scriptId": "281",
+              "url": "",
+              "lineNumber": 66,
+              "columnNumber": 27
+            },
+            {
+              "functionName": "stream",
+              "scriptId": "256",
+              "url": "https://you.com/_next/static/chunks/0i9_12~nllcfm.js",
+              "lineNumber": 0,
+              "columnNumber": 11801
+            },
+            {
+              "functionName": "",
+              "scriptId": "256",
+              "url": "https://you.com/_next/static/chunks/0i9_12~nllcfm.js",
+              "lineNumber": 0,
+              "columnNumber": 26319
+            },
+            {
+              "functionName": "",
+              "scriptId": "256",
+              "url": "https://you.com/_next/static/chunks/0i9_12~nllcfm.js",
+              "lineNumber": 0,
+              "columnNumber": 32592
+            },
+            {
+              "functionName": "handleSubmitQuery",
+              "scriptId": "256",
+              "url": "https://you.com/_next/static/chunks/0i9_12~nllcfm.js",
+              "lineNumber": 0,
+              "columnNumber": 35850
+            },
+            {
+              "functionName": "onSubmit",
+              "scriptId": "230",
+              "url": "https://you.com/_next/static/chunks/0qv4~j4_p-tzg.js",
+              "lineNumber": 0,
+              "columnNumber": 87228
+            },
+            {
+              "functionName": "handleSubmit",
+              "scriptId": "207",
+              "url": "https://you.com/_next/static/chunks/11_y4twarmq~u.js",
+              "lineNumber": 0,
+              "columnNumber": 25927
+            }
+          ],
+          "parent": {
+            "description": "await",
+            "callFrames": [
+              {
+                "functionName": "handleKeyDown",
+                "scriptId": "230",
+                "url": "https://you.com/_next/static/chunks/0qv4~j4_p-tzg.js",
+                "lineNumber": 0,
+                "columnNumber": 84176
+              },
+              {
+                "functionName": "eU",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 18858
+              },
+              {
+                "functionName": "eQ",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 19012
+              },
+              {
+                "functionName": "",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 37327
+              },
+              {
+                "functionName": "re",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 37426
+              },
+              {
+                "functionName": "rn",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 37840
+              },
+              {
+                "functionName": "",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 43296
+              },
+              {
+                "functionName": "oz",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 100139
+              },
+              {
+                "functionName": "eR",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 17999
+              },
+              {
+                "functionName": "ro",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 39131
+              },
+              {
+                "functionName": "nU",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 24800
+              },
+              {
+                "functionName": "nO",
+                "scriptId": "190",
+                "url": "https://you.com/_next/static/chunks/15tklufay_yxa.js",
+                "lineNumber": 0,
+                "columnNumber": 24584
+              }
+            ]
+          }
+        }
+      },
+      "redirectHasExtraInfo": false,
+      "type": "XHR",
+      "frameId": "0506D1DC37E60453A73236DEB2E11597",
+      "hasUserGesture": true
+    }
+  },
+  {
+    "method": "Network.loadingFailed",
+    "params": {
+      "requestId": "7732.1509",
+      "timestamp": 1325340.429125,
+      "type": "XHR",
+      "errorText": "net::ERR_CONNECTION_CLOSED",
+      "canceled": false
+    }
+  }
+]
