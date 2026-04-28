@@ -1,0 +1,3 @@
+No TRPCClientError observed.
+Console showed only the standard Mistral ASCII-art banner ("Le Chat" greeting). No red error lines were visible across multiple screenshots (09, 10, 11).
+Could not select-all/copy console contents because clipboard captured the prompt text from the chat input instead — DevTools panel did not have keyboard focus when ctrl+a was sent.

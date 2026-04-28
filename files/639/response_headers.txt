@@ -1,0 +1,11 @@
+Could not capture verbatim — windows-mcp Snapshot tool reported "No windows found" the entire session, so DevTools row click coordinates were eyeballed and went into wrong panels (filter bar, Elements tab) instead of opening the request detail. From the Network panel summary row only:
+
+Name:          message.newChatBatch?batch=1 (POST)
+Status:        200
+Protocol:      ?
+Type:          fetch
+Initiator:     7142F-72e2c1ce6 (likely tRPC client chunk)
+Size:          ~14.6 KB
+Time:          ~74 ms
+
+Response Headers tab was NOT opened in this run.

@@ -1,0 +1,8 @@
+Could not capture verbatim — Response panel was never successfully opened. Inferences from observable behavior:
+- HTTP 200 returned (no 4xx/5xx).
+- No client-side TRPCClientError thrown (otherwise no 200 + the chat input would not have cleared).
+- UI did NOT render any chat bubble (user or assistant). This suggests the response payload either:
+  (a) returned a warning/error envelope that the frontend silently ignored, or
+  (b) returned data the frontend expected but did not match the optimistic-UI shape needed to render the bubble.
+
+Without a body capture, cannot distinguish (a) from (b).

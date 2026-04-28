@@ -1,0 +1,28 @@
+Request #639 — mistral PII verify retry (Cycle 95 mistral envelope v5)
+
+Test infra issues:
+- mcp__windows-mcp__Snapshot returned "No windows found" the entire session despite Chrome running visible at (50,50) 1600x1000. Worked around by using PowerShell screenshot + click-by-coordinates against known geometry from screenshot inspection.
+- Initial Chrome launch via mcp__windows-mcp__App opened on a virtual desktop the snapshot tool could not see. Killing all chrome and re-launching landed it on Desktop 1 visible. Lost ~3 minutes to this.
+- DevTools coordinate work was eyeballed from PowerShell screenshots since Snapshot UI tree was empty.
+
+Pipeline executed:
+1. Chrome launched, navigated to https://chat.mistral.ai
+2. F12 opened DevTools; Network tab + Preserve log were active (visible in 02_devtools_open.png)
+3. Clicked chat input, typed PII prompt (visible in 04_after_type.png — text appeared in input)
+4. Pressed Enter to submit
+5. Network panel showed exactly one request: POST message.newChatBatch?... status 200, type fetch (visible in 05_after_send.png and 07_network_detail.png)
+6. Console (09_console2.png, 10_final_state.png) showed only the Mistral ASCII-art banner — no red TRPCClientError lines.
+7. Chat area on right STILL displays "Ask anything" placeholder with no user-message bubble and no assistant bubble (final state 10/11).
+8. URL bar remained at /chat — no navigation to /chat/<sessionId> as is normal after a successful new chat creation.
+
+Interpretation:
+- TRPCClientError 'Cannot convert undefined or null to object' from #638 appears RESOLVED — request reached server, got 200 back, no client-side error blocked submission.
+- However the engine response did not cause the UI to render the user message bubble OR an assistant warning bubble. The chat thread remains empty.
+- This is PROGRESS vs #638 (which never got past TRPCClientError to even POST) but NOT a full BREAKTHROUGH (no '보안 경고' bubble visible to user).
+
+Limitations of this run:
+- Could not click into the network row to inspect headers/response body (Snapshot blind, DevTools coords unreliable; click attempts went into filter bar / Elements tab).
+- Could not capture verbatim HTTP response body / headers — would require either CDP or a working Snapshot tool.
+- Cannot definitively rule out that the warning bubble rendered briefly and then was cleared, but visible state shows no bubble.
+
+Verdict: PARTIAL — envelope delivered without TRPCClientError (HTTP 200) but UI did NOT render the warning message.
