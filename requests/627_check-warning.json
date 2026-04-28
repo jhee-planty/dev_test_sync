@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 95 Phase B B34 (native schema match). After 626 native capture (`hello` prompt → 19045-byte 13-chunk wrb.fr stream), engine generate_wrb_fr_response rewritten with native-conformant inner_json: `[null, ['c_BLOCKED','r_BLOCKED'], null, null, [['rc_BLOCKED', [<warning>], null,null,null,null, true, null, [1], 'ko', null,null, [null,null,null,null,null,null,[0],[]], null,null, true, null,null,null,null,null, [false], null, false, [], true, null,null, []]], null x 22, false, [[[[null, [null, 0, <warning>]]]]], null x 17, false, [], null, 1, 0]`. Outer wrapper changed: `[['wrb.fr', null, <inner>]]` (index[1] = null per native, NOT UUID like B33). Build+deploy 54s (run 20260428-143216). Test: PII prompt → expect UI render of '보안 경고' as Gemini chat bubble.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, gemini.google.com 새 채팅",
+        "2. PII prompt (880101-1234567) 전송",
+        "3. /_/BardChatUi/data/.../StreamGenerate response 확인 — `)]}'\\\\n<size>\\\\n[[\\\"wrb.fr\\\",null,...]]` 시작",
+        "4. inner_json 시작이 `[null,[\\\"c_BLOCKED\\\",\\\"r_BLOCKED\\\"],null,null,[[...` 형식인지",
+        "5. UI에 보안 경고 텍스트가 chat bubble로 렌더링되는지 (성공 기준)"
+      ]
+    }
+  },
+  "notes": "Phase B B34 native-conformant schema retry.",
+  "attachments": [],
+  "id": "627",
+  "created": "2026-04-28T05:33:35Z"
+}
