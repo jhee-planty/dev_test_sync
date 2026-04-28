@@ -1,0 +1,8 @@
+Console (Default levels, 2 Issues, 8 hidden):
+- Multiple Coralogix Browser SDK errors: "Error parsing URL TypeError: Failed to construct 'URL': Invalid URL"
+  Stack frames in 0kn-z-2ki~mOq.js, 08k.bghx_zltq.js (telemetry/SDK noise — pre-existing, not related to streamingSearch)
+- POST https://auth.you.com/v1/auth/try-refresh?dcs=f&dcr=f → 401 (Unauthorized) (incognito, no session — expected)
+- Earlier: Access to fetch at 'https://opps-api.getwarmly.com/...createSession' from origin 'https://you.com' blocked by CORS
+- streamingSearch network entry shown in red as "(failed)" — no specific console error for that XHR (engine-side TCP RST/HTTP/2 close not surfaced in console)
+
+No "보안 경고" or APF warning text in console.

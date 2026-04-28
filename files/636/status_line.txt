@@ -1,0 +1,5 @@
+(failed) net::ERR_*  - request shown as "(failed)" in DevTools Network with 0.0 kB transferred, 548ms.
+Same symptom as #635: client receives 0 response headers (Provisional headers / no headers).
+DevTools Headers tab: "Response headers (0)" (zero headers) — h2_mode=1 (cascade) + h2_goaway=1 did NOT change client-visible behavior on you.com.
+General: POST https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&...&chatMode=default
+chatId=1ba02d7b-a08f-4aca-8bac-a5f079274dc7

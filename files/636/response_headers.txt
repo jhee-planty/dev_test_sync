@@ -1,0 +1,9 @@
+Response headers count visible in DevTools: 0
+(DevTools shows literal "Response headers (0)")
+
+Request URL:
+https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=1ba02d7b-a08f-4aca-8bac-a5f079274dc7&conversationTurnId=949f2035-a252-4098-abd0-d23e5610a57d&pastChatLength=0&selectedChatMode=default&queryTraceId=1ba02d7b-a08f-4aca-8bac-a5f079274dc7&traceId=1ba02d7b-a08f-4aca-8bac-a5f079274dc7|949f2035-a252-4098-abd0-d23e5610a57d|2026-04-28T08:25:54.178Z&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true
+
+Method: POST
+Referrer Policy: strict-origin-when-cross-origin
+:authority: you.com

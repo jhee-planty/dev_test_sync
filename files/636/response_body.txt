@@ -1,0 +1,5 @@
+[EMPTY]
+DevTools Response tab: "Failed to load response data — No data found for resource with given identifier"
+Size column: 0.0 kB
+Content-Length: not present (0 response headers received)
+No SSE events received by client.

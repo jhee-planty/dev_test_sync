@@ -1,0 +1,38 @@
+Request #636 — you.com PII block verify, Cycle 95 (h2_mode=1, h2_goaway=1)
+
+OUTCOME: FAILED — same symptom as #635 despite ChatGPT-aligned h2 params.
+
+Test details:
+- URL: https://you.com (incognito, redirected to /chat?chatMode=default → /search?...&chatMode=default after submit)
+- Prompt typed verbatim: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+- Sent via Enter key.
+
+Network observation (DevTools Network tab, "streamingSearch" filter, Preserve log ON):
+- Single matching request: POST /api/streamingSearch?... → status column shows "(failed)"
+- Time: 548 ms, Size: 0.0 kB
+- Headers panel: "Response headers (0)" — ZERO response headers reached the browser
+- Response panel: "Failed to load response data — No data found for resource with given identifier"
+- Type column: xhr
+- This matches #635 exactly: engine emits envelope but client never receives headers (Provisional Headers state).
+
+UI observation:
+- you.com chat shows generic error: "Sorry, something went wrong. Please try again later. Our team is looking into it..."
+- Error ID surfaced to user: 1ba02d7b-a08f-4aca-8bac-a5f079274dc7|949f2035-a252-4098-abd0-d23e5610a57d|2026-04-28T08:25:54.178Z
+- No "보안 경고" rendered.
+- No bypass / normal answer — full block at network layer, but UI shows error not warning.
+
+Comparison vs #635:
+- #635: same generic error, "Provisional headers shown", 0 response headers received.
+- #636 (h2_mode=1 cascade + h2_goaway=1 GOAWAY enabled): SAME — no improvement.
+- Hypothesis falsified: switching to chatgpt-aligned h2 params did NOT fix you.com SSE delivery.
+
+Possible next investigations:
+1. you.com may use a CDN/edge proxy (Cloudflare?) that buffers/holds response until full body received — partial 547B envelope may be sitting in proxy buffer, never flushed to client.
+2. Check whether engine is sending Content-Length or Transfer-Encoding: chunked.
+3. Try sending the SSE response body in a single write (no flush boundary).
+4. Verify whether Connection: close vs keep-alive matters here.
+5. Inspect engine-side TCP capture to confirm TCP FIN/RST timing vs h2 GOAWAY timing.
+
+Engine logs (per request brief) confirmed 547B envelope was emitted. Disconnect is between engine egress and you.com proxy/browser ingress.
+
+Duration: ~3.5 min (start 17:23:51, end ~17:27).
