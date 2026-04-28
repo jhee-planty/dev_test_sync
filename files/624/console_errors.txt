@@ -1,0 +1,10 @@
+Console errors observed (Console panel, after PII prompt submission):
+
+[Repeated pattern — multiple instances]
+- "Connecting to 'https://www.google.co.kr/pagead/1p-conversion/...' violates the following Content Security Policy directive: connect-src 'self' https://*.google.com https://*.gstatic.com ... The action has been blocked." (page CSP rejecting Google ad/analytics endpoints)
+- "Fetch API cannot load https://www.googleadservices.com/pagead/conversion/... Refused to connect because it violates the document's Content Security Policy."
+- "Loading the image 'https://www.google.co.kr/ads/ga-audiences?...' violates the following Content Security Policy directive: img-src ... The action has been blocked."
+
+Issues counter (top-right of DevTools): 9 errors / 4 warnings / 7 info-issues / 7 hidden
+
+NOTE: These CSP violations are page-script artifacts (Gemini frontend trying to ping ad/conversion endpoints), NOT directly tied to the PII prompt block. The PII block manifests as a clean StreamGenerate 200-response with error JSON body — NO JS-level error thrown for that, since the frontend code presumably just stalls waiting on a streaming chunk that never starts.

@@ -1,0 +1,2 @@
+HTTP/2 200 OK
+(Status code 200 OK in DevTools, but response body contains JSON error: code=400 "Request blocked by security policy" / status="INVALID_ARGUMENT")

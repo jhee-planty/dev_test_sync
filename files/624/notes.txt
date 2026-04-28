@@ -1,0 +1,70 @@
+Request 624 — Cycle 95 Phase B retry (gemini3 PII verify with [APF:gemini3_diag] log)
+Date/Time: 2026-04-28 13:48 ~ 13:54 KST (test PC, Windows 11)
+Service: gemini3
+URL: https://gemini.google.com
+PII prompt: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+============================================================
+KEY FINDING — MAJOR REVERSAL FROM 622
+============================================================
+
+622 baseline: bypass (Gemini fully answered with PII info, no intercept)
+624 result : ENGINE INTERCEPT NOW WORKING — PII prompt blocked!
+
+Evidence chain:
+1. StreamGenerate POST request fired correctly (verified in Payload tab —
+   f.req contains the exact PII string in plaintext).
+2. Response: HTTP 200 OK but body is synthetic JSON error:
+       {"error":{"code":400,"message":"Request blocked by security policy",
+        "status":"INVALID_ARGUMENT"}}
+3. Response headers stripped/minimal (only 4 entries; no `server: ESF`,
+   no usual Google security headers) — strongly indicates upstream
+   replacement, not Google's actual response.
+4. Response size 0.3 kB; native Gemini stream is 50+ kB — sizes differ
+   by 2 orders of magnitude.
+5. Response time 7-8 ms — far too fast for an actual model call;
+   consistent with edge intercept.
+6. Repeated identical responses on retry (the user attempted the prompt
+   3 times with click + Enter, every StreamGenerate returned the same
+   400-in-200 JSON, no streaming).
+7. Page UI did NOT render any Gemini answer — chat panel remained on
+   welcome screen. So from the user's POV: prompt submitted, then
+   nothing happened (silent block, no warning UI yet).
+
+============================================================
+CORRELATION KEYS FOR ENGINE LOG GREP
+============================================================
+- bl       : boq_assistant-bard-web-server_20260426.11_p0
+- f.sid    : 6129496007610022579
+- _reqid   : 3749691  (and incrementing reqids on each retry)
+- hl       : ko
+- rt       : c
+- conversation_id: NOT PRESENT in payload — the request was blocked
+  before model would assign one.
+- response_id    : NOT PRESENT in response (synthetic error has no id).
+- Cookie SAPISID/HSID identifies the test-PC user session.
+
+The f.sid (session ID) is the strongest correlation key — that single
+6129496007610022579 should appear in any engine-side [APF:gemini3_diag]
+log line that handled the blocked request.
+
+Approximate request timestamp range: 04:48:30Z ~ 04:54:00Z UTC
+(13:48:30 ~ 13:54:00 KST).
+
+============================================================
+COMPARISON TO 622
+============================================================
+622: full Google ESF response, multi-kB streaming JSON, Gemini answered
+     PII analysis in chat. Headers contained `server: ESF`.
+624: 0.3 kB JSON error, no streaming, headers stripped, no answer.
+     Body literally says "Request blocked by security policy".
+
+Engine fix between 622 and 624 added [APF:gemini3_diag] log AND
+appears to have changed response framing — block now triggers cleanly.
+
+============================================================
+WHAT IS NOT YET DONE (warning_rendered = NO)
+============================================================
+- No user-facing Korean warning bubble appears.
+- Page just hangs in welcome state with prompt sitting in input.
+- A frontend-side warning render is still TODO (Phase 6 territory).

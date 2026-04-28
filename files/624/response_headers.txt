@@ -1,0 +1,33 @@
+[General]
+Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=6129496007610022579&hl=ko&_reqid=3749691&rt=c
+Request Method: POST
+Status Code: 200 OK
+Remote Address: [2404:6800:4005:825::200e]:443
+Referrer Policy: origin
+
+[Response Headers — verbatim from DevTools panel, only 4 entries shown]
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: https://gemini.google.com
+Cache-Control: no-cache
+Content-Type: application/json; charset=utf-8
+
+[NOTABLE ABSENCE]
+- NO `server: ESF` header (Google native ESF responses always include this)
+- NO `x-content-type-options`, `x-frame-options`, `x-xss-protection` (typical Google headers missing)
+- Only 4 response headers total — Google native StreamGenerate typically returns 10+
+- Content-Type is `application/json` — Google native StreamGenerate uses streaming text/plain (chunked), not application/json
+
+[Conclusion]
+Header set is MINIMAL and atypical for Google's ESF infrastructure. Strong indicator of upstream interception (engine intercept replacing real Google response with synthetic 400-error JSON wrapped in 200 status).
+
+[Request Headers — verbatim]
+:authority: gemini.google.com
+:method: POST
+:path: /_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=6129496007610022579&hl=ko&_reqid=3749691&rt=c
+:scheme: https
+Accept: */*
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+Content-Length: 2797
+Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+Cookie: HSID=...; SSID=...; APISID=...; SAPISID=...; __Secure-1PAPISID=...; __Secure-3PAPISID=...; SEARCH_SAMESITE=CgQIsaAB; __Secure-BUCKET=COYD; _gcl_au=...; _ga=...; AEC=...; SID=...; (truncated for safety)
