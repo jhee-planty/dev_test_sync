@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://you.com",
+    "context": "Cycle 95 WSA v2 next candidate. you=BLOCKED_diagnosed, next_action=debug_envelope:har_capture. Cycle 94 finding: APF only intercepts /api/eventLogger telemetry NOT the actual chat /api/streamingSearch (engine writes 0 headers). Need HAR capture of streamingSearch response body to understand native schema. Test PC: send PII prompt to you.com, capture FULL response_body.txt for /api/streamingSearch endpoint (NOT eventLogger). expected: PII may bypass entirely (you.com chat path doesn't trigger APF block) OR partial intercept on eventLogger only.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, you.com new chat",
+        "2. PII prompt 전송",
+        "3. CAPTURE: /api/streamingSearch (NOT /api/eventLogger) — response_body.txt FULL",
+        "4. Note: status code, headers, body schema (SSE format expected)",
+        "5. Subagent: report native vs warning render outcome"
+      ]
+    }
+  },
+  "notes": "WSA v2 next priority — you har_capture for streamingSearch.",
+  "attachments": [],
+  "id": "632",
+  "created": "2026-04-28T06:56:02Z"
+}
