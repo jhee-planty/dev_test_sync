@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 95 Phase B B36 stream completion. 629 PARTIAL revealed: B35 hex IDs + 2-chunk OK structurally but renderer silent-buffers (no chat thread). Test PC recommendation: emit 3rd 'completion' chunk with stream-end marker `[null,[c_id,r_id],{\\\"26\\\":\\\"<token>\\\",\\\"44\\\":false}]` per 626 native (last 134-byte chunk before [\\\"di\\\",N] EOF marker). B36 adds completion chunk after content. Build+deploy 54s (run 20260428-152359). Reload_services done. Test: PII prompt → expect UI render of 보안 경고 chat bubble (success).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, gemini.google.com NEW chat",
+        "2. PII prompt 전송",
+        "3. Response body confirm 3 chunks: handshake / content / completion `{\\\"26\\\":\\\"<token>\\\",\\\"44\\\":false}`",
+        "4. UI: '보안 경고' chat bubble in conversation (success criteria)"
+      ]
+    }
+  },
+  "notes": "Phase B B36 completion chunk + 3-chunk emission.",
+  "attachments": [],
+  "id": "630",
+  "created": "2026-04-28T06:25:24Z"
+}
