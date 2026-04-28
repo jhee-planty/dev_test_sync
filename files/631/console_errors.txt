@@ -1,0 +1,5 @@
+﻿Console (6 errors, 1 warning):
+- Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.
+- Refused to load resource because it violates Content Security Policy directive: ... (CSP errors related to Google Analytics / DoubleClick / GoogleAdServices)
+- All errors are CSP-related (frame/script restrictions on tracking/analytics pixels)
+- No APF/warning-related console output

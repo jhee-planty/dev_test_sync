@@ -1,0 +1,14 @@
+﻿HTTP Response Status: 200 OK
+Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=-8258094057591172931&hl=ko&_reqid=3156590&rt=c
+Request Method: POST
+Remote Address: [2404:6800:4005:826::200e]:443
+Referrer Policy: origin
+accept-ch: Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version
+alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+content-disposition: attachment; filename="response.bin"; filename*=UTF-8''response.bin
+content-encoding: gzip
+content-security-policy: require-trusted-types-for 'script';report-uri /_/BardChatUi/cspreport
+content-type: application/json; charset=utf-8
+cross-origin-opener-policy: same-origin-allow-popups
+cross-origin-resource-policy: same-site

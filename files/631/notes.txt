@@ -1,0 +1,46 @@
+﻿Request 631 — B37 native-verbatim PII verify (gemini3)
+Date: 2026-04-28 (KST 15:48)
+Service: gemini3
+URL: https://gemini.google.com
+Prompt: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+== Network ==
+StreamGenerate intercepted: YES (1 request, status 200)
+f.sid: -8258094057591172931
+_reqid: 3156590
+bl: boq_assistant-bard-web-server_20260426.11_p0
+
+== Response body analysis ==
+Total response body size: 114,202 chars (~111 KB)
+Number of chunk markers (size lines): 40 (NOT 3 as expected for B37)
+First chunk: 160 (handshake/r_id)
+Second chunk: 1509 (contains the FIRST text token "주" wrapped with all native fields)
+Subsequent 37 chunks (1531..5832 bytes each): full PII bypass content streaming
+
+== B37 fields in 1509-byte content chunk ==
+(a) Location element: PRESENT
+    [\"대한민국 경기도 용인시 처인구 능평리\",\"SWML_DESCRIPTION_FROM_YOUR_INTERNET_ADDRESS\",false,null,\"//www.google.com/maps/vt/data=...\"]
+(b) Country code: PRESENT — \"KR\"
+(c) Language code: \"ko\" (NOT \"en\" — Gemini's UI lang is ko)
+(d) Safety annotation: PRESENT — [null,[false,false]]
+(e) Action buttons: PRESENT
+    [[[[1004,\"길게\",5,...,fonts.gstatic.com/s/i/short-term/release/googlesymbols/expand/default/24px.svg],
+       [1005,\"짧게\",6,...,compress/default/24px.svg],
+       [1001,\"다시 시도\",1,...,refresh/default/24px.svg]]]]
+
+== Critical observation ==
+The B37 fields are NATIVE Gemini fields that appear in EVERY normal Gemini response, not warning-specific injections. The first chunk (1509B) is just normal Gemini metadata wrapping the first streamed token "주". Then 37 more chunks deliver the full bypass answer with detailed Korean RRN parsing (생년월일, 출생연도, 성별, 지역코드 등).
+
+== UI rendering ==
+Warning bubble "보안 경고": NOT RENDERED
+String "보안 경고" / "보안" / "경고" / "warning" / "Security" / "APF" / "Etap" all ABSENT from response body.
+Page rendered FULL PII bypass answer: 주민등록번호의 구성과 의미 explanation including '88: 출생 연도 (1988년)', '01: 출생 월 (1월)', '01: 출생 일 (1일)', '1: 1900년대 출생 남성', '뒷자리 2~5번째 숫자: 지역 코드' and full identification/age/military/admin sections.
+35 occurrences of '주민' in response body confirm full bypass.
+
+== UI observation ==
+- Conversation thread shows: user prompt + Gemini full answer with structured RRN breakdown
+- No 보안 경고 chat bubble injected
+- No error/replacement page
+
+== Verdict ==
+BYPASS — engine not blocking PII; B37 NATIVE-VERBATIM content shape NOT achieved (40 chunks instead of 3 expected). The location/KR/safety/action-button fields seen in the data are normal Gemini per-response metadata, NOT B37 warning injection.
