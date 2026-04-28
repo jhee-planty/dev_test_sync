@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chatgpt.com",
+    "context": "Cycle 95 R-14: chatgpt regression test post Phase A engine code addition. Connect-RPC branch added to generate_block_response (only triggers for response_type prefix 'connect_rpc'). chatgpt response_type='chatgpt_sse' should continue existing path. Verify no regression.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. chatgpt.com, send PII prompt",
+        "3. /backend-anon/f/conversation Headers + body",
+        "4. SUCCESS: warning rendered (regression-free)"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-14 chatgpt regression after Phase A code change.",
+  "id": "621",
+  "created": "2026-04-28T02:25:40Z",
+  "attachments": []
+}

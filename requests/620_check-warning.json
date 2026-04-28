@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "kimi",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://www.kimi.com",
+    "context": "Cycle 95 R-13: kimi Phase A Connect-RPC handler verify. Engine code added: generate_connect_rpc_response() emits 1-byte flags + 4-byte BE length + JSON payload (data frame) + trailer frame (0x02 + length + JSON). Triggered by response_type prefix 'connect_rpc'. kimi service config updated: response_type=connect_rpc_kimi.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. kimi.com chat, send PII prompt",
+        "3. POST /apiv2/kimi.gateway.chat.v1.ChatService/Chat → Headers tab",
+        "4. Confirm Content-Type: application/connect+json",
+        "5. Response body should contain binary Connect-RPC frames (DevTools may show as binary preview)",
+        "6. SUCCESS: warning rendered in chat bubble",
+        "7. PARTIAL: response delivered but UI render fails → schema gap in JSON payload",
+        "8. FAIL: bypass or parser error",
+        "9. Verify [APF:envelope] log shows 'rendered via connect_rpc framer'"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-13 kimi Phase A Connect-RPC handler first verify.",
+  "id": "620",
+  "created": "2026-04-28T02:25:38Z",
+  "attachments": []
+}
