@@ -1,0 +1,50 @@
+{
+  "request_id": "638",
+  "service_name": "mistral",
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "status_detail": "TEST INFRASTRUCTURE FAILURE -- v5 envelope hypothesis NOT EXERCISED. Subagent could not deliver the PII prompt to Mistral because Claude Code app window persistently steals foreground focus on this test PC. windows-mcp Click/Type and PowerShell SetForegroundWindow+SendKeys both delivered keystrokes to Claude Code window instead of Chrome. Diagnostic screenshot at 17:53 confirmed -- showed dev_test_sync session log (the same view dev user is watching via AnyDesk) instead of Mistral, despite SetForegroundWindow returning True for the Le Chat handle. Subagent attempted pivot: launched Chrome with --remote-debugging-port=9222 + dedicated profile (bypasses focus entirely), opened fresh tab to chat.mistral.ai (verified via /json endpoint), wrote full CDP driver (cdp_run.ps1: Network/Page/Runtime/Console/Log domains, ProseMirror-aware injection, send-button-or-Enter fallback, response body capture). Driver hung in its Recv-Until busy-wait loop (PowerShell 5.1 ClientWebSocket.ReceiveAsync + while-not-IsCompleted is brittle), exceeded 120s tool timeout. Process killed at 17:58 to stay under 8min hard cap. KEY ENVIRONMENTAL FINDING: windows-mcp Click/Type cannot reliably target Chrome on this test PC while Claude Code is the active app. All future windows-mcp browser automation requests on this machine should use CDP/remote-debugging-port path, not screen coordinates.",
+  "started_at": "2026-04-28T17:50:00Z",
+  "completed_at": "2026-04-28T17:58:00Z",
+  "duration_seconds": 480,
+  "verdict_subagent": "FAILED",
+  "failure_class": "test_infrastructure -- not engine bug",
+  "warning_rendered": false,
+  "intercept_endpoint": "NOT_OBSERVED (prompt never delivered to UI)",
+  "request_status": "N/A (no request fired)",
+  "response_headers_count": 0,
+  "envelope_well_formed": "unknown (v5 envelope NOT exercised this run)",
+  "TRPCClientError_present": "unknown (console not captured)",
+  "bypass_normal_answer": false,
+  "v5_hypothesis_status": "UNTESTED -- need to retry with working browser automation",
+  "progress_vs_637": "WORSE -- #637 successfully sent prompt and captured envelope/console; this run could not deliver prompt at all",
+  "breakthrough_status": "NONE -- v5 envelope hypothesis remains untested",
+  "environmental_finding": {
+    "issue": "windows-mcp Click/Type cannot reliably target Chrome on test PC while Claude Code is active app",
+    "evidence": "Claude Code window persistently steals foreground focus. SetForegroundWindow returns True for Chrome handle but actual focus stays on Claude Code (verified via diagnostic screenshot showing dev_test_sync session log instead of Mistral).",
+    "recommended_fix": "All future windows-mcp browser automation requests on this machine should use CDP/--remote-debugging-port=9222 path, not screen coordinates. Skeleton driver (cdp_run.ps1) in files/638/ but needs WS Recv loop hardening."
+  },
+  "recommendation_for_dev": [
+    "Re-dispatch #638 (or new ID) for v5 envelope verification using CDP-based driver, not windows-mcp UI clicks. Subagent created skeleton but it needs hardening:",
+    "(1) replace busy-wait `while (-not $task.IsCompleted)` with bounded `$task.Wait(100)` calls",
+    "(2) batch all CDP commands as fire-and-forget sends",
+    "(3) drain events in single fixed 20s window before parsing",
+    "Alternative simpler approach: have a separate launched Chrome (manual or Chrome.exe with profile arg) BEFORE subagent dispatches, so subagent only needs to inject Input.dispatchKeyEvent via CDP without managing browser lifecycle.",
+    "The v5 envelope FIX itself (adding null-bearing fields to meta.values with ['undefined'] type marker) is sound per #637 root-cause analysis. Just need a working test method.",
+    "Engine team can test the v5 envelope locally by running TRPCClientError-throwing payload through actual tRPC v10 client parser before pushing to dev_test_sync, reducing test PC dependency."
+  ],
+  "errors_observed": [
+    "windows-mcp Click/Type delivered keystrokes to Claude Code instead of Chrome",
+    "PowerShell SetForegroundWindow returned True but focus stayed on Claude Code",
+    "CDP driver Recv-Until busy-wait hung past 120s timeout",
+    "Diagnostic screenshot showed dev_test_sync log instead of Mistral"
+  ],
+  "artifacts": [
+    "files/638/01_before.png (Mistral home, DevTools open, trpc filter, Preserve log on)",
+    "files/638/notes.txt (full failure timeline and root cause)",
+    "files/638/cdp_run.ps1 (CDP driver skeleton for re-use)"
+  ],
+  "notes": "Cycle 95 mistral envelope v5 verify. FAIL = test infrastructure issue, not engine. v5 hypothesis remains untested. Subagent 8min hit hard cap due to focus-stealing + WS busy-wait hang. Critical environmental learning: switch to CDP-based driver pattern for future Chrome automation on this PC.",
+  "request_received_at": "2026-04-28T08:47:31Z",
+  "git_pull_at": "2026-04-28T17:49:00Z"
+}

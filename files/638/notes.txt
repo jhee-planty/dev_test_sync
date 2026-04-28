@@ -1,0 +1,51 @@
+Request #638 — mistral PII verify, Cycle 95 envelope v5
+Subagent execution notes
+========================
+
+ENVIRONMENT FAILURE: Could not deliver the PII prompt to chat.mistral.ai
+in this run. Root cause is a Windows focus-stealing issue on the test PC,
+not a Mistral / engine v5 issue.
+
+Timeline (KST 17:50–17:58):
+- 17:50 Created artifact dir
+- 17:51 Launched Chrome incognito → Mistral home rendered (01_before.png OK)
+- 17:51 F12 opened DevTools, Network tab, "trpc" filter, Preserve log ON
+- 17:51 Pasted clipboard with PII prompt; chat input REMAINED EMPTY
+- 17:53 Diagnostic screenshot revealed Claude Code app stole focus and
+        windows-mcp Click/SendKeys delivered keystrokes to the WRONG window
+        (the screenshot in the diagnostic shows the Claude Code session log,
+        not Mistral). PowerShell SetForegroundWindow + AttachThreadInput
+        succeeded (returned True) but focus reverted before SendKeys fired.
+- 17:55 Switched approach: killed Chrome, relaunched with
+        --remote-debugging-port=9222 + dedicated profile, opened new tab
+        to https://chat.mistral.ai (status confirmed via /json endpoint).
+- 17:55 Wrote cdp_run.ps1 — full CDP driver via ClientWebSocket
+        (Network/Page/Runtime/Console/Log enable, JS injection of prompt
+        into ProseMirror contenteditable, dispatch input event, click send
+        button or fall back to Enter, capture response body & screenshot).
+- 17:57 cdp_run.ps1 hung in Recv-Until busy-wait loop (PowerShell 5.1
+        ReceiveAsync polling pattern is brittle); MCP call timed out at
+        120s. Process killed at 17:58.
+
+What WAS verified before failure:
+- Mistral page loads fine in Chrome incognito on this PC (01_before.png).
+- DevTools Network filter "trpc" + Preserve log applied successfully.
+- The page exposes a contenteditable input (no textarea) — needs
+  ProseMirror-style innerHTML injection, not value-setter.
+- chrome --remote-debugging-port=9222 works and exposes /json endpoint.
+
+What was NOT captured (pending future re-run):
+- Any /api/trpc/message.newChat request (prompt never sent)
+- Response headers / body (the v5 envelope test artifact)
+- Console TRPCClientError presence/absence
+- Whether '보안 경고' chat bubble renders
+- All planned PNGs except 01_before.png
+
+Recommendation for next attempt:
+The CDP approach is RIGHT — it bypasses the focus problem entirely.
+The script needs hardening (replace busy-wait with proper Task.Wait(ms)
+timeout pattern; pre-build all CDP commands as one batched send; consume
+events in a single fixed-window drain instead of per-call). The skeleton
+is in cdp_run.ps1.
+
+Verdict for this dispatch: FAILED (delivery), v5 envelope NOT exercised.
