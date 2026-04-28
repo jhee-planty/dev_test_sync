@@ -1,0 +1,26 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gamma",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gamma.app",
+    "context": "Cycle 95 R-9: gamma_sse_v7 verify post-engine-fix. v7 = v5 ordering reverted (credentials before origin) + ENGINE FIX Phase3-B31 deployed. Expected: ACAO no longer dropped, all 5 headers reach browser, CORS pass.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. gamma.app/create/generate, send PII prompt",
+        "3. /ai/v2/generation Headers tab → list all response headers including ACAO/ACAC values",
+        "4. SUCCESS: warning text rendered in chat (ACAO + ACAC both present, CORS pass)",
+        "5. PARTIAL: 5 headers visible but no UI render → SSE body schema issue surfaces",
+        "6. FAIL: still missing ACAO → engine fix didn't help, deeper bug"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-9 gamma post engine-fix verify (v7=v5 reorder, expecting all 5 headers now).",
+  "id": "616",
+  "created": "2026-04-28T01:21:03Z",
+  "attachments": []
+}
