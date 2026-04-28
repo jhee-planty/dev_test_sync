@@ -103,7 +103,7 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
 | `queue-advance.sh <service> <status>` | service status 전이 |
 | `phase-advance.sh --check|--commit <N>` | phase guard / commit |
 | `regen-status.sh` | status.md 재생성 (원본 스크립트 이식) |
-| `enforce-3strike.sh <service>` | failure_history 3건 동일 → SUSPENDED |
+| `enforce-3strike.sh <service>` | failure_history 3건 동일 → SUSPENDED `[OBSOLETE 2026-04-28 21차: 3-Strike auto-SUSPEND 폐기 — script vestigial. V1 rollback path 만 유지. references/legacy/v1-orchestration-loop.md 참조.]` |
 | `enforce-block-only-gate.sh <service>` | BLOCK_ONLY 판정 가능 여부 |
 | `invoke-subagent.sh <prompt-file> [--model=]` | Phase 1/2/5 의 sub-agent dispatch (Claude Code CLI) |
 

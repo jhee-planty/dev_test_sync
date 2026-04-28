@@ -18,8 +18,13 @@
   "poll_stage_count": 1,
   "updated_at": "2026-03-26T14:30:05",
   "service_queue": [
-    {"service": "{service_id}", "priority": 1, "status": "waiting_result", "task_id": 194},
-    {"service": "{service_id}", "priority": 2, "status": "pending_check", "task_id": null}
+    {"service": "{service_id}", "priority": 1, "status": "BLOCKED_diagnosed",
+     "next_action": "apply_engine_fix:wrb_fr_decoder",
+     "cause_pointer": "apf-operation/services/{service_id}_analysis.md",
+     "terminal_reason": null, "unverified_deploys": 0, "task_id": 194},
+    {"service": "{service_id}", "priority": 2, "status": "BLOCKED_undiagnosed",
+     "next_action": "debug_envelope:har_capture",
+     "cause_pointer": null, "terminal_reason": null, "task_id": null}
   ],
   "done_services": ["{service_id}", "{service_id}"],
   "failure_history": {

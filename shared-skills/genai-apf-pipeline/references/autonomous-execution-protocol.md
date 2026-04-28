@@ -192,8 +192,8 @@ GOOD (M0 empirical):
 ### Flow (≤ 2 rounds, sub-minute target)
 
 1. **Issue statement** — 1 sentence ("서비스 S 의 BLOCK_ONLY 처리 방법 선택")
-2. **Options enumerate** — 2-4 valid paths (예: "A: HEADERS frame 수정 재시도 / B: 다른 서비스 전환 / C: SUSPENDED 선언")
-3. **EC challenge** — 핵심 risk / premise 의심 제기 ("A 는 3-strike 위험 + 원인 검증 안 됨. B 는 progress 지연. C 는 sunk cost 수용.")
+2. **Options enumerate** — 2-4 valid paths (예: "A: HEADERS frame 수정 재시도 / B: 다른 서비스 전환 / C: terminate:block_only_accepted (architectural BLOCK_ONLY)")
+3. **EC challenge** — 핵심 risk / premise 의심 제기 ("A 는 unverified_deploys ≥ 3 위험 + 원인 검증 안 됨. B 는 progress 지연. C 는 sunk cost 수용.")
 4. **DF synthesis** — pick option + 1-sentence rationale ("B 선택: A 는 premise (HEADERS frame 이 원인) 가 코드 레벨 검증 안 됨. B 로 progress 유지하며 A 는 별도 investigation 로 분리.")
 5. **Execute immediately** — 선택된 option 즉시 실행 (선언 후 멈추기 금지 = Hard Rule 4)
 
@@ -206,7 +206,7 @@ GOOD (M0 empirical):
   "last_decision": {
     "timestamp": "2026-04-23T17:50:00Z",
     "issue": "qianwen BLOCK_ONLY 처리",
-    "options": ["A: HEADERS frame fix retry", "B: defer to gamma", "C: SUSPENDED"],
+    "options": ["A: HEADERS frame fix retry", "B: defer to gamma", "C: terminate:block_only_accepted"],
     "choice": "B",
     "rationale": "A premise 미검증, B 로 progress 유지"
   }
@@ -248,8 +248,8 @@ Good (Hard Rule 6 준수):
 ```
 [내부 micro-discussion, 30초]
 DF: qianwen BLOCK_ONLY 2nd iter 실패. 3rd 전 HEADERS frame 원인 가설 미검증.
-    Options: A 재시도 / B gamma 전환 / C SUSPENDED
-EC: A 는 원인 미검증 + 3-strike risk. C 는 premature (2 iter 만 소진).
+    Options: A 재시도 / B gamma 전환 / C terminate:block_only_accepted (architectural)
+EC: A 는 원인 미검증 + unverified_deploys 누적 risk. C 는 premature (2 iter 만 소진, apf-technical-limitations.md 모든 시도 안 됨).
     B 는 progress 유지 + A 는 design session 후 복귀 가능. B 가 optimal.
 DF: B 선택. Rationale: 원인 검증 분리 + pipeline 정체 방지.
 
