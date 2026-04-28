@@ -1,0 +1,23 @@
+### tRPC call sequence — chronological — Cycle 95 mistral
+
+Time t+0:  POST /api/trpc/message.newChat?batch=1   → 200 OK (81 ms)
+            payload: { content:[{type:"text",text:"내 주민등록번호는 880101-1234567 ..."}], ... }
+            response: BODY UNRECOVERABLE in DevTools, but tRPC client raised TRPCClientError "Cannot convert undefined or null to object"
+
+(end of trpc traffic — NO subsequent calls fired in 25+ seconds)
+
+## Calls that DID NOT happen (expected in native flow but absent here)
+- message.list      — NOT observed
+- chat.get          — NOT observed
+- conversation.get  — NOT observed
+- message.stream / SSE — NOT observed
+- ANY second tRPC call — NOT observed
+
+## Why the chain is empty
+The newChat mutation threw on the client side (TRPCClientError). The downstream React Query
+chain (useMessageList / useChatGet that normally fires after newChat resolves) never gets the
+"success" callback, so they never enqueue. UI stays blank, no warning, no answer.
+
+## Filter context
+DevTools Network filter "trpc" was set BEFORE the prompt was sent and Preserve log was ON.
+Total 444 requests recorded across full session, 1 of which matched "trpc". Confirmed.

@@ -1,0 +1,98 @@
+### Cycle 95 — mistral chained tRPC investigation — notes
+
+## Session context
+- Service: mistral (https://chat.mistral.ai)
+- Mode: GUEST (Chrome incognito, accepted ToS, NOT logged in)
+- Engine: APF MITM at server boundary, intercept on /api/trpc/message.newChat (#594)
+- Prompt: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+- Expected UI text: "보안 경고"
+- Outcome: UI stayed BLANK. No bubble, no warning, no error message in chat — input simply cleared.
+
+## Key empirical findings
+
+1. ONLY ONE tRPC call was issued — message.newChat?batch=1 (POST, 200 OK, 81 ms)
+   - 81 ms response time confirms the engine intercepted (real LLM = several seconds).
+   - HTTP status 200, Content-Type application/json — looks healthy at the wire layer.
+
+2. Chained calls (message.list / chat.get / conversation.get) DID NOT FIRE.
+   - This is the central finding for Cycle 95's question.
+   - These calls only fire AFTER newChat's mutation success callback runs in the client.
+   - Because newChat threw a client-side TRPCClientError BEFORE resolving, no follow-up
+     queries were enqueued. There is nothing for APF to additionally intercept.
+
+3. The client error: TRPCClientError "Cannot convert undefined or null to object"
+   - Root cause: Object.entries(<undefined>) deep inside tRPC v10 client error/response parser
+     (chunks/85072-1d8a16814ef97f72.js, function `e.from`).
+   - Implication: the BODY the engine injected does not match the tRPC envelope shape
+     that this version of @trpc/client expects.
+
+## What "engine intercepted" actually means here
+- #594's intercept fired on the REQUEST path (POST detected, prompt scanned, PII matched).
+- Engine swapped the response with a synthetic warning body.
+- BUT the synthetic body is malformed for tRPC. So instead of rendering a warning,
+  the client crashes silently and shows nothing.
+
+## Which call needs warning injection?
+For mistral, ONLY message.newChat needs intercept. The chain is NOT split across multiple
+tRPC calls — the original question's premise (newChat → message.list → chat.get) does NOT
+match observed behavior. Mistral's UI architecture: newChat is a mutation that returns the
+NEW message + assistant response in a single tRPC envelope; the subsequent message.list /
+chat.get only fire later (e.g. when navigating to the saved chat).
+
+## What the engine MUST return (correct tRPC v10 envelope)
+Two valid shapes exist:
+
+(A) Inject as a synthetic SUCCESS — assistant message containing the warning text:
+[
+  {
+    "result": {
+      "data": {
+        "json": {
+          "id": "<new-uuid>",
+          "chatId": "<new-uuid>",
+          "messages": [
+            {"role":"user","content":"<original>"},
+            {"role":"assistant","content":"보안 경고: 주민등록번호 등 민감정보 전송이 차단되었습니다."}
+          ]
+        },
+        "meta": {}
+      }
+    }
+  }
+]
+
+(B) Inject as a tRPC ERROR (will surface in chat as an error toast on most apps):
+[
+  {
+    "error": {
+      "json": {
+        "message": "보안 경고: 민감정보 차단",
+        "code": -32600,
+        "data": {
+          "code": "BAD_REQUEST",
+          "httpStatus": 400,
+          "stack": "",
+          "path": "message.newChat"
+        }
+      }
+    }
+  }
+]
+
+What the engine appears to be returning now: something that lacks one of `result.data.json`,
+`result.data.meta`, or the outer array — causing Object.entries() to receive undefined.
+
+## Recommendation for #594 fix
+Verify the engine's mistral handler emits the EXACT shape above (option A is preferred so
+the warning shows in chat, not as a destructive error toast). The wrapper MUST be a JSON ARRAY
+(batch=1 still uses array form), and EACH element must contain either `result.data.{json,meta}`
+or `error.json.{message,code,data}`. Missing `meta:{}` is the most likely culprit — many tRPC
+servers omit it but the client still calls Object.entries on `meta`.
+
+## What was NOT possible to capture this round
+- Verbatim response body bytes (DevTools "Failed to load response data" for the streaming
+  response; an authenticated-session re-fetch via Console fetch() was attempted but the
+  console input area was inaccessible due to overlapping hyperlinked stack-trace lines —
+  every click to focus the prompt routed to a Sources file). Recommend next round: pin
+  Console panel taller, or use HAR Export from the Network panel right-click menu, or use
+  preview-style network capture (CDP HAR via DevTools menu).

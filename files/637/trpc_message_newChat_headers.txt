@@ -1,0 +1,30 @@
+### tRPC Call #1 — message.newChat?batch=1
+
+General
+- Request URL:    https://chat.mistral.ai/api/trpc/message.newChat?batch=1
+- Request Method: POST
+- Status Code:    200 OK
+- Remote Address: [2a06:98c1:3200::90:80]:443
+- Referrer Policy: origin-when-cross-origin
+
+Response Headers
+- Access-Control-Allow-Credentials: true
+- Access-Control-Allow-Origin:      https://chat.mistral.ai
+- Cache-Control:                    no-cache
+- Content-Type:                     application/json
+
+Request Headers (selected)
+- :authority:    chat.mistral.ai
+- :method:       POST
+- :path:         /api/trpc/message.newChat?batch=1
+- :scheme:       https
+- accept:        */*
+- accept-encoding: gzip, deflate, br, zstd
+- accept-language: ko-KR,ko;q=0.9
+- content-length: 598
+- content-type:   application/json
+- cookie:         (csrftoken, anonymousUser, intercom-*, _cfuvid, cf_bm — guest session)
+
+Notes
+- Single tRPC call observed for the entire send. NO chained message.list / chat.get / conversation.get fired.
+- Status 200 is "transport OK" but the JSON body broke the tRPC client (see console error).

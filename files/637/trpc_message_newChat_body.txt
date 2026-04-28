@@ -1,0 +1,38 @@
+### tRPC Call #1 — message.newChat?batch=1 — Request + Response Body
+
+## Request Payload (verbatim from DevTools "View source")
+{"0":{"json":{"content":[{"type":"text","text":"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"}],"agentId":null,"agentsApiAgentId":null,"files":[],"isSampleChatForAgentId":null,"features":["beta-websearch"],"integrations":[],"canva":null,"action":null,"libraries":[],"projectId":null,"transcriptionsMetadata":null,"incognito":false},"meta":{"values":{"agentId":["undefined"],"agentsApiAgentId":["undefined"],"isSampleChatForAgentId":["undefined"],"canva":["undefined"],"action":["undefined"],"projectId":["undefined"],"transcriptionsMetadata":["undefined"]}}}}
+
+## Response Body
+- DevTools "Response" tab shows: "Failed to load response data — No data found for resource with given identifier"
+- This is typical for chunked/streaming bodies that Chrome did not retain after the connection closed.
+- However, the tRPC client logged the parsed result (mutation #6) to Console — captured below.
+
+## Console output for this call (verbatim)
+<< mutation #6 message.newChat
+Object
+  context: {}
+  elapsedMs: 81
+  input: {content: Array(1), agentId: undefined, agentsApiAgentId: undefined, files: Array(0), isSampleChatForAgentId: undefined, ...}
+  result: TRPCClientError: Cannot convert undefined or null to object
+    cause: TypeError: Cannot convert undefined or null to object
+           at Object.entries (<anonymous>)
+           at e.from (https://chat.mistral.ai/_next/static/chunks/85072-1d8a16814ef97f72.js:5:...)
+    data:    undefined
+    meta:    undefined
+    name:    "TRPCClientError"
+    shape:   undefined
+    message: "Cannot convert undefined or null to object"
+    stack:   "TRPCClientError: Cannot convert undefined or null to object
+              at e.from (https://chat.mistral.ai/_next/static/chunks/85072-1d8a16814ef97f72.js:...)"
+
+## Diagnosis
+The HTTP layer returned 200 OK in 81 ms (way too fast for a real LLM call → MITM intercept fired).
+But the body shape did NOT match what the tRPC client expects. tRPC client tried `Object.entries(<something>)` on a property that was undefined and threw immediately.
+
+The native (un-intercepted) success body for tRPC v10 batch=1 must look like:
+  [{"result":{"data":{"json":{ ... actual newChat payload ... }, "meta":{...}}}}]
+or for a tRPC error:
+  [{"error":{"json":{"message":"...","code":-32000,"data":{"code":"BAD_REQUEST","httpStatus":400,...}}}}]
+
+Whatever the engine returned has a missing/undefined sub-object that `Object.entries` chokes on (likely missing `meta` or missing `result.data.json` envelope, or missing `data` inside `error`).

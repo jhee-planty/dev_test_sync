@@ -1,0 +1,56 @@
+{
+  "request_id": "637",
+  "service_name": "mistral",
+  "command": "check-warning",
+  "overall_status": "PARTIAL",
+  "status_detail": "MAJOR DIAGNOSTIC FINDING: Cycle 95's 'chained tRPC calls' premise is INCORRECT for mistral. Only ONE tRPC call observed: POST /api/trpc/message.newChat?batch=1 (200 OK, 81ms — engine intercept confirmed by sub-100ms latency vs real LLM's multi-second). NO subsequent calls (message.list, chat.get, conversation.get) fire. The engine's intercept on newChat (#594) IS the correct injection point. The single newChat call is sufficient -- the engine just needs to return a well-formed tRPC v10 envelope. Console captured TRPCClientError: 'Cannot convert undefined or null to object' at Object.entries (<anonymous>) inside the tRPC client's e.from parser. The synthetic body engine returns is NOT a valid tRPC v10 envelope -- missing one of: result.data.json, result.data.meta (MOST LIKELY culprit), or the outer […] array wrapper. UI: completely blank -- input cleared, no bubble, no toast, no error message visible.",
+  "started_at": "2026-04-28T17:34:00Z",
+  "completed_at": "2026-04-28T17:42:30Z",
+  "duration_seconds": 510,
+  "verdict_subagent": "PARTIAL",
+  "warning_rendered": false,
+  "trpc_calls_observed": [
+    {
+      "method": "message.newChat",
+      "url": "POST /api/trpc/message.newChat?batch=1",
+      "status": "200 OK",
+      "latency_ms": 81,
+      "intercept_confirmed": "yes -- 81ms response confirms MITM intercept (real Mistral LLM = multi-second)"
+    }
+  ],
+  "subsequent_calls_observed": "NONE -- message.list, chat.get, conversation.get, SSE all ABSENT for 25+s after send. trpc filter set BEFORE prompt, Preserve log ON, so absence is real not lost.",
+  "newChat_intercepted": true,
+  "newChat_intercept_evidence": "81ms response time confirms MITM (real LLM is multi-second). tRPC client raised TRPCClientError indicating engine-injected body shape is malformed.",
+  "newChat_body_first_300_chars": "Verbatim body bytes UNAVAILABLE -- DevTools Response tab returned 'Failed to load response data -- No data found for resource with given identifier' (Chrome did not retain streaming body). Captured: parsed client error 'TRPCClientError {cause: TypeError \"Cannot convert undefined or null to object\" at Object.entries (<anonymous>) at e.from (chunks/85072-1d8a16814ef97f72.js)}'.",
+  "subsequent_calls_carry_warning_text": "N/A -- they never fire because newChat threw client-side before its success callback could enqueue them",
+  "chain_root_cause_diagnosis": "There is NO chain to fix -- mistral's UI uses a single tRPC mutation (message.newChat) that returns the assistant message inline. The engine's intercept on newChat (#594) IS the correct injection point, but the synthetic body engine returns is not a valid tRPC v10 envelope -- missing one of result.data.json, result.data.meta (most likely the culprit), or the outer […] array wrapper.",
+  "trpc_v10_envelope_canonical_shape": "[{\"result\":{\"data\":{\"json\":{...assistant_message_with_warning...},\"meta\":{}}}}]",
+  "engine_bug_type": "serializer bug -- not a missing-second-call problem",
+  "recommendation_for_dev": [
+    "Fix engine generate_block_response for mistral to emit canonical tRPC v10 envelope: `[{\"result\":{\"data\":{\"json\":{...},\"meta\":{}}}}]`. The most likely missing field is `meta:{}` (empty object).",
+    "Test by running TRPCClientError-throwing payload through the actual tRPC v10 client parser locally to identify exact missing field.",
+    "Alternative: capture an UNINTERCEPTED real Mistral message.newChat response (delete the engine intercept rule briefly) for byte-perfect schema reference, similar to #626 gemini3 native capture approach. Compare engine output vs native byte-by-byte.",
+    "After envelope fix, expect SUCCESS = warning bubble renders in mistral chat (newChat is the ONLY call needed; once parser succeeds, UI renders).",
+    "DEPRECATE WSA v2 chain hypothesis -- it doesn't apply to mistral. Update planning docs."
+  ],
+  "errors_observed": [
+    "Console: TRPCClientError 'Cannot convert undefined or null to object' at Object.entries inside e.from parser",
+    "DevTools Response tab: 'Failed to load response data'",
+    "UI: completely blank (no bubble, no error, no toast)"
+  ],
+  "artifacts": [
+    "files/637/01_before.png",
+    "files/637/02_devtools_network.png",
+    "files/637/03_after.png",
+    "files/637/04_warning_check.png",
+    "files/637/trpc_message_newChat_headers.png",
+    "files/637/trpc_message_newChat_console_error.png",
+    "files/637/trpc_message_newChat_headers.txt",
+    "files/637/trpc_message_newChat_body.txt",
+    "files/637/trpc_call_sequence.txt",
+    "files/637/notes.txt"
+  ],
+  "notes": "Cycle 95 WSA v2 mistral har_capture for chained tRPC analysis. PARTIAL with KEY FINDING: NO chain exists. Single newChat call is the entire flow. Engine's #594 intercept is correct location; envelope shape is the bug. Subagent 8.5min, exceeded 7min target due to console-input occlusion retries; within 8min hard.",
+  "request_received_at": "2026-04-28T08:31:11Z",
+  "git_pull_at": "2026-04-28T17:33:00Z"
+}
