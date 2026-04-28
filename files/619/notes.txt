@@ -1,0 +1,83 @@
+Cycle 95 R-12 zeta verification — request #619 (atomic h2_end_stream=1 + Phase3-B31 last-line parser fix)
+
+OUTCOME: FAILED — REGRESSION vs #617
+
+Observations:
+- warning rendered: NO. The chat bubble area instead shows a generic error popup
+  ("일시적인 오류가 발생했어요" / "Please try again in a moment") with 확인 button.
+  No Korean security-block phrase ("보안 경고", "주민등록번호" warning, etc.) was rendered.
+- error popup: YES — text: "일시적인 오류가 발생했어요 / 잠시 후 다시 시도해주세요"
+  Plus a secondary overlay at bottom: "더 편리한 zeta 앱에서 대화를 즐겨보세요" with
+  "앱에서 대화하기" button (likely client-side fallback when web stream fails).
+
+Network observations (key request: POST /v1/rooms/.../messages/stream):
+- Status: (canceled)   ← Chrome marks this as canceled, not 200, not (failed)
+- Protocol: (none — request never completed handshake to a response)
+- Time: 309 ms
+- Size: 0.0 kB
+- Response headers count: 0  (panel says "Response headers (0)")
+- Response data: "Failed to load response data — No data found for resource with given identifier"
+- EventStream tab: not available (no event-stream content received)
+- Preflight (OPTIONS): 200 OK h2 separately, took 68 ms — preflight is fine.
+
+Console findings (filtered for HTTP2_PROTOCOL):
+- net::ERR_HTTP2_PROTOCOL_ERROR observed on a sibling request:
+  GET /v1/rooms/bb6b33cb-a5ae-43f5-b116-736f96f477e0/settings/cyoa
+  This sibling request fired around the same window as the stream cancel.
+- The /messages/stream cancel itself was silent in the console (no per-URL error log),
+  but the H2 protocol error on the sibling request strongly suggests the same
+  connection-level failure killed both: the entire H2 connection to api.zeta-ai.io
+  was reset/torn-down by the proxy, taking the in-flight POST stream with it as
+  "canceled" (Chrome semantics: stream that goes away mid-flight when a connection
+  is reset shows up as "canceled" rather than "failed").
+
+JS exception:
+- TypeError: Cannot read properties of undefined (reading 'coinProduct')
+  React render path crashed — likely cascade from missing data because
+  multiple supporting requests (active-room-id, settings/cyoa, hashtag-topics)
+  all returned 404 / HTTP2_PROTOCOL_ERROR, leaving state undefined.
+
+Comparison vs prior cycles:
+- #612 (atomic alone, no parser fix): server sent body+EOS but engine drop-bug killed parsing → FAILED
+- #617 (h2_end_stream=2 / RST_STREAM + parser fix): 5 headers + 2 events + ERR_CONNECTION_CLOSED → PARTIAL
+- #619 (atomic h2_end_stream=1 + parser fix): 0 headers + 0 events + (canceled) → REGRESSION (worse than #617)
+
+Root cause hypothesis:
+The h2_end_stream=1 (2-frame atomic, body + empty END_STREAM in same write batch)
+appears to be triggering an H2 protocol error that bursts the whole connection,
+not just the single stream. With h2_end_stream=2 (RST_STREAM) in #617, only the
+specific stream was reset, and the client at least observed the headers + buffered
+events before the RST arrived. With h2_end_stream=1, the cleaner-looking atomic
+"body + empty END_STREAM frame" appears to violate something nghttp2 / Chrome
+expects — possibly:
+  (a) the empty DATA-with-END_STREAM frame is being rejected as malformed,
+  (b) the stream is being closed while the SETTINGS exchange or HEADERS write
+      hasn't completed and the H2 framer treats it as a protocol violation,
+  (c) the parser fix flushed a different write order that put the END_STREAM
+      frame BEFORE the HEADERS frame (or before the response body bytes were
+      flushed to the wire), causing FRAME_SIZE_ERROR / PROTOCOL_ERROR on the
+      receiving side.
+
+The visible smoking gun is net::ERR_HTTP2_PROTOCOL_ERROR on the sibling cyoa
+request — Chrome only reports this when nghttp2 (or h2 layer) actually parses
+something invalid on the wire, NOT when the server resets a stream cleanly.
+
+Recommendation:
+1. Capture a wireshark / curl --http2-prior-knowledge -v trace of the stream
+   exchange to see the exact frame ordering of the new atomic write.
+2. Compare frame ordering between #617 (RST_STREAM, working) and #619 (atomic
+   END_STREAM, broken).
+3. Most likely fix: ensure HEADERS frame is fully flushed BEFORE the body+END_STREAM
+   batch is queued; the new "atomic 2-frame batch" may be racing the HEADERS write.
+
+Test environment:
+- Date: 2026-04-28 ~11:13 KST
+- Test PC: Windows 11 (this PC)
+- Browser: Chrome (incognito attempted but title shows non-incognito; cookies
+  present from prior sessions). Did not affect outcome — the request DID reach
+  the server (preflight 200), but the actual stream POST was canceled.
+- Character used: 임윤찬 (LinearRaw9287) — random pick from front page.
+- Room ID: bb6b33cb-a5ae-43f5-b116-736f96f477e0
+- Plot ID: 5b6464b7-b4ca-4313-9700-b25bd4cba848
+
+Duration: ~5 min (well under 8 min hard timeout)

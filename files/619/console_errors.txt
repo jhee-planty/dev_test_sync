@@ -1,0 +1,42 @@
+Console errors observed (verbatim, 6 errors / 5 warnings reported by DevTools):
+
+1. Failed to load resource: the server responded with a status of 404 ()
+   — api.zeta-ai.io/v1/layout-sections/home:1 (404)
+
+2. Failed to load resource: the server responded with a status of 404 ()
+   — api.zeta-ai.io/v1/hashtag-topics:1 (404)
+
+3. Failed to load resource: the server responded with a status of 400 ()
+   — ups.analytics.yahoo... (400, Yahoo analytics, third-party, ignorable)
+
+4. GET https://api.zeta-ai.io/v1/rooms/active-room-id?plotId=5b6464b7-b4ca-4313-9700-b25bd4cba848
+   404 (Not Found)
+
+5. GET https://api.zeta-ai.io/v1/rooms/bb6b33cb-a5ae-43f5-b116-736f96f477e0/settings/cyoa
+   net::ERR_HTTP2_PROTOCOL_ERROR
+   *** This is the smoking gun — same H2 protocol family as the stream cancel ***
+
+6. TypeError: Cannot read properties of undefined (reading 'coinProduct')
+   at 0m797_i69-2c~.js:2:15082
+   at 0t1.i0qml8.ys.js:2:152503
+   at i_ (113b2qcua4vkz.js:50:58662)
+   at oO (113b2qcua4vkz.js:50:78919)
+   at oG (113b2qcua4vkz.js:50:77368)
+   at lu (113b2qcua4vkz.js:50:94107)
+   at uf (113b2qcua4vkz.js:50:133761)
+   at (113b2qcua4vkz.js:50:133606)
+   at ud (113b2qcua4vkz.js:50:133606)
+   at ue (113b2qcua4vkz.js:50:129535)
+   at uq (113b2qcua4vkz.js:50:155433)
+   at uz (113b2qcua4vkz.js:50:153647)
+   at uF (113b2qcua4vkz.js:50:153991)
+   at  (113b2qcua4vkz.js:50:153276)
+   *** React render exception — possibly cascade from missing data due to failed requests ***
+
+GPT/GPM warnings (PubAdsService deprecations, SharedId deprecation) — ignorable third-party.
+
+UI consequence:
+- Error popup "일시적인 오류가 발생했어요 / 잠시 후 다시 시도해주세요" with 확인 button
+  was displayed in the chat area.
+- Bottom of page shows "더 편리한 zeta 앱에서 대화를 즐겨보세요 / 앱에서 대화하기" overlay
+  prompting user to use the mobile app.
