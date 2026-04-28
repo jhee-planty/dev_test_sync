@@ -1,0 +1,58 @@
+{
+  "request_id": "613",
+  "service_name": "gamma",
+  "command": "check-warning",
+  "overall_status": "PARTIAL",
+  "status_detail": "BREAKTHROUGH PARTIAL. v5 (credentials-first reorder ONLY) fixes BOTH prior regressions: (a) v3 empty-ACAC HPACK bug -- now Access-Control-Allow-Credentials: true is transmitted correctly; (b) v4 ERR_HTTP2_PROTOCOL_ERROR -- gone, response delivered cleanly with 4 parseable headers. Response headers visible: Access-Control-Allow-Credentials, Cache-Control, Content-Type, X-Content-Type-Options. HOWEVER warning still doesn't render -- next layer exposed: NEW console error 'Access to fetch at https://ai.api.gamma.app/ai/v2/generation from origin https://gamma.app has been blocked by CORS policy: No Access-Control-Allow-Origin header is present on the requested resource.' Engine sets ACAC=true but does not emit ACAO echoing request Origin (https://gamma.app), which is mandatory under credentials-mode CORS. Page outline shows '1' placeholder only.",
+  "started_at": "2026-04-28T09:30:00Z",
+  "completed_at": "2026-04-28T09:36:00Z",
+  "duration_seconds": 360,
+  "verdict_subagent": "PARTIAL",
+  "warning_rendered": false,
+  "request_status": "200 OK h2 at HTTP layer; Status column shows 'CORS error' badge; fetch labeled (failed) by browser",
+  "acac_value": "Access-Control-Allow-Credentials: true (correctly transmitted, no longer empty)",
+  "response_headers_count": 4,
+  "header_names_seen": [
+    "Access-Control-Allow-Credentials",
+    "Cache-Control",
+    "Content-Type",
+    "X-Content-Type-Options"
+  ],
+  "cors_error_in_console": "yes",
+  "cors_error_verbatim": "Access to fetch at 'https://ai.api.gamma.app/ai/v2/generation' from origin 'https://gamma.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+  "http2_protocol_error": false,
+  "eventstream_events_seen": "0 (CORS-blocked before fetch could deliver body)",
+  "regression_vs_v4": "better -- no HTTP/2 PROTOCOL_ERROR, response delivered cleanly with 4 parseable headers",
+  "progress_vs_v3": "better -- ACAC value transmitted as 'true' instead of empty string. The empty-ACAC HPACK bug is cured by the credentials-first reorder alone.",
+  "root_cause_hypothesis": "v5 reorder confirmed to fix HPACK encoding of ACAC value (now 'true') AND avoid v4 frame-corruption regression. But the warning response generator only sets ACAC; it does not also emit Access-Control-Allow-Origin to echo the request Origin (https://gamma.app), which is MANDATORY under credentials-mode CORS.",
+  "recommendation_for_dev": [
+    "v6 priority A: keep v5's credentials-first reorder, additionally inject Access-Control-Allow-Origin: https://gamma.app (echo request Origin -- NOT '*' because credentials: 'include' forbids wildcard).",
+    "v6 must NOT re-introduce Vary or Expose-Headers from v4 (those caused HPACK regression).",
+    "After v6, expect either: SUCCESS (warning renders) or PARTIAL (envelope schema/SSE issue surfaces as next layer).",
+    "Lesson: minimal change wins. v4 added 3 things at once (reorder + Vary + Expose) and broke. v5 isolated the reorder and proved it works."
+  ],
+  "errors_observed": [
+    "Console: Access to fetch at 'https://ai.api.gamma.app/ai/v2/generation' from origin 'https://gamma.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+    "Network panel: Status column 'CORS error' badge",
+    "Page outline: '1' placeholder only (no warning text)"
+  ],
+  "artifacts": [
+    "files/613/01_before.png",
+    "files/613/02_devtools_network.png",
+    "files/613/03_status_column.png",
+    "files/613/04_response_headers.png",
+    "files/613/04b_acac_value.png",
+    "files/613/05_console.png",
+    "files/613/06_eventstream.png",
+    "files/613/07_after.png",
+    "files/613/08_warning_check.png",
+    "files/613/status_line.txt",
+    "files/613/acac_value.txt",
+    "files/613/console_errors.txt",
+    "files/613/eventstream.txt",
+    "files/613/notes.txt"
+  ],
+  "notes": "Cycle 95 R-5 -- gamma minimal reorder verify. PARTIAL with breakthrough: v3 empty-ACAC + v4 HPACK regression both cured by isolated credentials-first reorder. Next layer (missing ACAO) is now the only blocker. Subagent 6m, exceeded 5min soft, within 8min hard.",
+  "request_received_at": "2026-04-28T00:25:14Z",
+  "git_pull_at": "2026-04-28T09:30:00Z"
+}

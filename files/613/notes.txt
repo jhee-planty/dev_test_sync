@@ -1,0 +1,97 @@
+Request 613 — gamma.app PII block verify (Cycle 95 R-5, gamma_sse_v5)
+Timestamp: 2026-04-28 09:32~09:37 KST
+Service: gamma
+URL attempted: https://gamma.app/create/generate
+Final URL after submit: https://gamma.app/create/generate/40ou4v4zdoaut3w
+PII prompt: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+Generate button: "개요 생성" at (1400, 635) — clicked successfully
+
+=== Setup ===
+- Initial Chrome incognito attempt: gamma.app/create/generate redirected to /signin (no session)
+- Switched to regular Chrome (장희 user already signed in via persistent session)
+- Page loaded successfully into the create wizard (프레젠테이션 / 카드 10개 / 클래식 / 기본 / 한국어 defaults)
+- F12 → Network tab → Preserve log already on, Filter set to "generation"
+- Pasted PII prompt via clipboard (ctrl+v) — Korean text rendered correctly in input
+- Clicked "개요 생성" → URL changed to /create/generate/40ou4v4zdoaut3w
+- Waited 10s for response
+
+=== Network observations (filter: generation) ===
+Row order in Network panel:
+1. generation             204 h2 preflight  651ms  (OPTIONS preflight OK)
+2. generation             "CORS e..." fetch  461ms  ← THE FAILED actual SSE call
+3. render-generation      204 h2 preflight  222ms  (OPTIONS preflight OK)
+4. render-generation      (failed) fetch    485ms  ← second failure (likely chained on first)
+5. render-generation      201 h2 fetch       1.16s (a different/secondary call that succeeded)
+
+=== Critical headers — failed /ai/v2/generation ===
+General:
+  Request URL: https://ai.api.gamma.app/ai/v2/generation
+  Request Method: POST
+  Status Code: 200 OK
+  Referrer Policy: origin-when-cross-origin
+
+Response headers (4 total):
+  Access-Control-Allow-Credentials: true   ← FIXED! (v3 was '', v4 was absent)
+  Cache-Control: no-store
+  Content-Type: text/event-stream; charset=utf-8
+  X-Content-Type-Options: nosniff
+
+Request headers: included Origin: https://gamma.app, Cookie, Accept: text/event-stream, etc.
+
+=== Console error (verbatim) ===
+Access to fetch at 'https://ai.api.gamma.app/ai/v2/generation' from origin
+'https://gamma.app' has been blocked by CORS policy:
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+=== Verdict analysis ===
+v5 verdict: PARTIAL FIX
+- ACAC bug FIXED — value now 'true' (was '' in v3, absent in v4)
+- HTTP/2 PROTOCOL_ERROR regression from v4 RESOLVED — Status 200 OK on h2, response delivered with parseable headers
+- BUT new issue exposed: Access-Control-Allow-Origin header is MISSING entirely from response
+- Browser correctly rejects with credentials-mode CORS rule: when ACAC=true, ACAO must be a specific origin (not wildcard, not absent)
+- UI outcome: same as v3/v4 — no warning rendered, outline stuck at "1" placeholder
+
+=== Page state ===
+- "윤곽선" (Outline) section shows only "1" placeholder — no content rendered
+- NO "보안 경고" warning text on page
+- NO error banner in UI (gamma silently fails — same UX as previous cycles)
+- "카드 추가" / "생성" buttons visible but inert
+- 크레딧 320개 still shown (no credits consumed for the failed generation)
+
+=== Comparison vs prior cycles ===
+v3 (R-2): ACAC was empty string '' → CORS rejected, warning not rendered
+v4 (R-3 / req 611): added Vary + Expose-Headers → triggered ERR_HTTP2_PROTOCOL_ERROR (HPACK encoder broke)
+v5 (R-5 / this run): credentials-first reorder ONLY (no Vary, no Expose-Headers)
+  → HTTP/2 frames now valid (no protocol error)
+  → ACAC value correctly 'true' (HPACK encoding fixed)
+  → BUT engine never injected ACAO header (or it got dropped)
+
+=== Root cause hypothesis ===
+The credentials-first reorder by itself is enough to make the HTTP/2 frame valid AND
+get ACAC='true' transmitted correctly. This proves the v3 empty-ACAC bug was indeed
+caused by the header reorder issue (now confirmed).
+
+However the response is missing 'Access-Control-Allow-Origin' altogether. Either:
+(a) the engine was never injecting ACAO for the gamma response (and chatgpt baseline
+    works because chatgpt request has no Origin header forcing CORS validation), or
+(b) the engine drops ACAO when reordering happens, or
+(c) the warning response generator only sets ACAC and forgot ACAO.
+
+Most likely: the engine code that builds the SSE warning response sets ACAC: true
+but does NOT mirror the request Origin into ACAO. Need to add ACAO=https://gamma.app
+(echo of request Origin) to v6.
+
+=== Regression vs v4 ===
+BETTER — v4 had ERR_HTTP2_PROTOCOL_ERROR (frame parser failed). v5 delivers a clean
+200 OK h2 response that the browser parses successfully (4 response headers visible).
+
+=== Progress vs v3 ===
+BETTER — v3 had ACAC='' empty string (HPACK encoded zero-length value).
+v5 has ACAC='true' (correctly encoded). The empty-string bug is cured.
+But still PARTIAL because ACAO is now the missing piece blocking final success.
+
+=== Recommendation for v6 ===
+Add Access-Control-Allow-Origin header echoing the request Origin (https://gamma.app)
+in the SSE warning response. Keep the credentials-first ordering from v5.
+Do NOT re-add Vary/Expose-Headers from v4 — they are not strictly required and v4
+proved they break HPACK in the current engine.

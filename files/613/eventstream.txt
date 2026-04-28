@@ -1,0 +1,9 @@
+EventStream tab: NOT inspected (request was CORS-blocked at fetch initiation, so no events
+delivered to the EventSource — there is no SSE stream to view).
+
+The /ai/v2/generation request DID return 200 OK with Content-Type: text/event-stream;
+charset=utf-8 at the HTTP layer, but the browser's CORS preflight pass-through validation
+of the actual response failed (No ACAO header), so JS never received the response body.
+EventSource onmessage handlers therefore never fired.
+
+eventstream_events_seen: 0
