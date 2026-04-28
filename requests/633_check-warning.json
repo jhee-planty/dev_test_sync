@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://you.com",
+    "context": "Cycle 95 WSA v2 — you switched from TCP RST (you_json/SSR) to SSE body substitution per 632 native capture. New envelope template you_sse_v3 (id=80): emits text/event-stream with `event: youChatToken / data: {youChatToken: <warning>}` then `event: done / data: blocked`. Test PC: PII prompt to you.com, expect warning rendered in chat bubble (NOT generic error TypeError).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, you.com new chat",
+        "2. PII prompt 전송",
+        "3. /api/streamingSearch response: text/event-stream + youChatToken/done events",
+        "4. UI: '보안 경고' chat bubble (NOT '🤖 Sorry, something went wrong' generic error)"
+      ]
+    }
+  },
+  "notes": "you SSE envelope v3 verify (632 native shape applied).",
+  "attachments": [],
+  "id": "633",
+  "created": "2026-04-28T07:11:25Z"
+}
