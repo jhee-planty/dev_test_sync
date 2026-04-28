@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 95 Phase B retry #2 (B33 fix). Diagnosis: 624 PARTIAL revealed off-by-one bug — `lookup_key.compare(0, 5, \"wrb_fr\")` (5 chars) never matched 6-char string \"wrb_fr\". Block fired but fell through to DB envelope template (generic JSON error). B33 fix: changed length 5→6. Build+deploy 69s (run 20260428-135925). Engine should now route response_type='wrb_fr_gemini3' to generate_wrb_fr_response and emit ')]}\\\\n<size>\\\\n[[\\\"wrb.fr\\\",\\\"<uuid>\\\",<inner>,...]]' framing. Test: PII prompt → expect UI render of 보안 경고 instead of native Gemini answer.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, gemini.google.com 새 채팅",
+        "2. PII prompt (880101-1234567) 전송",
+        "3. /_/BardChatUi/data/.../StreamGenerate 응답 본문 시작 부분 확인 — `)]}'\\\\n<size>\\\\n[[\\\"wrb.fr\\\"...` 형식인지",
+        "4. UI에 '보안 경고' (warning_text_excerpt 일치) 렌더링 확인 (성공 기준)"
+      ]
+    }
+  },
+  "notes": "Phase B B33 off-by-one fix retry.",
+  "attachments": [],
+  "id": "625",
+  "created": "2026-04-28T05:01:16Z"
+}
