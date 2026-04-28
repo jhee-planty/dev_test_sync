@@ -1,0 +1,37 @@
+﻿INTERCEPT ENDPOINT (verbatim): /api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=...&conversationTurnId=...&pastChatLength=0&selectedChatMode=default&...
+  - Method: POST (NOT a Next.js SSR /_next/data/.../search.json GET)
+  - This is you.com's streaming chat API, not an SSP page-data fetch.
+
+UI STATE on screen after submit:
+  - User message bubble shows the PII prompt (Korean, with 880101-1234567).
+  - Assistant slot shows the GENERIC YOU.COM ERROR PAGE:
+      "Sorry, something went wrong. Please try again later.
+       Our team is looking into it. If you would like to follow up on this issue,
+        please visit our Feedback Portal or let us know on our Discord.
+       Please include the following Error ID in your message:
+        708c6e6a-2293-48f7-b9b8-4abf012447ca|23abaa8c-1576-4417-8f0a-36276c8f3812|2026-04-28T01:50:19.601Z"
+  - This is the you.com client-side error fallback rendered when the streamingSearch XHR fails / aborts.
+  - NO Korean security warning text rendered. NO 보안 경고. NO 주민등록번호 phrase.
+
+WIRE-LEVEL STATE for streamingSearch:
+  - Status column: "(failed)"
+  - Response headers count: 0 (zero headers delivered)
+  - Response body: "Failed to load response data" (no data captured by DevTools)
+
+VERDICT: PARTIAL is too generous. The intercept fired (the streamingSearch XHR did fail, so the engine clearly acted on the connection), BUT:
+  - No HTTP response with pageProps body was delivered.
+  - The you_json template (which is meant to populate Next.js error pageProps in the response BODY) never gets to the client because there is no body at all.
+  - You.com client falls back to its own generic error UI, which has nothing to do with the engine template.
+
+ROOT CAUSE HYPOTHESIS (Phase3-B31 last-line fix relevance):
+  - The Phase3-B31 fix was about emitting the last header line correctly. That helps for templates served as a complete HTTP response (headers + body). But here the engine appears to terminate the connection ENTIRELY (RST/close) instead of writing an HTTP response substitute.
+  - For you.com, /api/streamingSearch is a POST that returns text/event-stream. The engine likely matches PII -> blocks -> closes socket, never writing 200 + body.
+  - Therefore the you_json (Next.js SSP error pageProps) template is the WRONG template type for this endpoint. Even if Phase3-B31 fixed last-line emission, no template body is being served at all.
+  - To deliver a warning visibly on you.com chat UI, the engine needs to:
+     (a) write a real HTTP response (e.g., 200 with text/event-stream body containing a synthesized SSE event whose JSON shape matches you.com's stream protocol),
+     OR
+     (b) write a 200 JSON response in the shape that you.com's error/warning handler in the client recognizes (NOT Next.js SSP pageProps — that shape is for /_next/data/*.json which this site does not use here).
+  - The current you_json template (Next.js SSP pageProps shape) targets a route that you.com does not use for chat answers. Path=/ does not match the actual chat API path /api/streamingSearch.
+
+PROGRESS vs prior cycles:
+  - Same as cycle 94 (generic error UI). No improvement from Phase3-B31 last-line fix because the issue is not a malformed last header — it is that no response is being written at all (connection-level termination), and the template format (Next.js SSP) does not match the endpoint protocol (SSE streaming chat API).

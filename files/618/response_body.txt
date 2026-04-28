@@ -1,0 +1,7 @@
+﻿DevTools Response tab message:
+"Failed to load response data: No data found for resource with given identifier"
+
+This means: NO response body was ever sent over the wire. The you_json template (Next.js SSP error pageProps format) was therefore NOT delivered to the client. The intercept fires at the connection layer, not as a substituted HTTP body.
+
+pageProps payload delivered: NO
+First 300 chars of response body: <empty — no body>

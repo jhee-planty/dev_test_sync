@@ -1,0 +1,53 @@
+{
+  "request_id": "618",
+  "service_name": "you",
+  "command": "check-warning",
+  "overall_status": "PARTIAL",
+  "status_detail": "Engine intercepts but TWO LAYERED PROBLEMS prevent warning rendering. (1) Engine terminates the streamingSearch connection at the socket level (RST/close) -- Response headers count = 0 confirms no HTTP response was written. (2) Even if engine wrote a body, the you_json template's Next.js-SSP pageProps shape targets /_next/data/.../search.json style routes; you.com's actual chat path is POST /api/streamingSearch returning a streaming format. Template format does not match endpoint protocol. Intercept endpoint observed: POST /api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=...&conversationTurnId=...&pastChatLength=0&selectedChatMode=default&queryTraceId=...&traceId=...&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true. Status (failed), 0 headers, no body. you.com generic error fallback rendered: 'Sorry, something went wrong. Please try again later. Our team is looking into it. If you would like to follow up on this issue, please visit our Feedback Portal or let us know on our Discord. Please include the following Error ID in your message: <chatId>|<conversationTurnId>|<timestamp>'.",
+  "started_at": "2026-04-28T10:48:00Z",
+  "completed_at": "2026-04-28T10:50:30Z",
+  "duration_seconds": 150,
+  "verdict_subagent": "PARTIAL",
+  "warning_rendered": false,
+  "request_status": "(failed) -- no HTTP status code, connection-level termination",
+  "intercept_endpoint": "POST /api/streamingSearch?page=1&count=10&safeSearch=moderate&...&domain=youchat&chatId=708c6e6a-2293-48f7-b9b8-4abf012447ca&conversationTurnId=23abaa8c-1576-4417-8f0a-36276c8f3812&...",
+  "response_headers_count": 0,
+  "header_names_seen": [],
+  "response_body_first_300_chars": "<empty> -- DevTools shows 'Failed to load response data: No data found for resource with given identifier'",
+  "pageprops_delivered": false,
+  "generic_error_ui": true,
+  "generic_error_text": "Sorry, something went wrong. Please try again later. Our team is looking into it. If you would like to follow up on this issue, please visit our Feedback Portal or let us know on our Discord. Please include the following Error ID in your message: 708c6e6a-2293-48f7-b9b8-4abf012447ca|23abaa8c-1576-4417-8f0a-36276c8f3812|2026-04-28T01:50:19.601Z",
+  "bypass_normal_answer": false,
+  "intercept_fired": true,
+  "progress_vs_prior": "same as cycle 94 -- Phase3-B31 last-line fix did not change the visible outcome (last-line fix is moot when 0 headers exist)",
+  "root_cause_hypothesis": "Engine PII intercept fires (you.com server doesn't get the request) but engine then terminates connection without writing any response, so 0 headers + 0 body. Even if response were written, the you_json Next.js SSP pageProps template (target: /_next/data/.../search.json) is the WRONG SHAPE for you.com's actual chat endpoint /api/streamingSearch (which expects streaming format).",
+  "recommendation_for_dev": [
+    "v2 priority A: confirm engine actually writes a 200 response when intercepting /api/streamingSearch (currently 0 headers means no write). Engine-side log: did response writer fire? Did flush() complete?",
+    "v2 priority B: change template from you_json (Next.js SSP pageProps targeting /_next/data) to a streaming-search-compatible format. Need to capture an UNINTERCEPTED real you.com /api/streamingSearch response to see expected event shape (likely SSE-style chunks with conversation turn IDs).",
+    "Investigate: is the path narrowing wrong? you_json template was written for /_next/data/.../search.json but path=/ catches /api/streamingSearch. Either narrow to /_next/data path AND add a separate intercept for /api/streamingSearch with appropriate template, OR rewrite you_json to handle streaming format.",
+    "Cross-reference with #594 mistral capture pattern -- get verbatim real /api/streamingSearch response body before touching template."
+  ],
+  "errors_observed": [
+    "POST /api/streamingSearch: (failed), 0 headers, 0 body",
+    "DevTools: Failed to load response data: No data found for resource with given identifier",
+    "you.com client-side: 'Sorry, something went wrong. Please try again later.' generic error fallback"
+  ],
+  "artifacts": [
+    "files/618/01_before.png",
+    "files/618/02_devtools_network.png",
+    "files/618/03_status.png",
+    "files/618/04_response_headers.png",
+    "files/618/05_response_body.png",
+    "files/618/06_console.png",
+    "files/618/07_after.png",
+    "files/618/08_warning_check.png",
+    "files/618/response_headers.txt",
+    "files/618/response_body.txt",
+    "files/618/status_line.txt",
+    "files/618/console_errors.txt",
+    "files/618/notes.txt"
+  ],
+  "notes": "Cycle 95 R-11 -- you verify post engine fix. PARTIAL with critical finding: endpoint mismatch (you_json template targets /_next/data but actual is /api/streamingSearch). Engine fix moot until engine actually writes response. Subagent 2m30s, well within 5min soft.",
+  "request_received_at": "2026-04-28T01:33:05Z",
+  "git_pull_at": "2026-04-28T10:35:00Z"
+}

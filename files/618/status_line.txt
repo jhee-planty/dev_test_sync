@@ -1,0 +1,4 @@
+﻿Network panel column "Status" for /api/streamingSearch?... = (failed)
+HTTP status: NONE (connection terminated before response)
+Response headers (0) - shown verbatim in DevTools Headers tab
+Connection-level intercept (RST/close) — no HTTP response delivered
