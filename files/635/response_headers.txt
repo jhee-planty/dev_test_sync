@@ -1,0 +1,19 @@
+REQUEST URL:
+https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=846fa320-a4be-4f3d-a6ce-b96ff5f6473d&conversationTurnId=4e6882cc-8198-4d33-be52-4304bc98ba8b&pastChatLength=0&selectedChatMode=smart_routing&queryTraceId=846fa320-a4be-4f3d-a6ce-b96ff5f6473d&traceId=846fa320-a4be-4f3d-a6ce-b96ff5f6473d|4e6882cc-8198-4d33-be52-4304bc98ba8b|2026-04-28T08:08:29.962Z&enable_editable_workflow=true&use_nested_youchat_updates=true&enable_agent_clarification_questions=true
+
+GENERAL:
+Status Code: (failed) — XHR request failed, no status from server
+Referrer Policy: strict-origin-when-cross-origin
+
+RESPONSE HEADERS:
+(none — request failed before response headers were received)
+
+REQUEST HEADERS (provisional only — full headers not sent because connection failed):
+Provisional headers are shown
+Content-Type: text/plain;charset=UTF-8
+Referer: https://you.com/search?q=...&fromSearchBar=true
+Sec-Ch-Ua: "Google Chrome";v="147", "Not.A/Brand";v="8", ...
+
+NOTE: "Provisional headers are shown" + "Failed to load response data" indicates the
+request was aborted at the network layer (TCP RST / connection terminated by middlebox)
+BEFORE any HTTP response was received. Same failure pattern as request #634.

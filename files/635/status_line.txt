@@ -1,0 +1,9 @@
+Status: (failed)
+Type: xhr
+Initiator: 0kn-z-2ki~m0q.js
+Size: 0.0 kB
+Time: 499 ms
+
+DevTools displays "(failed)" with no HTTP status code — request never reached
+the application layer. UI label: "XHR request failed".
+Compared to #633/#634: SAME — still failing at TCP/connection level, no upgrade to 200 OK.

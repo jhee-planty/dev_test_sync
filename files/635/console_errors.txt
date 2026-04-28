@@ -1,0 +1,16 @@
+Console summary: 14 errors, 124 warnings.
+
+Notable errors observed:
+1. Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL
+   (multiple repeats — appears to be ambient SDK noise, not related to APF)
+   Stack: sJ → t.onStart → t.startSpan → e._createSpan → XMLHttpRequest.open
+   File: 0kn-z-2ki~m0q.js
+
+2. GET https://you.com/api/threads/846fa320-a4be-4f3d-a6ce-b96ff5f6473d 404 (Not Found)
+   File: 0kn-z-2ki~m0q.js (likely follow-up call after streamingSearch failure)
+
+No console error directly mentions text/event-stream, SSE parse failure, or block.
+The streamingSearch failure surfaces only via Network tab "(failed)" status, not
+via Console.
+
+Issues panel: 4 issues (1 page error, 3 breaking changes).

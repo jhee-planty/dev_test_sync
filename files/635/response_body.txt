@@ -1,0 +1,13 @@
+(EMPTY)
+
+DevTools Response tab displayed:
+"Failed to load response data
+No data found for resource with given identifier"
+
+No SSE body bytes were ever received. youChatToken: not present. done: not present.
+text/event-stream: never returned.
+
+This means the Engine's reload_templates fix (53 envelopes loaded) could not be
+verified by this test — the request never reached APF processing because the
+TCP connection was terminated upstream (same as #633/#634). The 보안 경고
+chat bubble was NOT delivered.

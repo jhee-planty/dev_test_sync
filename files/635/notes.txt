@@ -1,0 +1,67 @@
+request #635 — you.com PII block verify after engine reload_templates fix
+Date: 2026-04-28 17:07-17:11 KST (~4 min total)
+Cycle: 95
+Tester: Claude Opus 4.7 (1M ctx) on test PC, windows-mcp + DevTools
+
+VERDICT: FAILED — same pattern as #633/#634 (no breakthrough).
+
+What was tested
+---------------
+Hypothesis: prior failures (#633, #634) were due to engine holding stale template
+map (52 envelopes, missing you_sse_v3). Fix shipped: ran etapcomm
+ai_prompt_filter.reload_templates which loaded 53 envelopes including you_sse_v3.
+Expected outcome: streamingSearch now returns 200 OK with SSE body containing
+youChatToken event whose data carries '보안 경고', and chat bubble renders that text.
+
+What actually happened
+----------------------
+1. Chrome guest tab opened (default browser is Chrome on this PC).
+2. Navigated to https://you.com/chat — page loaded normally; cookied logged-in
+   session for 장희 최 (Pro plan FREE TRIAL). No login modal blocked the test.
+3. Opened DevTools (F12) → Network tab, Preserve log ON, filter "streamingSearch".
+4. Typed PII prompt verbatim into "How can I help?" textarea and pressed Enter.
+   Browser auto-redirected to /search?q=... and POSTed to /api/streamingSearch.
+5. After ~10 s wait:
+   - Network tab shows ONE matching request:
+     streamingSearch?page=1&count=10... domain=youchat
+   - Status: (failed)  Type: xhr  Size: 0.0 kB  Time: 499 ms
+   - Headers tab shows "Provisional headers are shown" — connection never
+     completed handshake from app perspective.
+   - Response tab: "Failed to load response data — No data found for resource
+     with given identifier" — zero bytes of body.
+6. UI rendered the GENERIC error message:
+     "Sorry, something went wrong. Please try again later.
+      Our team is looking into it. ... Error ID in your message:
+      846fa320-a4be-4f3d-a6ce-b96ff5f6473d|4e6882cc-8198-4d33-be52-4304bc98ba8b|
+      2026-04-28T08:08:29.962Z"
+   This is You.com's own client-side fallback when SSE never delivers a done
+   event. It is NOT the '보안 경고' template.
+
+Diagnosis
+---------
+The engine reload_templates fix did NOT restore service to you.com. The request
+is still being terminated at the TCP / TLS / proxy layer BEFORE the APF engine
+can inject the you_sse_v3 envelope into a 200 OK response.
+
+reload_templates was a NECESSARY but not SUFFICIENT condition. Hypothesis for
+next iteration:
+  a) APF engine may be detecting PII and dropping the connection (RST) instead of
+     hijacking the response — i.e. mode is still set to BLOCK, not WARN. Verify
+     ai_prompt_services.action for service "you" is "warn"/"replace_response",
+     not "block_tcp"/"reset".
+  b) Even with templates loaded, the per-service envelope-to-action binding may
+     still point to a default block path. Check the dispatch table.
+  c) MITM cert / TLS handshake may be failing on you.com specifically (less
+     likely since the same path worked for other services in earlier cycles).
+
+Recommended next dev action
+---------------------------
+On the etap test box:
+  - etapcomm ai_prompt_services.show service=you   → confirm action mode
+  - etapcomm ai_prompt_filter.show_envelope_binding service=you
+    → confirm you_sse_v3 is bound and intent is "warn", not "drop"
+  - tcpdump on the bridge while reproducing — observe whether engine emits
+    SSE frames or sends RST.
+
+Progress vs #634: SAME (no observable difference in client-side symptoms).
+Breakthrough status: NO breakthrough. you.com remains blocked at TCP level.
