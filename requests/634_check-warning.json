@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://you.com",
+    "context": "Cycle 95 you SSE v3 fix retry. 633 FAIL diagnosis: envelope_template stored with literal '\\n' chars (MySQL escape parsing failed via heredoc/printf), engine convert_to_http2_response returned size=0 (HTTP parser couldn't find CRLF). Fix: UPDATE used CHAR(13,10) explicit CRLF — verified hex 4F4B0D0A 'OK\\r\\n' stored correctly. Body uses LF for SSE. LENGTH=343 bytes. Test: PII prompt → expect '보안 경고' in you.com chat bubble.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, you.com new chat",
+        "2. PII prompt 전송",
+        "3. /api/streamingSearch response: 200 OK + Content-Type text/event-stream + youChatToken event with warning text + done event",
+        "4. UI: '보안 경고' chat bubble (success criteria)"
+      ]
+    }
+  },
+  "notes": "you SSE v3 CRLF fix retry.",
+  "attachments": [],
+  "id": "634",
+  "created": "2026-04-28T07:38:34Z"
+}
