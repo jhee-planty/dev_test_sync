@@ -1,0 +1,38 @@
+=== Request URL ===
+https://ai.api.gamma.app/ai/v2/render-generation
+
+=== OPTIONS preflight (the FIRST render-generation row in DevTools) ===
+Status: 204 No Content
+Remote Address: [2606:4700::6812:bc82]:443  (Cloudflare)
+Response headers (16 total) IN ORDER as displayed in DevTools:
+  Access-Control-Allow-Credentials: true
+  Access-Control-Allow-Headers: content-type
+  Access-Control-Allow-Methods: GET,HEAD,PUT,PATCH,POST,DELETE
+  Access-Control-Allow-Origin: https://gamma.app
+  Access-Control-Max-Age: 2592000
+  Cf-Cache-Status: DYNAMIC
+  Cf-Ray: 9f321ba6aaafea97-ICN
+  Date: Tue, 28 Apr 2026 00:56:35 GMT
+  Server: cloudflare
+  Set-Cookie: gamma_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=.gamma.app; secure
+  Set-Cookie: gamma_session=e30=; path=/; expires=Fri, 25 Apr 2036 00:56:35 GMT; domain=.api.gamma.app; secure; httponly
+  Set-Cookie: gamma_session.sig=TGPJndRzzFPGd8AIo-YccFbFeZg; path=/; expires=Fri, 25 Apr 2036 00:56:35 GMT; domain=.api.gamma.app; secure; httponly
+  Set-Cookie: __cf_bm=...; path=/; expires=...; domain=.gamma.app; HttpOnly; Secure
+  Vary: Origin, Access-Control-Request-Headers
+  X-Powered-By: Express
+  X-Request-Id: aa78fd1b-7d43-4d22-ace2-c3619c5af5af
+
+=== Page-driven POST render-generation (row 4 — the FAILED one with red X) ===
+Status: (failed) net::ERR_FAILED  (CORS-driven failure — 491ms)
+Remote Address: [2606:4700::6812:bc8b]:443
+Response headers: 0  ← ZERO HEADERS RECEIVED BY BROWSER
+Request was POST /ai/v2/render-generation, Content-Length 228, application/json
+Browser shows literally "Response headers (0)" — the panel is collapsed/empty.
+
+=== Console eval OPTIONS preflight (manual fetch) ===
+Status: blocked, CORS error in console:
+"Access to fetch at 'https://ai.api.gamma.app/ai/v2/render-generation' from origin 'https://gamma.app' has been blocked by CORS policy: Method OPTIONS is not allowed by Access-Control-Allow-Methods in preflight response."
+(Manual OPTIONS-as-method fetch is rejected because ACAM lists POST/GET/etc but not OPTIONS itself for the /OPTIONS-as-target case)
+
+=== Console eval GET render-generation ===
+Status: 404 Not Found  (request reached server, returned 404 — CORS headers presumably present since browser didn't reject)

@@ -1,0 +1,53 @@
+Cycle 95 R-6 / request 614 / gamma v6 ACAO position-2 test
+
+KEY OBSERVATION: There are TWO different layers responding for /ai/v2/render-generation:
+
+1. OPTIONS preflight — answered by Cloudflare edge (Server: cloudflare, Cf-Ray: 9f321ba6...).
+   Returns 204 + 16 response headers including ALL FIVE CORS headers (ACAC/ACAH/ACAM/ACAO/ACAMa).
+   ACAO value = "https://gamma.app". This appears HEALTHY.
+
+2. POST render-generation — page-driven, the actual data request — FAILED.
+   net::ERR_FAILED at 491ms. DevTools Headers panel shows "Response headers (0)".
+   ZERO response headers were received by the browser. This is the v6-engine path that the test
+   was meant to verify.
+
+INTERPRETATION:
+- The OPTIONS preflight passes Cloudflare → never even reaches the Etap engine (Cloudflare returns
+  cached/synthetic 204 with full CORS suite).
+- The POST goes Cloudflare → Etap engine (v6) → backend (or block).
+  v6's HPACK template (5 headers, ACAO at position 2) emits NOTHING to the browser. The browser
+  literally sees 0 response headers on this stream.
+
+This is WORSE than v5's symptom. v5 had "ACAO missing among 4 emitted headers". v6 emits zero.
+That suggests v6's reordering broke the entire HPACK frame, not just the ACAO slot — possibly
+the engine fails the encoding stage and aborts the response before any header bytes are
+serialized to the wire.
+
+OUTLINE PHASE (first /ai/v2/generation request, status 200) succeeded — outline appeared with
+empty card "1". So the upstream model responded; but render-generation, which streams SSE-style
+content, failed to deliver.
+
+WARNING TEXT 보안 경고: NOT rendered. Page shows only an empty placeholder card.
+
+PROGRESS vs v5: WORSE.
+- v5: ACAO missing, other 4 CORS headers present, browser received 4 headers.
+- v6: ZERO response headers received by browser. Engine emits nothing.
+
+ROOT CAUSE HYPOTHESIS: HPACK template position-2 ACAO change in v6 is invalid — possibly
+moves a static-table-indexed header into a dynamic slot (or vice-versa) and the encoder aborts
+the entire header block. Recommend: revert to v5 ordering and instead investigate WHY ACAO
+specifically was being dropped at position N (likely a name-length or static-table indexing bug,
+not a position bug).
+
+ARTIFACTS SAVED:
+01_before.png, 02_devtools_network.png, 02b_typed.png, 03_status.png,
+04_response_headers_full.png, 04b_acao_value.png, 04c_scrolled.png, 04d_more_scroll.png, 04e_more.png,
+05_console.png, 05b_console_scrolled.png, 05c_get_result.png, 05d_get_headers.png,
+06_network_after_console.png,
+07_failed_clicked.png (← shows Response headers (0) for failed POST),
+07b_response_headers_expanded.png (← also confirms 0),
+07c_preflight.png (← shows 204 + Response headers (16)),
+07d_preflight_headers.png (← shows ACAC/ACAH/ACAM/ACAO/ACAMa headers visible),
+07e_preflight_headers_more.png, 07f_preflight_more2.png,
+08_warning_check.png (← page shows empty outline, NO 보안 경고 text),
+response_headers.txt, acao_value.txt, console_errors.txt, notes.txt
