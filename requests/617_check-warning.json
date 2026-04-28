@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "zeta",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://zeta-ai.io",
+    "context": "Cycle 95 R-10: zeta verify post engine fix Phase3-B31. zeta_sse_v2 (Access-Control-Expose-Headers as last header — should be preserved now). h2_end_stream=2. Engine fix may resolve last-header drop but not address ERR_CONNECTION_CLOSED root cause.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. zeta-ai.io chat with character, send PII prompt",
+        "3. /v1/rooms/.../messages/stream Headers → list response headers count and names",
+        "4. EventStream tab → events count",
+        "5. SUCCESS: warning rendered",
+        "6. PARTIAL: events parse + headers present but UI render missing",
+        "7. FAIL: ERR_CONNECTION_CLOSED returns OR 0 events"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-10 zeta verify post engine last-line parser fix.",
+  "id": "617",
+  "created": "2026-04-28T01:33:03Z",
+  "attachments": []
+}
