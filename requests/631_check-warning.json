@@ -1,0 +1,24 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 95 Phase B B37 native-verbatim content shape. 630 PARTIAL revealed: B36 3-chunk OK structurally but content missing native fields. B37 adds (per 626 capture diff): (a) location element [<addr>,SWML_DESCRIPTION,false,null,<maps_url>], (b) country code 'KR', (c) language code 'en', (d) safety annotation [null,[false,false]], (e) action buttons [[[[1004,길게,...],[1005,짧게,...],[1001,다시 시도,...]]]] with proper Google Material icons URLs. Build+deploy 52s (run 20260428-154033). Reload_services done. Test: PII prompt → expect UI render of 보안 경고 chat bubble (success criteria — 7 iterations into B-series, verified iteratively).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, gemini.google.com NEW chat",
+        "2. PII prompt 전송",
+        "3. Response body confirm 3 chunks: handshake / content (~1300B with location+KR+en+buttons) / completion",
+        "4. UI: '보안 경고' chat bubble in conversation (PASS criteria)"
+      ]
+    }
+  },
+  "notes": "Phase B B37 native-verbatim content (location + country + language + safety + action buttons).",
+  "attachments": [],
+  "id": "631",
+  "created": "2026-04-28T06:41:59Z"
+}
