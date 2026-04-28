@@ -1,0 +1,31 @@
+# Response Headers — POST /api/streamingSearch (PII query)
+# Status: NETWORK FAILURE (engine intercept, connection reset)
+# DevTools shows "XHR request failed", JS fetch throws TypeError: Failed to fetch
+# Result: ZERO response headers returned to the browser (consistent with Cycle 94 finding "engine writes 0 headers")
+
+(no headers — connection terminated before response)
+
+# ----- For schema reference: BENIGN query response headers (200 OK from same endpoint) -----
+# These are what a non-blocked you.com chat looks like.
+
+accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+access-control-allow-origin: *
+alt-svc: h3=":443"; ma=86400
+cache-control: no-cache, no-transform
+cf-cache-status: DYNAMIC
+cf-ray: 9f3434edcae63122-ICN
+content-security-policy: <long CSP — see _benign.json>
+content-type: text/event-stream;charset=utf-8
+cross-origin-opener-policy: same-origin-allow-popups
+date: Tue, 28 Apr 2026 07:03:22 GMT
+expires: Tue, 28 Apr 2026 07:04:22 GMT
+permissions-policy: camera=(), microphone=(self src)
+referrer-policy: strict-origin-when-cross-origin
+server: cloudflare
+strict-transport-security: max-age=63062000; includeSubDomains; preload
+vary: accept-encoding
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+
+# Header count for benign response: 18
+# Body content-type: text/event-stream;charset=utf-8 (SSE)

@@ -1,0 +1,53 @@
+# Response Body — POST /api/streamingSearch (PII query)
+# Status: ZERO BYTES — engine intercepted at network layer
+# JS fetch error: TypeError: Failed to fetch (no Response object)
+# DevTools Network panel: "request failed" (no body content)
+#
+# This confirms Cycle 94 finding: engine RESETS the chat path connection
+# rather than substituting a body. Browser sees ERR_* network failure.
+
+(empty — no body received)
+
+# ============================================================
+# REFERENCE: BENIGN QUERY ("안녕") via SAME endpoint, captured for schema
+# This shows what a successful streamingSearch response looks like
+# ============================================================
+
+# URL: POST https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&domain=youchat&chatId=...&...
+# Status: 200 OK
+# Content-Type: text/event-stream;charset=utf-8
+# Body length: 215 bytes
+# Format: SSE (Server-Sent Events), one event per blank-line-separated record:
+#   - "event: <type>" header line
+#   - "data: <payload>" data line(s) — payload may be JSON or plain text
+#
+# Verbatim body bytes:
+
+event: youChatToken
+data: {"youChatToken": "#### Please [log in](https://you.com/signin) to use You.com.\n\n#### Check out our plans here: https://you.com/pricing"}
+
+event: done
+data: I'm Mr. Meeseeks. Look at me.
+
+
+# ============================================================
+# Schema notes for engine APF integration
+# ============================================================
+# 1. Stream framing: SSE (text/event-stream), terminator is blank line.
+# 2. Each event has: `event: <name>` then one or more `data: <text>` lines.
+# 3. Known event types observed:
+#    - youChatToken : data is JSON {"youChatToken": "<text fragment>"}.
+#                     Multiple of these stream the answer chunk-by-chunk.
+#    - done         : data is freeform text terminator. Marks end of stream.
+# 4. Likely additional event types in real authenticated session
+#    (not observed here because anonymous): youChatSerpResults, citations,
+#    workflowStep, error, etc. Inspect a real auth'd session to enumerate.
+# 5. APF block strategy candidates for this endpoint:
+#    a. Inject `event: youChatToken\ndata: {"youChatToken":"<warning text>"}\n\n`
+#       followed by `event: done\ndata: blocked\n\n` then close.
+#    b. Replace entire body and ensure content-type stays text/event-stream
+#       so the SSE parser doesn't choke.
+#    c. Current behaviour (RST/no body) makes you.com show its native
+#       generic error UI ("🤖 Sorry, something went wrong... Error ID:
+#       <traceId>"), NOT a security warning. Need to switch from RST
+#       to body substitution to render a custom warning.

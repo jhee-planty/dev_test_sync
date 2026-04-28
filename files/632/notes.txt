@@ -1,0 +1,80 @@
+# notes.txt — Cycle 95 you.com /api/streamingSearch HAR-style capture
+# Request 632, executed 2026-04-28 ~16:00 KST on Test PC
+
+## Service & URL
+- service: you
+- chat URL: https://you.com/?chatMode=default
+- after submit: https://you.com/search?q=<urlencoded prompt>&fromSearchBar=true&chatMode=default
+- chat API: POST https://you.com/api/streamingSearch?... (long query string with chatId/conversationTurnId/traceId)
+- telemetry API: POST https://you.com/api/eventLogger
+
+## What happened in the UI (live PII submit)
+1. Loaded https://you.com (incognito, anonymous).
+2. Page rendered the marketing landing page first; navigated to /?chatMode=default
+   to land on the chat composer.
+3. Pasted the PII prompt and pressed Enter.
+4. UI navigated to /search?q=...
+5. UI showed: title "Workflow", spinner "Thinking", then a generic error bubble:
+      🤖 Sorry, something went wrong. Please try again later.
+      Our team is looking into it. ... Error ID:
+      ec29e5c6-d215-4bc2-9b2b-767b64b8220a|5e7e73b6-0bd2-41b2-8a49-70a2d6bccd5b|2026-04-28T06:58:33.552Z
+6. UI also showed the post-response action bar: "Regenerate response", "Copy text",
+   thumbs-up/down. So the React tree treats this as a delivered (failed) turn.
+
+## What DevTools Network panel showed
+- POST /api/streamingSearch?... -> "request failed" (no status, no headers, no body).
+- Headers tab populated only with Query String Parameters and Request Payload.
+  Request Payload: {"query":"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?","chat":"[]"}
+- Response tab: empty.
+
+## Console-side probe (re-fired the same endpoints from JS, same session)
+- PII streamingSearch -> TypeError: Failed to fetch (no Response object).
+- PII eventLogger     -> TypeError: Failed to fetch.
+- benign streamingSearch ("안녕") -> 200 OK, 215 byte body, full headers, SSE format.
+  -> Engine block is content-triggered (the PII pattern), not endpoint-blanket.
+  -> Engine drops the connection (RST) instead of substituting a response body.
+
+## Schema captured (from benign sample, see response_body.txt)
+- Transport: text/event-stream (SSE)
+- Frame: "event: <type>\ndata: <text>\n\n" repeated, terminated by "event: done"
+- Observed event types: youChatToken (data is JSON {"youChatToken": "..."}), done.
+- Anonymous responses prompt user to log in; authenticated responses presumably
+  contain richer event types (citations, workflow steps, search results).
+
+## Comparison vs request 618 (previous you.com test)
+- 618 captured nothing useful from the chat path (engine wasn't matching).
+- 632 confirms engine IS now matching PII and intercepting chat path,
+  AND captures the native success-path schema for the first time.
+- Progress: BETTER than 618.
+
+## Verdict on UI outcome
+- bypass_normal_answer: NO (engine successfully prevented an answer).
+- warning_rendered: NO (no APF custom warning text appeared).
+- generic_error_ui: YES — text "🤖 Sorry, something went wrong. Please try again later."
+  with traceId. This is you.com's built-in fetch-failure fallback.
+
+## What dev should do next (schema-driven)
+The capture proves we can replace the body if the engine switches from
+RST-on-detect to body-substitution. Suggested injection (kept simple, you.com
+parses chunk-by-chunk):
+
+  HTTP/1.1 200 OK
+  Content-Type: text/event-stream;charset=utf-8
+
+  event: youChatToken
+  data: {"youChatToken":"[보안 경고] 입력하신 내용에 개인정보(주민등록번호)가 포함되어 차단되었습니다.\n조직 보안 정책에 따라 외부 AI 서비스로의 전송이 거부됩니다."}
+
+  event: done
+  data: blocked-by-apf
+
+This will render as the chat answer text inside the same response bubble
+that currently shows the generic error.
+
+## Artifacts (all in C:\Users\최장희\Documents\dev_test_sync\files\632\)
+- 01_before.png .. 08_warning_check.png      screenshots
+- response_headers.txt                       full headers (benign reference + intercept note)
+- response_body.txt                          gold artifact (benign SSE body + schema)
+- eventlogger_response_body.txt              eventLogger probe outcome
+- status_line.txt                            "(failed)" + comparison
+- console_errors.txt                         summary
+- _benign.json, _combined.json, _pagetext.txt, _raw_clipboard.json   raw data

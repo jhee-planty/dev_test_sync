@@ -1,0 +1,30 @@
+# Console errors observed during PII test on you.com
+# DevTools header: "Open Console to view 13 errors, 54 warnings"
+# Most errors come from page lifecycle code reacting to the failed streamingSearch.
+# Multiple references to chunk file 0kn-z-2ki~m0q.js indicate the chat client
+# library throwing because the SSE stream never opened.
+#
+# Custom probes (executed via console fetch):
+#   PII /api/streamingSearch       -> TypeError: Failed to fetch
+#   PII /api/eventLogger           -> TypeError: Failed to fetch
+#   benign /api/streamingSearch    -> 200 OK, 215 byte SSE body
+#
+# Stack frames (truncated, just frame locations):
+#   0kn-z-2ki~m0q.js:1:87382
+#   0kn-z-2ki~m0q.js:1:152188
+#   0kn-z-2ki~m0q.js:1:176895
+#   0kn-z-2ki~m0q.js:1:174235
+#   0kn-z-2ki~m0q.js:1:172043
+#   0kn-z-2ki~m0q.js:1:63688
+#   0kn-z-2ki~m0q.js:1:54978
+#   0kn-z-2ki~m0q.js:1:181196
+#   0kn-z-2ki~m0q.js:1:63461
+#   0kn-z-2ki~m0q.js:1:52731
+#   0kn-z-2ki~m0q.js:1:62057
+#   0kn-z-2ki~m0q.js:1:86458
+#   0kn-z-2ki~m0q.js:1:86892
+#   0v33j1vydf-ly.js:1:60342
+#   0v33j1vydf-ly.js:1:60746
+#   0v33j1vydf-ly.js:1:24436
+#
+# 1 page error in Issues tab (likely the failed POST chain).

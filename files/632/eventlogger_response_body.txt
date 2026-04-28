@@ -1,0 +1,12 @@
+# Response Body — POST /api/eventLogger (custom probe with PII text in event payload)
+# Status: ZERO BYTES — engine intercepted this too
+# JS fetch error: TypeError: Failed to fetch
+#
+# Raw clipboard from console: {"error":"TypeError: Failed to fetch"}
+#
+# Cycle 94 finding said "APF only intercepts /api/eventLogger telemetry, NOT chat".
+# Cycle 95 (this run) shows: BOTH /api/eventLogger AND /api/streamingSearch
+# are intercepted at the connection layer when the request body contains the PII pattern.
+# So the engine IS catching the chat path now — but uses RST not body substitution.
+
+(empty — no body received)

@@ -1,0 +1,4 @@
+(failed) — net::ERR_* (engine intercept; no response received by JS — TypeError: Failed to fetch)
+DevTools Network entry: "XHR request failed" for POST /api/streamingSearch
+DevTools Network entry: also "failed" for POST /api/eventLogger
+Comparison: benign query "안녕" via console fetch returned 200 OK SSE body (215 bytes)
