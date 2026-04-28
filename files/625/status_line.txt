@@ -1,0 +1,11 @@
+HTTP/2 200 OK
+
+(All 3 StreamGenerate requests fired during this session: _reqid=3250591, 3450591, 3650591 — all status 200, all 0.5 kB body, all ~6-7ms response time)
+
+Inspected request: _reqid=3650591 (latest)
+URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=7151351951098513068&hl=ko&_reqid=3650591&rt=c
+Method: POST
+Status: 200 OK
+Protocol: h2
+Size: 0.5 kB
+Time: 6 ms

@@ -1,0 +1,18 @@
+=== Console errors snapshot (Console tab, 13 errors / 1 warning total) ===
+
+Errors observed are all standard Gemini frontend boilerplate, NOT related to our intercept:
+
+1. Connecting to '<URL>' violates the following Content Security Policy directive: "connect-src 'self' <URL> <URL> ..." (CSP report-only — connections still proceed; pre-existing Gemini CSP behavior)
+
+2. No ID or name found in config. (Gemini frontend warning, unrelated)
+
+3. Loading the image https://www.google.co.kr/ads/ga-audiences?... violates ... img-src ... blocked. (multiple)
+
+4. blob: data: ... blocked. (multiple)
+
+5. Fetch API cannot load https://www.googleadservices.com/pagead/conversion/... Refused to connect because it violates the document's Content Security Policy. (multiple)
+
+=== Notable: NO errors related to the wrb.fr response parsing ===
+The Gemini frontend silently consumed the wrb.fr envelope without throwing — but did NOT render anything visible in the chat panel. This indicates the frontend received the framed response and parsed it, but inner_json schema (5-element tuple) does not match what the chat-bubble renderer expects (likely needs candidate/citation/turn metadata at specific indices that the engine isn't filling).
+
+No JS exception logged about "Cannot read property of null" or similar parse errors → engine output is JSON-valid and matches outer wrb.fr contract.

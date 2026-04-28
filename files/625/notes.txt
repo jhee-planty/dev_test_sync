@@ -1,0 +1,50 @@
+=== Request #625 — gemini3 PII verify (Cycle 95 Phase B B33 off-by-one fix retry) ===
+Date: 2026-04-28 KST 14:03~14:08 (~5 min)
+Service: gemini3
+Test PC: Windows 11, Chrome incognito
+
+=== Engine log correlation ===
+- f.sid: 7151351951098513068  (session ID — same across all 3 sends)
+- _reqid (3 sequential): 3250591, 3450591, 3650591
+- bl (build): boq_assistant-bard-web-server_20260426.11_p0
+- hl: ko
+- Conversation/UUID returned in wrb.fr: 9cf7bc23-2f7a-426c-915d-9ca135e37bdf
+
+Note: 3 sends happened because:
+- 1st send: Enter keypress on input may have been swallowed by IME
+- 2nd send: send button click via coords
+- 3rd send: send button click via label
+All 3 returned identical-shape wrb.fr framed responses (200 OK, 0.5 kB, ~6ms)
+→ engine intercept is DETERMINISTIC and IDEMPOTENT — every PII send hits the same wrb.fr block path.
+
+=== Key findings ===
+1. B33 OFF-BY-ONE FIX TOOK ✓
+   #624 returned generic JSON envelope (DB fallback path: wrong length-5 compare missed "wrb_fr").
+   #625 now returns proper wrb.fr framed envelope: ")]}'\n<size>\n[[\"wrb.fr\",<uuid>,<inner>,...]]"
+   → 5→6 char compare fix works as designed.
+
+2. Engine routing confirmed: response_type='wrb_fr_gemini3' → generate_wrb_fr_response()
+   - XSSI guard prefix ")]}'" present
+   - Length prefix "262" present
+   - wrb.fr tag present
+   - Inner JSON contains the warning text in Korean + English
+
+3. Inner JSON schema:
+   [[\"<warning_text>\",null,null,[],[]]]
+   → only 5-tuple, with warning text at index 0 and empty arrays at [3]/[4]
+
+4. UI RENDER FAILED — chat bubble was NOT created.
+   Welcome screen "개인 AI 어시스턴트인 Gemini를 만나 보세요" remained visible.
+   No Gemini exception in console → frontend consumed the wrb.fr but skipped the render.
+   Hypothesis: Gemini's chat renderer expects additional metadata in the 5-tuple (e.g., candidate list at [1] or messageId at [2]). When those are null/empty, render is silently skipped.
+
+=== Verdict ===
+PARTIAL — wrb.fr framing perfect, but UI render gap remains.
+Progress vs #624: SIGNIFICANT — broke through the routing bug; remaining work is purely inner_json schema enrichment.
+
+=== Recommended follow-up for engine team ===
+- Capture a *known-working* Google native wrb.fr block (or a chat reply) to compare inner_json schema
+- Likely missing fields in inner_json[0]:
+  * [1] candidates array? e.g., [[<text>,null,null,...],...]
+  * [2] message id / turn id?
+  * Or wrap warning into a "candidate"-shaped sub-array

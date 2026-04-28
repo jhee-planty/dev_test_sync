@@ -1,0 +1,24 @@
+=== Response body (verbatim, captured from DevTools Response tab, _reqid=3650591) ===
+
+)]}'
+262
+[["wrb.fr","9cf7bc23-2f7a-426c-915d-9ca135e37bdf","[[\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\\\n\\\\nThis request has been blocked due to sensitive information detected.\",null,null,[],[]]]",null,null,null,1]]
+
+=== Analysis ===
+- Line 1: ")]}'"  — XSSI guard prefix (Google standard)
+- Line 2: "262"   — chunk length prefix
+- Line 3: [["wrb.fr","<uuid>",<inner_json_string>,null,null,null,1]]
+  - "wrb.fr"  — Google's web response framing tag
+  - uuid: 9cf7bc23-2f7a-426c-915d-9ca135e37bdf
+  - inner_json (escaped):
+      [["⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n\nThis request has been blocked due to sensitive information detected.",null,null,[],[]]]
+  - inner_json[0][0] = warning text (Korean + English)
+  - inner_json[0][1] = null  (citations? candidates?)
+  - inner_json[0][2] = null
+  - inner_json[0][3] = []
+  - inner_json[0][4] = []
+
+=== Comparison ===
+- vs #622 (Google native): native would have ~6KB body of model output; this is 262 bytes total → INTERCEPT
+- vs #624 (generic JSON error): #624 returned plain JSON error envelope; this is wrb.fr framed → B33 FIX TOOK
+- Engine routing: response_type='wrb_fr_gemini3' → generate_wrb_fr_response() now triggered (5→6 char compare fix worked)

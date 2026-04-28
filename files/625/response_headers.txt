@@ -1,0 +1,33 @@
+=== Response Headers (verbatim, _reqid=3650591) ===
+
+General:
+- Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=7151351951098513068&hl=ko&_reqid=3650591&rt=c
+- Request Method: POST
+- Status Code: 200 OK
+- Remote Address: [2001:4860:4826:200::]:443
+- Referrer Policy: origin
+
+Response Headers:
+1. Access-Control-Allow-Credentials: true
+2. Access-Control-Allow-Origin: https://gemini.google.com
+3. Cache-Control: no-cache
+4. Content-Type: application/json+protobuf; charset=utf-8
+5. X-Content-Type-Options: nosniff
+
+=== Intercept signature analysis ===
+Header count: 5  (Google native = ~18 headers)
+- server: ABSENT (native: "scaffolding on HTTPServer2")
+- alt-svc: ABSENT (native present)
+- date: ABSENT (native present)
+- vary: ABSENT (native present)
+- x-xss-protection: ABSENT (native present)
+- expires: ABSENT (native present)
+- x-frame-options: ABSENT (native present)
+- content-disposition: ABSENT (native present)
+- content-encoding: ABSENT
+- transfer-encoding: ABSENT (native: chunked)
+- p3p: ABSENT (native present)
+
+VERDICT: 5 headers, no `server` header → ENGINE INTERCEPT confirmed
+       (Same minimal-header signature as #622-style intercept, NOT bypass)
+       Remote Address shows Google IPv6 — that is the connect target, not the actual server. Engine MITM intercepts before reaching Google.
