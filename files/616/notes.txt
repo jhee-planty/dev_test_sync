@@ -1,0 +1,44 @@
+=== Cycle 95 R-9 gamma_sse_v7 verify (request 616) ===
+Date: 2026-04-28 10:23-10:28 KST
+Service: gamma
+URL attempted: https://gamma.app/create/generate (auto-redirected to /vmtqrbjjlwzon6c after submit)
+Auth: logged in as 장희 (non-incognito Chrome session)
+Prompt: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+Format selected: 프레젠테이션, 카드 10개, 클래식, 기본, 한국어
+Submit button: "개요 생성" (Generate Outline)
+
+=== KEY FINDING: BREAKTHROUGH on ACAO ===
+ENGINE Phase3-B31 fix VERIFIED working on /ai/v2/generation:
+  - Status 200 OK
+  - 5 response headers, IN ORDER:
+      1. Access-Control-Allow-Credentials: true   <-- credentials BEFORE origin (v7 ordering applied)
+      2. Access-Control-Allow-Origin: https://gamma.app   <-- ACAO NO LONGER DROPPED
+      3. Cache-Control: no-store
+      4. Content-Type: text/event-stream; charset=utf-8
+      5. X-Content-Type-Options: nosniff
+  - Console: NO CORS error, NO "blocked by CORS policy"
+  - Chrome accepted the SSE stream and opened EventStream tab
+
+=== HOWEVER: Warning UI did NOT render ===
+- EventStream tab is empty: 0 events delivered
+- /ai/v2/render-generation companion fetch: net::ERR_HTTP2_PROTOCOL_ERROR
+- Console: "[PromptAndOutlineSettings] error generating outline: Unable to complete request"
+- Console: "[deckStyledImages] Failed to select image style — TypeError: Failed to fetch"
+- Page state after submit: empty outline (윤곽선) panel with placeholder "1" card,
+  no security warning text, no 보안 경고, no 차단 message
+
+=== Verdict reasoning ===
+v5 (R-7): had 4 headers, ACAO missing (last-line parser bug)
+v6 (R-8): unknown intermediate
+v7 (R-9): ENGINE Phase3-B31 fix + v5 ordering reverted (credentials first)
+  -> ACAO now reaches browser, all 5 template headers present, CORS PASS
+  -> But SSE body still not flowing (ERR_HTTP2_PROTOCOL_ERROR on sibling, empty EventStream)
+  -> Warning content schema / SSE body emit path NOT yet exercised end-to-end
+
+This matches PARTIAL exit criterion:
+  "5 headers visible but no UI render (SSE body schema issue surfaces)"
+
+Progress vs v5: BETTER (ACAO recovered, header count 4->5, no CORS error)
+Progress vs v6: BETTER-OR-EQUAL (depends on v6 baseline; v7 demonstrably has full header set)
+Breakthrough status: "ACAO present but UI broken"
+Next bug surface: SSE body emit / HTTP/2 stream framing on Cycle 95 R-10.

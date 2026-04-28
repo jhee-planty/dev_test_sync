@@ -1,0 +1,38 @@
+=== Console errors (verbatim, top to bottom) ===
+
+[Warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true.
+  (280dd768421331c8.js — informational, unrelated)
+
+[Info] [Churnkey] Embed v1.0.34
+[Info] [LaunchDarkly] LaunchDarkly client initialized
+[Info] [LaunchDarkly] Opening stream connection to https://clientstream.launchdarkly.com/eval/61e83cf.../eyJraW5...
+[Info] [Intercom] Launcher is disabled in settings or current page does not match display conditions
+[Info] [LaunchDarkly] Closing stream connection
+[Info] [LaunchDarkly] Opening stream connection to https://clientstream.launchdarkly.com/eval/61e83cf.../eyJraW5...
+[Info] Vantara: Already initializing or initialized
+
+[ERROR 1] [PromptAndOutlineSettings] error generating outline: Unable to complete request
+  (cc968af40e1f7cd5.js)
+
+[ERROR 2] POST https://ai.api.gamma.app/ai/v2/render-generation net::ERR_HTTP2_PROTOCOL_ERROR
+  (cc968af40e1f7cd5.js)
+
+[ERROR 3] [deckStyledImages] Failed to select image style
+  TypeError: Failed to fetch (ai.api.gamma.app)
+    at cc968af40e1f7cd5.js:13:2082
+    at a (c169aa6b0f025ea5.js:5:10178)
+    at S (e76e0720a3c185e9.js:6:152851)
+    at m (5912067710f4d20.js:2:65043)
+    at _ (5912067710f4d20.js:2:64757)
+    at push.e.s.generate.traceparent (5912067710f4d20.js:2:68355)
+    at C (1c504754979884c4.js:2:41049)
+    at 1c504754979884c4.js:2:44682
+    at oJ (fb9d0a6f151e4afd.js:2:95268)
+    at iE (fb9d0a6f151e4afd.js:2:111156)
+    ... (long stack of iE / ix calls in fb9d0a6f151e4afd.js)
+
+DevTools summary chip: 2 Issues, 3 errors, 1 warning, 2 hidden
+
+=== CORS errors? ===
+NONE. No "blocked by CORS policy" message anywhere.
+The CORS layer PASSED. Failure is at HTTP/2 framing layer (ERR_HTTP2_PROTOCOL_ERROR).
