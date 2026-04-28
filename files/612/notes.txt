@@ -1,0 +1,37 @@
+﻿WINDOWS_MCP NOTES — request 612 (zeta v3 H2 close fix verification)
+
+## Setup
+- Chrome incognito launched fresh
+- Navigated zeta-ai.io -> 동의하기 (consent agree)
+- Selected character 남이준, clicked 대화 시작하기 (start chat)
+- Opened DevTools (F12) -> Network tab -> filter 'stream', Preserve log already ON
+- Pasted PII prompt via clipboard (Korean text), pressed send button (1672,988)
+- Waited 10s for response
+
+## Network observation (KEY)
+- Found POST /v1/rooms/a27ab8ac-75f6-4639-a5e6-07eaeeadbe62/messages/stream
+- Headers: :method POST, :authority api.zeta-ai.io, Accept text/event-stream
+- Status column: '(canceled)' (NOT 200, NOT 'failed', NOT explicit ERR_CONNECTION_CLOSED 200)
+- Response headers (0) — zero response headers means no HTTP response received before abort
+- General section showed only Request URL + Referrer Policy (no Status Code line — typical for canceled before response)
+- Preflight OPTIONS request: 200 h2 ok
+- The actual stream POST: canceled
+
+## UI behavior
+- Error popup appeared: '일시적인 오류가 발생했어요' (Temporary error occurred), '잠시 후 다시 시도해주세요' (Please try again later), 확인 (OK) button
+- App promo overlay '더 편리한 zeta 앱에서 대화를 즐겨보세요' also appeared
+- NO chat bubble rendered with '보안 경고' warning text
+- Clicking 확인 navigated user back to zeta-ai.io/ko home (chat session ended)
+
+## Comparison vs R-27 (#607)
+- R-27: '(failed) ERR_CONNECTION_CLOSED 200' explicitly shown
+- This run (#612): '(canceled)' status shown
+- Both share: no eventstream events, no warning bubble, error popup displayed
+- The status string differs but functional outcome is identical — user sees error popup, no warning text
+
+## Hypothesis on root cause
+The h2_end_stream=1 atomic 2-frame DATA strategy may have changed the connection-close signature from 'ERR_CONNECTION_CLOSED' (abrupt RST/FIN before headers) to '(canceled)' (graceful close at HTTP level but no response body delivered). Even with atomic delivery, the engine appears to be producing a response that the client either:
+  (a) never receives any HTTP response (Response headers = 0), or
+  (b) receives but JS treats as invalid SSE and aborts via fetch.signal.abort()
+
+Either way, the SSE event stream did not deliver any events the frontend could parse into the '보안 경고' warning text. The atomic delivery hypothesis (eliminate ERR_CONNECTION_CLOSED) is partially confirmed — the explicit ERR_CONNECTION_CLOSED disappeared — but the user-visible outcome (no warning render) remains identical to #607.

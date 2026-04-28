@@ -1,0 +1,9 @@
+Access-Control-Allow-Credentials: <ABSENT>
+
+Verbatim status: absent
+Reason: response_headers count = 0 (DevTools shows "Response headers (0)")
+The response was rejected at the HTTP/2 protocol layer with net::ERR_HTTP2_PROTOCOL_ERROR
+before any header parsing could occur. Therefore ACAC is neither 'true' nor empty '' —
+it is fully ABSENT because Chrome never received parseable response headers.
+
+This is WORSE than v3 (which at least had ACAC as empty ''). v4 broke HTTP/2 framing entirely.

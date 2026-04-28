@@ -1,0 +1,21 @@
+=== Console errors observed (3 errors total) ===
+
+[1] [PromptAndOutlineSettings] error generating outline: Unable to complete request
+    Source: cc968af40e1f7cd5.js?…HSFWGTxSfMtfuREj:13
+
+[2] POST https://ai.api.gamma.app/ai/v2/render-generation net::ERR_HTTP2_PROTOCOL_ERROR
+    Source: cc968af40e1f7cd5.js?…HSFWGTxSfMtfuREj:13
+    Stack trace: (anonymous), a, S, m, _, push.e.s.generate.traceparent, C, oJ, iE/ix loop frames in fb9d0a6f151e4afd.js
+
+[3] [deckStyledImages] Failed to select image style
+    TypeError: Failed to fetch (ai.api.gamma.app)
+    Source: cc968af40e1f7cd5.js?…HSFWGTxSfMtfuREj:13
+
+=== Verdict on CORS ===
+NO classic CORS error message ("blocked by CORS policy" / "ACAC header") was logged.
+Instead the browser emitted ERR_HTTP2_PROTOCOL_ERROR — meaning the failure happened
+ONE LAYER BELOW CORS (HTTP/2 framing/HPACK), so CORS validation never executed.
+
+The v4 header reorder + Vary: Origin + Expose-Headers: * did NOT reach the browser
+in a parseable form. Likely cause: HPACK encoding of the response header block now
+produces an invalid frame that Chrome's HTTP/2 stack rejects outright.

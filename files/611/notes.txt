@@ -1,0 +1,49 @@
+Request 611 — gamma.app PII block verify (Cycle 95 R-3, gamma_sse_v4)
+Timestamp: 2026-04-28 09:04~09:08 KST
+Service: gamma
+URL attempted: https://gamma.app/create/generate
+Final URL after submit: https://gamma.app/create/generate/rdex6ud5swn26ef
+PII prompt: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+=== Procedure ===
+1. Launched Chrome, navigated to gamma.app/create/generate
+2. F12 → Network tab, Preserve log already on, filter "generation"
+3. Console tab inspected for CORS / fetch errors
+4. Clicked into prompt input, typed PII text
+5. Clicked "개요 생성" (Generate Outline) button at (1400, 635)
+6. Waited 10s for response
+
+=== Network observations (filter: generation) ===
+- /ai/v2/generation        200 h2  (initial outline-prep call succeeded)
+- /ai/v2/render-generation (failed) — THE FAILED REQUEST
+- /ai/v2/render-generation 201 h2  (a separate render-generation that succeeded
+  — likely a different code path / preflight, not the SSE endpoint we care about)
+
+The failed render-generation (the SSE / streaming endpoint that should have
+delivered the warning) returned NO RESPONSE HEADERS to the browser at all.
+
+=== Root cause hypothesis ===
+v3 produced empty ACAC '' (HPACK encoded the value as zero-length).
+v4 reorders credentials BEFORE origin and adds Vary/Expose headers.
+
+But Chrome now reports net::ERR_HTTP2_PROTOCOL_ERROR — the response
+header block is so malformed that Chrome's HTTP/2 parser rejects the
+frame outright before CORS validation runs.
+
+The header reorder did NOT fix the underlying HPACK encoding bug —
+it appears to have made it WORSE (now invalid HTTP/2 frame instead of
+just an invalid CORS header value).
+
+This is a FAILED verdict — engine HPACK encoding requires a code dive.
+
+=== Page state ===
+- "윤곽선" (Outline) section shows only "1" placeholder — no content rendered
+- NO "보안 경고" warning text on page
+- NO error banner in UI either — gamma silently fails
+- "카드 추가" / "생성" buttons remain visible but inert
+
+=== Comparison with chatgpt baseline (working) ===
+chatgpt sends headers in order: credentials → origin → ... and works.
+v4 was supposed to mirror this but the HTTP/2 protocol error suggests
+the HPACK encoder in the engine is corrupting the headers regardless
+of source order. The problem is in the encoder itself, not the order.
