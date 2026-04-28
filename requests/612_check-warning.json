@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "zeta",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://zeta-ai.io",
+    "context": "Cycle 95 R-4: zeta v3 H2 close fix verify. R-27 (607) had ERR_CONNECTION_CLOSED 200 because delayed_ES write=0 (visible socket closed before 10ms deadline). Engine code analysis: h2_end_stream=2 path uses deferred separate END_STREAM frame; h2_end_stream=1 uses atomic 2-frame DATA (body+empty in same write). Switched zeta config to h2_end_stream=1 + h2_goaway=0. Goal: atomic delivery → no race → clean END_STREAM → no ERR_CONNECTION_CLOSED.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Open zeta-ai.io chat with character",
+        "3. Send PII prompt",
+        "4. Network /v1/rooms/.../messages/stream → Status column should be 200 OK (NOT failed)",
+        "5. EventStream tab → 2 events should still parse",
+        "6. SUCCESS: warning text rendered in chat bubble",
+        "7. PARTIAL: events parse + 200 OK + no error popup but UI still missing render → schema fields gap",
+        "8. FAIL: still ERR_CONNECTION_CLOSED → atomic strategy didn't help, deeper engine debug needed"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-4 zeta atomic 2-frame H2 strategy verify.",
+  "id": "612",
+  "created": "2026-04-28T00:00:49Z",
+  "attachments": []
+}

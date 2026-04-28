@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gamma",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gamma.app",
+    "context": "Cycle 95 R-3: gamma_sse_v4 verify. v3 했음에도 CORS error 동일 (ACAC '': empty per browser). v4 changes: (1) reordered credentials BEFORE origin (matching chatgpt working baseline order), (2) added Vary: Origin (CORS spec recommendation), (3) Access-Control-Expose-Headers: * (to allow EventStream visibility). Goal: confirm if header reorder fixes Chrome ACAC parsing.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. Open gamma.app/create/generate",
+        "3. Submit PII prompt",
+        "4. CRITICAL: Network /ai/v2/generation → Headers tab → Response Headers → look for Access-Control-Allow-Credentials value",
+        "5. Console → check for CORS error message",
+        "6. SUCCESS: warning text rendered",
+        "7. PARTIAL: ACAC value visible as 'true' but UI not rendered → schema/SSE issue",
+        "8. FAIL: ACAC still '' → engine HPACK encoding issue (would require engine code dive)"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-3 gamma v4 CORS header order fix verify.",
+  "id": "611",
+  "created": "2026-04-28T00:00:47Z",
+  "attachments": []
+}
