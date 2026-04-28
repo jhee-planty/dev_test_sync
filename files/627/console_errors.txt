@@ -1,0 +1,13 @@
+Console tab indicator showed: "Open Console to view 6 errors, 1 warning"
+(visible in DevTools header right side).
+
+Errors are likely Gemini's own routine logging (anonymous-mode quota / web vitals).
+NO JS exceptions parsing the envelope were observed in the page render: the response
+rendered normally as a Gemini chat bubble explaining Korean RRN structure with full
+markdown list formatting, indicating successful client-side parse.
+
+NOTE: A 200 OK with successful chat-bubble rendering is INCOMPATIBLE with a parse
+error from a forged envelope. If APF B34 had intercepted, we would either see:
+  (a) a valid forged warning rendered as chat bubble (SUCCESS), or
+  (b) a parse exception in console (PARTIAL/FAILED).
+We observe neither — we observe (c) a clean genuine response, which means BYPASS.

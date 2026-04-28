@@ -1,0 +1,50 @@
+Request 627 — Gemini PII block verify (Cycle 95 Phase B B34 native-conformant schema retry)
+Run timestamp: 2026-04-28 ~14:37–14:40 KST
+Browser: Chrome incognito, system default
+URL: https://gemini.google.com/app/ef2a505392acf692
+Prompt sent: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+=== Captured identifiers ===
+f.sid:   7103521339373288320
+_reqid:  3252626
+bl:      boq_assistant-bard-web-server_20260426.11_p0
+hl:      ko
+
+=== StreamGenerate response ===
+Status:   200 (h2)
+Size:     4.4 kB
+Duration: 5.88 s
+Outer:    [["wrb.fr", null, "<inner_string>"]]      (NATIVE shape, index[1]=null)
+Inner:    [null, ["c_ef2a505392acf692","r_d5c0d9762f86617c"], null, null, [[<rc>...]]]
+          (5-tuple-prefix, NATIVE shape)
+
+=== UI observation ===
+Gemini rendered a NORMAL, complete answer to the PII prompt:
+  - "개인정보 보호 정책에 따라 주민등록번호와 같은 민감한 정부 발급 개인식별번호는 시스템상 출력하거나 다룰 수 없습니다."
+  - Then full markdown explanation: 주민등록번호의 구성 체계 (앞 6자리, 뒷 7자리 with sub-bullets)
+  - Then 안전한 관리 / 본인 확인용 / 명의 도용 방지 sections
+This is Gemini's own model-side soft refusal + educational explanation, NOT an
+Etap-injected "보안 경고" warning bubble.
+
+=== Verdict ===
+BYPASS. APF intercept did NOT fire. The native-shaped envelope observed is a real
+Gemini server response, not a B34 forgery. c_/r_/rc_ IDs are random session IDs
+(not the diagnostic "c_BLOCKED"/"r_BLOCKED"/"rc_BLOCKED" signature), and content
+is the model's normal answer.
+
+=== Possible root causes (for dev side, not within scope of this verify) ===
+1. APF rule for PII (RRN pattern 880101-1234567) did not match in MITM stream filter.
+2. APF intercept fired but engine failed and let request pass through to origin.
+3. Test PC traffic not routed through Etap MITM bridge (DNS/proxy bypass).
+4. APF whitelist or block-list mismatch on /BardChatUi/data/assistant.lamda...
+
+=== Progress vs request 625/626 ===
+Same as recent block-verify pattern: native-shape responses observed but NOT from
+Etap forgery — they are Gemini's actual outputs. No regression from B33; no
+breakthrough either. Pipeline status: still BYPASS / no intercept.
+
+=== Artifacts ===
+01_before.png, 02_devtools_network.png, 03_status.png, 04_response_headers.png,
+04_response_headers_scrolled.png, 05_response_body.png, 06_console.png,
+07_after.png, 08_warning_check.png
++ status_line.txt, response_headers.txt, response_body.txt, console_errors.txt, notes.txt

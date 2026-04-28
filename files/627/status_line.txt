@@ -1,0 +1,6 @@
+200
+Protocol: h2
+Type: xhr
+Size: 4.4 kB
+Time: 5.88 s
+Endpoint: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=7103521339373288320&hl=ko&_reqid=3252626&rt=c

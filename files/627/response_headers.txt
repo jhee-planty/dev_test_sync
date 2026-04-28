@@ -1,0 +1,20 @@
+Note: DevTools Headers tab in this Chrome version showed only Query String + Form Data
+sections (not separate Request/Response Headers list). The Network row's Status column
+indicates HTTP/2 200 OK from gemini.google.com (no APF intercept).
+
+Query String Parameters (Response was for this request):
+  bl       = boq_assistant-bard-web-server_20260426.11_p0
+  f.sid    = 7103521339373288320
+  hl       = ko
+  _reqid   = 3252626
+  rt       = c
+
+Form Data:
+  f.req    = [null,"[[\"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?\",0,null,null,null,null,0],[\"ko\"],[\"\",\"\",\"\",null,null,null,null,null,null,\"\"],\"!5-Sl5IDNAAa...\",\"e91f8ce9c05c7f8c9ad8f4100295a468\",null,[0],1,...,\"0F2A0D6C-FE22-4103-8D6C-B3E7C7E24C72\",...]"]
+  at       = (not displayed in panel)
+
+server_header_present: UNKNOWN (DevTools UI showed only QS + Form Data sections; full
+                       Response Headers list was not surfaced. However status 200 + h2
+                       protocol + 4.4 kB body + normal Korean answer rendered as Gemini
+                       chat bubble strongly indicates direct origin response, NOT an
+                       Etap-injected intercept.)

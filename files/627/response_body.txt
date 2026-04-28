@@ -1,0 +1,31 @@
+VERBATIM body extract (from DevTools Response panel via Snapshot text capture).
+Note: editor showed body content with literal escapes; outer wrapper format and inner
+JSON structure are reproduced below.
+
+==== Outer wrapper / size-prefixed chunked SPF body ====
+)]}'
+160
+[["wrb.fr",null,"[null,[null,\"r_d5c0d9762f86617c\"],{\"18\":\"r_d5c0d9762f86617c\",\"21\":[\"G-DlM1UXWNHjh_FgWtsU5VKrpMirxVrvOKMT6I1WJeI\"],\"44\":false}]"]]
+1511
+[["wrb.fr",null,"[null,[\"c_ef2a505392acf692\",\"r_d5c0d9762f86617c\"],null,null,[[\"rc_26642c980165c2ee\",[\"개인\"],null,null,null,null,true,null,[1],\"ko\",null,null,[null,null,null,null,null,null,[0],[]],null,null,true,null,null,null,null,null,[false],null,false,[],null,null,null,[]]],[\"대한민국 경기도 용인시 처인구 능평리\",\"SWML_DESCRIPTION_FROM_YOUR_INTERNET_ADDRESS\",false,null,\"//www.google.com/maps/vt/data=Xkt...\"],null,null,\"KR\",...]"]]
+...
+
+==== first_500_chars (verbatim, after )]}' prelude) ====
+)]}'
+160
+[["wrb.fr",null,"[null,[null,\"r_d5c0d9762f86617c\"],{\"18\":\"r_d5c0d9762f86617c\",\"21\":[\"G-DlM1UXWNHjh_FgWtsU5VKrpMirxVrvOKMT6I1WJeI\"],\"44\":false}]"]]
+1511
+[["wrb.fr",null,"[null,[\"c_ef2a505392acf692\",\"r_d5c0d9762f86617c\"],null,null,[[\"rc_26642c980165c2ee\",[\"개인\"],null,null,null
+
+==== Schema analysis ====
+- Outer wrapper format: [["wrb.fr", null, <inner_string>]]   <- index[1] = null, matches NATIVE shape
+- Inner JSON shape:     [null, ["c_<id>","r_<id>"], null, null, [[...]]]   <- matches NATIVE 5-tuple-prefix, NOT B33 wrapper
+- BUT: c_id = "c_ef2a505392acf692"   (real conversation id, NOT "c_BLOCKED")
+       r_id = "r_d5c0d9762f86617c"   (real reply id,        NOT "r_BLOCKED")
+       rc_id = "rc_26642c980165c2ee" (real candidate id,    NOT "rc_BLOCKED")
+       content[0] = "개인" (start of normal answer "개인정보 보호 정책에 따라...주민등록번호의 구성 체계와...")
+
+CONCLUSION: This is a GENUINE response from Gemini servers. APF intercept did NOT fire.
+The native-conformant schema observed is Gemini's own native response shape, not the
+B34 engine output. The structural similarity is what we expected the B34 forgery to
+match — but in this run, Etap APF did not intercept the StreamGenerate request at all.
