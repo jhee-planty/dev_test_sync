@@ -1,1 +1,0 @@
-﻿No EventStream events visible - Response headers (0) means connection completed without any HTTP response data. The stream request was marked as (canceled) in DevTools Network panel rather than (failed) ERR_CONNECTION_CLOSED 200 as in R-27 (#607). The SSE connection never delivered any 'data:' events to the client.

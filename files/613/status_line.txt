@@ -1,1 +1,0 @@
-200 OK (h2) — but Status column shows "CORS error" badge; fetch labeled (failed) by browser due to CORS policy violation

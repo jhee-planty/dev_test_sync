@@ -1,0 +1,26 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gamma",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://gamma.app",
+    "context": "Cycle 95 R-6: gamma_sse_v6 verify. v5 had 5 headers in template but browser received 4 (ACAO missing). v6: moved ACAO to position 2 (after Content-Type, BEFORE Cache-Control etc). Tests if position affects HPACK output.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. gamma.app/create/generate, send PII prompt",
+        "3. /ai/v2/generation Headers tab → list ALL response headers including value of access-control-allow-origin",
+        "4. SUCCESS: warning rendered (CORS check passes)",
+        "5. PARTIAL: ACAO visible but no render → schema/SSE issue surfaces",
+        "6. FAIL: ACAO STILL missing → engine HPACK has fundamental issue (not position-dependent)"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-6 gamma ACAO position test.",
+  "id": "614",
+  "created": "2026-04-28T00:49:31Z",
+  "attachments": []
+}
