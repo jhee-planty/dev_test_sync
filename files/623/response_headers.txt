@@ -1,0 +1,26 @@
+Request: POST https://chatgpt.com/backend-anon/f/conversation
+Status Code: 200 OK
+Remote Address: [2a06:98c1:3100::6812:202f]:443
+Referrer Policy: strict-origin-when-cross-origin
+Protocol: h2
+
+=== Response Headers (visible in DevTools) ===
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: https://chatgpt.com
+Cache-Control: no-store
+Content-Type: text/event-stream; charset=utf-8
+X-Content-Type-Options: nosniff
+
+Header count visible: 5
+
+=== Request Headers (key entries) ===
+:authority: chatgpt.com
+:method: POST
+:path: /backend-anon/f/conversation
+:scheme: https
+Accept: text/event-stream
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: ko-KR,ko;q=0.9
+Content-Length: 1032
+Content-Type: application/json
+Cookie: __Host-next-auth.csrf-token=...; __Secure-next-auth.callback-url=https%3A%2F%2Fchatgpt.com; oai-did=fc1f0d6f-97fd-457c-a564-a3df37031f6d; oai-chat-web-route=...; _cflb=...; _cfuvid=...; cf_clearance=...; cf_chl_rc_zm=...

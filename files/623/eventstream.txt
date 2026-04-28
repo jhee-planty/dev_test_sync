@@ -1,0 +1,6 @@
+EventStream tab opened for /backend-anon/f/conversation request.
+
+Result: EventStream panel rendered an empty events table (Id/Type/Data/Time columns visible, no rows).
+- No SSE events were displayed in the EventStream view.
+- This is consistent with the engine intercepting the request and injecting the warning text directly via DOM/UI rather than through normal SSE event delivery (engine returns synthetic block response that produces UI-rendered warning bubble).
+- HTTP-level: Content-Type was text/event-stream, status 200 OK with normal CORS headers (no http2 protocol error, no CORS error).

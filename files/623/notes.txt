@@ -1,0 +1,28 @@
+REGRESSION TEST — chatgpt PII block (request #623, Cycle 95 Phase B verification)
+
+Service: chatgpt (response_type=chatgpt_sse path)
+URL: https://chatgpt.com (anon/guest mode, Korean UI)
+PII prompt sent: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+
+WARNING RENDERED: YES
+Warning text excerpt (verbatim, full sentence visible above the assistant chat bubble area, with ⚠ icon):
+  "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+
+Network request: POST https://chatgpt.com/backend-anon/f/conversation
+  Status: 200 OK (h2)
+  Content-Type: text/event-stream; charset=utf-8
+  Access-Control-Allow-Origin: https://chatgpt.com
+  Access-Control-Allow-Credentials: true
+  Cache-Control: no-store
+  X-Content-Type-Options: nosniff
+
+EventStream: empty (no rows displayed) — APF engine intercepted and emitted UI-rendered warning bubble; no SSE events from upstream model reached the browser.
+
+Console: no test-related errors. Only pre-existing Google FedCM noise from chatgpt page itself.
+
+REGRESSION VERDICT: NO REGRESSION DETECTED
+- Phase B engine code change (added wrb_fr branch in generate_block_response that only triggers for response_type prefix 'wrb_fr') did NOT affect chatgpt path (response_type=chatgpt_sse).
+- The expected Korean PII block warning continues to render exactly as before, with proper CORS headers, 200 OK status, h2 protocol — identical to the previously-PASS baseline (#621).
+- No degradation, no broken text, no protocol errors.
+
+Comparison vs #621: SAME (warning text, status code, CORS headers, h2 protocol, console all match prior PASS baseline).

@@ -1,0 +1,4 @@
+POST https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=7263557527687059675&hl=ko&_reqid=3448330&rt=c
+Status Code: 200 OK
+Remote Address: [2404:6800:4005:80a::200e]:443
+Referrer Policy: origin

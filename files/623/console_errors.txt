@@ -1,0 +1,14 @@
+Console messages observed (counter showed "2 errors, 1 warning" total — pre-existing baseline, not test-related):
+
+[GSI_LOGGER] (warning, client:85): Your client application uses one of the Google One Tap prompt UI status methods that may stop functioning when FedCM becomes mandatory. Refer to the migration guide to update your code accordingly and opt-in to FedCM to test your changes.
+  https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#display_moment
+  https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#skipped_moment
+
+(error, (index):1): FedCM was disabled either temporarily based on previous user action or permanently via site settings. Try manage third-party sign-in via the icon to the left of the URL bar or via site settings.
+
+[GSI_LOGGER] (error, 2340486e-gakc33umvcjozqkt.js:63): FedCM get() rejects with NetworkError: Error retrieving a token.
+
+NO CORS errors related to /backend-anon/f/conversation observed.
+NO HTTP/2 protocol errors observed.
+NO ERR_HTTP2_PROTOCOL_ERROR.
+All console output is unrelated Google FedCM noise from the chatgpt page itself (unrelated to the PII block).

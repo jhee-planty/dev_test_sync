@@ -1,0 +1,56 @@
+=== Request 622 — Cycle 95 Phase B gemini3 wrb_fr handler first verify ===
+
+VERDICT: FAILED (bypass — Gemini answered normally with PII analysis)
+
+Key observations:
+
+1. Network endpoint that DID get hit:
+   POST https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?...
+   Status: 200 OK
+   This is the same endpoint type expected by the engine (BardChatUi/data/...StreamGenerate).
+
+2. Response body framing observed:
+   - Google's NATIVE wrb.fr framing IS visible in the response (length-prefixed chunks 1651, 1731, 1765, ... 2490 bytes)
+   - Each chunk: [["wrb.fr",null,"[null,[#"c_468ab8d4358fcec5#",#"r_5a7b3a63885127e8#" ...]]"]
+   - This confirms wrb.fr framing format documented in the engine code is structurally accurate
+   - HOWEVER, this is Google's own response, NOT the engine's generate_wrb_fr_response output
+   - The engine never intercepted/replaced this response
+
+3. Page render outcome:
+   - Tab title: "주민등록번호 정보 및 주의사항" (resident registration info and precautions)
+   - Chat bubble fully rendered with detailed PII analysis:
+     * "880101: 1988년 1월 1일생임을 나타냅니다."
+     * "1: 1900년대에 태어난 남성을 의미합니다. (참고로 2는 1900년대 여성, 3은 2000년대 남성, 4는 2000년대 여성을 의미합니다.)"
+     * Mention of regional code abolishment in 2020.10
+   - NO 보안 경고 / security-block warning text anywhere
+   - This is a complete PII bypass
+
+4. Why bypass occurred (root-cause hypotheses):
+   a. Engine MITM not in path for this Chrome session — verify etap bridge is processing gemini.google.com TLS interception
+   b. response_type='wrb_fr_gemini3' DB row may not be matched against URL pattern — verify endpoint regex matches
+      'BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate'
+   c. h2_end_stream=1, h2_goaway=0 setting may not be triggered — verify the row was committed and engine reloaded DB
+   d. PII detection upstream (before wrb_fr generation) may have failed to flag the prompt — confirm 880101-1234567 format matches the regex pattern in PII detector
+
+5. Cannot verify wrb.fr generator correctness from this trace:
+   Since the engine was never invoked, the actual generate_wrb_fr_response output (')]}' prefix + length + JSON envelope) was not observed in the network. The structural framing IS correct per the Google native response observed, but the engine integration point (interception + injection) is broken.
+
+Artifacts saved to C:\Users\최장희\Documents\dev_test_sync\files\622\:
+- 01_before.png — DevTools Network panel cleared, prompt input visible
+- 02_devtools_network.png — Network panel with StreamGenerate request listed
+- 03_status.png — Headers panel showing 200 OK status
+- 04_response_headers.png — Response headers (top portion)
+- 04b_response_headers_part2.png — Response headers (bottom portion)
+- 05_response_body.png — Response body showing length-prefixed wrb.fr chunks
+- 06_console.png — Console showing CSP errors only (no APF errors)
+- 07_after.png — Post-response page state
+- 08_warning_check.png — Page state confirming warning NOT rendered (PII answer rendered instead)
+- response_headers.txt
+- response_body.txt
+- status_line.txt
+- console_errors.txt
+- notes.txt (this file)
+
+Conversation id captured: c_468ab8d4358fcec5
+Response id captured: r_5a7b3a63885127e8
+URL: https://gemini.google.com/app/468ab8d4358fcec5

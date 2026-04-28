@@ -1,0 +1,11 @@
+=== Console (errors/warnings visible) ===
+6 errors, 4 warnings reported by DevTools.
+
+Visible error categories (all CSP / advertising-related, NOT APF-related):
+- "Loading the image '...google.co.kr/ads/ga-audiences?...' violates the following Content Security Policy directive: 'img-src https://*.google.com https://*.googleusercontent.com ...' . The action has been blocked." (multiple instances)
+- "Connecting to '...googleadservices.com/pagead/conversion/...' violates the following Content Security Policy directive: 'connect-src 'self' https://*.google.com ...' . The action has been blocked." (multiple instances)
+- "Fetch API cannot load https://www.googleadservices.com/pagead/conversion/.... Refused to connect because it violates the document's Content Security Policy."
+
+None of these errors relate to APF/wrb_fr handler activity.
+No JS errors from Gemini chat-rendering pipeline observed.
+No "wrb.fr parser error" or "schema mismatch" messages.
