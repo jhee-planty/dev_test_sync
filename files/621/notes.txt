@@ -1,0 +1,28 @@
+SUBAGENT REPORT — request #621 (chatgpt PII block REGRESSION)
+
+VERDICT: SUCCESS — warning STILL renders correctly. No regression detected.
+
+Warning rendered: YES
+Warning text excerpt (verbatim from page):
+  "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+  (rendered with warning triangle icon, in chat bubble area where assistant response would normally appear)
+
+This matches the expected text format. Warning was injected by the Etap APF engine into the SSE stream, and chatgpt's frontend rendered it as a normal assistant message.
+
+Network request details:
+- Service: chatgpt
+- URL: https://chatgpt.com/backend-anon/f/conversation
+- Method: POST
+- Status: 200 OK
+- Protocol: h2 (HTTP/2)
+- Content-Type: text/event-stream; charset=utf-8
+- ACAO present (https://chatgpt.com), ACAC present (true)
+
+Related requests:
+- /backend-anon/f/conversation/prepare (200, twice — once before, once after main request)
+
+Comparison to previous chatgpt PASS (request #615 / earlier cycles):
+- SAME behavior: Warning text rendered identically, response_type='chatgpt_sse' path is intact.
+- The Phase A code change (Connect-RPC branch added to generate_block_response()) did NOT affect the existing 'chatgpt_sse' path because the new branch only triggers for response_type prefix 'connect_rpc'.
+
+Regression: NONE.

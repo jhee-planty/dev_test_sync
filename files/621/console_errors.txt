@@ -1,0 +1,19 @@
+Console messages observed (3 total):
+
+1. [GSI_LOGGER] (warning, source: client:85)
+   "Your client application uses one of the Google One Tap prompt UI status methods that may stop functioning when FedCM becomes mandatory. Refer to the migration guide to update your code accordingly and opt-in to FedCM to test your changes."
+   - Unrelated to APF warning pipeline. Pre-existing Google sign-in warning.
+
+2. (error, source: (index):1)
+   "FedCM was disabled either temporarily based on previous user action or permanently via site settings. Try manage third-party sign-in via the icon to the left of the URL bar or via site settings."
+   - Unrelated to APF warning pipeline. Browser FedCM disabled error.
+
+3. [GSI_LOGGER] (error, source: 2340486e-gakc33umvcjozqkt.js:63)
+   "FedCM get() rejects with NetworkError: Error retrieving a token."
+   - Unrelated to APF warning pipeline. Knock-on effect of FedCM being disabled.
+
+Critical findings:
+- NO CORS errors
+- NO HTTP/2 protocol errors
+- NO ERR_CERT errors
+- NO errors related to /backend-anon/f/conversation request
