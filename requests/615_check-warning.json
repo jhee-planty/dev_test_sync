@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chatgpt.com",
+    "context": "Cycle 95 R-7: chatgpt regression test post-engine-fix. Engine fix Phase3-B31: convert_to_http2_response parser loop now parses last header line even when no trailing line_sep (recalculate_content_length strips Content-Length and removes that). Previously chatgpt also dropped its last header (ACAO) in theory, but UI rendered. Verify: warning still renders correctly + headers count includes ALL template headers.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON",
+        "2. chatgpt.com, send PII prompt",
+        "3. /backend-anon/f/conversation Headers → list all response headers",
+        "4. SUCCESS: warning still rendered (regression-free)",
+        "5. FAIL: warning broke = engine fix introduced regression on previously-working service"
+      ]
+    }
+  },
+  "notes": "Cycle 95 R-7 regression test for engine last-line parser fix.",
+  "id": "615",
+  "created": "2026-04-28T01:08:44Z",
+  "attachments": []
+}
