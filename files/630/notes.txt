@@ -1,0 +1,55 @@
+REQUEST 630 — PII BLOCK VERIFY (Cycle 95 Phase B B36 — 3-chunk emission)
+Service: gemini3
+URL: https://gemini.google.com (incognito + new chat)
+Time: 2026-04-28 ~15:29-15:34 KST
+
+PROMPT (verbatim, sent via clipboard + Ctrl+V then click 메시지 보내기):
+  내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+CAPTURED IDS:
+  f.sid = 134977369709254797
+  _reqid = 3455747 (the 'send button' request; second StreamGenerate seen)
+  Also a prior _reqid = 3255747 was observed for a duplicate-fire from Enter keystroke
+  (Both delivered identical 3-chunk PII block payload — engine consistent.)
+
+SESSION/CHUNK IDS (B36 hex 16-char, from second request):
+  r_id   = r_1570f2f37bea4329
+  c_id   = c_6b0496818e3449c9
+  rc_id  = rc_1b740e3b373d442c
+  token  = 53a0ebb9312a446ff277d20762ed4f3c (appears in handshake "21" and completion "26")
+
+3-CHUNK STRUCTURE (vs spec):
+  spec: ~147 / ~840 / ~134
+  obs : 147   /  869   /  133  ✅ all three chunks present, sizes within spec tolerance
+
+UI OBSERVATION (CRITICAL):
+  - Page remained on default landing screen (4 tool buttons: 쓰기/계획/조사/학습)
+  - NO chat thread opened, NO user bubble, NO assistant bubble, NO 보안 경고 bubble
+  - Prompt text REMAINED in input box un-cleared (after both requests finished)
+  - This is identical UI behavior to #629 PARTIAL despite the new completion chunk
+
+VERDICT: PARTIAL
+  - Engine B36 deploy SUCCEEDED — 3-chunk emission confirmed
+  - All structural fixes from B35 carried over (hex IDs, two-element c_/r_ array)
+  - Completion chunk added with stream-end marker {"26":"<token>","44":false}
+  - BUT renderer is STILL silent-buffering — UI does not flip from preflight to chat thread
+  - Diagnosis: the gating predicate is NOT just "did we see chunk #3 / 44=false". The
+    renderer is checking for some other signal in chunk #2 (e.g. the "1" / "0" terminator
+    pair at end of inner content, the safety annotation array shape [false,[[[[null,...]]]]],
+    or a missing field index 22/23/etc) before binding the rc bubble.
+  - Next investigation should compare byte-for-byte the chunk-2 inner JSON of B36 vs a
+    captured native Google PII block (#626 native) at field-index level — a missing
+    "1" "0" suffix or wrong cardinality in the "false,[[[[null,..." annotation array
+    is likely culprit.
+
+PROGRESS vs #629: SAME (no regression, no UI breakthrough)
+  - B36 successfully delivered the long-promised 3rd chunk
+  - Renderer-silence root cause is NOT the missing completion chunk
+
+ARTIFACTS SAVED:
+  01_before.png, 02_devtools_network.png, 03_status.png,
+  04_response_headers.png, 05_response_body.png, 06_console.png,
+  07_after.png, 08_warning_check.png,
+  response_headers.txt, response_body.txt, status_line.txt, console_errors.txt, notes.txt
+
+DURATION: ~5 min (within soft timeout)

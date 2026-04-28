@@ -1,0 +1,12 @@
+Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260426.11_p0&f.sid=134977369709254797&hl=ko&_reqid=3455747&rt=c
+Request Method: POST
+Status: 200 OK (inferred from successful response body retrieval, no red error indicator)
+
+Query String Parameters (verbatim from DevTools Headers tab):
+  bl: boq_assistant-bard-web-server_20260426.11_p0
+  f.sid: 134977369709254797
+  hl: ko
+  _reqid: 3455747
+  rt: c
+
+(Full Response Headers list could not be expanded into the snapshot text view due to DevTools panel layout — header detail rows were occluded by the Form Data panel. Captured via PNG at 04_response_headers.png. Standard Google chunked transfer headers expected: content-type=application/json+protobuf, transfer-encoding=chunked, server=ESF, x-content-type-options=nosniff. Body was returned in 3 chunks of 147 / 869 / 133 bytes per the chunked-encoding length prefixes preserved in response_body.txt.)

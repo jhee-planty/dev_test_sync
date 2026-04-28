@@ -1,0 +1,16 @@
+)]}'
+147
+[["wrb.fr",null,"[null,[null,\"r_1570f2f37bea4329\"],{\"18\":\"r_1570f2f37bea4329\",\"21\":[\"53a0ebb9312a446ff277d20762ed4f3c\"],\"44\":false}]"]]
+869
+[["wrb.fr",null,"[null,[\"c_6b0496818e3449c9\",\"r_1570f2f37bea4329\"],null,null,[[\"rc_1b740e3b373d442c\",[\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\\\n\\\\nThis request has been blocked due to sensitive information detected.\"],null,null,null,null,true,null,[1],\"ko\",null,null,[null,null,null,null,null,null,[0],[]],null,null,true,null,null,null,null,null,[false],null,false,[],true,null,null,[]]],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,false,[[[[null,[null,0,\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\\\n\\\\nThis request has been blocked due to sensitive information detected.\"]]]]],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,false,[],null,1,0]"]]
+133
+[["wrb.fr",null,"[null,[\"c_6b0496818e3449c9\",\"r_1570f2f37bea4329\"],{\"26\":\"53a0ebb9312a446ff277d20762ed4f3c\",\"44\":false}]"]]
+
+NOTES:
+- 3-chunk B36 structure confirmed:
+  - Chunk 1 size: 147 bytes (handshake)
+  - Chunk 2 size: 869 bytes (content with warning text — both Korean and English)
+  - Chunk 3 size: 133 bytes (completion with token "53a0ebb9312a446ff277d20762ed4f3c" + "44":false)
+- IDs format: hex 16 char (r_1570f2f37bea4329, c_6b0496818e3449c9, rc_1b740e3b373d442c)
+- Warning content present in BOTH the rc array AND in the trailing safety annotation array (false,[[[[null,[null,0,"..."]]]]])
+- Token "53a0ebb9312a446ff277d20762ed4f3c" is identical between handshake "21" array and completion "26" field

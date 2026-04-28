@@ -1,0 +1,2 @@
+HTTP/1.1 200 OK
+(Both StreamGenerate XHR requests returned 200 OK; response body was retrievable from DevTools Response tab as evidenced by the 3-chunk parsable payload. Status column did not show error icon for either entry.)

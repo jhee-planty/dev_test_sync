@@ -1,0 +1,13 @@
+Console badge: 9 errors, 1 warning
+Issues badge: 9 issues (7 page errors, 1 breaking change, 1 possible improvement)
+
+Console panel content visible after PII prompt response delivery was dominated by Content Security Policy directive listings (CSP source allowlists for *.google.com, *.googleusercontent.com, *.gstatic.com, *.youtube.com, *.youtube-nocookie.com, *.ytimg.com, *.ggpht.com, bard.datacommons.org, *.googleapis.com, *.googletagmanager.com, www.google.com, google.com, googleads.g.doubleclick.net etc.) plus references to:
+  - https://gemini.gstatic.com/_/mss/boq-bard-web/_/js/k=boq-bard-web.BardChatUi.ko.NbTTl7v40PQ.2018.O/...m=LQaXg?wli=BardChatUi.wUsADd3E8Qc.libheifWasm.O%3A%3BBardChatUi.4vryIFCe4sg.loadWasmSipCoca.O%3A%3B:1352
+  - same source :624 (referenced twice — likely warning + violation report)
+  - https://gemini.google.com/app:1
+  - https://www.googleadservices.com/pagead/conversion/11160585753 (advertising conversion ping, unrelated)
+  - https://apis.google.com/js/api.js (GAPI loader)
+  - https://www.gstatic.com/feedback/* (feedback widget)
+
+Errors are CSP/feedback infra noise; NO error specifically referencing the StreamGenerate response parsing or the rc_ chunk handling was observable. The renderer silently dropped the warning content with no thrown exception.
+Relevance: LOW direct relevance — silence in error stream is itself the symptom (renderer treats payload as well-formed but yields no DOM update).
