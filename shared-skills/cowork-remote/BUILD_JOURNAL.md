@@ -28,7 +28,7 @@
 8. `classify-result` : result JSON 읽고 성공/실패 · failure_category 판정 (**Claude decision point**)
 9. `update-queue-done` : queue.json pending → done|error 전환 + state.json `last_checked_result_id` 갱신 (deterministic)
 10. `archive-completed` : `local_archive/{date}/` 로 request+result 이동 (deterministic)
-11. `emit-macos-notif` : 결과 도착 · 서비스 SUSPENDED · 서비스 완료 시에만 `osascript` 알림 (deterministic, conditional)
+11. `emit-macos-notif` : 결과 도착 · 서비스 SUSPENDED · 서비스 완료 시에만 `osascript` 알림 (deterministic, conditional) `[OBSOLETE 2026-04-28: SUSPENDED enum 폐기 (V2 5-class). 알림 trigger 도 v2 enum 으로 매핑 필요. canonical: cowork-remote/references/pipeline-state-schema.md]`
 
 ### 외부 의존
 
@@ -50,7 +50,7 @@
 - **State files (gitignored, local_archive/)**:
   - `state.json` (dev 전용 필드): `{last_request_id, last_checked_result_id, updated_at}`
   - `queue.json` (tracked): `{last_updated, tasks:[{id, command, to, status, created, updated, summary}]}`
-  - `pipeline_state.json` (dev 전용): 현재 서비스·큐·failure_history (3-Strike 용) — 본 skill 은 **읽기만**, 갱신은 genai-apf-pipeline 측에서
+  - `pipeline_state.json` (dev 전용): 현재 서비스·큐·failure_history (3-Strike 용) — 본 skill 은 **읽기만**, 갱신은 genai-apf-pipeline 측에서 `[OBSOLETE 2026-04-28: 3-Strike auto-SUSPEND 폐기. failure_history 는 evidence 기록 용도로 유지 (per-service analysis doc 보조).]`
 
 ### 이전 설계와의 차이 (의도적 변경)
 
@@ -60,7 +60,7 @@
 | GitHub MCP connector 의존 | 주 경로 | **제거**. git CLI 만 사용 (skill 의존성 단일화). |
 | Scheduled Task 모드 | Mode2 로 정의 | **제거** (MEMORY.md §13.4 No schedulers 준수). manual invocation 만. |
 | Adaptive polling 3-stage | references 에 명시 | **제거** (사용자 운영 모드 : 수동 호출) |
-| Auto-SUSPEND 3-Strike | §BEHAVIORAL RULES | **유지** (결과 기반). cowork-remote 가 `failure_history` 기록, 판정은 pipeline 에서 |
+| Auto-SUSPEND 3-Strike | §BEHAVIORAL RULES | **유지** (결과 기반). cowork-remote 가 `failure_history` 기록, 판정은 pipeline 에서 `[OBSOLETE 2026-04-28 21차: 3-Strike auto-SUSPEND 폐기 (사용자 directive — Claude 작업 정확도 우려). failure_history 자체는 evidence 기록으로 유지.]` |
 | references/pipeline-state-schema.md | 전체 schema | **유지 참조** (재작성 시 schema_version 추가) |
 
 **이 변경은 lessons.md 원칙 §3.2 "Source of truth 불명확" 해소** — 이제 이 skill 의 SKILL.md 가 SSOT.

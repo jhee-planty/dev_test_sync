@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # queue-advance.sh <service> <status> [--priority N]
+#
+# !!! VESTIGIAL — V1 rollback only. V2 (5-class enum) is active. !!!
+# !!! Do NOT invoke in V2 operations. See references/legacy/v1-orchestration-loop.md !!!
+#
+# (V1 behavior, kept for rollback path only):
 # Transitions a service_queue entry:
 #   status in: pending_check | in_progress | done | suspended | stalled
 # If status == done → also appends to done_services and removes from service_queue.

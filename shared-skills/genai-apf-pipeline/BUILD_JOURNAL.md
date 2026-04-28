@@ -32,9 +32,9 @@
 | common.sh | pipeline_state 경로, schema_version=1.0, jq 의존 |
 | state-get.sh / state-set.sh | 필드 I/O |
 | queue-next.sh | priority asc pending_check 반환 |
-| queue-advance.sh | status 전이 (pending_check/in_progress/done/suspended/stalled) + done 시 done_services 이동 |
+| queue-advance.sh | status 전이 (pending_check/in_progress/done/suspended/stalled) + done 시 done_services 이동 `[OBSOLETE 2026-04-28: V2 5-class enum (DONE/BLOCKED_diagnosed/BLOCKED_undiagnosed/NEEDS_LOGIN/TERMINAL_UNREACHABLE) 적용. canonical: cowork-remote/references/pipeline-state-schema.md. queue-advance.sh 자체 vestigial.]` |
 | phase-advance.sh | --check / --commit (phase guard: prev 완료 필수) |
-| enforce-3strike.sh | failure_history 최근 3건 동일 → SUSPENDED |
+| enforce-3strike.sh | failure_history 최근 3건 동일 → SUSPENDED `[OBSOLETE 2026-04-28: 3-Strike auto-SUSPEND 폐기 (사용자 directive — Claude 작업 정확도 우려). enforce-3strike.sh 자체 vestigial.]` |
 | enforce-block-only-gate.sh | limitations 문서 alts vs impl journal 시도 횟수 비교 |
 | invoke-subagent.sh | Claude Code CLI (`claude -p`) 호출 wrapper |
 | regen-status.sh | status.md 자동 생성 (원본 이식) |

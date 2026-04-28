@@ -46,45 +46,25 @@ RT="$SKILL_DIR/runtime"
 
 ## Pipeline State (핵심 필드)
 
-```json
-{
-  "schema_version": "1.0",
-  "current_service": "gemini",
-  "current_phase": "phase3-block-verify",
-  "last_request_id": 17,
-  "last_checked_result_id": 16,
-  "service_queue": [
-    {"service": "gemini", "priority": 1, "status": "in_progress"},
-    {"service": "deepseek", "priority": 2, "status": "pending_check"}
-  ],
-  "done_services": ["chatgpt","claude"],
-  "failure_history": {
-    "gemini": [{"category":"PROTOCOL_MISMATCH","build":"B42"}]
-  },
-  "updated_at": "..."
-}
-```
+Schema canonical: `cowork-remote/references/pipeline-state-schema.md` (v2 enum + cause_pointer + terminal_reason + vocabulary v2 4 family + terminate:*).
 
-runtime 이 매 변경 시 schema_version 유지 + updated_at 갱신.
+핵심 필드 요약:
+- `service_queue[]` — entry 마다 status (5-class enum) + next_action (vocabulary v2) + cause_pointer (BLOCKED_*) + terminal_reason (TERMINAL_UNREACHABLE)
+- `done_services[]` — DONE 도달 service 목록
+- `failure_history{}` — service 별 최근 실패 catalog (auto-classification 입력)
+- `_next_action_vocabulary_v2` — 4 family verb 정의
+
+상세 schema + entry 예시는 canonical doc 참조.
 
 ---
 
-## Orchestration 흐름 (Claude 가 따르는 고수준 loop)
+## Orchestration — Active = WSA v2
 
-```
-while service_queue 에 pending_check 존재:
-    service = runtime/queue-next.sh          # 다음 우선순위 pending_check
-    runtime/queue-advance.sh $service in_progress
-    for phase in [1..7]:
-        runtime/phase-advance.sh --check $phase  # guard: 이전 phase 통과?
-        (Claude 가 해당 phase 수행 — 필요 시 cross-skill invoke wrapper 사용)
-        runtime/phase-advance.sh --commit $phase # state 갱신
-        runtime/regen-status.sh                 # status.md 재생성
-    runtime/queue-advance.sh $service done
-endwhile
-```
+본 skill 의 active orchestration 은 **§Work Selection Algorithm v2** (아래 섹션 참조).
 
-**orchestration loop 자체는 Claude 가 수행**. runtime 은 각 step 의 결정론 부분만 담당.
+**Legacy V1 orchestration loop** (phase-based 순차 single-service) 은 archive 되어 있음. Rollback 필요 시: `references/legacy/v1-orchestration-loop.md` 참조.
+
+V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 문제 재발 시 롤백 가능". V1 archive 는 rollback path 보존 용이며 active operation 에서 따르지 않음 (context 낭비 방지).
 
 ---
 
@@ -105,9 +85,9 @@ endwhile
 
 | policy | 판정자 | 동작 |
 |--------|-------|------|
-| 3-Strike (같은 failure_category 3회) | runtime `enforce-3strike.sh` | service → SUSPENDED |
-| BLOCK_ONLY gate | runtime `enforce-block-only-gate.sh` + Claude | apf-technical-limitations.md 의 모든 대안 시도 없이 BLOCK_ONLY 금지 |
-| 총 빌드 상한 (apf-warning-impl 와 독립) | runtime `enforce-3strike.sh` | build 10 초과 시 서비스 HOLD |
+| 3-Strike auto-suspend | **폐기 (2026-04-28 21차)** | Claude 작업 정확도 부족 우려 — 자동 SUSPENDED 처리 X. 운영자가 cause_pointer 분석 후 결정. |
+| BLOCK_ONLY gate (D14b) | Claude + per-service analysis doc | `apf-technical-limitations.md` 의 모든 listed 접근법 시도 + 결과 명시 + inapplicable 증명 후만 `terminate:block_only_accepted` 허용 |
+| 총 빌드 상한 (apf-warning-impl 와 독립) | runtime `enforce-3strike.sh` | (vestigial — V1 path. V2 는 build count 추적 안 함) |
 | 응답 대기 중 STALLED 자동 전환 | **없음** | 2026-04-21 정책 변경 — 결과 도착까지 반복 |
 
 ---
@@ -152,6 +132,7 @@ endwhile
 ```
 1. Read pipeline_state.json service_queue
 2. Filter entries where next_action does NOT start with 'defer:'
+                                AND does NOT start with 'terminate:'
    → autonomous_candidates list
 3. If autonomous_candidates non-empty:
    - Sort by priority asc
@@ -160,9 +141,9 @@ endwhile
    - Update entry next_action OR status as result dictates
    - Commit pipeline_state.json
    - Push request if next_action requires test PC, else return to loop
-4. If autonomous_candidates empty (all defer:):
+4. If autonomous_candidates empty (all defer: / terminate:):
    - Compose explicit "needs_user_input" status report
-   - Report to user with itemized defer reasons
+   - Report to user with itemized defer / terminate reasons
    - Allow long-idle ScheduleWakeup
 5. Empty queue (no entries at all):
    - Goal achieved OR user has not enqueued more services
@@ -207,11 +188,16 @@ debug_envelope:*    — har_capture | envelope_diff | etap_log_diagnose | conten
 
 debug_decoder:*     — wrb_fr_layer | ws_body_layer | h2_streaming_body
 
-debug_http_layer:*  — transport_probe | force_h2 (etap QUIC blocking / alt-svc strip)
+debug_http_layer:*  — transport_probe | force_h2 (etap visible_tls._block_quic
+                                                  / DPDK-level QUIC drop)
 
 apply_engine_fix:*  — wrb_fr_decoder | ws_body_inspector | (other engine work)
 
 defer:*             — *_user_har / user_login_provisioning / vpn_or_region_change / ...
+
+terminate:*         — block_only_accepted (architectural BLOCK_ONLY, all approaches in
+                      apf-technical-limitations.md tried/rejected per cause_pointer doc)
+                    | user_decommissioned | replaced_by:{service}
 ```
 
 새 verb 도입 시 vocabulary v2 에 정의 추가. v1 verbs 는 `[deprecated]` 표기.

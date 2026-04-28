@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # queue-next.sh
+#
+# !!! VESTIGIAL — V1 rollback only. V2 (WSA + next_action) is active. !!!
+# !!! Do NOT invoke in V2 operations. See references/legacy/v1-orchestration-loop.md !!!
+#
+# (V1 behavior, kept for rollback path only):
 # - Picks the pending_check service with lowest priority number (highest priority)
 # - stdout: service id (empty if none)
 # - exit 0 if found, exit 0 if empty (stdout empty = queue drained)

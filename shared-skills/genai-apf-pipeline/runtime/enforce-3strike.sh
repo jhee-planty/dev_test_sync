@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 # enforce-3strike.sh <service>
+#
+# !!! VESTIGIAL — 3-Strike auto-SUSPEND policy was DROPPED 2026-04-28 21차 !!!
+# !!! User directive: Claude 작업 정확도 부족으로 자동 SUSPENDED 처리 부적합 !!!
+# !!! Do NOT invoke. Kept on disk only for V1 rollback path. !!!
+# !!! See references/legacy/v1-orchestration-loop.md !!!
+#
+# (V1 behavior, kept for rollback path only):
 # Reads failure_history[service] last 3 entries. If all same category → mark SUSPENDED.
 # stdout: resulting status (unchanged|SUSPENDED)
 # exit 0

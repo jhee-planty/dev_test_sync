@@ -26,37 +26,33 @@ test PC에서 작업을 수행하려면 `test-pc-worker` 스킬을 설치하는 
 
 ---
 
-## 방법 2 — test-pc-worker.skill 설치 (권장)
+## 방법 2 — Junction-based install (권장 / 현재 deployment)
 
-Git 저장소(dev_test_sync)를 통해 `test-pc-worker.skill` 파일을 test PC에 전달하고 설치한다.
-이 스킬은 command별 desktop-commander 도구 사용법과 결과 JSON 템플릿을 모두 포함한다.
+> **2026-04-28 21차 변경**: `.skill` bundle file (e.g., `test-pc-worker.skill`) install 시나리오는 **유지하지 않음**. Junction-based install 이 단일 deployment 경로.
+
+dev_test_sync repo 의 shared-skills/ 가 git 으로 자동 동기화 + Test PC 의 `~/.claude/skills/` 가 junction 으로 연결 → git pull 만 하면 SKILL.md 변경이 즉시 반영됨.
 
 ### 전달 절차
 
-1. dev PC에서 `test-pc-worker.skill`을 Git 저장소의 `shared-skills/`에 복사:
-
+1. dev PC 에서 SKILL.md / references 수정 후 git push:
    ```bash
-   cp <skills_folder>/test-pc-worker.skill \
-      ~/Documents/workspace/dev_test_sync/shared-skills/
    cd ~/Documents/workspace/dev_test_sync
-   git add shared-skills/test-pc-worker.skill
-   git commit -m "Update test-pc-worker.skill"
+   git add shared-skills/test-pc-worker/...
+   git commit -m "Update test-pc-worker"
    git push
    ```
 
-2. test PC에서 git pull:
+2. test PC 에서 git pull:
    ```powershell
-   # 실제 deployment 경로 (예시 — 환경별 상이, common.ps1 자동 탐색)
+   # 실제 deployment 경로 (per-user — common.ps1 자동 탐색)
    cd $env:USERPROFILE\Documents\dev_test_sync
    git pull
    ```
    (Korean 경로 인코딩 주의 — Canonical: `test-pc-worker/references/git-push-guide.md`)
 
-3. test PC에서:
-   - Cowork 열기
-   - Git 저장소 폴더를 마운트
-   - `test-pc-worker.skill` 파일을 열면 설치 버튼이 표시됨
-   - 설치 버튼 클릭 → 스킬 설치 완료
+3. Junction 자동 반영:
+   - 최초 1회만 `setup/install-skills.ps1` 실행 (`~/.claude/skills/<skill>` → junction → `dev_test_sync/shared-skills/<skill>`)
+   - 이후 git pull 만 하면 SKILL.md / references 즉시 반영. 별도 install 단계 불필요.
 
 4. 설치 후 사용:
    ```
