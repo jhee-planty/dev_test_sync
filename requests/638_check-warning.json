@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai",
+    "context": "Cycle 95 mistral envelope v5. 637 PARTIAL revealed: chain hypothesis WRONG (only newChat fires once), engine intercept confirmed (81ms), but TRPCClientError 'Cannot convert undefined or null to object' at Object.entries inside tRPC client parser. Root cause: SuperJSON meta.values missing entries for null fields (references, memories, moderationCategory, agentId, agentsApiAgentId, createdById, nextVersion, prevVersion, model, quotedContent, workflowExecution). v5 adds ALL null-bearing fields to meta.values with ['undefined'] type marker so SuperJSON converts null→undefined cleanly. Reload_templates done.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, chat.mistral.ai new conversation",
+        "2. PII prompt 전송",
+        "3. /api/trpc/message.newChat response: 200 OK + valid tRPC v10 envelope",
+        "4. Console: NO TRPCClientError this time",
+        "5. UI: '보안 경고' message bubble (success)"
+      ]
+    }
+  },
+  "notes": "mistral_trpc_json_v4 envelope v5 with full meta.values null→undefined coverage.",
+  "attachments": [],
+  "id": "638",
+  "created": "2026-04-28T08:47:31Z"
+}
