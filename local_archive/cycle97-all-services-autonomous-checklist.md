@@ -129,9 +129,18 @@ SELECT id, service_name, response_type, LENGTH(envelope_template) AS env_size
 → **Best autonomous choice**: **Option B** (baseline 유지) + Option C 를 cycle 98+ 별도 session 으로 defer.
 → **단 사용자 자율 mode 명시** = Option C 를 본 cycle 에서 시도 가능 (engine code rewrite, 30분-1시간 work).
 
-- [ ] Decision 기록 (`apf-operation/state/decisions/{ts}_M0_gemini3_option_choice.json`)
-- [ ] Option B (가장 안전, 1-step) 시 — pipeline_state.json gemini3 entry 의 next_action 정정 + cycle 98 candidate 표시
-- [ ] Option C 시 — gemini3 engine wrb_fr handler 의 cycle 95 80줄 native 복원 + handler intercept dispatch fix (cycle 95 known intermittency root cause = `decode_data Invalid hex sequence` 추가 진단)
+- [x] **Decision 기록** (`apf-operation/state/decisions/20260429_172000_M0_gemini3-option-choice.json`)
+  - Option A: REJECTED (mission incompatible — block_mode=0 = PII 검사 OFF, D20a 정반대)
+  - Option B: **CHOSEN** (current partial protection, M0 default winner)
+  - Option C: DEFERRED (multi-cycle engine work, cycle 98+ dedicated session)
+- [x] **pipeline_state.json gemini3 entry 정정**:
+  - status: cycle 96 27차 진단 결과 + Option B baseline maintain 명시
+  - next_action: `apply_engine_fix:...` → `defer:cycle98_dedicated_engine_session_for_decode_data_keyword_scan_state_fix`
+  - _decision_source: M0, evidence pointer to decisions/ JSON
+- [x] **Option C cycle 98+ defer rationale 명시**:
+  - cycle 95 80줄 native generate_wrb_fr_response 복원 + decode_data Invalid hex sequence 진단 + handler intercept dispatch fix
+  - Multi-step engine work (read source / design fix / build / deploy / verify / regression) → 별도 dedicated session 권장
+  - Implementation gap (apf-operation/services/gemini3_analysis.md) 에 명시
 
 ---
 
