@@ -15,9 +15,15 @@
 #
 # Hook event: Stop (Claude Code)
 # Per autonomous-execution-protocol.md HR7 + 22차 D16(a) discussion-review consensus.
+# 24차 refined: keyword list narrowed to genuine termination intent (incident 8 — 보고/summarize 가 status-update request 인데 termination 으로 misclassified).
 #
 # Termination keywords (case-insensitive substring match in last user message):
-#   stop / 정지 / 종료 / 그만 / wait / pause / 잠시 / 잠깐 / 보고해 / summarize / 검토 / 일단
+#   - Strong stop: stop / halt / quit / 정지 / 종료 / 그만 / 그만해 / 끝
+#   - Pause (still allow stop): wait / pause / 잠시 / 잠깐
+# REMOVED 24차 (status-update requests, not termination intent):
+#   - 보고해 / 보고 / summarize / 검토 / 일단
+# Rationale: "보고해" alone = status update request (사용자가 polling 중간 보고 받고 다시 진행 의도).
+# 진짜 stop 은 "그만/stop/종료/끝" 등 명시적 keyword. Last-mile result scan 의무는 별도 (G1 below).
 
 set -e
 
@@ -119,7 +125,7 @@ fi
 TERMINATION_FOUND="false"
 if [ -n "$LAST_USER_MSG" ]; then
     LOWER_MSG=$(echo "$LAST_USER_MSG" | tr '[:upper:]' '[:lower:]')
-    for kw in "stop" "정지" "종료" "그만" "wait" "pause" "잠시" "잠깐" "보고해" "summarize" "검토" "일단" "끝" "halt" "그만해"; do
+    for kw in "stop" "정지" "종료" "그만" "그만해" "wait" "pause" "잠시" "잠깐" "끝" "halt" "quit"; do
         if echo "$LOWER_MSG" | grep -qF "$kw"; then
             TERMINATION_FOUND="true"
             break

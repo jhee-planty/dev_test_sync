@@ -161,6 +161,50 @@ bash runtime/feedback.sh --report-incident "<description>" \
 
 ---
 
+## Incident 8 — Premature stop with last-mile result delivery (cycle 95 #643 gamma)
+
+**발생 일시**: 2026-04-29 KST (직전 session)
+
+**증상**:
+- 직전 session 발언: "#643 final polling 미도착. instruction 따라 A4.1 gamma deferred + cycle 95 최종 종합 보고"
+- 사용자가 본 분석 요청 (현 24차 session)
+
+**사실 관계 (evidence verified)**:
+- 10:33:39 KST (UTC 01:33:39): #643 push (gamma 사용자 로그인 후 재push, queue.json `created` field)
+- 10:42:51 KST (UTC 01:42:51): Stop hook log: `[allow stop — termination keyword in user msg]` (`/tmp/stop-autonomous-guard.log`)
+- 10:53 KST: `dev_test_sync/results/643_result.json` 실제 도착 (mtime, 7260 bytes)
+- 후속: commit `eb9978e` "Result: test-pc 643 (gamma SUCCESS — A4 cleanup validated, B37 regression FIXED)"
+
+**Stop hook log smoking gun**: 사용자 직전 메시지에 termination keyword (D16(a) original list 의 "보고해 / summarize / 검토 / 일단" 중 하나로 추정) 포함되어 hook 정상 allow stop. Result 가 11분 후 도착. Claude session 은 이미 stop 모드 진입 → "polling 미도착" 단정 + "instruction 따라" defer + cycle 95 종합 보고 작성.
+
+**Multi-violation 분석**:
+1. **D9 Anti-fabrication 변종 미커버**: 기존 D9 list 에 "polling 미도착" 변종 미포함. "offline / stopped / hung / 무응답" 만 명시되어 있어 escape.
+2. **Stop hook keyword 너무 broad**: "보고해 / summarize / 검토 / 일단" 은 status-update request (사용자가 보고 받고 다시 진행 의도) 인데 termination 으로 misclassified. cycle 95 incident 분석 시 over-inclusion.
+3. **Last-mile result scan 의무 부재**: Stop hook allow 됐어도 응답 종료 직전 pending request 의 result file 1회 scan 의무 없었음. 1회 `ls dev_test_sync/results/643_result.json` 했으면 발견 가능 (mtime 10:53 vs Stop allow 10:42 — 11분 gap 안에서 도착 가능성 충분).
+4. **"instruction 따라" self-imposed**: cycle95_master_summary 의 next_session_starting_points 같은 reference doc 의 narrative 를 "instruction" 으로 misclassify. Source pointer 검증 의무 없었음.
+
+**Root cause**:
+1. Stop hook keyword over-inclusion (D16(a) original codify 시 over-aggressive)
+2. D9 list semantic gap (변종 keyword escape)
+3. Stop allow → response termination 사이 last-mile evidence 검증 점차 누락
+4. Self-imposed instruction 합리화 메커니즘 (reference 를 "지시" 로 misclassify)
+
+**Recovery actions (24차 D18 codify)**:
+- D9 list 확장: polling 미도착 / 응답 없음 / silent / no result / empty result 등 변종 추가
+- Stop hook keyword refinement: "보고해 / summarize / 검토 / 일단" **제거**. Strong termination 만 (`stop / 정지 / 종료 / 그만 / 그만해 / wait / pause / 잠시 / 잠깐 / 끝 / halt / quit`)
+- Self-Check Category H (Last-mile Result Scan Obligation) 신설
+- Self-Check Category G (Self-Imposed Instruction Detection) 신설
+
+**Recovery commit**: 본 24차 session 의 commit (autonomous-execution-protocol.md 변경 + Stop hook 양쪽 path sync + INTENTS D18 codify).
+
+**재발 방지 mechanism**:
+- D9 list 확장 → "polling 미도착" 같은 변종 단정 시 self-check 발동
+- Stop hook keyword narrowing → "보고해" alone = NOT stop (status update request 정확 분류)
+- Self-Check Category H → Stop allow 시 last-mile scan 의무
+- Self-Check Category G → "instruction 따라" self-narrative 시 source pointer 의무
+
+---
+
 ## 재현 명령 (검증용)
 
 모든 incident 는 동일 transcript 에서 재현 가능:

@@ -316,7 +316,10 @@ Polling (ScheduleWakeup chain) 종료는 **오직 아래 2 가지만** 허용:
 Polling 중 Test PC 상태 추론:
 
 - ✅ **Permitted** (default positive assumption): "Test PC ScheduleWakeup chain 처리 중"
-- ❌ **Prohibited** (negative state assumption): "offline" / "crashed" / "stopped" / "hung" / "session 종료됨" / "무응답" 기타 부정적 상태 단정
+- ❌ **Prohibited** (negative state assumption — D9 Anti-fabrication): 다음 keyword variants 전부 포함:
+  - **State**: "offline" / "crashed" / "stopped" / "hung" / "session 종료됨" / "무응답"
+  - **Result delivery** (24차 추가): "polling 미도착" / "result 미도착" / "응답 없음" / "no result" / "empty result" / "silent" / "도착 안 함" / "fail to arrive" / "timeout 추정"
+  - 모든 변종이 state-assumption-based termination 으로 분류됨. Positive default ("ScheduleWakeup chain 처리 중" / "result file 아직 미관측") 로 re-frame 후 polling 유지.
 
 **Evidence 있는 경우에도 polling 유지**:
 - 예: git unreachable, ScheduleWakeup 자체 error 반복
@@ -355,6 +358,21 @@ Request push 완료 후 결과 도착까지의 폴링 행동:
   - Dev-side Claude 의 별도 diagnostic action (request 이미 전달됨, 추가 action 없음)
   - expected + N분 기반 모드 전환 (과거 bash-loop era rule, 11차 ScheduleWakeup 전환 후 obsolete. 15차 사용자 directive 로 공식 삭제.)
 ```
+
+#### Last-mile Result Scan 의무 (D18, 24차)
+
+**24차 incident 8 trigger**: 사용자 termination keyword (보고/summarize 등) 로 Stop hook allow 됐을 때, Claude session 이 result file scan 없이 "polling 미도착" 단정 + defer 진행. 그 사이 result file 도착 (10:53 KST) 했지만 scan 누락.
+
+**의무 (last-mile scan)**:
+```
+Stop hook allow 가 fire 되어 응답 종료 시점에 도달했을 때:
+  pending requests (queue.json status=pending OR pipeline_state.pending_requests) 가 있으면
+  → 응답 종료 직전 `ls -la dev_test_sync/results/{id}_result.json` 1회 scan 의무
+  → 도착했으면 read + classify + update-queue + archive (전체 result processing protocol 6단계)
+  → 도착 안 했으면 stop 진행 (단, "polling 미도착" 단정 금지 — D9 confirm)
+```
+
+매 ScheduleWakeup tick 도 동일 — `git pull && ls results/` 검증 의무. 단순 ScheduleWakeup 재예약만으로 tick skip 금지.
 
 ### Interval 선택 (delaySeconds)
 
@@ -512,6 +530,7 @@ primary task가 blocked(결과 대기 등)일 때:
 - **"N분 경과 → Test PC offline"** 단정했는가? → **Behavioral Boundaries 위반**. ScheduleWakeup chain 재개.
 - **"polling 중단, 보고"** 선언했는가? → **Hard Rule 3 + 5 위반**. 즉시 재개 + 보고 보류.
 - **"Test PC {negative state}"** 추론했는가? (offline/crashed/stopped/hung/무응답 등) → **Test PC State Inference Prohibition 위반**. Positive default ("ScheduleWakeup 처리 중") 로 re-frame + polling 유지.
+- **"polling 미도착" / "result 미도착" / "응답 없음" / "silent" / "no result" / "empty result"** 단정했는가? → **D9 Anti-fabrication 위반 (24차 추가)**. Result file scan (`ls results/{id}_result.json`) evidence 없이 미도착 단정 금지. positive default ("아직 미관측") 사용.
 - **Request 전달 후 "Test PC 에 diagnostic 요청" 재push**? → **Q1 directive 위반**. Request 이미 전달됨. 추가 diagnostic 금지. Polling 유지.
 - **"expected + 10분" 를 termination 근거 OR 어떤 action trigger (diagnostic / mode-switch / side-action 포함) 근거**로 사용했는가? → **Time-Check Protocol v2 위반**. Expected 는 **timing log 정보용만** (사용자 상태 보고에 display OK). Polling 행동에 어떤 영향도 미치지 않음. Termination 은 2 조건 (결과 / session) 외 금지 + 추가 action trigger 도 금지 (CI-5 정상 polling 상황). Disclaimer trick ("trigger 는 termination 아님, 추가 action 발동만") 도 rule 위반 — **17차 loophole closing**.
 
@@ -552,6 +571,29 @@ primary task가 blocked(결과 대기 등)일 때:
 - **Cycle summary doc (예: cycle{N}_master_summary) 작성 후 stop 시도?** → **Stop hook 가 reminder 발동**. 그러나 priming-level 자가 점검: autonomous_candidates 0 증명 후만 stop. summary doc 자체는 OK, doc-write-then-stop pattern 차단.
 - **M4 (user-required) encounter (예: Test PC infra 실패) 발견?** → 해당 task 만 `defer:*` 또는 `infra_blocked:*`, **다른 candidate 영향 없음**. 일부 task 의 M4 = 전체 stop 정당화 X (cycle95 의 "Test PC infra 실패" → 모든 work stop overgeneralization 사례).
 - **7시간+ long-running session 끝 즈음 reasoning 약화 감지?** → 확실치 않으면 마지막 candidate 1개 더 실행 후 stop. fatigue analog 의 stop bias 차단.
+
+### Category G: Self-Imposed Instruction Detection (24차 incident 8 반영)
+
+24차 incident 8 trigger: 직전 session 이 "**instruction 따라** A4.1 gamma deferred + cycle 95 종합 보고" 발언. "instruction 따라" 의 source 가 **명확하지 않음** — cycle95_master_summary 의 next_session_starting_points 같은 reference 를 self-imposed instruction 으로 misinterpret 한 것으로 추정.
+
+**자기 점검**:
+
+- **"instruction 따라" / "지시에 따라" / "방침대로" / "X 하라고 했으니" 류의 self-narrative 사용?** → instruction source pointer (path:line + 인용) 동반 의무. 못 대면 self-imposed 로 분류 → 즉시 폐기.
+- **Source 검증 패턴**:
+  1. 사용자 직전 메시지 (현 turn) 에 explicit directive 있는가?
+  2. INTENTS.md / progress.md / handoff.md 의 user-quoted directive 인가?
+  3. cycle{N}_master_summary 같은 reference doc 의 narrative 를 "instruction" 으로 misclassify 안 했는가? (reference != instruction)
+- **Self-imposed instruction 차단 후**: 원래 목적 (사용자 underlying intent) 재구성 + autonomous WSA v2 candidate 우선순위 따라 진행.
+- **위반 시 cascade**: self-imposed "instruction" → "종합 보고 작성 trigger" → polling chain 절단 → "polling 미도착" 단정 (D9) → premature stop. 24차 incident 8 패턴.
+
+### Category H: Last-mile Result Scan Obligation (24차 incident 8 반영)
+
+Stop 진입 시 (Stop hook allow OR self-stop) **반드시** pending request 의 result file 1회 scan:
+
+- 사용자 termination keyword 로 Stop hook allow 됐어도, pending request 가 있으면 응답 종료 직전 `ls -la dev_test_sync/results/{id}_result.json` 1회.
+- 도착 → process (read + classify + update-queue + archive) 후 stop. 사용자 보고에 result 포함.
+- 미도착 → stop 진행. 단 "polling 미도착" / "result 미도착" 단정 금지 (D9). "아직 미관측" / "ScheduleWakeup chain 처리 중" 사용.
+- **24차 incident 8 evidence**: 사용자 termination keyword 로 Stop hook allow (10:42 KST) → Claude session "polling 미도착" 단정 후 cycle 95 종합 보고 작성. 그러나 result 가 11분 후 (10:53 KST) 실제 도착. 1회 last-mile scan 했으면 발견 가능.
 
 ---
 
