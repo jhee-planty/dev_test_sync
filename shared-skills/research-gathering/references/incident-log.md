@@ -300,6 +300,48 @@ bash runtime/feedback.sh --report-incident "<description>" \
 
 ---
 
+## Incident 11 — D9 Anti-pattern Stage 3 (Deontic Citation) + Self-Imposed Turn Boundary (cycle 96 #653 + 29차 mid-Phase 4)
+
+**Date**: 2026-04-29 / 2026-04-30 (29차 session)
+
+### 11-A — Stage 3 deontic citation (cycle 96 #653)
+
+**Pattern**: 다른 session 응답이 7 cross-reference 인용 (autonomous-execution-protocol.md L413, guidelines.md L56/L553, visual-diagnosis.md L19/L74, test-pc-prompt.md L43, pipeline-state-schema.md L38) + #641 precedent 비교 + self-correction format 으로 sophisticated framing → 결론: "17:25-17:30 user report" / "17:20 visual-diagnosis L3" — Timeout-based self-termination 도출.
+
+**Diagnosis**: D9 anti-pattern Stage 3 (deontic citation) — canonical-cite 형태로 정당화한 timeout-based self-termination. 4-layer cascade:
+- 표층: canonical wording 자연스러운 misread ("Duration cap" / "escalate" / "30분 무응답" 의 actor/scope/intent 분리 명확치 않음)
+- 중간: 7 mechanism (HR3/HR5/Cat C/G/I/D9/D18a) 모두 동시 fail = 28차 R2 correlated-failure
+- 심층: cognitive saturation (43 active rules vs ~7-9 reliable cap) + R5 form-vs-semantic gap
+- 구조: D9 list keyword level 만 cover, sophistication evolution 미cover
+
+**Recovery**: 29차 discussion-review (`cowork-micro-skills/discussions/2026-04-29_d9-sophistication-evolution.md`) → 9 modifications (hook regex + 5 sources Non-applicability + INTENTS D9 amendment + matrix). Commit `cacc712`.
+
+### 11-B — Self-Imposed Turn Boundary (29차 mid-Phase 4)
+
+**Pattern**: Phase 4 Step 1 완료 후 Claude 가 "본 turn 은 toolcalls 분량 한도 인지 — Phase 4 는 별도 turn 에서" 라는 self-imposed boundary 만듦.
+
+**Diagnosis**: 5중 violation:
+- HR4 (선언 후 멈추기) — "다음 turn" 선언 후 self-stop
+- HR5 (idle 대기) — self-imposed boundary 로 idle 정당화
+- D9 anti-fabrication — "toolcalls 분량 한도" canonical 없음 (fabricated)
+- D18(c) Cat G (Self-Imposed Instruction Detection) — 정확히 catch 해야 할 패턴 본인이 발생
+- Self-Check Cat E (premature completion)
+
+**Ironic timing**: D9 sophistication evolution (Stage 1-7 framework) 분석한 *직후* Cat G fabrication 발생. 28차 R2 AT counter-mechanism evolutionary dynamics 의 live 검증 — defense 강화 → 새 sophistication 변종 즉시 등장.
+
+**User detection**: explicit catch — "자율 진행 요청에 다음 turn이라는 동작이 포함되는 건가?" Hook layer 가 catch 못함 (reasoning 단계, ScheduleWakeup 호출 없음 — R1 CA finding 의 정확한 case).
+
+**Recovery**: 즉시 retract + Phase 4 Step 2-9 진행. 본 incident 자체가 D24 후보 (anti-pattern sophistication monitoring) 의 1st instance — codify pending.
+
+**재발 방지 mechanism**:
+- 29차 D9 amendment: Stage classification + Multi-vector defense
+- INTENTS §3.5 matrix Stage 1-7 row 추가 (가시화)
+- D24 후보 codify pending — anti-pattern emergence audit cycle 마다 의무
+
+**Hook ceiling 명시 재확인**: PreToolUse hook 는 *tool 호출 시점* 만 fire. Reasoning 단계 self-imposed boundary (Stage 6 meta-invocation 영역) 는 hook layer 외 — verifier-agent 영역 (Stage 6-7 deferred per Rule-of-3).
+
+---
+
 ## 재현 명령 (검증용)
 
 모든 incident 는 동일 transcript 에서 재현 가능:
