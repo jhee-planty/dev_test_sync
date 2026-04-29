@@ -60,13 +60,29 @@ chatgpt / claude / genspark / blackbox / qwen3 / grok / deepseek / github_copilo
 **Mission state**: v7 baseline = current production state (#651 verified, mistral_trpc_json_v4 1563B). HP-1/HP-3' DISPROVEN. HP-2 wire-confirmed PARTIAL. 4 untested candidates.
 
 ### 사전 의무 (mission protection — v8 incident protocol)
-- [ ] v7 LOAD_FILE backup 확보:
-  ```sql
-  SELECT INTO OUTFILE '/tmp/mistral_trpc_json_v4_backup_20260429.bin'
-    LINES TERMINATED BY '' FROM (SELECT envelope_template FROM ai_prompt_response_templates
-    WHERE service_name='mistral' AND response_type='mistral_trpc_json_v4') t;
-  ```
-  실제 production binary 위치 확인 후 SCP 또는 mysqldump 사용. backup 검증: byte size 1563.
+- [x] **v7 LOAD_FILE backup 확보** (2026-04-29 16:52 KST, production 218.232.120.58):
+  - `/var/backups/apf-envelope/mistral_v7_id24_20260429.bin` (1572B, mysql -BN 형식)
+  - `/var/backups/apf-envelope/mistral_v7_id24_outfile.bin` (1572B, INTO OUTFILE 형식)
+  - `/var/backups/apf-envelope/mistral_v7_id24_HEX.txt` (3127B HEX, **canonical** — DB raw 1563B × 2 + newline)
+  - `/var/backups/apf-envelope/mistral_v7_id24_dump.sql` (3457B mysqldump INSERT)
+  - DB row: id=24, service_name=mistral, response_type=mistral_trpc_json_v4, env_size=1563B
+  - Body 시작: `HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nC...` (HEX 검증 OK)
+
+### Restore commands (v9 회귀 시 즉시 실행)
+```bash
+# Option 1: HEX UPDATE (canonical, 가장 빠름)
+ssh -p 12222 solution@218.232.120.58 "sudo bash -c 'HEXVAL=\$(cat /var/backups/apf-envelope/mistral_v7_id24_HEX.txt | tr -d \"\\n\"); mysql etap -e \"UPDATE ai_prompt_response_templates SET envelope_template=UNHEX(\\\"\$HEXVAL\\\") WHERE id=24\"' && sudo etapcomm ai_prompt_filter.reload_templates"
+
+# Option 2: mysqldump REPLACE
+ssh -p 12222 solution@218.232.120.58 "sudo mysql etap -e 'DELETE FROM ai_prompt_response_templates WHERE id=24' && sudo mysql etap < /var/backups/apf-envelope/mistral_v7_id24_dump.sql && sudo etapcomm ai_prompt_filter.reload_templates"
+```
+
+### Verify after restore
+```sql
+SELECT id, service_name, response_type, LENGTH(envelope_template) AS env_size 
+  FROM ai_prompt_response_templates WHERE id=24;
+-- expected: 24 | mistral | mistral_trpc_json_v4 | 1563
+```
 
 ### Cycle 97 (a) batch wrapper shape iteration
 - [ ] Native shape candidate generate:
