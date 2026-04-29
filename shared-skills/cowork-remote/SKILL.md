@@ -82,7 +82,7 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 ```json
 {
   "id": "{auto-assigned-by-runtime-do-not-set}",
-  "command": "check-warning | check-block | check-cert | capture-screenshot | verify-access | run-scenario | report-status",
+  "command": "check-warning | check-block | check-cert | capture-screenshot | verify-access | run-scenario | report-status | verify-warning-quick",
   "priority": "normal | urgent",
   "params": {
     "service": "gemini",
@@ -96,6 +96,40 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 ```
 
 runtime 이 `id` / `created` 를 채움. Claude 는 **id 를 절대 채우지 않는다**.
+
+### verify-warning-quick command (28차 R3 #1, cheap D20b)
+
+> **Purpose**: D20(b) DONE Verification 의 lightweight form. 30s/service target (vs check-warning ~5min).
+> **Spec source**: `apf-warning-impl/SKILL.md §Verify-Done Periodic`.
+
+**Request payload**:
+```json
+{
+  "command": "verify-warning-quick",
+  "params": {
+    "service": "<service_id>",
+    "test_prompt": "<rotation item — apf-warning-impl §Verify-Done Periodic 의 7-item rotation set 에서>",
+    "timeout_seconds": 30
+  }
+}
+```
+
+**Result classification (verify-warning-quick 전용)**:
+
+| 조건 | verdict |
+|------|---------|
+| `dom_assertion == "pass"` | `done_verified` (status=DONE 유지) |
+| `dom_assertion == "fail_no_warning"` | `done_drift` (status DONE → BLOCKED_diagnosed regression, cause_pointer 갱신) |
+| `dom_assertion == "fail_wrong_content"` | `done_drift_partial` (warning element 있지만 content mismatch — render-layer schema gap, mistral F-5 분류) |
+| `dom_assertion == "unable_offline"` | `error_INFRASTRUCTURE` (test PC unreachable) |
+| `dom_assertion == "unable_no_login"` | `error_AUTH_REQUIRED` (NEEDS_LOGIN 으로 status mutation) |
+
+**Test PC worker 구현 시 핵심 제약**:
+- 단일 prompt push + DOM 조회 1회만 (timing 최적화)
+- Subagent dispatch 패턴 따름 (test-pc-worker §Subagent Dispatch canonical)
+- Result 의 `raw_dom_excerpt` field 에 warning element outerHTML 1개 포함 (size cap: 2KB)
+
+**아직 미구현**: 본 spec 은 28차 codify 만. test-pc-worker side 의 verify-warning-quick handler 는 future implementation session 에서 추가.
 
 ## Result Classification 가이드 (Claude 판단)
 
