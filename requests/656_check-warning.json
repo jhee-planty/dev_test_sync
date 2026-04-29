@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai/?cb=20260430084500",
+    "context": "Cycle 97 mistral v11 (b2) HP-3 H2 minimal variant. #655 evidence-driven: messages[0].agentId 변경 무효 (HP-3 H1 DISPROVEN), test PC report 의 finding 3 — 'input.agentId / input.agentsApiAgentId at TOP LEVEL of mutation payload undefined' → strong HP-3 H2 candidate. v11 (b2) = result.data.json 의 top level 에 'agentId':'00000000-0000-0000-0000-000000000000' + 'agentsApiAgentId':'00000000-0000-0000-0000-000000000000' 추가 (chatId 와 title 사이). env_size 1563→1670B (+107). Mission protection: v7 HEX backup 보유 — regression 즉시 revert.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL ?cb=20260430084500",
+        "3. PII prompt 전송",
+        "4. Network: response size ~1.8kB (v11 baseline 1670B body)",
+        "5. Console: TRPCClientError 변화 또는 해소 (HP-3 H2 confirm/disprove)",
+        "6. UI: warning bubble rendered (HP-3 H2 CONFIRM) OR same error (다음 hypothesis)",
+        "7. Mission-critical: real LLM streaming 감지 시 즉시 v7 revert"
+      ]
+    }
+  },
+  "notes": "Cycle 97 mistral v11 (b2) HP-3 H2 top-level agentId test (#655 evidence-driven)",
+  "attachments": [],
+  "id": "656",
+  "created": "2026-04-29T23:42:53Z"
+}

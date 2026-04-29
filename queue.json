@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-29T23:31:27Z",
+  "last_updated": "2026-04-29T23:42:53Z",
   "tasks": [
     {
       "id": "531",
@@ -1329,10 +1329,21 @@
       "id": "655",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-29T23:31:27Z",
-      "updated": "2026-04-29T23:31:27Z",
-      "summary": "Cycle 97 mistral v10 (b) HP-3 H1 minimal blind test (사용자 주체적 directive)"
+      "updated": "2026-04-29T23:42:11Z",
+      "summary": "[error_NOT_RENDERED] v10 (b) HP-3 H1 DISPROVEN — messages[0].agentId UUID set 무효, same TRPCClientError 'Cannot convert undefined or null to object'. Mission PROTECTED. New diagnostic: top-level input.agentId + input.agentsApiAgentId undefined (HP-3 H2 candidate).",
+      "archived": true,
+      "archived_at": "2026-04-29T23:42:11Z"
+    },
+    {
+      "id": "656",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-29T23:42:53Z",
+      "updated": "2026-04-29T23:42:53Z",
+      "summary": "Cycle 97 mistral v11 (b2) HP-3 H2 top-level agentId test (#655 evidence-driven)"
     }
   ]
 }
