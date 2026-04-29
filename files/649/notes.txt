@@ -1,0 +1,82 @@
+Request #649 — mistral v8 HP-3 SuperJSON consistency fix verification
+Date: 2026-04-29 14:50 KST
+Test PC: Windows 11 (incognito Chrome)
+
+=== VERDICT ===
+WINDOWS_MCP_VERDICT: FAILED
+Breakthrough: NO — TRPCClientError "Unknown error" still present, NO warning bubble rendered, normal Mistral answer was delivered.
+
+=== EVIDENCE ===
+
+1. NETWORK — message.newChat?batch=1
+   - URL: https://chat.mistral.ai/api/trpc/message.newChat?batch=1
+   - Method: POST
+   - Status: 200 OK
+   - Response Size: ~0.9 kB (within ~792B expected envelope range)
+   - Content-Type: application/json
+   - Response body STRUCTURE confirms v8 envelope:
+     * "id": "22c3cbae-..."
+     * "role": "assistant"
+     * "content": "..."
+     * "contentChunks": [{"type": "text", "text": ...}]
+     * "status": "active"
+     * "generationStatus": ...
+     * "createdAt": "2026-..."
+     * "files": []
+     * "followups": []
+     * "reaction": ...
+     * "visibility": ...
+     * "version": 0
+     * "versionCount": ...
+     * "isAcceleratedAn..."
+     * "parentVersion": ...
+     * "turn": 1
+     * "meta": { "values": ... }
+
+2. CONSOLE — TRPCClientError STILL PRESENT
+   << mutation #6 message.newChat
+   Object:
+     context: {}
+     elapsedMs: 258
+     input: {content: Array(1), agentId: undefined, agentsApiAgentId: undefined, ...}
+     result: TRPCClientError
+       cause: undefined
+       data: undefined
+       meta: undefined
+       name: "TRPCClientError"
+       shape: undefined
+       message: "Unknown error"
+       stack: "TRPCClientError: Unknown error\n  at e.from (https://chat.mistral..."
+
+3. DOM
+   - User prompt rendered: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+   - Assistant bubble rendered with NORMAL Korean answer about RRN structure (생년월일, 성별, 출생지) — NOT a warning
+   - Bypass confirmed: APF intercept failed; Mistral backend processed prompt normally
+   - APF warning bubble: NOT visible
+
+=== INTERPRETATION ===
+- v8 envelope IS being delivered with correct structure (size ~0.9kB, status active, content/contentChunks present)
+- HOWEVER tRPC client STILL throws "Unknown error" → SuperJSON deserialize / response shape mismatch persists
+- The fact that input shows "agentId: undefined, agentsApiAgentId: undefined" suggests these undefined fields exist in the REQUEST PAYLOAD which is normal — but possibly the response SuperJSON meta also still has issues
+- Result: Mistral falls back to normal stream (StreamGenerate path or similar), bypassing APF entirely
+- v8 fix did NOT resolve the issue; same regression pattern as v7
+
+=== ARTIFACTS ===
+- 01_before.png — initial Gemini state (before navigation)
+- 02_after_send.png — after first paste attempt (clipboard didn't paste)
+- 03_final_state.png — Network panel with message.newChat selected
+- 04_network_row.png — duplicate of 03
+- 05_response_headers.png — Headers panel (200 OK, application/json)
+- 06_response_body.png — Response body showing v8 envelope structure
+- 07_console.png — Console showing TRPCClientError mutation error
+
+=== TIMING ===
+- Hard cap: 8 min — kept within budget
+- Submission method: First Ctrl+V failed (textarea not focused due to Network panel click), retried with direct Type tool succeeded
+
+=== RECOMMENDATION ===
+Progress vs v7: SAME — TRPCClientError "Unknown error" still throws on mutation #6 message.newChat.
+Next iteration (v9?) needs to either:
+  (a) further audit SuperJSON meta.values entries, possibly comparing against a real Mistral success response captured live
+  (b) inspect what shape the tRPC client EXPECTS (specific required fields, version markers)
+  (c) consider whether response top-level shape (e.g. tRPC batch wrapper [{...}] vs single {...}) is also being mismatched

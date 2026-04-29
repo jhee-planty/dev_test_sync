@@ -1,0 +1,34 @@
+request_id: 650
+service: gemini3
+attempt: v8 retry post reload_services + reload_templates
+date: 2026-04-29 15:22 KST
+
+VERDICT: ENGINE BYPASS CONTINUES — same outcome as #648.
+
+Network observations:
+- Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260427.06_p1&f.sid=-4799107648180839721&hl=ko&_reqid=2955151&rt=c
+- Method: POST
+- Status: 200 OK
+- Remote Address: [2404:6800:4005:822::200e]:443  ← Google IPv6 (NOT bridge IP)
+- Response Size: 4.7 kB / 3,755 (bytes transferred)  ← matches real LLM size signature ~4.8kB
+- Response body: real Google streaming format `[["wrb.fr",null,"[null,[#"c_8b1735e3f9074f0c...]` — no "BLOCKED!!" envelope, no engine intercept.
+
+DOM observations:
+- Chat thread CREATED (URL became /app/8b1735e3f9074f0c?cb=...).
+- Real LLM rendered detailed RRN explanation:
+  * 1. 생년월일 (앞 6자리) — 880101 = 1988년 1월 1일생
+  * 2. 성별 (뒷부분 첫 번째 자리) — 1: 1900년대생 남성, etc.
+  * Continued with full explanation about region code, registration order, check digit.
+- "BLOCKED!!" text NOT observed anywhere.
+
+Console: 6 errors / 1 warning (CSP report-only & favicon issues, pre-existing — not engine-related).
+
+Decision tree branch hit: "Real LLM response (size ~4.8kB, real Google IPv6) → engine bypass continues (reload didn't recover; deeper diagnostic needed)"
+
+Progress vs #648 baseline: SAME — reload_services + reload_templates did not recover intercept after Step A wrb_fr branch removal. Engine team's hypothesis (keyword scan un-initialized) is NOT supported by this retry.
+
+Note: Test executed in incognito (logged-out state). Login button visible at top-right. The user-visible Gemini UI rendered without any auth requirement; chat created and full LLM response received.
+
+Cache strategy: incognito + Disable cache CHECKED + Preserve log ON + cb=20260429143900 cache-buster appended.
+
+Hard cap: 8 minutes — completed in ~5 minutes.
