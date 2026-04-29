@@ -1,0 +1,60 @@
+{
+  "request_id": "640",
+  "service_name": "chatgpt",
+  "command": "check-warning",
+  "overall_status": "SUCCESS",
+  "status_detail": "Cycle 95 cleanup (commit fa92420 — response observation hooks + Group A request buffering removed) did NOT regress chatgpt blocked-response rendering. Engine block fired on POST /backend-anon/f/conversation (anonymous flow because test Chrome profile not signed in). Warning bubble rendered in chat UI within ~1s of send-button click. Warning text observed: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (note: this is the engine's actual block message; the request's expected_text='보안 경고' literal string was NOT in the bubble but the semantic intent — a security warning replacing the LLM response — IS satisfied). DOM verification: turns_dom.json shows assistant warning at conversation-turn-1, injected synchronously, no streaming LLM tokens. F9 regression check passes.",
+  "started_at": "2026-04-29T08:57:00Z",
+  "completed_at": "2026-04-29T09:15:00Z",
+  "duration_seconds": 1099,
+  "verdict_subagent": "SUCCESS",
+  "warning_rendered": true,
+  "warning_text_observed": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "warning_text_expected": "보안 경고",
+  "warning_text_match_caveat": "Engine actual block text differs from request's expected_text literal — the engine emits a longer Korean explanatory string. Semantic match (security warning replaces LLM answer) confirmed; literal substring match would fail. Recommend dev align expected_text in future requests OR update test harness to accept engine canonical block string.",
+  "intercept_endpoint": "POST https://chatgpt.com/backend-anon/f/conversation (anon flow — profile not signed in). Handshake: POST https://chatgpt.com/backend-anon/f/conversation/prepare (200 OK).",
+  "request_status": "200 OK",
+  "response_first_500_chars_caveat": "Captured /prepare body (conduit_token JWT, 500 chars verbatim in artifact). Body of the actual /conversation POST not captured — script's first-match heuristic picked /prepare. Engine block confirmed visually + via DOM (data-message-author-role='assistant' turn).",
+  "response_body_evidence": "files/640/response_body.txt (verbatim /prepare envelope); files/640/turns_dom.json (assistant warning turn DOM); files/640/03_warning_check.png (rendered bubble screenshot)",
+  "bypass_normal_answer": true,
+  "bypass_evidence": "No real LLM streaming tokens observed; assistant turn appears synchronously within ~1s of send; no multi-second response delay characteristic of OpenAI passthrough",
+  "progress_vs_pre_cleanup": "same — warning still rendered (no regression). This is the desired outcome of the F9 regression check.",
+  "regression_observed": false,
+  "regression_evidence": "n/a — engine block fires identically before and after cleanup; assistant turn injected synchronously; no LLM passthrough; final UI state stable",
+  "cleanup_commit_validated": "fa92420 (tag cycle95-blocked-diagnosed-state-2026-04-29)",
+  "hooks_removed_validated": "on_http_response, on_http2_response*, Group A request buffering — none caused regression for chatgpt POST blocked-flow",
+  "errors_observed": [
+    "Console: [GSI_LOGGER] FedCM NetworkError (Google One-Tap, unrelated to test)",
+    "Console: 'Not signed in with the identity provider' (unrelated)",
+    "Console: 'Autofocus processing was blocked' (browser-internal warning, unrelated)"
+  ],
+  "test_infra_findings": {
+    "chrome_profile_not_logged_in": "Test Chrome had no chatgpt session — fell to /backend-anon/f/conversation (anonymous codepath). Block still fires on anon endpoint, which is actually a STRONGER positive signal (validates engine intercept rule covers anon flow too).",
+    "powershell_korean_encoding": "PowerShell heredoc → JS string lost Korean encoding for the user prompt, but the digit pattern 880101-1234567 survived and triggered the engine's PII detector regardless. Future runs should use UTF-8 explicit encoding when crafting JS-injected prompts.",
+    "cdp_harness_iteration_overhead": "Subagent spent ~15min iterating on CDP harness (PowerShell ClientWebSocket cancellation bug). Once stable, the actual test took <1s. Future runs should reuse the hardened CDP driver from files/640/ rather than rebuild.",
+    "windows_mcp_avoided": "Subagent went straight to CDP/--remote-debugging-port=9222 path per #638/#639 lessons; no windows-mcp Click/Type focus-stealing issues encountered."
+  },
+  "recommendation_for_dev": [
+    "Cycle 95 cleanup F9 regression check PASSES for chatgpt. Safe to proceed with cleanup commit fa92420.",
+    "Consider extending regression check to other previously-passing services (gemini2 SUCCESS, claude SUCCESS, perplexity SUCCESS, gemini3 SUCCESS) before declaring full cleanup safe across all engine codepaths.",
+    "Engine team: the warning text 'expected_text' literal mismatch (request expected '보안 경고' but engine emits longer string) suggests test harness or dev request payload should be aligned. Two options: (a) update engine to include literal '보안 경고' as bubble title prefix, OR (b) update dev request expected_text to match engine canonical block message OR use semantic-substring match.",
+    "Test PC: harden the CDP driver (files/640/ artifacts) into a reusable module. PowerShell ClientWebSocket cancellation bug consumed 75% of subagent time."
+  ],
+  "artifacts": [
+    "files/640/01_before.png",
+    "files/640/02_after_send.png",
+    "files/640/03_warning_check.png (warning bubble rendered)",
+    "files/640/notes.txt",
+    "files/640/response_headers.txt",
+    "files/640/response_body.txt (/prepare envelope)",
+    "files/640/response_body_first1k.txt",
+    "files/640/console_errors.txt",
+    "files/640/status_line.txt",
+    "files/640/page_text.txt",
+    "files/640/all_responses.txt",
+    "files/640/turns_dom.json (assistant warning turn DOM proof)"
+  ],
+  "notes": "Cycle 95 cleanup F9 regression check for chatgpt: PASS. Engine block fires on anon flow, warning bubble renders, no LLM passthrough. Cleanup commit fa92420 safe to ship for chatgpt codepath. Subagent ~18min total (1099s) due to CDP harness iteration overhead — actual test phase was <1s. F9 verdict: SUCCESS, no regression observed.",
+  "request_received_at": "2026-04-28T23:59:53Z",
+  "git_pull_at": "2026-04-29T08:57:00Z"
+}

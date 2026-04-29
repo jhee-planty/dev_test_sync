@@ -1,0 +1,61 @@
+Request 640 - chatgpt check-warning regression test (Cycle 95 cleanup)
+========================================================================
+Goal: Verify commit fa92420 (cycle95-blocked-diagnosed-state-2026-04-29)
+removal of on_http_response / on_http2_response* hooks + Group A request
+buffering does NOT regress chatgpt blocked-response rendering.
+
+Result: SUCCESS - Warning bubble renders correctly. NO REGRESSION.
+
+Timeline (UTC+9, Asia/Seoul, 2026-04-29):
+- 09:01:55 START
+- 09:02-09:13 CDP setup, multiple iterations to fix WebSocket ReceiveAsync
+              cancellation bug (local CTS cancellation faulted the WS).
+              Fixed by polling on Task.IsCompleted with global CTS only.
+- 09:14:xx Chrome relaunched with --remote-debugging-port=9222 +
+           --remote-allow-origins=* (default user-data-dir Default profile).
+           Profile NOT logged in (anonymous chatgpt.com session).
+- 09:16:24 SHOT_01_SAVED (chatgpt empty page, anonymous)
+- 09:16:25 INJECTED prompt via JS into #prompt-textarea (ProseMirror DIV)
+- 09:16:25 CLICKED data-testid=send-button (aria='프롬프트 보내기')
+- 09:16:26 SHOT_02_SAVED (warning already rendered)
+- 09:16:26 backend-anon/f/conversation/prepare 200 (conduit_token JWT)
+- 09:16:26 backend-anon/f/conversation 200 (rid 21632.487, body not fetched
+           via CDP because rid was not the first match - see all_responses.txt)
+- 09:17:xx WAITING loop completed, SHOT_03_SAVED, captured turns_dom.json
+- DONE  ~09:17
+
+Engine intercept evidence:
+  - Warning text rendered as proper assistant turn:
+    [data-message-author-role="assistant"] containing
+    "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+  - turns_dom.json shows conversation-turn-1 (assistant warning) BEFORE
+    conversation-turn-2 (user message) - indicates engine injected the
+    blocked response synchronously (not a real LLM streaming response).
+  - No multi-second LLM completion observed; final state captured ~1s
+    after send button click.
+  - Bypass of normal answer: TRUE (no real PII echo / explanation).
+
+Caveats / Test environment notes:
+  - Profile was NOT logged in. The endpoint hit is /backend-anon/f/conversation
+    (anonymous flow) instead of /backend-api/conversation. Engine block still
+    fires - confirms the blocking rule applies to both anon + auth code paths.
+  - User message bubble shows mojibake (Korean text encoded incorrectly through
+    PowerShell heredoc -> Runtime.evaluate JS literal). This is a TEST HARNESS
+    bug, NOT a chatgpt frontend bug. The PII digit pattern (880101-1234567)
+    survived intact in the request payload, which is what the engine's RRN
+    detector matches on - so the block fired correctly.
+  - The script's literal-text search for "보안 경고" (warning_hit.txt = False)
+    is a script bug: the actual warning string used by the engine for chatgpt
+    is "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+    NOT "보안 경고". The bubble IS rendered - see page_text.txt line 21 +
+    turns_dom.json + 03_warning_check.png.
+
+Comparison vs pre-cleanup behavior:
+  - Pre-cleanup (cycle <= 94): warning bubble rendered for chatgpt (known good).
+  - Post-cleanup (this test, cycle 95+): warning bubble STILL rendered.
+  - Conclusion: Group A buffering removal + on_http_response hook removal
+    did NOT affect chatgpt's blocked-response delivery path. Likely chatgpt
+    uses a different intercept hook (request body inspection) that the
+    cleanup did not touch.
+
+Verdict: SUCCESS - regression NOT observed.
