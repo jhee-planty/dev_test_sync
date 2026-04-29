@@ -1,0 +1,83 @@
+Request #641 RETRY — huggingface check-warning A4 regression test
+=================================================================
+Result: FAILED (NEEDS_USER_SESSION — same blocker as initial attempt)
+Wall-clock: ~6 minutes across three harness iterations
+
+ROOT CAUSE
+==========
+The HuggingChat OAuth grant is NOT present in the test PC's Chrome default profile.
+User was alerted to re-login and likely completed huggingface.co marketing-site login,
+but the chat/conversation OAuth scope (openid profile inference-api read-mcp read-billing)
+remains ungranted, so any access to /chat/ that triggers a server-side auth check
+redirects to /login.
+
+EVIDENCE TIMELINE
+=================
+T+0   Discovered Chrome at https://huggingface.co/login (OAuth flow already in progress)
+T+1   auth_check.ps1: navigated huggingface tab to /chat/ — saw textarea[placeholder="Ask anything"] briefly (client-side render before auth gate fires)
+T+2   cdp_retry.ps1 run: AUTH probe passed (textarea visible), DISMISSED 'Start chatting'
+      → click triggered OAuth → instant redirect to /login → focus failed (NO_TEXTAREA)
+      → resulting screenshot 06 = login form
+T+3   cdp_retry2.ps1 run: skipped modal click, used ESC instead, navigated /chat/
+      → AUTH probe passed → 1 loadingFailed event captured:
+         net::ERR_ABORTED canceled=True type=Document method=GET url=/chat/login?next=/chat/
+         (this is the OAuth redirect being aborted by Page.navigate, NOT a RST_STREAM)
+      → focus + insertText + DOM-set-value all returned NO_TARGET / NO_VAL
+      → page transitioned to /login during the operation
+T+4   cdp_retry3.ps1 run: explicit DOM remove of welcome modal succeeded (REMOVED:1)
+      → TEXTAREAS probe: [{i:0, p:"Ask anything", visible:true, inViewport:true}] — confirmed present
+      → FOCUS=FOCUSED:i=0:p=ask anything — focus succeeded
+      → DOM_INJECT immediately after = NO_TARGET → page redirected mid-operation
+      → final screenshot 06 = HuggingFace Log In page ("Log in with your Hugging Face account to use HuggingChat")
+
+CONCLUSION
+==========
+The textarea visibility is transient — SvelteKit chat shell renders before the SSR auth
+check returns the redirect, then a client-side router.replace() shoves the page to /login.
+Window between visibility and navigation is ~1-2 seconds, smaller than CDP roundtrip
+for focus + insert + verify.
+
+The login screen explicitly states: "Log in with your Hugging Face account to use HuggingChat."
+This is the OAuth consent gate for the chat scope — distinct from the marketing-site login.
+
+CDP HARNESS VALIDATION
+======================
+- WebSocket CDP connection: WORKING
+- Page.navigate, Network.enable, Runtime.enable, Network.loadingFailed capture: WORKING
+- Korean Unicode injection paths (Input.insertText + DOM setter String.fromCodePoint): WORKING in isolation
+- Modal DOM removal: WORKING (REMOVED:1 confirmed)
+The harness is fully functional; the blocker is environmental.
+
+RST_STREAM EVIDENCE — TASK GOAL
+================================
+NOT OBSERVABLE: no POST /chat/conversation/{uuid} was sent because the chat shell never
+reached an interactive state. Engine A4 cleanup behavior on huggingface remains UNTESTABLE
+without an authenticated OAuth session.
+
+The single Network.loadingFailed event captured was an aborted GET /chat/login redirect,
+not the RST_STREAM signature on a POST /chat/conversation/{uuid} that the regression test
+needs to verify.
+
+RECOMMENDATION
+==============
+NEEDS_USER_SESSION — User must complete the FULL HuggingChat OAuth consent on test PC:
+1. Open https://huggingface.co/chat/ in normal Chrome (not the CDP tab)
+2. Click 'Login' → enter HF credentials → on the OAuth consent screen, click 'Authorize'
+3. Verify chat textarea is interactive WITHOUT redirect
+4. Then re-dispatch this request
+
+ARTIFACTS
+=========
+- 04_retry_before.png — pre-modal-removal (welcome modal overlay visible, textarea behind)
+- 05_retry_after_send.png — login page (post-redirect)
+- 06_retry_warning_check.png — login page (final, "Log in with your HF account to use HuggingChat")
+- retry_status_line.txt — "NO_CONVERSATION_REQUEST_OBSERVED"
+- retry_response_headers.txt — N/A (no POST issued)
+- retry_response_body.txt — N/A
+- retry_console_errors.txt — minimal
+- retry_turns_dom.json — []
+- retry_loading_failed.txt — 1 entry (aborted /chat/login redirect, NOT RST_STREAM)
+- retry_all_responses.txt — only static asset GETs
+- retry_page_text.txt — login form text
+- cdp_retry.ps1 / cdp_retry2.ps1 / cdp_retry3.ps1 — three iterations of harness
+- _retry.log / _retry2.log / _retry3.log — execution logs

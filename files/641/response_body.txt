@@ -1,0 +1,5 @@
+N/A — no chat conversation request reached.
+
+The session is not authenticated for HuggingChat. The /chat/ welcome modal forced an OAuth flow that landed on the /login page before the test could send any prompt. Therefore no POST /chat/conversation/{uuid} body to capture.
+
+The only chat-API response captured during the run was an empty (`<empty>`) conversation-list response from the initial chat-page hydration. This is unrelated to the APF intercept target and is kept only as proof-of-network-capture.

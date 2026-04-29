@@ -1,0 +1,3 @@
+N/A — no POST /chat/conversation/{uuid} request was issued because the SvelteKit chat
+shell client-side-redirected to /login before any send action could complete.
+See retry_notes.txt for details.

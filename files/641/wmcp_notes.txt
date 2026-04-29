@@ -1,0 +1,42 @@
+request_id: 641
+attempt: windows-mcp pivot (3rd attempt for #641)
+date: 2026-04-29 09:54-09:56 KST
+operator: Claude Code agent on test PC
+
+TIMELINE
+========
+T+0 (09:54)  Initial Screenshot — Active foreground was Claude Code UI on Desktop 2, Chrome icon visible in taskbar.
+T+~10s       Click on Chrome taskbar icon (1211,1050) -> Chrome came forward. Two tabs: "data" (DNS_PROBE_FINISHED_NXDOMAIN, leftover from earlier CDP attempt) and "Hugging Face — The AI commun...".
+T+~20s       Clicked HuggingFace tab — landed on huggingface.co/login?next=https%3A%2F%2Fhuggingface.co%2Foauth%2Fauthorize%3Fclient_id%3D8f1a1d63-... showing the standard "Log In With your Hugging Face Account" form. Banner: "Log in with your Hugging Face account to use HuggingChat."
+T+~35s       Tried direct nav to https://huggingface.co/chat/. Welcome modal appeared ("Welcome to HuggingChat ... Start chatting"). Clicked "Start chatting".
+T+~50s       After clicking "Start chatting" the page redirected back to the OAuth /login gate (same login form). Confirms guest session has no chat permission and the user is NOT signed in to Hugging Face on this Chrome profile.
+T+~60s       Opened DevTools (F12), switched to Console, evaluated: document.cookie + ' || URL=' + location.href
+             Result (verbatim from screenshot wmcp_07_console.png):
+               '__stripe_mid=46c4cde6-ceae-4f8b-bae1-646c6c4e5c44b61c72; __stripe_sid=33db9024-0174-4bd6-a581-23753e83767b6758c3; aws-waf-token=7c33b4e2-cfed-46bf-9b9a-ed41d7c601d9:AgoAdqQE/84WAAAA:TNZ2/+JpZIWXGoieikzhuLSBpO7ctJwXaBt7d2gpQJwOMG91bvT3KiNWKJrLUY/r6Ag3j34G93F1AXGh5jMv9YUw3A/IudeGQt33HEldmYuxmqafz7WXBEj5c3HTcR5pSlFQC4XLwNQFdnt03a8rKvDutCPBQxtf7d6mS7RmtMkUpfGYnDL3PD1neSpypKnTLNY5jpvXXosLZsIrdIxKBD6KwYR/OaF/ma9vJMWeoaAVFo9+CrEXwdHtTIus4hB/U9R25Ps= || URL=https://huggingface.co/login?next=https%3A%2F%2Fhuggingface.co%2Foauth%2Fau...'
+
+KEY FINDING
+===========
+Premise of the request — "user has Chrome window logged into HuggingChat" — is FALSE for this Chrome session. The visible HF tab is on the OAuth login gate, and document.cookie contains only stripe + aws-waf tokens — NO `hf-chat` / `token` / session cookie. The same auth wall that blocked CDP attempts 1 & 2 also blocks the windows-mcp pivot, because the wall is at the Chrome profile / cookie-jar layer, not the automation method.
+
+Therefore engine A4 (h2_hold_request=1 cleanup, delayed_ES + RST_STREAM forward) was NOT exercised — no chat textarea reached, no PII prompt submitted, no POST /conversation issued, no warning render attempted.
+
+Recommended next steps (NOT executed here, out of cap scope):
+  (a) Have the user log into HuggingChat in this Chrome window manually, then re-dispatch #641. ~30s of user action and the test should run cleanly.
+  (b) OR test against a service that does not require login (e.g. perplexity.ai guest mode, claude.ai guest), if A4 behavior is service-agnostic.
+  (c) OR persist a logged-in profile snapshot so future agent runs inherit the session.
+
+ARTIFACTS
+=========
+- wmcp_01_before.png         — full screen at start (Claude Code UI foreground)
+- wmcp_02_after_send.png     — HuggingFace login gate after Chrome focus + tab switch
+- wmcp_03_chat_state.png     — HuggingFace login gate (post "Start chatting" redirect)
+- wmcp_07_console.png        — DevTools Console showing document.cookie + URL evidence (NO hf session cookie, URL=/login)
+  (wmcp_04/05/06 not produced — never reached chat textarea / network row / response body to capture)
+
+ENGINE A4 VERDICT
+=================
+unknown — could not exercise. Test bypassed at auth gate before any traffic to /api/conversation could be generated. No regression evidence either way.
+
+DURATION
+========
+~3 min (well under 8min cap). Stopped early because retrying further on this Chrome profile is futile without user login action.

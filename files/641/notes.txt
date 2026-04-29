@@ -1,0 +1,79 @@
+Request #641 — huggingface check-warning A4 regression test
+Cycle 95 cleanup A4: engine no longer honors h2_hold_request=1 (huggingface had this set).
+Now uses delayed_ES + RST_STREAM to abort instead of holding POST forwarding.
+
+================================================================
+TIMELINE
+================================================================
+T+0  Started; checked existing artifacts in #640 (cdp_run.ps1 reusable from chatgpt run)
+T+0  CDP not running on port 9222
+T+1  Launched Chrome --remote-debugging-port=9222 with fresh profile (.chrome_cdp_profile) on huggingface.co/chat/
+T+1  CDP up, but page redirected to /join (sign-up form), not chat — fresh profile has no HF cookies
+T+2  Adapted #640's cdp_run.ps1 → cdp_run.ps1 (this dir) for huggingface (modified URL filter, input selector, conversation URL pattern, added Network.loadingFailed capture for RST_STREAM)
+T+3  First run: page was sign-up form, INJECT picked the "AI & ML interests" textarea (wrong target), clicked the form's submit button — landed on "Complete your profile"
+T+4  Killed chrome, relaunched with default Chrome profile ($env:LOCALAPPDATA\Google\Chrome\User Data, profile=Default) — this profile shows HuggingChat header (logged-in cookies present at site level)
+T+5  Second run: chat tab opened but a "Welcome to HuggingChat" modal blocked the UI. Driver dismissed via clicking 'Start chatting' button. After click → OAuth redirect → /login page. **Session is NOT actually authenticated for HuggingChat OAuth scope.**
+T+6  Korean Unicode insertText path verified working (PROMPT_LEN=43, FIRST=내 주민등 — proper Korean encoding via CDP Input.insertText with codepoint array). However no chat textarea ever existed (we landed on login form).
+T+7  Captured artifacts from current state (login page); emit FAILED.
+
+================================================================
+KEY FINDING — TEST BLOCKER
+================================================================
+HuggingChat now requires authenticated OAuth session. The default Chrome profile on this test PC has HF marketing-page cookies but the chat OAuth session has expired.
+
+The "Start chatting" welcome-modal CTA does NOT just close the modal — it triggers an OAuth authorize flow that, lacking a valid session, redirects to /login. There is no chat textarea on the resulting page.
+
+This is the same `login_required: true` constraint documented in
+shared-skills/genai-apf-pipeline/services/huggingface_check_warning_455_template.json
+("OAuth 로그인 필요. #441에서 jhee28 계정 로그인 확인됨, ... 세션 만료 시 로그인 스크린샷만 캡처 후 즉시 중단하고 NEEDS_USER_SESSION 보고").
+
+================================================================
+RST_STREAM / partial-body evidence
+================================================================
+Not observable: no POST /chat/conversation/{uuid} was sent because we never reached the chat UI to trigger one. Network.loadingFailed events: 0. No ERR_HTTP2_PROTOCOL_ERROR or ERR_INCOMPLETE_CHUNKED_ENCODING in console.
+
+================================================================
+WHAT WAS CONFIRMED
+================================================================
+1. CDP harness from #640 adapts cleanly to huggingface (driver runs, screenshots, network capture, console capture all functional).
+2. Korean Unicode injection via CDP Input.insertText (codepoint array) preserves encoding correctly — VERIFY=내 주민등 (4 chars matched).
+3. No CDP/runtime issues; the blocker is purely HuggingChat session state.
+
+================================================================
+WHAT WAS NOT VERIFIED (regression goal)
+================================================================
+- Chat-bubble warning render with "차단" — could not test (no chat UI access).
+- POST /chat/conversation/{uuid} request shape, status, body — not generated.
+- Real LLM response suppression (RST_STREAM) — not observable.
+- Engine A4 cleanup behavior on huggingface — UNTESTABLE without OAuth session.
+
+================================================================
+RECOMMENDATION
+================================================================
+NEEDS_USER_SESSION: User on dev PC must manually re-login as jhee28 in the test PC's Chrome default profile, then re-dispatch this request. Suggest the cowork-remote skill emit a `needs-login` status code so dev side can prompt user login before re-pushing #641.
+
+Alternative (parking-lot): provision a local credentials store (gitignored) for re-login automation, or use a longer-lived test account with extended-session opt-in.
+
+================================================================
+ARTIFACTS
+================================================================
+- 01_before.png — welcome modal pre-dismiss
+- 02_after_send.png — login page (post 'Start chatting' click)
+- 03_warning_check.png — login page (final state, no chat reached)
+- page_text.txt — DOM text (login form)
+- response_headers.txt — N/A (no POST conversation request)
+- response_body.txt — N/A
+- response_body_first1k.txt — N/A
+- status_line.txt — "NO_CONVERSATION_REQUEST_OBSERVED"
+- console_errors.txt — 1 line, no RST_STREAM signal
+- turns_dom.json — []
+- loading_failed.txt — empty
+- all_responses.txt — only static asset + login redirect URLs
+- cdp_run.ps1 — original adapted driver
+- cdp_run2.ps1 — improved driver with modal dismiss + Unicode insertText
+- _run.log, _run2.log — driver execution logs
+
+================================================================
+DURATION
+================================================================
+~7 minutes wall clock.

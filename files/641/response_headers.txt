@@ -1,0 +1,18 @@
+N/A — no POST /chat/conversation/{uuid} request was sent during this run.
+
+Reason: HuggingChat OAuth session not present in the test PC's Chrome default profile. The 'Start chatting' welcome-modal CTA triggered an OAuth authorize redirect to /login, blocking access to the chat UI. No conversation submit request was ever generated.
+
+The only chat-related response captured was an unrelated conversation-list GET on first chat-page hydration (kept here for reference, but it is not the targeted endpoint):
+
+REFERENCE-ONLY (NOT THE TARGETED ENDPOINT):
+HTTP 200
+URL: https://huggingface.co/chat/api/v2/conversations?p=1
+METHOD: GET
+MIME: application/json
+content-security-policy: frame-ancestors https://huggingface.co;
+access-control-allow-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+access-control-allow-origin: *
+x-cache: Miss from cloudfront
+content-type: application/json
+
+The targeted POST /chat/conversation/{uuid} endpoint (the APF-intercept target) was NOT exercised because the test never reached the chat UI.

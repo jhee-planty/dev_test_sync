@@ -1,0 +1,22 @@
+﻿Hugging Face
+Models
+Datasets
+Spaces
+Docs
+Pricing
+Log In
+Sign Up
+Log In
+
+With your Hugging Face Account
+
+Log in with your Hugging Face account to use 
+HuggingChat.
+Username or Email address
+Password
+Forgot your password?
+Login
+
+Don't have an account? Sign Up
+
+Unlock SSO with Team & Enterprise

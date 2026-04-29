@@ -1,0 +1,86 @@
+{
+  "request_id": "641",
+  "service_name": "huggingface",
+  "command": "check-warning",
+  "overall_status": "FAIL",
+  "failure_class": "test_infrastructure -- HuggingChat OAuth session absent in test PC Chrome (all profiles checked)",
+  "status_detail": "Cycle 95 cleanup A4 regression for huggingface NOT EXERCISED across 3 attempts. Engine intercept never reached. Root cause is auth — not automation. Verified across CDP attempt 1 (separate profile, /login redirect), CDP attempt 2 (same separate profile, SvelteKit hydration race redirected to /login mid-DOM-op), and windows-mcp attempt 3 (user's real Chrome window — document.cookie shows only stripe + aws-waf tokens, NO HuggingChat session cookie). The /chat/ page renders briefly then router.replace()s to /login because no OAuth token is present. windows-mcp itself worked correctly (Click/Type/Shortcut/Clipboard all succeeded, no focus-steal). The wall is at the cookie-jar layer, not the automation method. Resolution requires user to physically sign in to huggingface.co/chat once in this Chrome window via OAuth Authorize click, then re-dispatch the test.",
+  "started_at": "2026-04-29T09:30:00Z",
+  "completed_at": "2026-04-29T09:50:00Z",
+  "duration_seconds": 1200,
+  "verdict_subagent": "PARTIAL (3rd attempt) — but engine A4 codepath untestable in current state",
+  "attempts_summary": [
+    {
+      "attempt": 1,
+      "method": "CDP separate profile (--remote-debugging-port=9222)",
+      "outcome": "FAIL — Start chatting modal redirected to /login",
+      "duration_s": 420
+    },
+    {
+      "attempt": 2,
+      "method": "CDP separate profile retry (modal-click + ESC + DOM-remove variants)",
+      "outcome": "FAIL — SvelteKit hydration race router.replace()'d to /login",
+      "duration_s": 360
+    },
+    {
+      "attempt": 3,
+      "method": "windows-mcp on user's real Chrome window (per user instruction)",
+      "outcome": "PARTIAL — automation worked (no focus steal), but Chrome cookies lack HuggingChat session; same /login redirect",
+      "duration_s": 180
+    }
+  ],
+  "warning_rendered": false,
+  "warning_text_observed": "not observed",
+  "warning_text_expected": "차단",
+  "intercept_endpoint": "POST https://huggingface.co/chat/conversation/{uuid} (target — never reached in any attempt)",
+  "request_status": "NO_CONVERSATION_REQUEST_OBSERVED -- /login redirect blocked all 3 attempts",
+  "response_first_500_chars": "not captured",
+  "bypass_normal_answer": "unknown (no POST sent in any attempt)",
+  "rst_stream_observed": false,
+  "rst_stream_evidence": "not generated -- no POST /conversation traffic to RST. Only Network.loadingFailed events were aborted /login OAuth redirects from the harness's own Page.navigate calls.",
+  "partial_body_evidence": "not observable -- no POST emitted",
+  "progress_vs_pre_cleanup": "untestable -- gated by auth state, not engine behavior",
+  "regression_observed": false,
+  "regression_evidence": "absence of evidence is not evidence of absence -- A4 regression cannot be ruled out from these runs; need re-test with valid HF session",
+  "automation_validated": "windows-mcp pivot (attempt 3) confirmed: Click, Type, Shortcut (F12, Ctrl+V, Enter), Clipboard.SetText (Korean preserved), Console eval all functional. NO focus-steal observed. Lesson: windows-mcp is viable on this test PC when targeting user's real Chrome window directly (not a separate profile).",
+  "auth_diagnosis": "document.cookie inspection on user's real Chrome at huggingface.co confirmed: only stripe_mid + stripe_sid + aws-waf-token cookies present. Missing: hf-* session cookies, HuggingChat OAuth bearer. User must click OAuth Authorize once after navigating to /chat/login.",
+  "errors_observed": [
+    "/chat/ → /login OAuth redirect (all 3 attempts)",
+    "DNS_PROBE_FINISHED_NXDOMAIN on stale 'data' tab (leftover from earlier CDP run, cosmetic)",
+    "SvelteKit router.replace() race during hydration (CDP attempt 2)"
+  ],
+  "test_infra_findings": {
+    "auth_state_gating": "huggingface (and any login-gated service) requires valid OAuth session in user's actual Chrome window. CDP separate profiles do NOT inherit. Test PC profile state is not currently version-controlled.",
+    "windows_mcp_validated": "windows-mcp on real Chrome works perfectly when prerequisites met (no focus-steal, no coordinate eyeballing failure). Earlier #638/#639 focus-steal symptom was likely caused by Chrome being unfocused initially — once explicitly foregrounded, windows-mcp drives it cleanly.",
+    "recommended_fix": "Three options: (a) user manually clicks Authorize in OAuth flow once in test PC default Chrome, then re-dispatch #641; (b) cowork-remote runtime adds HF auth pre-check before scheduling huggingface check-warning runs; (c) engine team validates A4 via direct integration test against engine (no browser dep) for h2-framing-level regressions."
+  },
+  "recommendation_for_dev": [
+    "Re-dispatch #641 (or new ID) AFTER user completes OAuth Authorize in test PC Chrome at https://huggingface.co/chat/login",
+    "A4 regression check for huggingface remains OUTSTANDING — h2_hold_request=1 ignore behavior + delayed_ES + RST_STREAM still untested",
+    "Engine team can validate A4 alternatively via direct engine integration test (synthetic partial-body POST + RST_STREAM) — eliminates browser auth dependency for h2-framing regressions",
+    "Add 'auth_state_required' field to request envelopes so cowork-remote can pre-check before dispatching, surface NEEDS_USER_SESSION verdict early"
+  ],
+  "artifacts": [
+    "files/641/01_before.png (CDP attempt 1)",
+    "files/641/02_after_send.png (CDP attempt 1)",
+    "files/641/03_warning_check.png (CDP attempt 1)",
+    "files/641/notes.txt",
+    "files/641/cdp_run.ps1",
+    "files/641/cdp_run2.ps1",
+    "files/641/04_retry_before.png (CDP attempt 2)",
+    "files/641/05_retry_after_send.png (CDP attempt 2)",
+    "files/641/06_retry_warning_check.png (CDP attempt 2)",
+    "files/641/retry_notes.txt",
+    "files/641/cdp_retry.ps1",
+    "files/641/cdp_retry2.ps1",
+    "files/641/cdp_retry3.ps1",
+    "files/641/wmcp_01_before.png (windows-mcp attempt 3)",
+    "files/641/wmcp_02_after_send.png",
+    "files/641/wmcp_03_chat_state.png",
+    "files/641/wmcp_07_console.png",
+    "files/641/wmcp_notes.txt"
+  ],
+  "notes": "Cycle 95 A4 huggingface regression FAILED at auth gate across 3 attempts (CDP×2, windows-mcp×1). Engine codepath untested. windows-mcp itself validated as working on this test PC when targeting user's real Chrome. Resolution: user OAuth click required.",
+  "request_received_at": "2026-04-29T00:25:12Z",
+  "git_pull_at": "2026-04-29T09:30:00Z"
+}
