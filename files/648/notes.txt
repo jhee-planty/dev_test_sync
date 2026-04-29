@@ -1,0 +1,41 @@
+Request 648 — gemini3 check-warning Cycle 96 v8 HG-1 native verbatim envelope
+Date: 2026-04-29 14:32~14:35 KST
+Tester: Claude (test PC, windows-mcp)
+
+TIMELINE
+- 14:31 task start; desktop snapshot captured (Mistral tab open prior)
+- 14:32 Ctrl+Shift+N -> incognito window opened (cache-buster, no Google login required for gemini.google.com/app open access)
+- 14:32 navigated to https://gemini.google.com/app -> Gemini landing page rendered (Korean UI, "개인 AI 어시스턴트인 Gemini를 만나 보세요")
+- 14:32 F12 DevTools -> Network tab; Preserve log ON; Disable cache CHECKBOX checked; filter "StreamGenerate"
+- 14:33 clicked chat textarea; pasted RRN prompt via clipboard; Enter
+- 14:33 chat thread created at /app/d57210761eed737b
+- 14:33 assistant bubble began streaming
+- 14:34 stream completed; full LLM answer about RRN structure visible (생년월일 1988-01-01, 성별 digit explanation, etc.)
+- 14:35 Network row inspected: POST .../BardFrontendService/StreamGenerate, 200 OK, xhr, 4.8 kB total, 7.42 s, Remote Address [2404:6800:4005:805::200e]:443 (Google IP)
+
+OBSERVATIONS
+- thread_created: TRUE (URL contains chat ID c_d57210761eed737b)
+- bubble_visible: TRUE (assistant rendered detailed Korean response)
+- "BLOCKED!!" substring: NOT FOUND anywhere in DOM nor response body
+- response_size_bytes: ~4915 bytes (4.8 kB), NOT the expected ~19319 (engine envelope)
+- response is the REAL Gemini LLM answer (explains 880101 = birthdate 1988-01-01, gender digit '1', etc.)
+- request was directly served by Google's gemini.google.com server (remote IP 2404:6800:...) — engine MITM intercept did NOT fire
+
+DECISION TREE RESULT
+- Real LLM response about RRN -> ENGINE BYPASS branch (third option in task spec)
+- Step A regression: ai_prompt_filter.cpp wrb_fr branch removal + reload may have left intercept inactive for gemini.google.com hostname, OR cache-buster incognito mode triggered different TLS/SNI path that the bridge didn't classify as gemini, OR the Step A built/deployed code did not actually load.
+- This is NOT comparable to Cycle 95 silent-drop pattern (Cycle 95 = engine intercept fired and renderer dropped envelope; here engine intercept did not fire at all).
+
+VERDICT
+- v8 native verbatim hypothesis CANNOT be tested because the engine bypass occurred — request reached real Google server.
+- Need: verify etapd is running, ai_prompt_filter loaded, intercept hostname pattern still matches gemini.google.com after Step A rebuild, check apf logs for any "filter not invoked" trace.
+
+ARTIFACTS
+- 01_before.png (gemini app, DevTools+Disable cache visible)
+- 02_after_send.png (immediately after Enter)
+- 03_final_state.png (chat thread + bubble fully streamed; Response tab open)
+- 04_network_row.png (Status 200, 4.8 kB, 7.42 s)
+- 05_response_headers.png (POST URL, Remote Address Google IP)
+- 06_response_body.png (wrb.fr framing with chat ID — real LLM answer)
+- 07_console.png
+- notes.txt
