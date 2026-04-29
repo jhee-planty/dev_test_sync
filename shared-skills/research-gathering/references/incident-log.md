@@ -138,6 +138,29 @@ bash runtime/feedback.sh --report-incident "<description>" \
 
 ---
 
+## Incident 7 — Doc-source drift: skill 인용 명령이 실제 환경에 미존재
+
+**발생**: 2026-04-29 cycle 95 cleanup, Phase 5 L7 부하 측정 중
+
+**사실 관계**:
+- `etap-bench/SKILL.md` §Step 4 와 memory `feedback_etap_dpdk_unavailable.md` 가 `etapcomm etap.total_traffic` 명령을 monitoring 도구로 권고
+- 실제 etap v2.x 환경 호출 결과: `FAILED : Unknown function total_traffic`
+- 영향: 자율 모드에서 부하 측정 시 monitoring metric 수집 실패 → trial-and-error 로 대체 명령 (`ai_prompt_filter.show_stats`, `etap.port_info`, `/proc/PID/status`) 발견
+- 이외 동일 cleanup 에서 발견된 drift:
+    - `etap-testbed/references/module-toggle.md` regex `[^/]*?` 가 path 안 `/` 때문에 매칭 실패 (8일 전 메모 작성 시점에는 검증된 듯하나 환경/규약 변경으로 broken)
+    - `etap-testbed/references/step1-deploy-restart.md` 가 testbed Etap 별도 install 단계 누락 — `etap-build-deploy.sh` 가 테스트 서버만 deploy 하는 구조 변경 미반영
+
+**Root cause**: Skill reference 의 명령/regex/절차가 작성 시점에 정확했어도 (a) etap minor version 변경, (b) 빌드 스크립트 동작 변경, (c) DB 컬럼 schema 변경으로 stale. 검증 metadata 부재.
+
+**본 skill 의 대응 (제안 단계 — 토론 consensus 필요)**:
+- Skill reference 인용 명령에 `<!-- verified: YYYY-MM-DD env=etap-v{X} -->` annotation
+- 6개월 또는 etap minor version bump 시 자동 stale flag → 재검증 trigger
+- Skill 편집 종료 전 `feedback_skill_edit_self_review.md` §"How to apply" 의 7-point grep 의무화 (cycle 95 self-review 누락 사례에서 잔존 2건 추가 발견 — `88ac6c9`)
+
+**Recovery**: `dev_test_sync@3875f08` (drift fix 3 files) + `88ac6c9` (self-review recovery 2 files). 총 5 files 정정.
+
+---
+
 ## 재현 명령 (검증용)
 
 모든 incident 는 동일 transcript 에서 재현 가능:
