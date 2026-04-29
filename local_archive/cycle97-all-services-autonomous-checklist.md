@@ -46,7 +46,13 @@ chatgpt / claude / genspark / blackbox / qwen3 / grok / deepseek / github_copilo
 - [x] #641 (2026-04-29 09:30) — FAIL (3 attempts /login redirect, OAuth session 부재)
 - [x] User OAuth 로그인 완료 (2026-04-29 ~16:45 KST)
 - [x] **#653 push** (`commit 49bf1c7`) — same prompt, post-login retry
-- [ ] **Test PC verdict 대기** (~5-10min, ScheduleWakeup chain)
+- [x] **Engine A4.1 PASS verified** (production etap.log 2026/04/29-16:54:38 KST):
+  - BLOCKED entry on `POST /chat/conversation/69f1b9a8dd49f4fce42d0a48` (application/json)
+  - PII keyword "주민등록번호" detected, type=ssn
+  - prompt id=9727541b-f258-4162-ab06-b4798be90579 (matches #653 inputs)
+  - Production Blocked stat: 3 → 4 (+1) confirmed
+  - **Conclusion**: fa92420 cycle 95 cleanup (h2_hold_request 무시) 후에도 engine intercept 정상. delayed_ES + RST_STREAM 대체 mechanism 동작 OK. A4 engine regression **없음**.
+- [ ] **DOM warning render verdict 대기** (test PC 처리 중, ScheduleWakeup 17:02 chain)
 - [ ] Result archive (`local_archive/2026-04-29/653_*.json`)
 - [ ] State update (pipeline_state.json huggingface entry — 현재 queue 에 없음, 신규 entry 추가)
 - [ ] Verdict 분기:
