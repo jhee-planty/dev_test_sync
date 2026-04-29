@@ -100,10 +100,16 @@ SELECT id, service_name, response_type, LENGTH(envelope_template) AS env_size
 - [x] DB UPDATE envelope_template via UNHEX (id=24, env_size 1563→1561)
 - [x] `etapcomm ai_prompt_filter.reload_templates` — "Response templates (message + envelope) reloaded successfully"
 - [x] Push #654 urgent (commit 6f9c677)
-- [ ] Verdict 분기 (test PC 처리 중, ScheduleWakeup 17:13 chain):
-  - **SUCCESS** (warning bubble rendered) → DONE_candidate
-  - **FAIL no regression** (TRPCClientError persists OR new error, no real LLM fallback) → hypothesis space narrowed to HP-3 H1 metadata gap (HAR 필요), defer mistral
-  - **FAIL + regression** (real LLM PII fallback) → **즉시 v7 HEX revert + reload_templates + #N verify** (v8 incident protocol)
+- [x] **Verdict (#654, 17:15 KST commit 9ed9613)**: **PARTIAL → (a) DISPROVEN**
+  - Wire-OK: envelope 구조적 전달 confirmed (array→object change payload 반영)
+  - Render-FAIL with NEW error class: `TRPCClientError 'Cannot convert undefined or null to object'`
+  - Diagnostic: `?batch=1` endpoint contracts ARRAY response → batch unmarshal `Object.keys(undefined)` TypeError. v7 array IS canonical.
+  - **Mission PROTECTED**: NO real LLM PII fallback (security-wise v7=v9)
+- [x] **v7 HEX restored 17:18 KST** (UNHEX UPDATE + reload_templates OK, env_size 1561→1563B)
+- [x] #654 archive + queue.json status=error_NOT_RENDERED
+- [x] mistral_analysis.md F-7 추가 (cycle 97 (a) DISPROVEN + diagnostic)
+- [x] pipeline_state.json mistral entry next_action: `defer:user_har_for_HP-3_metadata_field_diff_or_M4_authorize_blind_b_or_d`
+- [x] Hypothesis space update: (a) DISPROVEN, (c) DISPROVEN family. Remaining (b)/(d) require HAR M4 / engine work M4.
 
 ### Deferred (HAR 의존)
 - (b) required fields = F-5 H1 metadata gap (agentId/parentId/parentMessageId/vote/model)
