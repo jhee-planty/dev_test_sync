@@ -614,10 +614,11 @@ Stop 진입 시 (Stop hook allow OR self-stop) **반드시** pending request 의
 
 매 action AND queue-state mutation 전 **provenance assertion** 의무. **Goal Drift / Work Fabrication 차단**.
 
-**Provenance 4+1 카테고리** (D19(a)) — 매 action 은 다음 중 하나에 anchor:
+**Provenance 6+1 카테고리** (D19(a) + 26차 D20 mission 확장) — 매 action 은 다음 중 하나에 anchor:
 
 ```
 provenance ∈ {
+  mission:<project>:<outcome>,             # ★ ROOT anchor — apf:warning_visibility:<service> (D20)
   queue:<service>:<next_action>,           # D11 queue entry pop
   directive:current_turn,                  # 사용자 직전 메시지 explicit
   directive:pointer:<path:line>,           # D10/D18 retention with quoted pointer
@@ -625,6 +626,8 @@ provenance ∈ {
   decision_source:<M0/M1/M2/M3/M4>:<id>    # queue entry creation/mutation
 }
 ```
+
+**Mission anchor (가장 우선)** — `mission:apf:warning_visibility:<service>` 가 모든 다른 provenance 의 root. queue / directive / metric / decision_source 는 모두 mission 에 advance 해야 정당.
 
 **자기 점검**:
 
@@ -634,6 +637,42 @@ provenance ∈ {
 - **Debug 작업이면 D14(a) anchor 보유?** → specific service/issue + measurable status transition (예: BLOCKED_undiagnosed → BLOCKED_diagnosed). Generic "protocol reading" / "self-behavior debugging" = fabrication, NOT D14(a) 적용.
 
 **위반 시 cascade**: provenance 없는 action → goal drift 누적 → fabricated work chain → eventually self-imposed cycle summary OR premature stop. 25차 직전 instance: "다음 작업 없어?" → "D17/D18 read" fabricated, self-acknowledged.
+
+---
+
+### Category J: Mission-Anchor Discipline (26차 D20 반영)
+
+매 작업 시작 시 + 사용자 "session 목표가 뭐야?" 류 질문 시 **mission anchor 검증**.
+
+**APF Mission canonical**: `cowork-micro-skills/INTENTS.md §1.5` — "모든 등록 AI 서비스에서 PII 입력 시 사용자 경고 visible".
+
+**자기 점검**:
+
+- **Session goal 응답 시 mechanism 으로 답하는가?** → "cycle 95 cleanup" / "service_queue 진행" / "D-codify" 등 means 로 답 = misclassification. **APF mission 으로 답** 의무.
+- **Sub-task 시작 전 mission anchor 검증?** → "이 next_action 이 mission (warning visible to user) 에 어떻게 advance?" 못 대면 fabrication 의심 + Category I (provenance) 재검증.
+- **status=DONE 도달 verification?** → user-visible warning 실제 검증 (check-warning request 결과). 자기 보고 (status update) 만으로 mission proxy stale 위험.
+- **Means / Mission 혼동 패턴**:
+  - "37/37 DONE" = mission proxy (means measure), NOT mission. 37 services 가 user-visible warning 받는지가 진짜 mission.
+  - "service_queue 진행" = mechanism, NOT mission.
+  - "Phase 1-7 lifecycle" = mechanism, NOT mission.
+  - "cycle N cleanup" = means, NOT mission.
+
+**위반 patterns (instances 4건 누적)**:
+- 22차 cycle 95 stop event: "37/37 DONE" 망각 → 9 candidates 남기고 stop. mechanism 에 흡수.
+- 24차 incident 8: "polling 미도착" + cycle 95 종합 보고 자체 trigger. cycle cleanup = means 인데 goal 로 처리.
+- 25차 D17/D18 read fabrication: governance read = means 인데 goal 로 fabricate.
+- **현재 26차 trigger**: "세션 목표=cycle 95 cleanup" 답변. **cycle 95 cleanup 은 means**. 진짜 mission = APF warning visible. 사용자 직접 정정.
+
+→ 모두 같은 root cause: **APF mission 의 governance anchor 부재 → Claude 가 mechanism 에 흡수**. D20 codify 로 anchor 강제.
+
+**Mission alignment 응답 template**:
+```
+Q: "이 세션의 목표가 뭐야?"
+A: "본 session 의 작업은 APF mission ('모든 등록 AI 에서 PII 입력 시 사용자 경고 visible')
+    에 advance. 현 sub-task 는 [구체 means: cycle N cleanup / specific service debug / etc]
+    이며, 이는 mission 의 [구체 advance: gemini3 warning visible / mistral terminate evaluation /
+    etc] 에 contribute."
+```
 
 ---
 

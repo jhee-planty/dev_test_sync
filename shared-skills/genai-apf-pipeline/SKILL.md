@@ -7,7 +7,19 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 
 # genai-apf-pipeline
 
-**최상위 orchestrator** — Phase 1-7 + policy enforcement + service queue 관리.
+## ★ APF Mission (canonical anchor, D20 26차)
+
+**APF 의 본질 mission**: **모든 등록 AI 서비스에 대해 PII (민감 정보) 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시.**
+
+> 사용자 원문 (2026-04-29): "이 세션의 목표는 APF 를 통해 프롬프트에 민감 정보 포함 시 사용자에게 경고 문구를 보여주는 것이 목표야"
+> 사용자 원문 (2026-04-28): "APF 는 등록된 모든 AI 프롬프트를 검사할 수 있어야 해."
+
+이 mission 이 본 skill 의 모든 sub-task (Phase 1-7) / mechanism (service_queue / next_action / status) / decision 의 **anchor**. 모든 means (lifecycle / phase / status transition / cycle cleanup) 는 본 mission 에 advance 해야 정당.
+
+→ **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` (D20 codify)
+→ **Subordinate ref**: `apf-operation/docs/apf-technical-limitations.md` (D14b, 시도 catalog)
+
+**최상위 orchestrator** — Phase 1-7 + policy enforcement + service queue 관리. 위 mission 의 operational implementation.
 
 ## 기본 인프라
 

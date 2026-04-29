@@ -256,6 +256,50 @@ bash runtime/feedback.sh --report-incident "<description>" \
 
 ---
 
+## Incident 10 — Session Goal Misclassification (mechanism→mission)
+
+**발생 일시**: 2026-04-29 KST (25차 D19 codify 후 session)
+
+**증상**:
+- 사용자 Q: "이 세션의 목표가 뭐야?"
+- Claude 답변: "Primary goal: Cycle 95 cleanup verified state 확보 + commit + ship..."
+- 사용자 정정: "이 세션의 목표는 APF 를 통해 프롬프트에 민감 정보 포함 시 사용자에게 경고 문구를 보여주는 것이 목표야.. 확인이 안돼?"
+
+**사실 관계**:
+- D19 codify 직후 (25차)
+- 본 session 의 cumulative 작업: cycle 95 cleanup commits + 23/24/25차 D-codify + watchdog 양쪽 sync 등 모두 mechanism (means)
+- 본질적 mission ("APF 가 모든 등록 AI 에서 PII 경고 표시") 으로 답하지 못함
+
+**Multi-violation 분석** (4 patterns 진화의 4번째):
+- **22차**: cycle 95 stop event — "37/37 DONE" mission proxy 망각
+- **24차**: incident 8 — "polling 미도착" + cycle 95 종합 보고. cycle cleanup = means
+- **25차**: D17/D18 read fabrication. governance read = means
+- **26차**: 본 instance — "session goal = cycle 95 cleanup" 답변. **cycle cleanup = means 명백**
+
+**Root cause** (4 patterns 공통):
+- **APF mission 의 governance anchor 부재** — INTENTS §1 = Project A (cowork-micro-skills) 만, APF mission = apf-technical-limitations.md L3 단일 line 외 anchor 부재
+- **D-series (D11-D19) 모두 mechanism 측면** — autonomous execution / canonical path / provenance 등. **mission 자체 anchor 안 됨**
+- **5 APF skills mission word usage = 0** (mission/goal/objective/목표/존재 이유)
+- 매 session 시작 시 Claude 가 mechanism 만 read → mechanism 으로 사고 → mechanism 으로 답
+
+**Recovery actions (26차 D20 codify)**:
+- **D20(a) Mission Anchor Codification**: APF mission canonical 위치 (INTENTS §1.5 + genai-apf-pipeline/SKILL.md 상단) explicit. D19(a) provenance 에 `mission:*` root super-anchor 추가.
+- **D20(b) DONE Verification**: status=DONE 정기 user-visible 재검증.
+- **D20(c) Self-Check Category J**: Mission-Anchor Discipline. "session 목표 ?" 질문 시 mission alignment template 의무.
+
+**Recovery commit**: 본 26차 session.
+
+**재발 방지 mechanism**:
+- INTENTS §1.5 → 매 governance loading 시 APF mission canonical 자동 read
+- genai-apf-pipeline/SKILL.md 상단 ★ Mission section → skill triggered 시 첫 visible
+- Self-Check Category J → 작업 시작 + goal 질문 시 mission anchor 검증
+- D19(a) provenance `mission:*` root → mechanism 답변 시 mission alignment 의무
+
+**APF mission canonical** (이번 incident 가 정의):
+> "모든 등록 AI 서비스에 대해 PII (민감 정보) 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시"
+
+---
+
 ## 재현 명령 (검증용)
 
 모든 incident 는 동일 transcript 에서 재현 가능:
