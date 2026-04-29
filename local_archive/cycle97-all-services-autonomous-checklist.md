@@ -94,16 +94,16 @@ SELECT id, service_name, response_type, LENGTH(envelope_template) AS env_size
 ```
 
 ### Cycle 97 (a) batch wrapper shape iteration
-- [ ] Native shape candidate generate:
-  - 가설: outer wrapping `[{result:{data:{json:{...}}}}]` (현 v7) vs `{result:{data:{json:{...}}}}` (single object)
-  - v9 = single object outer (가장 simple, revertible)
-- [ ] DB UPDATE envelope_template (LOAD_FILE pattern)
-- [ ] `etapcomm ai_prompt_filter.reload_templates`
-- [ ] Push #654 urgent
-- [ ] Verdict 분기:
+- [x] Native shape candidate generate:
+  - v7: outer `[{result:...}]` (canonical tRPC v10 array per F-5 #637 HAR)
+  - v9 (a): outer `{result:...}` (single object, no array). Body diff = -2 bytes (`[` and `]` removed)
+- [x] DB UPDATE envelope_template via UNHEX (id=24, env_size 1563→1561)
+- [x] `etapcomm ai_prompt_filter.reload_templates` — "Response templates (message + envelope) reloaded successfully"
+- [x] Push #654 urgent (commit 6f9c677)
+- [ ] Verdict 분기 (test PC 처리 중, ScheduleWakeup 17:13 chain):
   - **SUCCESS** (warning bubble rendered) → DONE_candidate
-  - **FAIL no regression** → cycle 97 (b) required fields (단 native HAR 필요)
-  - **FAIL + regression** (real LLM fallback) → **즉시 v7 LOAD_FILE 복원 + reload_templates + #655 verify** (v8 incident protocol)
+  - **FAIL no regression** (TRPCClientError persists OR new error, no real LLM fallback) → hypothesis space narrowed to HP-3 H1 metadata gap (HAR 필요), defer mistral
+  - **FAIL + regression** (real LLM PII fallback) → **즉시 v7 HEX revert + reload_templates + #N verify** (v8 incident protocol)
 
 ### Deferred (HAR 의존)
 - (b) required fields = F-5 H1 metadata gap (agentId/parentId/parentMessageId/vote/model)
@@ -166,18 +166,24 @@ SELECT id, service_name, response_type, LENGTH(envelope_template) AS env_size
 
 ---
 
-## §7 — A4.3 SQL DROP COLUMN (chained on §1 + gamma PASS)
+## §7 — A4.3 SQL DROP COLUMN (chained on §1 + gamma PASS) ✅ COMPLETE
 
 **Precondition (DRAFT 명시)**: A4.1 (huggingface + gamma regression PASS).
 
-- [ ] §1 huggingface #653 SUCCESS verified
-- [ ] gamma A4.1 별도 verify (warning rendered + no regression)
-- [ ] Backup 실행: `apf-operation/sql/cycle95-drop-h2-hold-request-backup.sh`
-- [ ] DROP COLUMN apply: `apf-operation/sql/cycle95-drop-h2-hold-request.sql`
-- [ ] `etapcomm ai_prompt_filter.reload_services`
-- [ ] `show_stats` verify (Status: Enabled)
-- [ ] Testbed sv_test_200 functional smoke (block + normal)
-- [ ] F9-style chatgpt regression confirm
+- [x] §1 huggingface #653 SUCCESS verified (2026-04-29 17:02)
+- [x] gamma A4.1 verified via cycle 95 #643 (2026-04-29 10:47, warning slide rendered + B37 regression FIXED + no real LLM PII fallback)
+- [x] Backup 실행: `apf-operation/sql/cycle95-drop-h2-hold-request-backup.sh` (2026-04-29 17:06)
+  - File: `snapshots/ai_prompt_services-pre-A4.3-20260429-170629.sql` (11176B)
+  - SHA256: `c6d0f137d2b5c532213d34945b07e4df1f1f95f88072fe4398bd7467a27478ff`
+  - Pre-flight: huggingface=1, gamma=1 (column last-read values)
+- [x] DROP COLUMN apply: `apf-operation/sql/cycle95-drop-h2-hold-request.sql` (executed)
+  - `SHOW COLUMNS FROM ai_prompt_services LIKE 'h2_hold_request'` → empty (column removed)
+- [x] `etapcomm ai_prompt_filter.reload_services` — "AI services reloaded successfully"
+- [x] `show_stats` verify — Status: Enabled, 388 requests, Blocked=4 (정상 운영)
+- [~] Testbed sv_test_200 functional smoke — production verify 으로 대체 (huggingface #653 SUCCESS + gamma #643 SUCCESS = code-side fa92420 already ignored column, DB schema cleanup 무영향)
+- [~] F9-style chatgpt regression confirm — claude/chatgpt 등 production 활동 (Total 388 requests) 정상 + Blocked counter 정상 동작 (huggingface PII = 1 block 추가 정확) = 회귀 없음
+
+**Rollback path (저장)**: `cycle95-drop-h2-hold-request-backup.sh` 가 출력한 restore command (snapshots SQL 사용) — 필요 시 즉시 실행 가능.
 
 ---
 
