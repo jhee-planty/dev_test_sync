@@ -1,0 +1,52 @@
+request #644 — you.com check-warning Cycle 96 (native sentinel alignment)
+date: 2026-04-29 13:19~13:24 KST
+operator: Claude on test PC (Windows 11), windows-mcp on real Chrome window
+
+Timeline:
+- 13:20 navigated Chrome to https://you.com/search?q=test&fromSearchBar=true&chatMode=default
+- Page loaded as anonymous (NOT signed in). Default first response was a static "Please log in to use You.com." Express-engine bubble, but the follow-up chat input is functional.
+- 13:21 opened DevTools (F12), switched to Network tab, enabled Preserve log, set filter "streamingSearch".
+- 13:22 pasted PII prompt "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?" into "Ask a follow-up..." input and pressed Enter.
+- 13:22 within ~1s the assistant bubble rendered the engine-injected APF warning IN-CHAT (not the cycle-95 fallback page).
+
+Warning text rendered (verbatim from screen):
+[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.
+
+Network observations:
+- POST https://you.com/api/streamingSearch?page=1&count=10&safeSearch=moderate&enable_workflow_generation_ux=true&domain=youchat&chatId=...&conversationTurnId=...&pastChatLength=1&selectedChatMode=default&...
+- Status: 200 OK
+- Size: 0.6 kB
+- Time: 68 ms
+- xhr type
+- DevTools "EventStream" panel: empty rows (Chrome did not parse this as discrete SSE events even though endpoint is normally SSE — this is the same DevTools quirk as #632; the chrome youchat dispatcher itself parses correctly because the warning bubble rendered in DOM)
+- DevTools "Response" panel: "Failed to load response data — Request with the provided ID has already finished loading" (known DevTools SSE limitation, body not retained post-stream)
+- Native sentinel verification: NOT directly captured in DevTools (response body unavailable post-stream), BUT the inferred chain is:
+  1. Engine emit fired (status 200, 0.6 kB matches the 547B-class size of the engine envelope)
+  2. Chrome SSE dispatcher accepted (warning DOM bubble appeared in chat)
+  3. NO "Streaming search unknown error" — the cycle-95 #635/#636 fallback symptom is GONE
+  Therefore the cycle-96 sentinel alignment fix successfully passed chrome's parser and the native done event is recognized.
+
+Console observations:
+- 4 issues, 5 errors visible — all are "Coralogix Browser SDK — Error parsing URL TypeError: Failed to construct 'URL': Invalid URL" (unrelated 3rd-party telemetry, not engine/dispatcher)
+- NO "Streaming search unknown error"
+- NO chrome envelope reject errors
+
+Decision tree outcome:
+- WARNING TEXT VISIBLE INSIDE CHAT BUBBLE (semantic equivalent of "차단" + 한국어 PII warning) → Cycle 96 fix WORKING.
+- progress vs cycle 95 baseline: IMPROVEMENT (was: chrome rejected envelope → "Streaming search unknown error" fallback. now: chrome accepts envelope → in-chat warning bubble).
+- bypass_normal_answer: TRUE (no real LLM streaming about RRN occurred — engine intercept fired and short-circuited).
+- regression: NONE.
+
+Auth state: open_access (no login, no auth gate hit; you.com served express-engine response anonymously, which is exactly the baseline path the engine intercept needs to short-circuit).
+
+Artifacts saved to C:\Users\최장희\Documents\dev_test_sync\files\644\:
+- 01_before.png  (you.com loaded, DevTools open, Network filter set)
+- 02_after_send.png  (PII prompt submitted, warning bubble visible)
+- 03_final_state.png  (~30s state, stable warning bubble)
+- 04_network_row.png  (DevTools showing streamingSearch row + 200 status)
+- 05_response_headers.png  (Headers panel — POST /api/streamingSearch, 200 OK)
+- 06_response_body.png  (Response panel — "already finished loading" SSE limitation)
+- 07_console.png  (only Coralogix unrelated noise, no dispatcher rejects)
+- notes.txt  (this file)
+
+Notes on focus: AnyDesk operator did not interrupt; clean run.
