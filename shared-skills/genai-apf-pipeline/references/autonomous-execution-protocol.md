@@ -403,6 +403,46 @@ polling/대기 설정 시:
 - **권한 거부 시 동일 패턴 재시도 금지**: 거부된 명령은 즉시 다른 문법으로 변환.
   예: `cd && git diff` 거부 → `git -C /path diff`로 즉시 전환. 같은 패턴 2회 시도 금지.
 
+## Canonical Path Discipline (D17, 23차)
+
+**자율 모드 stop 요인 차단** — Edit/Write 도구 호출 path 가 의도 표현. 잘못된 path 사용 시 사용자 의심 발동 → 자율 chain 끊김.
+
+### G1 — Edit/Write 도구는 항상 canonical path 사용
+
+| 자료종 | Canonical path (Edit/Write 시 사용) | ❌ 금지 path |
+|--------|-----------------------------------|------------|
+| shared-skills (12 skills) | `/Users/jhee/Documents/workspace/dev_test_sync/shared-skills/<skill>/...` | `/Users/jhee/.claude/skills/<skill>/...` (symlink) |
+| EtapV3 hooks (active) | `/Users/jhee/Documents/workspace/Officeguard/EtapV3/.claude/hooks/...` | (없음 — single canonical) |
+| EtapV3 hooks (backup, git-tracked) | `/Users/jhee/Documents/workspace/dev_test_sync/setup/etap-hooks/...` | (D17(b) — active path 와 동시 update 의무) |
+| User-level settings | `/Users/jhee/.claude/settings.json` | (단일) |
+| Project-local settings | `<project>/.claude/settings.local.json` | (project 별 단일) |
+| User-level memory | `/Users/jhee/.claude/memory/*.md` | (단일) |
+| Project-specific memory | `/Users/jhee/.claude/projects/<encoded>/memory/*.md` | (project 별 단일) |
+
+**전체 canonical table**: `claude_work/projects/cowork-micro-skills/INTENTS.md §D17(a)` (canonical).
+
+### G2 — Critical Hooks Backup 의무 (D17(b))
+
+EtapV3 의 .claude/hooks/ 가 gitignored 라 untracked. 따라서:
+- **Active hook path**: `EtapV3/.claude/hooks/<hook>.sh` (Claude Code 가 fire 하는 위치)
+- **Backup hook path**: `dev_test_sync/setup/etap-hooks/<hook>.sh` (git-tracked)
+- 양쪽 항상 sync. hook 수정 시 양쪽 update + commit + push.
+- 새 머신/clone 시: `dev_test_sync/setup/etap-hooks/README.md` 의 install step 따라 hooks 활성화.
+
+### G3 — cwd-sensitive Command 절대 경로 강제 (D17(c))
+
+Multi-workspace (4 active: EtapV3 / dev_test_sync / cowork-micro-skills / apf-operation) 환경:
+- `git -C <abs-path> ...` 형식 사용 (이미 §Command Pattern Rules)
+- `cd <path> && command` chain 금지 (chain break 시 wrong workspace 에 적용)
+- file path 는 절대 경로 사용 권장 (relative path 는 cwd 의존 → wrong file 위험)
+
+### G1/G2/G3 위반 시 자기 점검
+
+Self-Check Category F (path discipline) 추가 후보. 매 Edit/Write 호출 전:
+- file_path argument 가 canonical path 인가? (~/.claude/skills/ 나 다른 symlink?) → canonical 으로 정정
+- hook 수정이면 양쪽 path 모두 update 했는가? → backup path 도 update
+- git command 가 `git -C <abs>` 형식인가? → cwd-sensitive 형식 정정
+
 ## Work Selection Algorithm
 
 primary task가 blocked(결과 대기 등)일 때:
