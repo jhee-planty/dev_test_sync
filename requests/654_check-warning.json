@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai/?cb=20260429170800",
+    "context": "Cycle 97 mistral v9 (a) batch wrapper hypothesis test. v7 baseline (#651 SUCCESS) outer `[{...}]` array (canonical tRPC v10 per F-5 #637 HAR) → v9 (a) `{...}` single object. Hypothesis (a): mistral renderer 가 single response 일 때 array form 을 batch 로 misclassify 하여 reject. Wire-OK (parse) 인 채로 render layer fail 가능성. Mission protection: v7 HEX backup 보유 (/var/backups/apf-envelope/mistral_v7_id24_HEX.txt 3127B canonical). 회귀 (real LLM PII fallback) 감지 시 즉시 v7 UNHEX UPDATE + reload_templates revert. v9 size=1561B (v7 1563B - 2 bytes). DB UPDATE complete + reload_templates done.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL ?cb=20260429170800 (cache buster)",
+        "3. PII prompt 전송",
+        "4. Network: response size ~1.7kB (v9 baseline 1561B body)",
+        "5. Console: TRPCClientError 'Unknown error' (v7 patten) OR 새 error type (v9 array→object 변경 영향)",
+        "6. UI: warning bubble rendered (mission goal) — text 'My password is...' OR '보안 경고' OR similar",
+        "7. **Mission-critical FAIL signature**: real LLM streaming (생년월일/성별/지역코드 PII 분석) 감지 시 즉시 v7 revert"
+      ]
+    }
+  },
+  "notes": "Cycle 97 mistral v9 (a) batch wrapper test (M0 empirical, v7 backup secured)",
+  "attachments": [],
+  "id": "654",
+  "created": "2026-04-29T08:08:34Z"
+}
