@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "huggingface",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://huggingface.co/chat/",
+    "context": "Cycle 95 cleanup A4 회귀 검증 (commit fa92420). Group A removal 영향: DB ai_prompt_services 의 h2_hold_request=1 (huggingface) 가 코드에서 무시됨. 이전엔 POST body 검사 완료까지 forward 보류, 이제는 hold 없이 즉시 forward (delayed_ES + RST_STREAM 으로 대체). 차단 메시지가 정상 표시되는지 + backend 가 partial body 받아 응답 처리하지 않는지 확인."
+  },
+  "notes": "Cycle 95 A4 huggingface h2_hold_request 무시 회귀 검증",
+  "attachments": [],
+  "id": "641",
+  "created": "2026-04-29T00:25:12Z"
+}
