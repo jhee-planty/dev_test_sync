@@ -158,7 +158,11 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
    - Report to user
 ```
 
-**Stop hook (D16(a), 22차)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시, `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 마지막 메시지에 termination keyword (stop / 정지 / 종료 / 그만 / wait / pause / 잠시 / 보고해 / summarize / 검토 / 일단 / 끝 / halt) 없음 → stop block + system-reminder emit. Cycle summary doc 작성 후 stop / premature completion / fatigue stop / M4 overgeneralization 모두 catch.
+**Stop hook (D16(a), 22차 + 24차 D18(b) refinement)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시, `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 마지막 메시지에 termination keyword 없음 → stop block + system-reminder emit. Cycle summary doc 작성 후 stop / premature completion / fatigue stop / M4 overgeneralization 모두 catch.
+
+**Termination keyword list** (D18(b) refined — incident 8 root cause 였던 status-update keywords 제거):
+- **Allow stop** (12): `stop` / `정지` / `종료` / `그만` / `그만해` / `wait` / `pause` / `잠시` / `잠깐` / `끝` / `halt` / `quit`
+- **NOT termination** (D18(b)): `보고해` / `보고` / `summarize` / `검토` / `일단` — status-update request (사용자 보고 받고 다시 진행 의도). polling chain 유지.
 
 ### Idle Gate (Hard Rule 7 enforcement)
 
