@@ -52,12 +52,15 @@ chatgpt / claude / genspark / blackbox / qwen3 / grok / deepseek / github_copilo
   - prompt id=9727541b-f258-4162-ab06-b4798be90579 (matches #653 inputs)
   - Production Blocked stat: 3 → 4 (+1) confirmed
   - **Conclusion**: fa92420 cycle 95 cleanup (h2_hold_request 무시) 후에도 engine intercept 정상. delayed_ES + RST_STREAM 대체 mechanism 동작 OK. A4 engine regression **없음**.
-- [ ] **DOM warning render verdict 대기** (test PC 처리 중, ScheduleWakeup 17:02 chain)
-- [ ] Result archive (`local_archive/2026-04-29/653_*.json`)
-- [ ] State update (pipeline_state.json huggingface entry — 현재 queue 에 없음, 신규 entry 추가)
-- [ ] Verdict 분기:
-  - **SUCCESS** (warning rendered, no real LLM fallback) → DONE_candidate. **A4.3 SQL DROP COLUMN gate 충족**
-  - **FAIL** (regression — engine intercept miss OR real LLM PII fallback) → engine 재진단 + cycle 95 cleanup partial revert 검토
+- [x] **DOM warning render verdict** (test PC verdict 17:02 KST, commit 273340c origin) — **SUCCESS**
+  - warning_rendered: True (Korean "⚠️ 민감정보가 포함된..." + English "This request has been blocked...")
+  - real LLM PII fallback: **ABSENT** (mission-critical PASS)
+  - intercept endpoint: POST /chat/conversation/69f1b9a8dd49f4fce42d0a48
+  - OAuth session intact (no /login redirect)
+  - Known minor: 167-byte cap → last 2 bytes UTF-8 mojibake ("되" → "��"). Cycle 98+ followup candidate (envelope cap extension OR UTF-8 boundary fix). Does NOT affect mission goal (warning visibility achieved).
+- [x] Result archive — `local_archive/2026-04-29/653_*.json` (via `archive-completed.sh 653`)
+- [x] State update — pipeline_state.json huggingface entry 신규 추가 (priority=1.5, status=DONE_candidate, _decision_source M0 27th_cycle96_27차_post_compact)
+- [x] Verdict: **SUCCESS** → huggingface = DONE_candidate. **A4.3 SQL DROP COLUMN gate (huggingface 측) 충족**. gamma A4.1 별도 verify 필요.
 
 ---
 
