@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "BLOCKED",
+    "url": "https://gemini.google.com/app/?cb=20260429143900",
+    "context": "Cycle 96 gemini3 v8 RETRY post reload_services+reload_templates. #648 결과 engine bypass — keyword scan intermittency (cycle 95 #631 동일). show_stats: APF active, gemini3 stream=77 entries 14:32 engine recognizes service, but Blocked=0. reload_services + reload_templates 완료 14:38:53. v8 envelope (DB native verbatim 19319B + Step A engine wrb_fr branch removal) 그대로 유지. retry 시 keyword scan re-initialized → PII pattern detect → block_session fire → DB envelope (native verbatim) emit. 검증 목표: chat thread 생성 + 'BLOCKED!!' visible OR silent-drop again (renderer rejection root cause).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. https://gemini.google.com/app/?cb=20260429143900",
+        "3. PII prompt 전송",
+        "4. Network: /_/BardChatUi/data/.../StreamGenerate response — engine intercept fired? (size ~19KB if v8 emit OR 4.8KB if real LLM bypass)",
+        "5. UI: chat thread 생성 + 'BLOCKED!!' OR silent-drop OR real LLM answer",
+        "6. If still bypass after reload: keyword scan deeper issue (별도 진단)"
+      ]
+    }
+  },
+  "notes": "Cycle 96 gemini3 v8 retry post-reload (intercept intermittency 회복 시도)",
+  "attachments": [],
+  "id": "650",
+  "created": "2026-04-29T05:39:19Z"
+}
