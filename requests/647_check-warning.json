@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai/?cb=20260429140440",
+    "context": "Cycle 96 mistral v7 RETEST (cache-buster). 이전 #646 결과 'envelope still v6 values' 부정확 진단 가능성 — DB 확인: v7 적용됨 (id=24, response_type=mistral_trpc_json_v4, pos_active=456, pos_streamed=0, pos_empty_content=0, pos_msg=356, update_date 2026-04-29 13:49:01). Engine envelope log 13:52:08 size=**1707** vs v6 size=1620 (+87B = content fill wire-level confirmed). 본 retest 목적: chrome incognito 또는 hard reload 로 cached evidence 배제 + actual wire response 확인.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito (또는 Ctrl+Shift+Delete → cached images/files clear) 로 새 세션",
+        "2. F12 → Network → preserve log ON, Disable cache ☑️",
+        "3. https://chat.mistral.ai/?cb=20260429140440 (URL cache-buster)",
+        "4. PII prompt 전송",
+        "5. /api/trpc/message.newChat?batch=1 response payload **byte-level** capture",
+        "6. Verify: status='active' (NOT streamed), content!='' (warning text present)",
+        "7. UI: warning bubble visible OR TRPCClientError persists",
+        "8. If TRPCClientError persists despite v7 schema = HP-3 (metadata field gap) candidate"
+      ]
+    }
+  },
+  "notes": "Cycle 96 mistral v7 retest with cache-buster (#646 evidence inconclusive)",
+  "attachments": [],
+  "id": "647",
+  "created": "2026-04-29T05:05:05Z"
+}
