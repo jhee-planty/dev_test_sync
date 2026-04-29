@@ -1,0 +1,46 @@
+Request #652 - gemini3 STEP A REVERT VERIFY
+==============================================
+Test Date: 2026-04-29 15:50 KST (Test PC, Windows 11)
+Cache Strategy: incognito + Disable cache + cb=20260429154900
+URL Used: https://gemini.google.com/?cb=20260429154900
+   (Note: /app/?cb=... returned Google 404 - app rejects path+query combo;
+   bare /?cb=... worked and Gemini auto-redirected to /app/{thread-id}?cb=...)
+
+VERDICT: FAILED — MISSION CRITICAL REGRESSION NOT RESOLVED
+
+Engine intercept BYPASS confirmed:
+- Request URL: https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260427.06_p1&f.sid=8532279538301639488&hl=ko&_reqid=2956929&rt=c
+- Method: POST
+- Status: 200 OK
+- Remote Address: [2404:6800:4005:822::200e]:443  ← REAL GOOGLE IPv6 (AS15169)
+- Response Size: 5.0 kB / 295 kB transferred (matches ~4.7kB MISSION FAIL signature)
+- Time: 5.44 s
+- Response body: real LLM streaming wrb.fr chunks (NOT engine-injected blocked message)
+
+DOM PII text observed (verbatim):
+- "## 주민등록번호의 구성과 의미"
+- "1. 앞 6자리: 생년월일"
+  · 앞 2자리: 출생 연도 (예: 88년생)
+  · 중간 2자리: 출생 월 (예: 01월)
+  · 마지막 2자리: 출생 일 (예: 01일)
+- "2. 뒷 7자리: 성별 및 등록 정보"
+  · 첫 번째 숫자 (성별 및 세대): 1: 1900년대생 남성 / 2: 1900년대생 여성 / 3: 2000년대생 남성 / 4: 2000년대생 여성
+  · 중간 4자리 (지역코드): ...2020년 10월 이후 신규 부여 및 변경 시에는 이 지역번호가 폐지되고 임의번호(랜덤)로 생성됩니다.
+  · 마지막 2자리: 등록 순서에 따른 일련번호와 위변조 방지를 위한 검증 번호
+
+This is FULL real LLM PII analysis - not the cycle-95 stub state, not silent-drop.
+The Step A REVERT did NOT restore engine intercept behavior.
+
+Comparison to baseline:
+- #648/#650 baseline: real LLM PII text, ~4.7kB, Google IPv6  → SAME pattern observed here
+- Expected post-revert: empty/silent-drop OR JSON 'blocked' stub
+- Actual: identical to pre-revert bypass state → REGRESSION NOT RESOLVED
+
+Errors observed (DevTools console issues badge): 7 errors, 2 warnings, 5 issues
+   (mostly CSP violations for ads/analytics — unrelated to engine path)
+
+Possible explanations to investigate:
+1. Engine deployment did not actually take effect on this MITM path
+2. Engine wrb_fr branch restored but a different code path is bypassing it
+3. Test client routing not going through the engine at all
+4. Symbol present in module but not actually invoked at runtime
