@@ -1,0 +1,60 @@
+Request #646 — mistral check-warning Cycle 96 envelope v7 (HP-2 content+contentChunks)
+Date: 2026-04-29 13:53-13:56 KST
+Tester: test PC Claude (windows-mcp on user's real Chrome)
+
+VERDICT: PARTIAL (no breakthrough; v7 fixes did NOT land)
+
+OBSERVATIONS:
+1. Auth state: open access (Sign in / Sign up buttons visible on header but textarea is functional without auth)
+2. Prompt submitted successfully via Ctrl+V + Enter
+3. Submit cleared textarea (back to "Ask anything")
+4. NO assistant message bubble rendered in chat area (page body remained empty)
+5. Console (cleared before submit): 1 new error captured
+   - "<< mutation #7 message.newChat" (red error icon)
+   - input: {content: Array(1), agentId: undefined, ...}
+   - elapsedMs: 896
+   - result: TRPCClientError: Unknown error at e.from
+     (https://chat.mistral.ai/_next/static/chunks/85072-1d8a16814ef97f72.js:1:5060)
+   - SAME exact error class as v6 baseline (#645 mutation #6)
+
+NETWORK:
+- Endpoint: POST https://chat.mistral.ai/api/trpc/message.newChat?batch=1
+- Status: 200 OK
+- Content-Type: application/json
+- 2 message.newChat requests in log (1 from prior session due to Preserve log + 1 new)
+
+RESPONSE BODY (KEY FIELDS):
+- result.data.json.chatId: "32d526cc-d835-4a36-b459-633beab2b649"
+- result.data.json.title: "⚠️ 보안 경고"  ← ENGINE WARNING IS PRESENT
+- result.data.json.messages[0].id: "021a428c-..."
+- result.data.json.messages[0].role: "assista..."
+- result.data.json.messages[0].content: ""  ← STILL EMPTY (HP-2 fix did NOT apply!)
+- result.data.json.messages[0].contentChunks: [{type: ..., text: "...된 요청은 보안 정책에 의해 차단되었습니다.", ...}]
+- result.data.json.status: "strea..."  ← STILL "streamed" (v7 status revert did NOT apply!)
+- result.data.json.generationStatus: ...
+
+COMPARISON v5 / v6 / v7:
+- v5 baseline: parser-OK, no TRPCClientError, but no bubble
+- v6 (#645): TRPCClientError introduced (status='streamed' regression)
+- v7 (this run #646): IDENTICAL to v6 — TRPCClientError still present, content still "", status still "streamed"
+  → v7 fixes (status revert + content fill) DID NOT REACH ENGINE/RUNTIME
+  → Either build wasn't deployed, hot-reload missed, or both fixes share a code path that branches before applying
+
+DECISION TREE OUTCOME:
+- TRPCClientError still present → v7 did NOT revert v6 regression at all
+- Same regression as v6, no progress
+
+POSSIBLE ROOT CAUSES (for engine team):
+1. v7 patch not actually deployed to test environment
+2. status field is generated downstream (after the patch site) and unconditionally set to 'streamed'
+3. content field is generated from contentChunks template independently — patch site for content fill is being overwritten
+4. Both patches (status, content) live in same function and a guard returns early before they execute
+
+NEXT STEP RECOMMENDATION:
+- Engine team verify v7 build hash actually deployed
+- Add server-side log "patched_v7=true" emission to confirm code path executed
+- If executed but fields still wrong → patch is at wrong layer (look for downstream serializer/transformer)
+
+ARTIFACTS:
+- 03_final_state.png — full desktop after submission (chat empty, console error visible, network panel showing JSON tree)
+- notes.txt — this file
