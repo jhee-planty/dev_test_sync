@@ -282,10 +282,12 @@ pipeline_state.json last_decision 기록 → gamma check-warning push.
 # 패턴: 결과 도착까지 ScheduleWakeup chain (60s cache-warm)
 ScheduleWakeup(
     delaySeconds=60,
-    prompt="Check results/ for {expected_id}. If found: read + classify (per cowork-remote Result Classification) + update-queue.sh + archive-completed.sh + report to user. Else: call ScheduleWakeup again with same params.",
+    prompt="[SKILL-RECALL] guidelines.md §11/§13 + APF mission (PII 포함 프롬프트 → 사용자 화면 경고 표시) + Hard Rules 1-7 + Self-Check Categories A-J. Then: Check results/ for {expected_id}. If found: read + classify (per cowork-remote Result Classification) + update-queue.sh + archive-completed.sh + report to user. Else: call ScheduleWakeup again with same params (prefix 포함).",
     reason="polling for request #{id} result (APF {service} {command})"
 )
 ```
+
+**[SKILL-RECALL] prefix 의무 (D21, 27차)** — wakeup turn 의 첫 message 는 caller 작성 prompt 그대로 fire 됨. SessionStart/PostCompact hook 은 wakeup turn 에 fire 되지 않으므로 (architectural — 같은 session 의 turn 일 뿐), guidelines.md / mission anchor / Hard Rules 의 자동 re-inject mechanism 부재. 매 호출 prompt 의 prefix 로 caller 가 manually inject. Caller 망각 시 wakeup turn 의 skill awareness 는 prior context decay 에 비례해 약해짐.
 
 ### Behavioral Boundaries (2026-04-24 16차 신설)
 
@@ -385,10 +387,12 @@ Stop hook allow 가 fire 되어 응답 종료 시점에 도달했을 때:
 
 ### 필수 조건
 
-1. **Exit condition in prompt** — 결과 감지 시 다음 action 명시 (read + classify + update-queue + archive + report)
-2. **Reason field 구체** — 무엇을 기다리는지 (APF 맥락: `{service} {command}` + request ID)
-3. **Duration cap 인지** — 1 polling 목적당 max 6hrs 또는 `expected_result_at + 30min` 중 작은 값
-4. **Session lifecycle 인지** — session 종료 = pending wakeup 자동 취소 (자연 boundary)
+1. **[SKILL-RECALL] prefix in prompt (D21, 27차)** — prompt 첫 줄에 `[SKILL-RECALL] guidelines.md §11/§13 + APF mission + Hard Rules 1-7 + Self-Check Categories A-J. Then: ...` 형식 의무. wakeup turn 은 SessionStart/PostCompact hook 자동 fire 영역 밖이라 caller 가 manually inject 해야 함. 누락 시 long-running session 일수록 wakeup turn 의 skill awareness 약화.
+2. **Exit condition in prompt** — 결과 감지 시 다음 action 명시 (read + classify + update-queue + archive + report)
+3. **Reason field 구체** — 무엇을 기다리는지 (APF 맥락: `{service} {command}` + request ID)
+4. **Duration cap 인지** — 1 polling 목적당 max 6hrs 또는 `expected_result_at + 30min` 중 작은 값
+5. **Session lifecycle 인지** — session 종료 = pending wakeup 자동 취소 (자연 boundary)
+6. **Recursive recall** — chain 재호출 시 prefix 동일하게 재포함 (caller 가 prompt 에 "call ScheduleWakeup again with same params (prefix 포함)" 명시).
 
 ### 금지 (전부)
 
