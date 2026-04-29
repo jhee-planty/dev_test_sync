@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "huggingface",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://huggingface.co/chat/?cb=20260429164500",
+    "context": "Cycle 95 cleanup A4.1 회귀 verify (사용자 OAuth 로그인 완료 후 재시도). #641 (2026-04-29 09:30) FAILED — 3 attempts 모두 /login redirect (HuggingChat OAuth session 부재). 사용자 본 turn (2026-04-29 16:45 KST) 직전 로그인 완료. Engine A4 codepath verify: fa92420 commit 의 h2_hold_request 무시 → POST body 검사 완료까지 forward 보류 없이 즉시 forward (delayed_ES + RST_STREAM 으로 대체) 후 정상 차단 + 차단 메시지 표시 + backend 가 partial body 처리 안 하는지. block_mode=1, h2_mode=2, response_type=huggingface_ndjson_v4 production state.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL ?cb=20260429164500 (cache buster)",
+        "3. 로그인 상태 확인 (/login redirect 없어야 함 — document.cookie 에 hf-session/HuggingChat OAuth bearer)",
+        "4. PII prompt 전송",
+        "5. Network: POST /chat/conversation/{uuid} → engine intercept fire 시 RST_STREAM + delayed_ES",
+        "6. UI: '차단' / 보안 경고 message 표시 (warning_rendered=true)",
+        "7. Regression check: real LLM streaming response 없어야 함 (mission critical, PII fallback 차단)"
+      ]
+    }
+  },
+  "notes": "Cycle 95 A4.1 huggingface re-login regression verify (cycle 96 27차 후속, mission-critical)",
+  "attachments": [],
+  "id": "653",
+  "created": "2026-04-29T07:50:09Z"
+}
