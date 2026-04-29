@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "BLOCKED",
+    "url": "https://gemini.google.com/app",
+    "context": "Cycle 96 gemini3 v8 — HG-1 native verbatim strategy. Cycle 95 Phase B B31-B37 (7 iterations) 모두 silent-drop renderer reject. Cycle 96 strategy: 626 native body 19045B 통째로 envelope_template 에 저장 (only Hey there → BLOCKED!! 9-byte placeholder 치환, byte length 동일). Engine code change: ai_prompt_filter.cpp wrb_fr branch removed (Step A built+deployed) → default DB envelope path 사용. DB UPDATE: envelope_template length 316 → 19319 (HTTP headers + verbatim body). reload_templates done. Expected: chrome 의 Bard renderer 가 schema-identical native response 수락 → chat thread 생성 + 'BLOCKED!!' text 표시. SUCCESS = schema 가 root cause 확정 (다음 iteration: 한국어 warning text 적용 + chunk length 동적 처리).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. https://gemini.google.com/app 새 conversation",
+        "3. PII prompt 전송",
+        "4. /_/BardChatUi/data/.../StreamGenerate response: 200 OK + binary body ~19KB",
+        "5. UI: chat thread 생성 + 'BLOCKED!!' 또는 message bubble visible (success criteria)",
+        "6. FAIL: page remains on default landing (schema 외 다른 root cause)"
+      ]
+    }
+  },
+  "notes": "Cycle 96 gemini3 v8 HG-1 native verbatim envelope schema test",
+  "attachments": [],
+  "id": "648",
+  "created": "2026-04-29T05:28:29Z"
+}
