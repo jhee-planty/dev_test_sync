@@ -25,13 +25,15 @@ collect_once() {
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') ===" > "$outfile"
 
     echo "--- port_info ---" >> "$outfile"
-    ssh -p $ETAP_PORT $ETAP_HOST "etapcomm etap.port_info" >> "$outfile" 2>&1
+    ssh -p $ETAP_PORT $ETAP_HOST "sudo /usr/local/bin/etapcomm etap.port_info" >> "$outfile" 2>&1
 
-    echo "--- total_traffic ---" >> "$outfile"
-    ssh -p $ETAP_PORT $ETAP_HOST "etapcomm etap.total_traffic" >> "$outfile" 2>&1
+    # 2026-04-29 정정: etap.total_traffic / etap.total_session 명령은 v2.x etap에 미존재
+    # (Unknown function). /proc/PID/status 로 시스템 RSS 수집으로 대체.
+    echo "--- proc_status (RSS) ---" >> "$outfile"
+    ssh -p $ETAP_PORT $ETAP_HOST "cat /proc/\$(pgrep -x etap)/status 2>/dev/null | grep -E 'VmRSS|VmSize|Threads'" >> "$outfile" 2>&1
 
-    echo "--- total_session ---" >> "$outfile"
-    ssh -p $ETAP_PORT $ETAP_HOST "etapcomm etap.total_session" >> "$outfile" 2>&1
+    echo "--- visible_tls_stats ---" >> "$outfile"
+    ssh -p $ETAP_PORT $ETAP_HOST "sudo /usr/local/bin/etapcomm visible_tls.show_stats" >> "$outfile" 2>/dev/null
 
     # 모듈별 통계 (존재하면 수집)
     echo "--- apf_stats ---" >> "$outfile"

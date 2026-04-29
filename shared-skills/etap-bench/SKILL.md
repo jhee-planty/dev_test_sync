@@ -161,15 +161,17 @@ PKTGEN_EOF
 ### Etap 측 통계 수집 (테스트 전/후)
 
 ```bash
-# 테스트 시작 전 스냅샷
-ssh -p 12222 solution@61.79.198.110 "etapcomm etap.port_info" > stats_before.txt
-ssh -p 12222 solution@61.79.198.110 "etapcomm etap.total_traffic" >> stats_before.txt
+# 테스트 시작 전 스냅샷 (etap.total_traffic 명령 미존재 — §Step 4 참조)
+ssh -p 12222 solution@61.79.198.110 "sudo /usr/local/bin/etapcomm etap.port_info" > stats_before.txt
+ssh -p 12222 solution@61.79.198.110 "sudo /usr/local/bin/etapcomm ai_prompt_filter.show_stats" >> stats_before.txt
+ssh -p 12222 solution@61.79.198.110 "sudo /usr/local/bin/etapcomm visible_tls.show_stats" >> stats_before.txt
 
 # === pktgen 테스트 실행 (60초) ===
 
 # 테스트 종료 후 스냅샷
-ssh -p 12222 solution@61.79.198.110 "etapcomm etap.port_info" > stats_after.txt
-ssh -p 12222 solution@61.79.198.110 "etapcomm etap.total_traffic" >> stats_after.txt
+ssh -p 12222 solution@61.79.198.110 "sudo /usr/local/bin/etapcomm etap.port_info" > stats_after.txt
+ssh -p 12222 solution@61.79.198.110 "sudo /usr/local/bin/etapcomm ai_prompt_filter.show_stats" >> stats_after.txt
+ssh -p 12222 solution@61.79.198.110 "sudo /usr/local/bin/etapcomm visible_tls.show_stats" >> stats_after.txt
 ```
 
 ### 패킷 크기 Sweep (Config A/B 주력)
