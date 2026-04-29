@@ -1,0 +1,60 @@
+Request #642 — gamma A4 check-warning regression test
+=====================================================
+Timestamp: 2026-04-29 ~10:00 KST (test PC)
+Service: gamma.app
+Browser: User's real Chrome window via windows-mcp (NOT separate CDP profile)
+
+Timeline
+--------
+T+0    Screenshot — found existing Chrome window (HuggingFace tab + DevTools open)
+T+10s  Ctrl+L address bar -> typed https://gamma.app/create/generate, Enter
+T+16s  Page loaded — Chrome auto-redirected to https://gamma.app/signin?redirect_to=...%2Fcreate%2Fgenerate
+       Cookie banner appeared (Reject All / Accept All) — dismissed via X.
+       Login page rendered: Korean "로그인", "Google 로 계속하기", email + password fields,
+       "통합인증 로그인(SSO)으로 계속하기".
+T+30s  Switched DevTools tab from Console to Network. Filtered "generate".
+       Only entry: GET https://gamma.app/create/generate — 200 OK, document, 10kB, 97ms.
+       Headers: Cf-Ray=9f3a5e57080beab1-ICN (Cloudflare), Content-Disposition=inline; filename="generate".
+       This is the static HTML that issues the client-side redirect to /signin.
+       NO POST to any AI generate / chat backend was issued.
+T+~90s Saved 7 PNGs + this notes.txt.
+
+Per-chunk count
+---------------
+N/A — no streaming POST occurred. Only the signin-redirect HTML response.
+
+RST_STREAM evidence
+-------------------
+Not observable. The engine A4 path (h2_hold_request handling, delayed_ES, RST_STREAM) is
+exercised only when the client POSTs to gamma's AI backend. Because gamma forces auth before
+any AI endpoint becomes reachable, no such POST was made and the engine never saw the prompt.
+
+Auth state
+----------
+gamma.app is NOT open access for AI-generation endpoints. /create/generate immediately
+302-redirects (or client-side router-redirects) to /signin. User is not logged in.
+This matches the task brief's contingency: "auth gate appears (gamma is typically open
+access for landing page but /create may require login)".
+
+Decision tree result
+--------------------
+Cannot evaluate Cycle 95 cleanup A4 vs B37 baseline. The engine forwarding logic was never
+hit because no body was ever POSTed past the auth gate. Result is INCONCLUSIVE w.r.t. the
+fa92420 cleanup — neither improvement nor regression can be claimed from this run.
+
+To make this test meaningful we need either:
+  (a) a logged-in gamma session on this Chrome profile (manual user login + cookie persist), or
+  (b) a public gamma endpoint that accepts unauthenticated AI prompts (none currently known).
+
+Artifacts
+---------
+01_before.png         — gamma signin page first load + DevTools Console
+02_after_send.png     — same page after dismissing cookie banner
+03_final_state.png    — Network tab open, filter cleared
+04_network_row.png    — Network filtered "generate" — 1 row only (the redirect doc)
+05_response_headers.png — Headers panel for the /create/generate document (200 OK, Cloudflare)
+06_response_body.png  — Preview/Response panel
+07_console.png        — Console tab (LaunchDarkly init, Canvas2D warning, Churnkey embed; no errors)
+notes.txt             — this file
+
+Verdict: PARTIAL — auth blocker confirmed; A4 engine path not exercised.
