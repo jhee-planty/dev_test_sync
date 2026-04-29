@@ -77,6 +77,39 @@
 
 ---
 
+## Lesson 2026-04-29-01 — CDP /--remote-debugging-port=9222 path 가 windows-mcp focus 충돌 회피 (cycle 95 #640)
+
+**발생 맥락**: cycle 95 cleanup F9 chatgpt regression check (#640). cycle 94 #638/#639 에서 windows-mcp Click/Type 이 Chrome focus 빼앗기는 issue (Claude Code app focus 충돌) 로 자동화 fail. #640 subagent 는 처음부터 CDP path 선택.
+
+**관찰된 결과**:
+- ✅ chatgpt 회귀 verdict SUCCESS — warning bubble rendered, no LLM passthrough
+- ✅ /backend-anon/f/conversation flow (chrome 비로그인 시 자동 fallback) 도 차단 enforcement 적용 — anon endpoint 도 cover 됨이 검증
+- ⚠️ subagent 시간 18min (1099s) 소모 — 실제 test 는 <1s, 나머지 ~14min 은 CDP harness iteration:
+    - PowerShell ClientWebSocket cancellation bug (Connect/Disconnect 시점 race)
+    - 한 번 hardened 후 즉시 검증 가능
+- 📝 PowerShell heredoc → JS string 한글 encoding 손실 — but 880101-1234567 digit 패턴은 살아남아 PII detector 트리거 정상
+
+**Lesson 1 — CDP path > windows-mcp Click/Type**:
+focus-stealing app (Claude Code) 가 active session 시 windows-mcp Click/Type 신뢰성 낮음. CDP `--remote-debugging-port=9222` 로 직접 fetch/eval/network 제어 가 우회로. cycle 95 F9 가 first 검증 사례.
+
+**Lesson 2 — CDP harness 재사용성**:
+#640 의 PowerShell ClientWebSocket cancellation 처리 코드를 `runtime/cdp-driver/` 로 hardening 하면 다음 subagent 가 즉시 사용 (~1s test). 14min 의 75% iteration 비용 회수.
+
+**Lesson 3 — Anonymous flow 검증 stronger signal**:
+chatgpt 차단이 `/backend-api/conversation` (signed-in) 뿐 아니라 `/backend-anon/f/conversation` (anon) 도 fire 한다는 것은 engine intercept rule 의 robust 함을 입증. F9 회귀 시 chrome 로그인 없이도 검증 충분.
+
+**Lesson 4 — Encoding caveat**:
+JS injected prompt 의 한글이 PowerShell heredoc encoding 으로 손실되어도, 검증 목적 (PII pattern 트리거) 에는 digit 만 살아남으면 충분. 하지만 expected_text literal substring match 는 취약 → semantic match 권장.
+
+**조치 제안**:
+- (즉시) CDP driver hardening: `runtime/cdp-driver/` 모듈로 promote — ClientWebSocket cancellation handler + fetch/eval helper. 다음 windows-focus-conflict subagent 호출 시 import.
+- (장기) test-pc-worker SKILL.md §Subagent Dispatch 의 failure mode F-G 로 등록: "windows-mcp focus stolen by Claude Code app → CDP fallback 권고".
+- (검증 정책) check-warning request 의 `expected_text` 가 engine canonical 차단 메시지와 align 되도록 dev-side 가이드 추가, 또는 test-pc-worker 가 semantic-substring match (보안/차단/민감 keyword 포함) 으로 fallback.
+
+**관련 request ID**: #640 (cycle 95 F9 chatgpt regression — verdict SUCCESS)
+
+---
+
 (이후 새 lesson append)
 
 ---
