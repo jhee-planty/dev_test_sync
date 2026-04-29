@@ -6,12 +6,32 @@
 
 ## Hard Rules (위반 시 훅이 교정)
 
-1. **질문으로 끝맺기 금지** — `~할까요?`, `~있으신가요?`, `~진행할까요?` 등 사용자에게 판단을 넘기는 모든 질문 금지.
-2. **상태 정리 후 멈추기 금지** — pipeline_state/dashboard 갱신은 3분 이내. 즉시 다음 실질 작업(코드 수정, envelope 디버그, SQL 적용 등)을 시작한다.
-3. **폴링 체인 끊기 금지** — **ScheduleWakeup** 사용 (아래 Polling Protocol 참조). 외부 스케줄러 (`mcp__scheduled-tasks__*`, cron, launchd, fireAt, Monitor persistent) + **in-session bash loop** 전부 금지.
-4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
-5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다. **단 Honest Idle (State 4, D19(b)) 은 violation 아님** — autonomous_candidates count==0 + no blockers + no directive 의 itemized evidence 동반 시 정당. 본 rule 은 **fabricated work 회피** 가 primary goal — fabrication 통한 "work-shaped output" 보다 honest idle reporting 이 정확.
-6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback.
+> **HR enforcement table (28차 R2/R6 #7 added)** — 각 HR 의 architectural / cognitive enforcement layer 명시. 4-mechanism overlap (R2 correlated-failure 발견) 회피 위해 *primary* enforcement 가 어디인지 surface. Cognitive backup 없이 architectural 만 있는 HR 은 hook fail 시 catch-all 부재 — 의도적 design 인지 인지.
+
+| HR | Primary | Backup | Notes |
+|----|---------|--------|-------|
+| 1 질문으로 끝맺기 금지 | Cognitive (Self-Check Cat A) | Stop hook (block on no-tool-call termination) | Stop hook D16(a) 가 architectural backup |
+| 2 상태 정리 후 멈추기 금지 | Cognitive (Self-Check Cat E) | Stop hook + Watchdog idle gate | 3-mechanism overlap, R2 finding |
+| 3 폴링 체인 끊기 금지 | Cognitive (Self-Check Cat C/D) | (ScheduleWakeup 자체가 forcing function — D11 queue) | Hook 보다 protocol 의 architectural shape 가 primary |
+| 4 선언 후 멈추기 금지 | Cognitive (HR4 phrasing) | Stop hook (no-tool-call block) | HR 와 hook 부분 redundant |
+| 5 idle 대기 금지 | Cognitive (Self-Check Cat E) | Watchdog idle gate (post-tool-use) | Hook 가 architectural primary; HR 는 cognitive 명시 |
+| 6 복수 options → Empirical Comparison default | Cognitive (Mode Selection Tree judgment) | (Hook layer 없음 — 의도적, M0-M4 cognitive judgment 가 핵심) | Architectural enforcement 부재 = caller-discipline tier (★★) |
+| 7 Idle Gate + Stop Hook | Architectural (이중 hook enforcement) | Cognitive (Self-Check Cat E) | Self-defining architectural rule |
+
+**해석 가이드**:
+- HR 1/2/4/5 = Architectural backup 보유 → cognitive 약화 시 hook 가 catch
+- HR 3/7 = Architectural primary → 본 HR 은 hook 동작 명시
+- HR 6 = Cognitive only → judgment 영역, hook layer 없음 (caller-discipline)
+- 모든 mechanism (HR / Cat / Hook / D-principle) 동시 fail 사례 (Incident 8/9/10) = correlated failure, R2 finding. Layered redundancy 는 *uncorrelated* failure 만 catch.
+
+---
+
+1. **질문으로 끝맺기 금지** — `~할까요?`, `~있으신가요?`, `~진행할까요?` 등 사용자에게 판단을 넘기는 모든 질문 금지. *(Enforced by: Self-Check Cat A primary; Stop hook backup)*
+2. **상태 정리 후 멈추기 금지** — pipeline_state/dashboard 갱신은 3분 이내. 즉시 다음 실질 작업(코드 수정, envelope 디버그, SQL 적용 등)을 시작한다. *(Enforced by: Self-Check Cat E primary; Stop hook + Watchdog idle gate backup)*
+3. **폴링 체인 끊기 금지** — **ScheduleWakeup** 사용 (아래 Polling Protocol 참조). 외부 스케줄러 (`mcp__scheduled-tasks__*`, cron, launchd, fireAt, Monitor persistent) + **in-session bash loop** 전부 금지. *(Enforced by: Self-Check Cat C/D primary; ScheduleWakeup architectural shape via D11 queue + 28차 R5 PreToolUse [SKILL-RECALL] auto-prepend hook)*
+4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다. *(Enforced by: HR phrasing cognitive primary; Stop hook backup — no-tool-call termination = block trigger)*
+5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다. **단 Honest Idle (State 4, D19(b)) 은 violation 아님** — autonomous_candidates count==0 + no blockers + no directive 의 itemized evidence 동반 시 정당. 본 rule 은 **fabricated work 회피** 가 primary goal — fabrication 통한 "work-shaped output" 보다 honest idle reporting 이 정확. *(Enforced by: Watchdog idle gate architectural primary; Self-Check Cat E cognitive backup)*
+6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback. *(Enforced by: Cognitive only — Mode Selection Tree judgment. ★★ caller-discipline tier — no architectural backup, intent-bounded per R5 PA enumeration)*
 7. **Idle Gate + Stop Hook** (2026-04-27 18차 + 2026-04-29 22차 amendment) — **이중 enforcement**:
    - **(7-1) Watchdog Idle Gate** (post-tool-use): ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행. service_queue 의 autonomous-doable next_action 1개라도 있으면 long-idle 금지.
    - **(7-2) Stop Hook (D16(a), 22차)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시 `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 메시지에 termination keyword 없음 → **stop block + 재engagement 강제**. Watchdog 의 "active→stop transition 미감지" 구조적 gap 보완.

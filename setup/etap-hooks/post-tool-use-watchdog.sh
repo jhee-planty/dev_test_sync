@@ -55,14 +55,57 @@ case "$TOOL_NAME" in
   "Edit"|"Write"|"NotebookEdit")
     IS_IDLE_PATTERN="false"
     # D19 25차: log to provenance trail (Edit/Write 모두)
+    # 28차 R5 amendment: add inferred_service field for cross-validation drift detection
     FILE_PATH=$(echo "$INPUT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('file_path','UNKNOWN'))" 2>/dev/null || echo "UNKNOWN")
     # provenance 자체는 hook 이 직접 verify 불가 (claim 만 기록). audit 시 path 분포로 drift 추정.
-    python3 -c "
-import json
-entry = {'ts': '$NOW', 'tool': '$TOOL_NAME', 'file_path': '$FILE_PATH'}
+    # 28차 R5 cross-validation: file_path 에서 service identifier 추출 → trail 에 inferred_service 기록.
+    # AT 시나리오 ("claim mission:apf:warning_visibility:gemini3, edit unrelated path") drift 감지 데이터.
+    python3 << PYEOF 2>/dev/null || true
+import json, re
+file_path = "$FILE_PATH"
+# Service inference: known APF service names in file_path
+services = ['gemini3','gemini','mistral','you','chatgpt','copilot','gamma','perplexity','claude','grok','anthropic','wrtn','jasper','phind','poe']
+inferred = []
+fp_lower = file_path.lower()
+for s in services:
+    # word-boundary-aware match
+    if re.search(r'(^|[/_-])' + re.escape(s) + r'($|[/_.-])', fp_lower):
+        inferred.append(s)
+inferred_service = inferred[0] if inferred else 'cross-cutting'
+entry = {'ts': '$NOW', 'tool': '$TOOL_NAME', 'file_path': file_path, 'inferred_service': inferred_service}
 with open('$PROVENANCE_TRAIL', 'a') as f:
     f.write(json.dumps(entry) + '\n')
-" 2>/dev/null || true
+
+# Drift detection (28차 R5): last 5 entries — if 4+ same service then sudden switch to different service → warn
+try:
+    with open('$PROVENANCE_TRAIL') as f:
+        lines = f.readlines()
+    recent = lines[-6:-1]  # last 5 BEFORE current entry
+    if len(recent) >= 4:
+        prior_services = []
+        for ln in recent:
+            try:
+                prior_services.append(json.loads(ln).get('inferred_service', 'cross-cutting'))
+            except:
+                pass
+        # 4+ same prior + current is different + neither is cross-cutting
+        if (prior_services.count(prior_services[0]) >= 4 and
+            inferred_service != prior_services[0] and
+            inferred_service != 'cross-cutting' and
+            prior_services[0] != 'cross-cutting'):
+            # Write drift warning to dedicated log (separate from /tmp/apf-watchdog-state.json)
+            with open('/tmp/apf-provenance-drift.log', 'a') as df:
+                df.write(json.dumps({
+                    'ts': '$NOW',
+                    'prior_service': prior_services[0],
+                    'prior_count': prior_services.count(prior_services[0]),
+                    'current_service': inferred_service,
+                    'current_file_path': file_path,
+                    'severity': 'drift_4plus_to_different'
+                }) + '\n')
+except Exception:
+    pass
+PYEOF
     ;;
 esac
 

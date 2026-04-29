@@ -134,7 +134,17 @@ if [ -n "$LAST_USER_MSG" ]; then
 fi
 
 if [ "$TERMINATION_FOUND" = "true" ]; then
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — termination keyword in user msg]" >> "$LOG"
+    # 28차 R2 amendment: keyword found + candidates > 0 → allow but inform user of pending candidates
+    # Redirection scenarios ("그만 만들고 다른 거 해") leave candidates orphaned silently in current logic.
+    # State-based supplement: surface pending count so user can decide redirect vs genuine stop.
+    if [ "$COUNT" != "0" ]; then
+        echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — termination keyword + $COUNT pending candidates surfaced]" >> "$LOG"
+        cat <<HOOKJSON
+{"systemMessage":"[D16(a) R2 state-supplement] Termination keyword detected — stop allowed. However, ${COUNT} autonomous candidate(s) remain in service_queue:\n${TASKS}\n\nIf this was a redirect (e.g., '그만 만들고 다른 거 해'), the user can re-prompt. If genuine session-end, candidates will resume in next session via D11 pull-based pop."}
+HOOKJSON
+        exit 0
+    fi
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — termination keyword, no pending]" >> "$LOG"
     exit 0
 fi
 
