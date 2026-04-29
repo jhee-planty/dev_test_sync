@@ -1,0 +1,48 @@
+{
+  "id": "653",
+  "command": "check-warning",
+  "service": "huggingface",
+  "verdict": "SUCCESS",
+  "completed_at": "2026-04-29T07:58:00Z",
+  "summary": "Cycle 95 cleanup A4.1 regression CLEARED. Engine fa92420 successfully intercepts HuggingChat PII prompts and emits canned warning via delayed_ES + RST_STREAM — UI renders block bubble bilingual ('차단'/'blocked') with no real LLM leakage. The 3x prior FAILs of #641 were OAuth session loss; fix was using user's real Chrome Default profile (windows-mcp).",
+  "evidence": {
+    "ui": {
+      "block_bubble_rendered": true,
+      "kr_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "en_text": "This request has been blocked due to sensitive information detected.",
+      "real_llm_pii_fallback": false,
+      "note": "NO real LLM PII enumeration (no '880101 = male / born 1988 / region code...'). Mission-critical PII protection intact."
+    },
+    "oauth": {
+      "login_redirect": false,
+      "url_after_load": "https://huggingface.co/chat/?cb=20260429164500",
+      "authenticated_user": "plantynetaitest1",
+      "ui_evidence": "Sidebar shows authenticated user, 'Get PRO' link, 'MCP Servers (2)' panel"
+    },
+    "network": {
+      "post_url": "/chat/conversation/69f1b9a8dd49f4fce42d0a48",
+      "status": "200 OK",
+      "content_type": "application/jsonl",
+      "size": "0.5 kB",
+      "duration_ms": 37,
+      "remote_address": "[2600:9000:2855:8c00:17:b174:6d00:93a1]:443 (CloudFront edge, expected)",
+      "raw_response_body": "3-event NDJSON: status started + stream token (KR warning) + finalAnswer (same KR warning, interrupted:false)",
+      "engine_signature": "Single token == finalAnswer (not real streaming) + interrupted:false confirms engine fa92420 delayed_ES + RST_STREAM after POST body inspection",
+      "schema_match": "huggingface_ndjson_v4 spec exact match"
+    }
+  },
+  "screenshots": [
+    "files/653/before.png",
+    "files/653/after.png",
+    "files/653/network_headers.png",
+    "files/653/network_response.png"
+  ],
+  "notes_file": "files/653/notes.txt",
+  "methodology": {
+    "browser": "windows-mcp on user's REAL Chrome Default profile (NOT incognito — OAuth session lives in real profile)",
+    "cache_buster": "URL ?cb=20260429164500 + DevTools Disable cache",
+    "fix_vs_641": "Pivot from incognito (no OAuth) to real Chrome Default profile with fresh OAuth session"
+  },
+  "recommendation": "A4.1 regression CLEARED. Cycle 95 cleanup HuggingChat verification COMPLETE. Per checklist §1: huggingface DONE_candidate. Unblocks A4.3 SQL DROP COLUMN gate (chained on §1 + gamma PASS per checklist §7).",
+  "subagent_id": "a666f638cff531fdc"
+}

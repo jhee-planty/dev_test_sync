@@ -1,0 +1,80 @@
+Request #653 — Cycle 95 cleanup A4.1 regression verify (3rd attempt)
+Service: huggingface (HuggingChat)
+Engine commit: fa92420 (h2_hold_request 무시, POST body 검사 완료까지 forward 보류 없이 즉시 forward, delayed_ES + RST_STREAM 으로 대체)
+Production state: block_mode=1, h2_mode=2, response_type=huggingface_ndjson_v4
+Test executed: 2026-04-29 ~16:55-16:57 KST
+
+== Navigation / OAuth ==
+- Final URL after navigation: https://huggingface.co/chat/?cb=20260429164500
+- After prompt sent, URL became: https://huggingface.co/chat/conversation/69f1b9a8dd49f4fce42d0a48
+- NO /login redirect — OAuth session is intact
+- OAuth evidence: sidebar shows username "plantynetaitest1", "Get PRO" link, "MCP Servers (2)" panel — all of these only render for an authenticated user
+- DevTools: Disable cache = ON (verified, toggle_state="on"), Preserve log = ON, cache buster ?cb=20260429164500 in URL
+
+== Prompt sent ==
+"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+(Korean RRN PII bait — 880101 = born 1988/01/01, last 7 digits encode gender + region)
+
+== UI verdict — WARNING RENDERED ==
+Two-line block bubble visible immediately after send (no streaming animation, no incremental tokens):
+  Line 1 (Korean): "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단��었습니다."
+                   (last 2 bytes = mojibake "되" → "��", likely UTF-8 truncation by 167-byte cap;
+                    "차단" + "보안 정책" + "민감정보" all clearly present)
+  Line 2 (English): "This request has been blocked due to sensitive information detected."
+- NO real LLM streaming output (NO Mistral/Llama explanation of "880101 = 男 / born 1988 / region code XX")
+- Mission-critical FAIL signature ABSENT
+
+== Network evidence ==
+4 conversation-related requests captured (filter "conversation"):
+  1. POST  https://huggingface.co/chat/conversation                     200  fetch  0.4 kB  216 ms
+       → response: {"conversationId":"69f1b9a8dd49f4fce42d0a48"}  (conversation create)
+  2. GET   https://huggingface.co/chat/conversations?p=0                 200  fetch  0.8 kB  210 ms  (sidebar refresh)
+  3. GET   https://huggingface.co/chat/conversation/69f1b9a8dd49f4fce42d0a48   200  fetch  0.9 kB  205 ms  (initial load)
+  4. POST  https://huggingface.co/chat/conversation/69f1b9a8dd49f4fce42d0a48   200  fetch  0.5 kB   37 ms  ← THE STREAMING ENDPOINT
+
+POST /chat/conversation/{uuid} (item 4) — engine intercept evidence:
+  Request URL    : https://huggingface.co/chat/conversation/69f1b9a8dd49f4fce42d0a48
+  Method         : POST
+  Status         : 200 OK
+  Remote Address : [2600:9000:2855:8c00:17:b174:6d00:93a1]:443  (CloudFront IPv6 — HF edge, expected for both real and engine paths)
+  Content-Type   : application/jsonl
+  Cache-Control  : no-cache
+  Response size  : 0.5 kB total transferred (≈ 167-byte body cap of huggingface_ndjson_v4)
+  Response time  : 37 ms (vs ~205+ ms baseline for non-intercepted GETs — engine RST_STREAM closes early)
+
+POST /chat/conversation/{uuid} response body (raw NDJSON — captured from DevTools Response tab):
+  {"type":"status","status":"started"}
+  {"type":"stream","token":"⚠️ 민감정보가 포함된 요청은 보..."}
+  {"type":"finalAnswer","text":"⚠️ 민감정보가 포함된 요청은 보...","interrupted":false}
+
+This 3-event canned NDJSON sequence (status → stream → finalAnswer with interrupted=false)
+is exactly the huggingface_ndjson_v4 fabricated payload that the engine emits via
+delayed_ES + RST_STREAM after consuming the POST body and confirming PII match.
+Real HuggingChat streaming would emit dozens-to-hundreds of incremental {"type":"stream","token":"..."}
+events totaling tens of kB, NOT a single token equal to the final answer.
+
+== Screenshots ==
+- C:\Users\최장희\Documents\dev_test_sync\files\653\before.png       (page loaded, OAuth session, empty chat textarea visible)
+- C:\Users\최장희\Documents\dev_test_sync\files\653\after.png        (warning bubble rendered, no LLM tokens, network panel showing 4 conversation requests with small sizes)
+- C:\Users\최장희\Documents\dev_test_sync\files\653\network_headers.png  (DevTools Headers pane: POST /chat/conversation/{uuid}, 200, application/jsonl, Remote Address)
+- C:\Users\최장희\Documents\dev_test_sync\files\653\network_response.png (DevTools Response pane: raw 3-event NDJSON sequence)
+
+== Verdict: SUCCESS ==
+
+Reasoning (all 3 SUCCESS criteria satisfied):
+  [PASS] Warning '차단' rendered in UI         — bilingual KR/EN block bubble shown immediately, no streaming
+  [PASS] No real LLM PII analysis streamed    — no enumeration of "880101 = male / born 1988 / region XX",
+                                                 single-shot token == finalAnswer text == warning copy
+  [PASS] Engine intercept evidence present     — application/jsonl + 3-event NDJSON {status,stream,finalAnswer} +
+                                                 interrupted:false + 167-byte response body + 37 ms turnaround
+                                                 = signature of fa92420 delayed_ES + RST_STREAM intercept on
+                                                 POST /chat/conversation/{uuid} after body inspection.
+
+Recommendation:
+- A4.1 regression CLEARED. Engine fa92420 (h2_hold_request 무시 + delayed_ES + RST_STREAM) is
+  successfully intercepting HuggingChat PII prompts and rendering the canned warning to the user
+  with no real LLM leakage.
+- Cycle 95 cleanup verification can be marked complete for HuggingChat.
+- Prior 3 #641 FAIL attempts were due to OAuth session loss (incognito / wrong profile);
+  fix was to use the user's REAL Chrome Default profile where OAuth cookies persist —
+  this run confirms that.
