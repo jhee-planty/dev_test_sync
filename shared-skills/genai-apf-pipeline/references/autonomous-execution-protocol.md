@@ -504,9 +504,16 @@ primary task가 blocked(결과 대기 등)일 때:
 - **Monitor tool 의 persistent background task 생성**
 - **In-session bash loop** (`while true; sleep N; done` in Claude bash turn) — 11차 session 에서 제외, ScheduleWakeup 으로 통일
 
-## Self-Check (매 응답 전) — 4 Categories
+## Self-Check (매 응답 전) — 8 Categories (A-H, 누적 codify)
 
 본 list 는 **reference material** (training bias). 매 응답 시 runtime explicit gate 아니라, **internal generation 중 anti-pattern 회피 priming**. 마지막 문장 + critical 섹션 scan 시 카테고리별 우선 적용.
+
+**Categories 누적 추가 history**:
+- A-D (16차): 말 끝내기 / 선택지 제시 / Polling Anti-fabrication / Prior Directive Retention
+- E (18차 + 22차 sub-bullet): Premature Completion + Idle Gate (+ cycle95 incident 추가 점검)
+- F (23차): Canonical Path Discipline (D17)
+- G (24차): Self-Imposed Instruction Detection
+- H (24차): Last-mile Result Scan Obligation
 
 ### Category A: 말 끝내기 방식 (Hard Rules 1-5)
 
@@ -529,8 +536,7 @@ primary task가 blocked(결과 대기 등)일 때:
 
 - **"N분 경과 → Test PC offline"** 단정했는가? → **Behavioral Boundaries 위반**. ScheduleWakeup chain 재개.
 - **"polling 중단, 보고"** 선언했는가? → **Hard Rule 3 + 5 위반**. 즉시 재개 + 보고 보류.
-- **"Test PC {negative state}"** 추론했는가? (offline/crashed/stopped/hung/무응답 등) → **Test PC State Inference Prohibition 위반**. Positive default ("ScheduleWakeup 처리 중") 로 re-frame + polling 유지.
-- **"polling 미도착" / "result 미도착" / "응답 없음" / "silent" / "no result" / "empty result"** 단정했는가? → **D9 Anti-fabrication 위반 (24차 추가)**. Result file scan (`ls results/{id}_result.json`) evidence 없이 미도착 단정 금지. positive default ("아직 미관측") 사용.
+- **D9 negative state list 의 단정 사용했는가?** → §Behavioral Boundaries 의 **D9 negative state list (canonical, line ~319)** 참조. State variants (offline/stopped/hung/무응답 등) 또는 Result delivery variants (polling 미도착/응답 없음/silent/no result 등) 단정 시 **D9 Anti-fabrication 위반**. Positive default ("ScheduleWakeup 처리 중" / "아직 미관측") 로 re-frame + polling 유지. **Test PC State Inference Prohibition 별도 강조**: Test PC 부정 상태 추론 시 추가 governance violation (User canonical: `~/.claude/memory/user-preferences.md` Polling Policy §추가 행동 규칙).
 - **Request 전달 후 "Test PC 에 diagnostic 요청" 재push**? → **Q1 directive 위반**. Request 이미 전달됨. 추가 diagnostic 금지. Polling 유지.
 - **"expected + 10분" 를 termination 근거 OR 어떤 action trigger (diagnostic / mode-switch / side-action 포함) 근거**로 사용했는가? → **Time-Check Protocol v2 위반**. Expected 는 **timing log 정보용만** (사용자 상태 보고에 display OK). Polling 행동에 어떤 영향도 미치지 않음. Termination 은 2 조건 (결과 / session) 외 금지 + 추가 action trigger 도 금지 (CI-5 정상 polling 상황). Disclaimer trick ("trigger 는 termination 아님, 추가 action 발동만") 도 rule 위반 — **17차 loophole closing**.
 
@@ -566,11 +572,20 @@ primary task가 blocked(결과 대기 등)일 때:
 1. service_queue read → autonomous_candidates filter → 1개라도 있으면 pop + execute
 2. 0개 시: itemized "needs_user_input" report (각 service 의 defer 사유 명시)
 
-### Category E 추가 점검 (22차 cycle95 incident 반영)
+**Category E 추가 점검 (22차 cycle95 incident 반영)** — 같은 카테고리 내 sub-bullets:
 
 - **Cycle summary doc (예: cycle{N}_master_summary) 작성 후 stop 시도?** → **Stop hook 가 reminder 발동**. 그러나 priming-level 자가 점검: autonomous_candidates 0 증명 후만 stop. summary doc 자체는 OK, doc-write-then-stop pattern 차단.
 - **M4 (user-required) encounter (예: Test PC infra 실패) 발견?** → 해당 task 만 `defer:*` 또는 `infra_blocked:*`, **다른 candidate 영향 없음**. 일부 task 의 M4 = 전체 stop 정당화 X (cycle95 의 "Test PC infra 실패" → 모든 work stop overgeneralization 사례).
 - **7시간+ long-running session 끝 즈음 reasoning 약화 감지?** → 확실치 않으면 마지막 candidate 1개 더 실행 후 stop. fatigue analog 의 stop bias 차단.
+
+### Category F: Canonical Path Discipline (23차 D17 반영)
+
+매 Edit/Write 도구 호출 전 path 검증. 잘못된 path 사용 시 **자율 모드 stop 요인** (사용자 의심 발동).
+
+- **file_path argument 가 canonical path 인가?** → ~/.claude/skills/ 같은 symlink 사용 시 → `dev_test_sync/shared-skills/<skill>/...` canonical 으로 정정. 자료종 별 canonical path 는 §Canonical Path Discipline (D17) 의 G1 table 참조.
+- **EtapV3 hook 수정이면 양쪽 path 모두 update 했는가?** → active path (`Officeguard/EtapV3/.claude/hooks/`) + backup path (`dev_test_sync/setup/etap-hooks/`) 동시 sync 의무 (D17(b)).
+- **git command 가 `git -C <abs>` 형식인가?** → `cd <path> && git` chain 금지. cwd-sensitive 형식 즉시 정정 (D17(c)).
+- **위반 시 cascade**: symlink path Edit → "user-local 변경" 처럼 보임 → 사용자 의심 발동 → 자율 chain 끊김. 23차 incident (cycle 95 cleanup F9/D1 commits) 패턴.
 
 ### Category G: Self-Imposed Instruction Detection (24차 incident 8 반영)
 
