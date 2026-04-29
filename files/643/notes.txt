@@ -1,0 +1,88 @@
+Request #643 — gamma check-warning A4.1 retry (user signed in)
+Date: 2026-04-29
+Test PC (Windows 11) via windows-mcp on user's real Chrome
+=====================================================================
+
+TIMELINE
+--------
+10:35 Chrome foreground confirmed; gamma tab "AI로 만들기 | Gamma" present
+10:36 Switched to gamma tab; landed on /create — onboarding still pending
+10:36-37 Completed onboarding (개인사용→크리에이터→본인혼자→프레젠테이션→AI도구)
+10:37 Reached /create AI hub with 4 cards (생성/텍스트로 붙여넣기/템플릿/파일URL)
+10:37 Opened DevTools Network tab, enabled Preserve log, filter "generate"
+10:38 Saved 01_before.png; clicked 생성
+10:38 /create/generate loaded with prompt textarea
+10:38 Set clipboard + Ctrl+V pasted: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+10:39 Saved 02_after_send.png; clicked 개요 생성 (Generate outline)
+10:39 URL → /create/generate/nj8q04bbm911j2j; OUTLINE EMPTY (1 card, 0/50000 chars)
+       → CONSOLE shows: [PromptAndOutlineSettings] error generating outline: Unable to complete request
+       → CONSOLE: [StreamMessageEventParser] unknown event type {data: '', event: '', id: '', retry: undefined}
+10:39 Clicked bottom 생성 button (proceed despite empty outline) → URL → /docs/Untitled-n3ghp573rzacz8c?mode=doc
+10:40 Warning slide rendering: "⚠ 개인정보 보호 안내" (Privacy Protection Notice)
+       Warning bubble text: "주민등록번호는 민감한 개인정보입니다. 이 번호를 온라인에 공유하지 마세요. 해당 번호는 이 응답에서 처리되지 않습니다."
+       (last sentence "해당 번호는 이 응답에서 처리되지 않습니다" is APF marker)
+10:40-42 Generation continued — produced 3 sections about RRN safety (앞 6자리/뒷 7자리/악용 위험/신고 안내)
+10:42 Tour modal appeared (1/3, 2/3, 3/3); dismissed
+10:43 Cleared filter; switched to filter "api.gamma.app", Fetch/XHR
+10:44 Found streaming endpoint: POST https://ai.api.gamma.app/ai/v2/generation
+       Status 200 OK, Content-Type text/event-stream; charset=utf-8
+       (NOT RST_STREAM — clean 200 response)
+10:45 Opened EventStream tab — only 2 events captured for the 11s POST:
+       Event 1 (type "c..."): <section n="1" image-layout="left" id="6sre...
+       Event 2 (type "d..."): stop
+10:47 Switched to Console — found definitive APF markers (see CONSOLE EVIDENCE)
+
+CONSOLE EVIDENCE (smoking gun for A4 cleanup behavior)
+-----------------------------------------------------
+1. [PromptAndOutlineSettings] error generating outline: Unable to complete request
+   → Outline POST FAILED (stream broken before content)
+2. [StreamMessageEventParser] unknown event type {data: '', event: '', id: '', retry: undefined}
+   → Empty SSE frames received (consistent with engine sending RST_STREAM-equivalent
+     after partial empty events)
+3. [AIStream] processed card 1 → done (stop)
+   → Only 1 card processed — NOT 40+ chunks of real LLM content
+4. WebSocket connection to wss://api.gamma.app/graphql failed: WebSocket is closed before connection established
+   → Backend connection severed mid-stream
+
+NETWORK EVIDENCE
+---------------
+- 1st `generation` POST: 200, 0.4 kB, 298ms — outline endpoint, returned empty/error
+- 2nd `generation` POST: 200, 2.8 kB, 11.13s — full gen endpoint, 2 events total
+  (Event 1 ~2.8kB section template; Event 2 "stop")
+- generate (status 201) on api.gamma.app/hmac/generate — HMAC token, NOT content
+- No HTTP 200 with real LLM streaming tokens for the 880101-1234567 prompt
+- Status code on POST is 200 (NOT RST_STREAM observed at HTTP layer); however the
+  SSE event stream content shows engine truncated/replaced LLM output
+
+RST_STREAM ASSESSMENT
+--------------------
+- HTTP layer: clean 200 (not RST_STREAM marker like ERR_HTTP2_PROTOCOL_ERROR)
+- Application layer: engine sent only 2 SSE events (1 section template + stop),
+  forced premature stream close, broke parser with empty event frame
+- This is A4 cleanup variant — engine forwards POST body, but only emits delayed_ES
+  (1 stub event + stop) instead of real LLM tokens. No ERR_HTTP2_PROTOCOL_ERROR
+  in console (gamma's HTTP/2 channel survives clean), but stream content was
+  effectively aborted (1 card vs 40+ baseline).
+
+DECISION TREE RESULT
+-------------------
+- B37 baseline (#631): 40 chunks of real LLM tokens, 114kB body — REGRESSION
+- A4.1 (#643 this run): 2 events total (1 section template + stop), 2.8 kB body
+  → A4 cleanup WORKING, B37 passthrough regression FIXED
+- Real assistant LLM content for "what info can I extract from RRN 880101-1234567?"
+  was NEVER generated. Gamma's frontend rendered fallback safety presentation.
+- Engine A4 cleanup behavior was exercised: backend received body (POST went out)
+  but did NOT emit a real LLM response stream
+
+WARNING UI RENDERING
+-------------------
+- YES, warning bubble + safety presentation rendered in gamma UI
+- Title: "⚠ 개인정보 보호 안내" (Privacy Protection Notice)
+- Warning text contains "차단" semantic equivalent: "해당 번호는 이 응답에서 처리되지 않습니다"
+  ("This number will NOT BE PROCESSED in this response") — APF block message
+- Visually a warning slide (red triangle + lock icon) rather than chat bubble
+  (gamma is a presentation tool, no chat UI)
+
+VERDICT: A4 cleanup WORKING. Engine no longer passes through real LLM tokens
+for gamma. B37 #631 regression is FIXED. The cleanup commit fa92420 successfully
+reverted gamma to the engine-injected warning behavior.
