@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai/?cb=20260429143000",
+    "context": "Cycle 96 mistral envelope v8 — HP-3 SuperJSON consistency fix. v7 wire-confirmed (#647 PARTIAL) — engine + envelope OK, but TRPCClientError 'Unknown error' due to SuperJSON meta.values 'undefined' markers vs JSON null mismatch. v8 fix: (a) JSON 의 12 null fields omit (references/memories/moderationCategory/agentId/agentsApiAgentId/createdById/parentId/nextVersion/prevVersion/model/quotedContent/workflowExecution + contentChunks[0]._context), (b) meta.values 의 13 'undefined' entries omit. consistent: meta 만 keep — chatId/messages.0.id (uuid), messages.0.createdAt (Date). Envelope size 1562 → 792 bytes. reload_templates done. Expected: chrome 의 mistral renderer 가 minimal-but-consistent envelope 수락 → warning bubble visible.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "MANDATORY_CACHE_BUSTER": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL ?cb=20260429143000",
+        "3. PII prompt 전송",
+        "4. /api/trpc/message.newChat?batch=1 response: 200 OK + tRPC v10 envelope (~800B)",
+        "5. Console: NO TRPCClientError",
+        "6. UI: '보안 경고' message bubble visible (success criteria)"
+      ]
+    }
+  },
+  "notes": "Cycle 96 mistral v8 HP-3 SuperJSON consistency (omit null fields + meta undef entries)",
+  "attachments": [],
+  "id": "649",
+  "created": "2026-04-29T05:33:17Z"
+}
