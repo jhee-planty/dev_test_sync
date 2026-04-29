@@ -228,18 +228,21 @@ ssh -p 10000 planty@61.79.198.72 \
 
 ### Etap 내부 통계 (etapcomm)
 
-`etapcomm etap.total_traffic`은 호출 간격 동안의 실시간 통계를 반환:
-- **bps** (in/out): 초당 비트 — 실제 throughput
-- **pps** (in/out): 초당 패킷 수
-- **dropPps** (in/out): 초당 드롭 패킷 수
-- **dropped**: 누적 드롭 카운터
+> **2026-04-29 정정**: `etap.total_traffic` 명령은 v2.x etap 에 **존재하지 않음** (`Unknown function`). 가용 명령 목록은 `etapcomm` (no args) 또는 `etapcomm etap.help` 로 확인. 모듈 단위 stats + 시스템 metric 으로 대체.
+
+가용 모니터링 도구:
+- **모듈 통계**: `etapcomm ai_prompt_filter.show_stats`, `etapcomm visible_tls.show_stats`
+- **NIC 포트**: `etapcomm etap.port_info`, `etapcomm etap.get_link_status`
+- **시스템 RSS / CPU**: `top -p $(pgrep -x etap)`, `cat /proc/$(pgrep -x etap)/status | grep -E 'VmRSS|VmSize'`
+- **에러 카운터**: `grep -aE 'ERROR|WARN|FATAL' /var/log/etap.log`
 
 ```bash
-# 테스트 중 주기적 수집 (5초 간격)
+# 테스트 중 주기적 수집 (5초 간격) — module stats + system RSS
 ssh -p 12222 solution@61.79.198.110 << 'EOF'
 for i in $(seq 1 12); do
   echo "=== $(date +%H:%M:%S) ==="
-  etapcomm etap.total_traffic
+  sudo /usr/local/bin/etapcomm ai_prompt_filter.show_stats | grep -E 'Total AI|Block|Check'
+  cat /proc/$(pgrep -x etap)/status | grep -E 'VmRSS|VmSize'
   sleep 5
 done
 EOF

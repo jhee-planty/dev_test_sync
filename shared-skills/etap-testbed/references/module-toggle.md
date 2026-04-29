@@ -24,10 +24,11 @@ TARGET = "disable"                            # "disable" or "enable"
 path = "/etc/etap/module.xml"
 content = open(path).read()
 if TARGET == "disable":
-    pat = re.compile(rf"<module(\s+[^/]*?libetap_{re.escape(MODNAME)}\.so[^/]*?/>)", re.DOTALL)
+    # Use [^>] (not [^/]) — path attribute contains '/' (e.g. /usr/local/lib/etap/...)
+    pat = re.compile(rf"<module(\s+[^>]*?libetap_{re.escape(MODNAME)}\.so[^>]*?/>)", re.DOTALL)
     repl = r"<_module\1"
 else:
-    pat = re.compile(rf"<_module(\s+[^/]*?libetap_{re.escape(MODNAME)}\.so[^/]*?/>)", re.DOTALL)
+    pat = re.compile(rf"<_module(\s+[^>]*?libetap_{re.escape(MODNAME)}\.so[^>]*?/>)", re.DOTALL)
     repl = r"<module\1"
 new = pat.sub(repl, content)
 if new == content:

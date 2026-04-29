@@ -7,15 +7,35 @@
 
 ## 기존 빌드 패키지 사용
 
+> **중요 (2026-04-29 추가)**: `etap-build-deploy.sh` runtime 은 빌드 패키지를 **테스트 서버(218.232.120.58)** 에 deploy 하지만 testbed Etap 서버(61.79.198.110) 에는 자동 install 안 함. testbed 기능 검증 시 별도 install 필요. 또한 `module.xml` 의 `ai_prompt_filter` 가 default 로 `<_module>` (disabled) 일 수 있으므로 enable 단계 포함.
+
 ```bash
 ssh -p 12222 solution@61.79.198.110 << 'EOF'
 YYMMDD=$(date +%y%m%d)
+# 1) 패키지 install
 sudo tar xzf /tmp/etap-root-${YYMMDD}.sv.debug.x86_64.el.tgz -C /usr/local
+
+# 2) (필요 시) ai_prompt_filter 모듈 enable — see module-toggle.md
+sudo python3 - <<PY
+import re
+path='/etc/etap/module.xml'
+c=open(path).read()
+new=re.sub(r'<_module(\s+[^>]*?libetap_ai_prompt_filter\.so[^>]*?/>)', r'<module\1', c, flags=re.DOTALL)
+if new!=c: open(path,'w').write(new); print('module enabled')
+else: print('already enabled')
+PY
+
+# 3) 재시작 + 검증
 sudo systemctl restart etapd.service
-sleep 3
-systemctl status etapd.service | head -5
+sleep 8
+pgrep -xc etap                      # 반드시 1
+sudo /usr/local/bin/etapcomm ai_prompt_filter.show_stats | head -5  # "Module does not exist" 면 enable 실패
 EOF
 ```
+
+**검증 포인트** (2026-04-29 cycle 95 cleanup 검증):
+- `etapcomm ai_prompt_filter.show_stats` 가 "Module does not exist" → module.xml 의 enable 단계 실패. 위 step 2 에서 regex 매칭 안됨 (path 안의 `/` 때문). `module-toggle.md` 의 fixed regex (`[^>]`) 사용.
+- `Loaded N response templates, N envelope templates` 가 etap.log 에 없으면 init 실패.
 
 ## 소스 변경 후 빌드가 필요한 경우
 
