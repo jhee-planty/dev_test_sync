@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chatgpt.com",
+    "context": "Cycle 95 cleanup (commit fa92420, tag cycle95-blocked-diagnosed-state-2026-04-29) 회귀 검증. response observation hooks (on_http_response, on_http2_response*) + Group A request buffering removal 후 chatgpt 차단 응답이 정상적으로 chat bubble 에 표시되는지 확인. Engine reset 완료, testbed F1-F8 + L7 부하 30k req @ c=50 0 failed 검증 완료."
+  },
+  "notes": "Cycle 95 cleanup F9 regression check",
+  "attachments": [],
+  "id": "640",
+  "created": "2026-04-28T23:59:53Z"
+}
