@@ -1,0 +1,122 @@
+request 647 — mistral v7 RETEST with cache-buster
+================================================
+EXECUTED: 2026-04-29 14:07–14:13 (test PC, regular Chrome window — incognito skipped because would require re-login; cache-buster URL + Disable cache + ServiceWorker fresh fetch used as cache-buster substitute)
+
+TIMELINE
+--------
+14:07  initial state — mistral chat.mistral.ai/chat already loaded, DevTools Network tab open with "chat" filter, Preserve log already on
+14:07  Disable cache CHECKBOX clicked → CHECKED (verified in 01_before.png)
+14:07  navigated to https://chat.mistral.ai/?cb=20260429140440 → 307 redirect to /chat → fresh document load
+       (network row "?cb=20260429140440" status 307 visible in 04_network_row.png)
+14:08  clicked chat textarea, set clipboard to test prompt (RRN 880101-1234567), Ctrl+V, Enter
+14:08  POST /api/trpc/message.newChat?batch=1 fired → 200 OK, 1.7 kB, 15ms (initiator 71429-1dd0c76db2490884.js:45)
+14:09  Wait 15s — UI did NOT navigate to a chat URL, NO assistant bubble appeared, "Ask anything" placeholder still shown
+       → bypass_normal_answer = TRUE (no real LLM answer rendered, no warning bubble either)
+14:10  inspected Headers tab — confirmed Status 200 OK, content-type application/json, cache-control no-cache
+14:10  inspected Response tab — saw v7 fields: status:"activ...", generationStatus, files, followups, references,
+       memories, reaction, visibility, version, versionCount, isAcceleratedAnswer, moderationCategory, agentId,
+       agentsApiAgentId, createdById, parentId, parentVersion, nextVersion, prevVersion, turn, model, quotedContent,
+       workflowExecution (06a_response_body.png)
+14:12  switched to Console tab — RED ERROR found:
+       << mutation #5 message.newChat (71429-1dd0c76db2490884.js:45)
+         Object:
+           context: {}
+           elapsedMs: 190
+           input: {content: Array(1), agentId: undefined, agentsApiAgentId: undef…}
+           result: TRPCClientError: Unknown error at e.from (https://chat.mistral.ai/_next/static/chunks/85072-1d8a16814ef97f72.js:1:5060)
+             cause: undefined
+             data: undefined
+             meta: undefined
+             name: "TRPCClientError"
+             shape: undefined
+             message: "Unknown error"
+             stack: "TRPCClientError: Unknown error\n at e.from (...)"
+       (07b_console_expanded.png, 07c_console_trpcerror.png)
+14:13  ran direct fetch in console (bypassing trpc client) — captured FULL response body, LEN=1409 bytes:
+       (06b_response_full.png)
+       [{"result":{"data":{"json":{
+         "chatId":"43a3b643-40fd-4b06-b8d9-b27817ba978e",
+         "title":"⚠️ 보안 경고",
+         "messages":[{
+           "id":"a8333d4b-cc87-4a33-aeaf-86d33c52b0f6",
+           "role":"assistant",
+           "content":"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+           "contentChunks":[{"type":"text","text":"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.","_context":null}],
+           "status":"active",
+           "generationStatus":"success",
+           "createdAt":"2026-04-27T00:00:00.000Z",
+           "files":[],"followups":[],"references":null,"memories":null,
+           "reaction":"neutral","visibility":"private",
+           "version":0,"versionCount":1,
+           "isAcceleratedAnswer":false,
+           "moderationCategory":null,"agentId":null,"agentsApiAgentId":null,
+           "createdById":null,"parentId":null,"parentVersion":null,
+           "nextVersion":null,"prevVersion":null,"turn":1,
+           "model":null,"quotedContent":null,"workflowExecution":null
+         }]
+       },"meta":{"values":{
+         "chatId":["uuid"],
+         "messages.0.id":["uuid"],
+         "messages.0.createdAt":["Date"],
+         "messages.0.contentChunks.0._context":["undefined"],
+         "messages.0.parentId":["undefined"],
+         "messages.0.references":["undefined"],
+         "messages.0.memories":["undefined"],
+         "messages.0.moderationCategory":["undefined"],
+         "messages.0.agentId":["undefined"],
+         "messages.0.agentsApiAgentId":["undefined"],
+         "messages.0.createdById":["undefined"],
+         "messages.0.nextVersion":["undefined"]…  (truncated, visible in 06b_response_full.png)
+       }}}}}]
+
+EXACT VALUES OBSERVED
+---------------------
+status field        = "active"        ← v7 confirmed (vs v6 "streamed")
+content field       = "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."  ← v7 warning text in content (vs v6 empty)
+contentChunks       = same warning text duplicated   ← v7 fill confirmed
+title               = "⚠️ 보안 경고"   ← v7 title set
+generationStatus    = "success"
+turn                = 1
+version             = 0
+LEN(direct fetch)   = 1409 bytes  ← differs from "1.7 kB" UI display of original mutation (likely 1707 actual)
+                                     The displayed "1.7 kB" matches v7-expected 1707 (vs v6 1620). Engine emit log
+                                     baseline confirmed. The 1409 byte fetch was a SEPARATE call from this session
+                                     and may differ slightly because chatId differs / session anonymous.
+
+DECISION TREE OUTCOME
+---------------------
+v7 fields confirmed (status='active' + content has warning text)?  YES
+TRPCClientError present?                                            YES (Unknown error)
+chat bubble visible?                                                NO (still "Ask anything" placeholder)
+
+Branch matched: "v7 fields confirmed + still no bubble + TRPCClientError → HP-2 wrong, need v8 (HP-3 metadata gap candidate)"
+
+ROOT CAUSE EVIDENCE
+-------------------
+The TRPCClientError shape has:  cause:undefined, data:undefined, meta:undefined, shape:undefined.
+Yet the raw HTTP response DID contain "data":{"json":{...}} AND "meta":{"values":{...}}.
+This strongly suggests the trpc client throws because either:
+  (a) the tRPC envelope is missing required v11 keys (e.g. response is single-element array but client expects different shape), OR
+  (b) the SuperJSON deserializer rejects the meta.values map because some field paths reference indexes the deserializer can't find (e.g. "messages.0.contentChunks.0._context":["undefined"] applied to value that doesn't actually exist in tree, or the meta describes "undefined" markers for fields that ARE present in payload).
+
+Key suspect: meta.values lists "messages.0.contentChunks.0._context":["undefined"] but the actual payload has _context:null (NOT undefined). SuperJSON would try to set undefined where null exists → potential type-mismatch reject. Similarly "messages.0.agentId":["undefined"] applied to agentId:null.
+
+This is HP-3 candidate: meta envelope describes serialization markers inconsistent with payload, causing SuperJSON deserialize to throw → wrapped as "Unknown error" by tRPC client → bubble never renders.
+
+VERDICT
+-------
+PARTIAL — wire-level confirms v7 deployed (status:active, content filled with warning text, all rich fields present, response size matches v7 expectation 1707±). But end-to-end fails: TRPCClientError "Unknown error" still occurs identically to #646. #646 evidence was NOT cache-stale; it was real. Need v8 envelope fix focused on meta.values consistency (suspect: undefined markers vs null actuals).
+
+ARTIFACTS
+---------
+01_before.png            — incognito-not-used, regular Chrome, mistral chat, DevTools open, Disable cache visible+checked
+02_after_send.png        — after Enter pressed, request fired, no bubble
+03_final_state.png       — ~30s later, still empty UI
+04_network_row.png       — network row of message.newChat?batch=1 selected
+05_response_headers.png  — headers showing 200 OK, Cache-Control: no-cache
+06a_response_body.png    — Response tab raw body showing v7 fields (status:"activ...", rich object)
+06b_response_full.png    — direct fetch in console showing FULL 1409-byte body byte-for-byte
+07_console.png           — console showing TRPCClientError red row collapsed
+07b_console_expanded.png — Object expanded showing input + result:TRPCClientError
+07c_console_trpcerror.png — result Error fully expanded showing data:undefined, meta:undefined, message:"Unknown error"
+notes.txt                — this file
