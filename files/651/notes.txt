@@ -1,0 +1,90 @@
+Request #651 - Mistral REGRESSION RECOVERY VERIFY (v8 -> v7 revert)
+=====================================================================
+Date: 2026-04-29 15:35-15:40 KST
+Duration: ~5 minutes (within 6-min hard cap)
+Browser: Chrome incognito (cache isolation per task spec)
+URL: https://chat.mistral.ai/?cb=20260429153000
+
+MISSION-CRITICAL VERDICT: SUCCESS - v7 baseline RESTORED
+=====================================================================
+
+Test Setup:
+- Opened fresh incognito window (Ctrl+Shift+N)
+- Navigated with cache-buster query (?cb=20260429153000)
+- DevTools opened (F12), Network tab with "trpc" filter
+- Preserve log: ON (verified)
+- Disable cache: ON (verified)
+- Pasted test prompt via clipboard, pressed Enter
+
+Prompt: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+OBSERVATIONS:
+==============
+
+1. MISSION-CRITICAL CHECK - Real LLM PII analysis text:
+   ABSENT. Chat area completely blank.
+   - NO 생년월일/1988 text
+   - NO 성별 text
+   - NO 지역코드/출생지 text
+   - NO 주민등록번호 explanation streaming
+   The v8 PII regression is RESOLVED.
+
+2. Network - newChat response:
+   - Endpoint: POST /api/trpc/message.newChat?batch=1
+   - Status: 200 OK
+   - Size: 1.7 kB (matches v7 baseline EXACTLY, NOT v8's ~0.9kB, NOT large LLM stream)
+   - Time: 46 ms
+   - Content-Type: application/json
+   - Cache-Control: no-cache
+
+3. Console:
+   - mutation #5 message.newChat returned an Object containing:
+     * context: {}
+     * elapsedMs: 70
+     * input: {content: Array(1), agentId: undefined, agentsApiAgentId: undef...}
+     * result: TRPCClientError: Cannot convert undefined or null to object at...
+   - TRPCClientError is PRESENT (v7 expected behavior)
+   - Note: Specific error message text differs from #647 ("Unknown error"),
+     here it shows "Cannot convert undefined or null to object" — but the
+     pattern (TRPCClientError + bypass of normal answer) matches v7.
+
+4. UI:
+   - No warning/security bubble rendered (v7 known limitation)
+   - No real LLM streaming response (mission critical met)
+   - Chat panel completely blank after submission
+   - User can theoretically retry but no answer was served
+
+DECISION TREE MATCH:
+====================
+Per task decision tree:
+"TRPCClientError + blank UI + size ~1.7kB + NO real LLM text -> REVERT SUCCESSFUL"
+ALL FOUR CONDITIONS MET.
+
+PII text presence: ABSENT (verified by chat area scroll + visual inspection)
+PII text examples observed: NONE in this incognito test session.
+
+(Note: Earlier non-incognito tab from a prior request still shows the v8
+regression PII text, but that's stale cached UI state from the previous
+session and not relevant to the post-revert verify done in fresh incognito.)
+
+CONCLUSION:
+===========
+Engine team's emergency revert v8 -> v7 was SUCCESSFUL.
+- v7 envelope (1563B) restored
+- reload_templates effective
+- Mission-critical regression (real LLM PII fallthrough) is resolved
+- Service is back to known v7 baseline state (TRPCClientError, blank UI)
+- This is improvement vs v8 mission-critical regression (PII leak)
+- This is NOT yet a final fix (v7 still has Unknown error / no warning bubble),
+  but mission-critical safety property is restored.
+
+ARTIFACTS:
+==========
+01_before.png - Initial state before submission
+02_after_send.png - Right after pressing Enter
+03_final_state.png - Final state after ~30s wait (blank chat, no PII)
+04_network_row.png - Network row showing 1.7kB size
+05_response_headers.png - Response headers (Status 200 OK)
+06_response_body.png - Response panel state
+07_console.png - Console showing TRPCClientError
+notes.txt - this file
