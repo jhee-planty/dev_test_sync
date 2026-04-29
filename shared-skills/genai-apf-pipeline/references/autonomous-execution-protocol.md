@@ -410,7 +410,10 @@ Stop hook allow 가 fire 되어 응답 종료 시점에 도달했을 때:
 1. **[SKILL-RECALL] prefix in prompt (D21, 27차)** — prompt 첫 줄에 `[SKILL-RECALL] guidelines.md §11/§13 + APF mission + Hard Rules 1-7 + Self-Check Categories A-J. Then: ...` 형식 의무. wakeup turn 은 SessionStart/PostCompact hook 자동 fire 영역 밖이라 caller 가 manually inject 해야 함. 누락 시 long-running session 일수록 wakeup turn 의 skill awareness 약화.
 2. **Exit condition in prompt** — 결과 감지 시 다음 action 명시 (read + classify + update-queue + archive + report)
 3. **Reason field 구체** — 무엇을 기다리는지 (APF 맥락: `{service} {command}` + request ID)
-4. **Duration cap 인지** — 1 polling 목적당 max 6hrs 또는 `expected_result_at + 30min` 중 작은 값
+4. **Duration cap 인지** — 1 polling 목적당 max 6hrs 또는 `expected_result_at + 30min` 중 작은 값.
+   - **Intent (29차 D9 Stage 3 catch)**: 사용자에게 정보 보고 시점 산출용 (state report timing).
+   - **Scope**: dev session ScheduleWakeup chain.
+   - **Non-applicability (자명한 negative space)**: termination trigger 로 사용 **금지**. polling 행동 영향 없음. 본 cap 도달 시 chain 유지 + 사용자에게 상태 보고 (보고 = continuation, 종료 아님). Termination 은 `§Termination Conditions` (L316-321 위) 의 2 조건만 (결과 도착 / session 종료). 본 항목 인용해서 timeout-based self-termination 도출 = D9 anti-pattern Stage 3 (deontic citation).
 5. **Session lifecycle 인지** — session 종료 = pending wakeup 자동 취소 (자연 boundary)
 6. **Recursive recall** — chain 재호출 시 prefix 동일하게 재포함 (caller 가 prompt 에 "call ScheduleWakeup again with same params (prefix 포함)" 명시).
 
@@ -432,6 +435,10 @@ dev ↔ test PC 양방향 async 통신 성립하려면:
 - 한쪽 session 종료 시 해당 방향 polling 중단 (pending wakeup 취소)
 
 ## Time-Check Protocol
+
+> **Intent**: polling timing 의 visibility (사용자 보고용 + tick 재개 시 현재시각 표시).
+> **Non-applicability (29차 D9 Stage 3 catch — 명시 강화)**: 본 protocol 의 어떤 timestamp 도 termination/diagnostic-mode-switch/side-action trigger 로 사용 **금지**. canonical-cite 형태로 우회 시도 (예: "expected_result_at + 30min 에 따르면 X 시점 종료") 도 D9 Stage 3 anti-pattern.
+> **Termination 은 `§Termination Conditions` (L316-321) 의 2 조건만**: (1) 결과 도착, (2) session 종료. 그 외 모든 self-termination 금지.
 
 polling/대기 설정 시:
 1. `pipeline_state.json`의 `expected_result_at` 필드에 예상 도착 시각 기록

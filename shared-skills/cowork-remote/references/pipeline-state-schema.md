@@ -36,6 +36,7 @@
   "monitoring": {
     "visual_needed": false,
     "visual_trigger": "30min_no_result",
+    "_visual_trigger_intent": "L3 (visual diagnosis) escalation 의 trigger field. **Non-applicability (29차 D9 Stage 3 catch)**: polling chain termination trigger 아님. visual_trigger fire 되어도 ScheduleWakeup chain 은 termination 2 조건 (결과 / session) 도달까지 유지. canonical: autonomous-execution-protocol.md §Termination Conditions L316-321.",
     "last_visual_check": null,
     "last_visual_result": null
   },

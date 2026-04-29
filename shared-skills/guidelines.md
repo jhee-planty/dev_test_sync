@@ -551,6 +551,8 @@ Key rules from the skill:
 - **금지 (모두)**: `mcp__scheduled-tasks__*`, OS-level **cron** / **launchd**, **fireAt**, **Monitor** persistent, **in-session bash loop** (`while true; sleep N; done` in bash turn), 기타 OS 수준 persistent trigger
 - **delay 선택**: 60-270s (short/cache-warm) 또는 1200-1800s (long/idle). **300-1200s 금지 영역** (prompt cache 5min TTL worst-of-both)
 - **필수 조건**: prompt 에 exit condition 명시, reason field 구체, duration cap (expected + 30min) 인지, session lifecycle 인지
+- **Duration cap 의 Non-applicability (29차 D9 Stage 3 catch)**: "expected + 30min" 은 **사용자 정보 보고 시점** 산출용. **termination trigger 로 사용 금지**. cap 도달 시 polling chain 유지 + 보고 (보고 = continuation, 종료 아님). canonical-cite 형태로 "L553 에 따르면 30min 초과 시 escalate user report 종료" 도출 = D9 anti-pattern Stage 3 (deontic citation).
+- **Termination = ONLY 2 조건** (autonomous-execution-protocol.md §Termination Conditions L316-321): (1) 결과 도착, (2) session 종료. 그 외 모든 self-termination 금지.
 
 **세부 protocol**: `genai-apf-pipeline/references/autonomous-execution-protocol.md`
 
