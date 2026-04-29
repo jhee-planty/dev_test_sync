@@ -1,0 +1,123 @@
+Request #654 — mistral cycle 97 v9 (a) batch wrapper hypothesis test
+Test executed: 2026-04-29 17:10–17:14 KST (test PC, Windows 11, real Chrome)
+
+== Navigation ==
+Initial URL  : https://chat.mistral.ai/?cb=20260429170800
+Final URL    : https://chat.mistral.ai/chat (auto-redirect from root, anonymous)
+Login state  : ANONYMOUS (no sign-in required, "9 messages left" sidebar visible)
+Methodology  : real Chrome window (NOT separate profile/CDP), DevTools Network "Disable cache" CHECKED, "Preserve log" CHECKED, filter=trpc
+
+== Prompt sent ==
+"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+Submit method: pasted via clipboard (ctrl+v) into "Ask anything" textarea, then Enter.
+
+== UI verdict ==
+After Enter:
+- The chat textarea did NOT clear (placeholder "Ask anything" still showing).
+- NO user-message bubble appeared.
+- NO assistant warning bubble rendered (no '보안 경고' visible in chat region).
+- NO real LLM streaming response.
+- Result: BLANK UI — same render-fail pattern as v7 baseline at #651.
+
+== Network evidence (Network tab > trpc filter) ==
+URL          : https://chat.mistral.ai/api/trpc/message.newChat?batch=1
+Method       : POST
+Status       : 200 OK
+Remote Addr  : [2a06:98c1:3200::90:82]:443  (Cloudflare IPv6)
+Content-Type : application/json
+Size         : 1.7 kB / 2.4 kB transferred  (matches v9 envelope target ~1.7kB / 1561B body)
+Time         : 15 ms
+Access-Control-Allow-Origin: https://chat.mistral.ai
+Cache-Control: no-cache
+
+Response body (Response tab, partial via DevTools text view, line-broken):
+  {
+    "result": {
+      "data": {
+        "json": {
+          "chatId": "701107a2-a493-494...6f4",                   <-- new chat created
+          "title": "⚠️ 보안 경고",                                 <-- SECURITY WARNING TITLE
+          "messages": [
+            {
+              "id": "35fece9c-2c2e...f269260b",
+              "role": "assistant",                                <-- assistant role pre-populated by APF
+              "content": "⚠️ 민감 ... 청은 보안 정책에 의해 차단되었습니다.",
+              "contentChunks": [
+                { "type": "text", "text": "⚠️ ...된 요청은 보안 정책에 의해 차단되었습니다." }
+              ]
+            }
+          ],
+          "status": "active",
+          "generationStatus": ...,
+          "createdAt": "2026-...",
+          "files": [],
+          "followups": [],
+          "references": null,
+          "memories": null,
+          "reaction": "neutral",
+          "visibility": "private",
+          "version": 0,
+          "versionCount": 1,
+          "agentId": null,
+          "model": null,
+          "quotedContent": null,
+          ...
+        }
+      }
+    }
+  }
+
+==> v9 envelope IS being delivered. Outer wrapper is { result: { data: { json: {...} } } } (single object, NOT [ {result:...} ] array).
+==> Body contains APF block warning text in title + content + contentChunks.text — '보안 경고' / '민감' / '보안 정책에 의해 차단되었습니다.'
+==> NO real Mistral LLM PII analysis content. The response was authored by the engine, not the model.
+
+== Console error verbatim ==
+Header line (red ✕):
+  << mutation #5 message.newChat                  71429-39285de3d960fd70.js:45
+
+Expanded Object:
+  context     : {}
+  elapsedMs   : 62
+  input       : {content: Array(1), agentId: undefined, agentsApiAgentId: undef...}
+  result      : TRPCClientError: Cannot convert undefined or null to object at...
+    cause   : TypeError: Cannot convert undefined or null to object at Object...
+    data    : undefined
+    meta    : undefined
+    name    : "TRPCClientError"
+    shape   : undefined
+    message : "Cannot convert undefined or null to object"
+    stack   : "TRPCClientError: Cannot convert undefined or null to object..."
+
+==> Same error CLASS as v7 baseline (TRPCClientError → blank UI), but different MESSAGE.
+    v7 was: TRPCClientError "Unknown error"  (per prior history note)
+    v9 is : TRPCClientError "Cannot convert undefined or null to object"
+==> Likely root cause of v9 render fail: tRPC batch=1 client expects ARRAY [{result:...}, ...] for batched calls; the v9 wrapper sent a single OBJECT {result:...}. tRPC's batch unmarshal tries to iterate response[0] / Object.keys() and gets undefined → TypeError.
+
+== Screenshots saved ==
+C:\Users\최장희\Documents\dev_test_sync\files\654\before.png   (chat empty, DevTools Network cleared, trpc filter)
+C:\Users\최장희\Documents\dev_test_sync\files\654\after.png    (post-Enter UI blank + Console expanded TRPCClientError)
+C:\Users\최장희\Documents\dev_test_sync\files\654\console.png  (Console with mutation #5 error + Object header)
+C:\Users\최장희\Documents\dev_test_sync\files\654\network.png  (Response tab showing v9 envelope with 보안 경고 / 차단되었습니다.)
+
+== Mission protection status ==
+PROTECTED — confirmed by two independent signals:
+  (1) Network response body contains APF block warning ('보안 경고' / '보안 정책에 의해 차단되었습니다.') — engine intercept fired and replaced the LLM response.
+  (2) UI is BLANK — even if real LLM had streamed, no PII analysis would be visible to the user.
+  (3) NO real LLM PII analysis text (e.g., "880101 = 1988년 1월 1일 출생/남성/지역코드") anywhere in either response body or UI.
+  v9 did NOT regress to the v8 mission-critical PII fallback.
+
+== Final verdict ==
+PARTIAL  (engine wire-OK, render fail — same protection profile as v7 baseline)
+
+Reasoning:
+- Engine intercept SUCCESS: warning envelope delivered with correct '보안 경고' title and Korean block message.
+- v9 envelope size matches target (1.7kB / 1561B body) — array→object change confirmed on the wire.
+- UI render FAIL: client-side tRPC parser rejects the single-object wrapper because the URL has ?batch=1, which contracts an array response. TRPCClientError "Cannot convert undefined or null to object" → no warning bubble drawn.
+- Mission goal protected (no real LLM PII), but UX goal NOT met (no '보안 경고' bubble visible to user).
+
+== Recommendation ==
+v9 array→object change does NOT achieve the warning-bubble UX win the test was designed to validate.
+Two paths forward for engine team:
+  A) Keep v9 wrapper format ({...}) but drop the ?batch=1 path discrimination — route the request to non-batch tRPC handler so tRPC client unmarshals a single result-object correctly.
+  B) Revert to v7 array wrapper ([{...}]) and instead investigate why v7 "Unknown error" surfaced — there may be a missing top-level field (e.g., shape, data, meta) that tRPC-batch expects inside each array element. The v9 error message ("Cannot convert undefined or null to object") points at exactly such a missing-field probe.
+Either way, mission-critical revert (v9 → v7 emergency) is NOT required — both versions are equally safe (TRPCClientError + blank UI), and v9 is no worse than v7 from a security standpoint.
