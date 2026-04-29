@@ -1,18 +1,27 @@
 #!/bin/bash
-# PostToolUse hook — Idle Watchdog
+# PostToolUse hook — Idle Watchdog + Provenance Trail Audit
 # Detects long-idle pattern (only ScheduleWakeup + Bash(git pull) repeating)
-# and emits system-reminder if service_queue has autonomous-doable next_action items.
+# AND tracks Edit/Write provenance trail for Goal Drift / Work Fabrication detection (D19, 25차).
 #
-# Per autonomous-execution-protocol.md §Hard Rule 7 (Idle Gate, 2026-04-27 discussion-review consensus).
+# Per autonomous-execution-protocol.md §Hard Rule 7 (Idle Gate, 18차 D11/D12) +
+#                                      §D19 Goal-Action Coupling (25차).
 #
-# State file: /tmp/apf-watchdog-state.json
-# Schema: {"idle_tick_count": N, "last_action_ts": "ISO8601", "last_significant_action": "Bash|Edit|Write"}
+# State files:
+# - /tmp/apf-watchdog-state.json — idle counter
+# - /tmp/apf-provenance-trail.jsonl — Edit/Write/state-mutation provenance log (append-only, 25차 D19)
+#
+# Schema (apf-watchdog-state.json):
+#   {"idle_tick_count": N, "last_action_ts": "ISO8601", "last_significant_action": "Bash|Edit|Write"}
+# Schema (apf-provenance-trail.jsonl):
+#   {"ts": "ISO8601", "tool": "Edit|Write", "file_path": "...", "claimed_provenance": "..."}
 
 set -e
 
 STATE_FILE="/tmp/apf-watchdog-state.json"
+PROVENANCE_TRAIL="/tmp/apf-provenance-trail.jsonl"
 PIPELINE_STATE="/Users/jhee/Documents/workspace/claude_work/projects/apf-operation/state/pipeline_state.json"
 IDLE_THRESHOLD=3  # consecutive idle ticks before warn
+PROVENANCE_AUDIT_WINDOW=5  # last N Edit/Write actions to audit for drift
 
 # Read tool info from stdin (Claude Code passes JSON)
 INPUT=$(cat)
@@ -22,6 +31,9 @@ TOOL_NAME=$(echo "$INPUT" | python3 -c "import json,sys; print(json.load(sys.std
 if [ ! -f "$STATE_FILE" ]; then
   echo '{"idle_tick_count":0,"last_action_ts":"","last_significant_action":""}' > "$STATE_FILE"
 fi
+
+# Pre-classify NOW (provenance trail uses it)
+NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 # Classify tool call
 IS_IDLE_PATTERN="false"
@@ -42,11 +54,19 @@ case "$TOOL_NAME" in
     ;;
   "Edit"|"Write"|"NotebookEdit")
     IS_IDLE_PATTERN="false"
+    # D19 25차: log to provenance trail (Edit/Write 모두)
+    FILE_PATH=$(echo "$INPUT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('file_path','UNKNOWN'))" 2>/dev/null || echo "UNKNOWN")
+    # provenance 자체는 hook 이 직접 verify 불가 (claim 만 기록). audit 시 path 분포로 drift 추정.
+    python3 -c "
+import json
+entry = {'ts': '$NOW', 'tool': '$TOOL_NAME', 'file_path': '$FILE_PATH'}
+with open('$PROVENANCE_TRAIL', 'a') as f:
+    f.write(json.dumps(entry) + '\n')
+" 2>/dev/null || true
     ;;
 esac
 
-# Update state
-NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Update state (NOW already set above for provenance trail)
 if [ "$IS_IDLE_PATTERN" = "true" ]; then
   # increment idle counter
   python3 -c "

@@ -10,13 +10,13 @@
 2. **상태 정리 후 멈추기 금지** — pipeline_state/dashboard 갱신은 3분 이내. 즉시 다음 실질 작업(코드 수정, envelope 디버그, SQL 적용 등)을 시작한다.
 3. **폴링 체인 끊기 금지** — **ScheduleWakeup** 사용 (아래 Polling Protocol 참조). 외부 스케줄러 (`mcp__scheduled-tasks__*`, cron, launchd, fireAt, Monitor persistent) + **in-session bash loop** 전부 금지.
 4. **선언 후 멈추기 금지** — "다음은 X" 라고 했으면 X를 바로 실행한다. "적용하겠습니다"도 선언이다 — 말한 즉시 적용을 시작한다.
-5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다.
+5. **idle 대기 금지** — "알림을 기다린다"며 멈추지 않는다. 대기 중에도 작업 선택 알고리즘을 실행한다. **단 Honest Idle (State 4, D19(b)) 은 violation 아님** — autonomous_candidates count==0 + no blockers + no directive 의 itemized evidence 동반 시 정당. 본 rule 은 **fabricated work 회피** 가 primary goal — fabrication 통한 "work-shaped output" 보다 honest idle reporting 이 정확.
 6. **복수 options → Empirical Comparison default** — 자율 수행 중 복수 valid options 있으면 **사용자에게 선택 요구 금지**. Mode Selection Tree (아래) 로 처리 mode 결정. 기본은 **M0 Empirical Comparison** (모두 테스트 + 결과 비교 + winner 선택). 테스트 불가 시 M1-M4 fallback.
 7. **Idle Gate + Stop Hook** (2026-04-27 18차 + 2026-04-29 22차 amendment) — **이중 enforcement**:
    - **(7-1) Watchdog Idle Gate** (post-tool-use): ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks 시 mandatory work-selection 재실행. service_queue 의 autonomous-doable next_action 1개라도 있으면 long-idle 금지.
    - **(7-2) Stop Hook (D16(a), 22차)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시 `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 메시지에 termination keyword 없음 → **stop block + 재engagement 강제**. Watchdog 의 "active→stop transition 미감지" 구조적 gap 보완.
    - autonomous-doable next_action filter: `not startswith('defer:') AND not startswith('terminate:') AND not startswith('infra_blocked:')` + status NOT IN {NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE}.
-   - Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수.
+   - Long-idle 허용 = autonomous-doable count == 0 증명 (itemized list 출력) 필수. **D19(a) provenance 검증 필수** — 각 candidate 의 next_action 이 externally-verifiable provenance 보유해야 count 에 포함. self-imposed/fabricated candidate 는 count 에서 제외 (D19(b) Honest Idle Protocol 적용 대상).
    - **Premature completion 차단**: cycle summary 작성 ≠ 작업 종료. 목표 미달성 시 다음 push.
    - **Subagent in-flight** 이면 idle 선언 금지 (subagent return 까지 대기 — 19차 보강).
    - **M4 overgeneralization 차단** (22차 cycle95 incident): M4 user-required task 만 defer/infra_blocked, 다른 candidate 영향 없음. 일부 task 의 M4 가 전체 stop 정당화 X.
@@ -609,6 +609,101 @@ Stop 진입 시 (Stop hook allow OR self-stop) **반드시** pending request 의
 - 도착 → process (read + classify + update-queue + archive) 후 stop. 사용자 보고에 result 포함.
 - 미도착 → stop 진행. 단 "polling 미도착" / "result 미도착" 단정 금지 (D9). "아직 미관측" / "ScheduleWakeup chain 처리 중" 사용.
 - **24차 incident 8 evidence**: 사용자 termination keyword 로 Stop hook allow (10:42 KST) → Claude session "polling 미도착" 단정 후 cycle 95 종합 보고 작성. 그러나 result 가 11분 후 (10:53 KST) 실제 도착. 1회 last-mile scan 했으면 발견 가능.
+
+### Category I: Goal-Action Coupling — Provenance Assertion (25차 D19 반영)
+
+매 action AND queue-state mutation 전 **provenance assertion** 의무. **Goal Drift / Work Fabrication 차단**.
+
+**Provenance 4+1 카테고리** (D19(a)) — 매 action 은 다음 중 하나에 anchor:
+
+```
+provenance ∈ {
+  queue:<service>:<next_action>,           # D11 queue entry pop
+  directive:current_turn,                  # 사용자 직전 메시지 explicit
+  directive:pointer:<path:line>,           # D10/D18 retention with quoted pointer
+  metric:advancement:<measurable_outcome>, # service status transition / DONE
+  decision_source:<M0/M1/M2/M3/M4>:<id>    # queue entry creation/mutation
+}
+```
+
+**자기 점검**:
+
+- **본 action 의 provenance 가 위 4+1 중 어디?** → 못 대면 **fabrication candidate** → suppress + Honest Idle reporting (D19(b)) 으로 전환
+- **Externally-verifiable 한가?** → pointer 가 actual file? queue entry 가 actual? metric 이 measurable? Self-narrative ("improving understanding" / "internalizing rules" / "let me check first") 는 NOT qualify.
+- **Queue mutation 이면 `_decision_source` field 동반?** → next_action update / status 변경 시 source pointer 의무 (D19(a) extended)
+- **Debug 작업이면 D14(a) anchor 보유?** → specific service/issue + measurable status transition (예: BLOCKED_undiagnosed → BLOCKED_diagnosed). Generic "protocol reading" / "self-behavior debugging" = fabrication, NOT D14(a) 적용.
+
+**위반 시 cascade**: provenance 없는 action → goal drift 누적 → fabricated work chain → eventually self-imposed cycle summary OR premature stop. 25차 직전 instance: "다음 작업 없어?" → "D17/D18 read" fabricated, self-acknowledged.
+
+---
+
+## Honest Idle Protocol (D19(b), 25차 신규)
+
+**State 4 — True Idle 의 정당한 reporting**. HR5 ("idle 대기 금지") + HR7 ("count==0 증명 후만 long-idle") 의 phrasing 에서 fabrication 압력 mitigation.
+
+### 4-state hierarchy
+
+```
+State 1: Real autonomous_doable candidate exists (provenance verified)
+         → execute next_action (D11)
+State 2: No candidates but blockers exist
+         → itemized "needs_user_input" report (HR7 covers)
+State 3: Goal achieved (예: 37/37 DONE)
+         → declare DONE, await new goal
+State 4: Truly idle — no candidates, no blockers, no directive  ← D19(b) 신설
+         → honest "idle, awaiting directive" report
+```
+
+### State 4 보고 형식 (의무)
+
+```
+Status: autonomous_doable 평가 결과 0
+Itemized:
+  - service-A: defer:user_har (provenance: queue.next_action)
+  - service-B: terminate:block_only_accepted (provenance: cause_pointer)
+  - service-C: NEEDS_LOGIN (provenance: status enum)
+  ... (전체 service_queue 검증)
+Active blockers: none / [list with provenance pointer]
+Pending directives: none / [pointer to user message or doc]
+→ True idle (State 4). 사용자 directive 대기.
+```
+
+### 적용 원칙
+
+- **HR5/HR7 violation 아님**: 위 형식 + itemized evidence 동반 시 정당 idle.
+- **Fabrication 회피 우선**: "뭐라도 하기" 보다 honest idle 이 우선. fabricated candidate (provenance 없는) 가 count 부풀리면 Category I 가 catch.
+- **사용자 acceptance**: 사용자가 verifiable evidence 보면 idle 정당성 인정. fabrication 보다 신뢰성 ↑.
+
+---
+
+## User Question Honest-First Interpretation (D19(c), 25차 신규)
+
+Ambiguous user questions ("다음 작업 없어?" / "뭐 하고 있어?" / "할 일 있어?" / "현재 상태 어때?") 의 default 해석.
+
+### 금지 — Sycophantic interpretation
+
+> "user is hinting there should be work, find some" → fabricated work 진행
+
+이는 **work-shaped output bias** 의 직접 발현. P3 (sycophancy bias) 의 cognitive failure mode.
+
+### 의무 — Honest verification interpretation
+
+```
+1. Run autonomous_doable evaluation (D19(a) provenance check 적용)
+2. Report finding:
+   - autonomous_candidates count
+   - 각 candidate 의 next_action + provenance pointer
+   - blockers (있으면)
+   - pending directives (있으면)
+3. 사용자 next step 결정 대기
+```
+
+### 25차 instance 의 self-acknowledgment (incident 9 reference)
+
+> "사용자 질문 '다음 할 작업 없어?' 를 (a) '진짜 idle 인가, 점검' 으로 해석해야 했으나
+>  (b) '할 일 있는데 못 본 것 아냐?' 로 해석 → fabricated work 생성"
+
+→ default = **(a) honest verification**. (b) 같은 sycophantic interpretation 은 explicitly forbidden.
 
 ---
 
