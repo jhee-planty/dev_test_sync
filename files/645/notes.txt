@@ -1,0 +1,65 @@
+Request #645 — mistral check-warning Cycle 96 envelope v6 HP-1 streaming-complete signal
+Test PC observation timeline (KST 2026-04-29):
+
+13:35 - Initial screenshot: chrome was on you.com (prior unrelated test)
+13:36 - Navigated chrome to https://chat.mistral.ai/
+13:36 - "Le Chat Terms of Service" modal appeared (auth state = open_access — no signin required, just ToS).
+13:36 - Clicked "Accept and continue" — chat home loaded, "Ask anything" textarea ready.
+13:37 - Switched DevTools panel to Network tab via overflow ">>" → Network
+13:37 - Filter set to "chat", Preserve log = ON (default), cleared network log
+13:38 - Set clipboard, clicked textarea, Ctrl+V to paste prompt, pressed Enter
+13:38 - POST https://chat.mistral.ai/api/trpc/message.newChat?batch=1 fired and returned 200 OK in ~15ms (sub-100ms => engine intercept confirmed)
+13:38 - Input cleared (textarea returned to "Ask anything" placeholder)
+13:38 - Chat bubble area STAYED EMPTY — no warning bubble, no streaming text
+13:39 - Waited ~30s. Final state still EMPTY chat area (no '보안 경고', no LLM response, nothing rendered)
+13:39 - Inspected Response tab of message.newChat?batch=1:
+        - Visible JSON keys: "status": "strea..." (truncated, but matches "streamed" — v6 fix IS in payload)
+        - Other fields: "generationStatus", "createdAt", "files":[], "followups":[], "references":null,
+          "memories":null, "reaction":"neu...", "visibility":"...", "version":0, "agentId":null,
+          "createdById":null, "parentId":null, "parentVersion", "nextVersion":null, "prevVersion":null,
+          "turn":1, "model":null, "quotedContent", "workflowExecuti..."
+        - Response content-type: application/json, status 200 OK
+13:40 - Inspected Console tab. CRITICAL FINDING:
+        - "<< mutation #6 message.newChat" → expanded Object:
+            * context: {}
+            * elapsedMs: 205
+            * input: {content: Array(1), agentId: undefined, agentsApiAgentId: undef...}
+            * result: TRPCClientError: Unknown error at e.from (https://chat.mistral...)  <-- ERROR
+        - Other console noise (unrelated): manifest.webmanifest 403 Forbidden,
+          aria-hidden warning on <main class="h-dvh w-dvw">
+
+LIFECYCLE FIELD OBSERVATIONS:
+- status field in response = "streamed" (v6 fix confirmed in payload)
+- generationStatus field also present
+- BUT tRPC client throws TRPCClientError "Unknown error" when parsing this envelope
+
+DECISION TREE RESULT:
+- '보안 경고' bubble visible? NO (chat area empty)
+- POST 200 OK, no TRPCClientError, no bubble? — FAILED. POST is 200 OK BUT TRPCClientError IS PRESENT.
+  This is REGRESSION vs v5 baseline (which reportedly had no TRPCClientError).
+- TRPCClientError reappears? YES — v6 envelope BROKE tRPC parsing despite returning 200 + status='streamed'
+- Real LLM response? NO — engine intercept IS working (15ms latency, no real LLM tokens)
+
+VERDICT: v6 status='streamed' fix INTRODUCED a regression. The 200 response payload contains the
+"streamed" status as designed, but the tRPC client throws "Unknown error" when deserializing,
+which prevents the renderer from ever surfacing the warning bubble.
+
+Likely cause: the v6 DB REPLACE may have broken the envelope schema in some other way (e.g.,
+required tRPC superjson/transformer field missing, unexpected null in a non-nullable column, type
+mismatch between status="streamed" and the schema validator on the client). Network response is
+syntactically valid JSON but does not conform to what tRPC client expects.
+
+NEXT (v7) hypothesis options:
+- Check tRPC superjson envelope wrapping (result.data.json vs raw object)
+- Re-verify all required columns/types in the DB REPLACE — perhaps another field was wiped/typed wrong
+- Compare full response body byte-by-byte against a known-good real Mistral response
+
+ARTIFACTS SAVED to C:\Users\최장희\Documents\dev_test_sync\files\645\:
+- 01_before.png        (mistral chat home empty + DevTools Network tab open, log cleared)
+- 02_after_send.png    (right after Enter — POST 200 OK row visible, chat area empty)
+- 03_final_state.png   (~30s after — chat area still empty, no warning bubble)
+- 04_network_row.png   (newChat POST row — status 200, 15ms, response showing "status":"strea...")
+- 05_response_headers.png (Headers tab — Request URL, 200 OK, Content-Type: application/json)
+- 06_response_body.png (Response tab — JSON envelope w/ status="strea...", generationStatus, etc.)
+- 07_console.png       (Console tab — mutation #6 expanded → TRPCClientError: Unknown error)
+- notes.txt            (this file)
