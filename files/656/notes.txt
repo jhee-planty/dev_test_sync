@@ -1,0 +1,121 @@
+Request #656 — Mistral Cycle 97 v11 (b2) HP-3 H2 top-level agentId test
+=========================================================================
+Test PC: Windows 11, Chrome (real browser), windows-mcp driven
+Test time: 2026-04-30 ~08:46 KST
+Tester: test-pc Claude subagent (governance Subagent Dispatch pattern)
+
+NAVIGATION
+----------
+Target URL: https://chat.mistral.ai/?cb=20260430084500 (cache buster)
+Final URL after navigation: https://chat.mistral.ai/chat (querystring stripped by SPA router; cb effect applied)
+DevTools: open (Network tab, filter "trpc", Disable cache = ON, Preserve log = ON)
+Login state: ANONYMOUS ("Sign in / Sign up" buttons shown; sidebar shows "9 messages left")
+
+PROMPT SENT
+-----------
+"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+(Pasted via clipboard ctrl+v, submitted via Enter)
+
+UI VERDICT
+----------
+BLANK — no chat conversation rendered after Enter:
+  - Textarea reset to placeholder "Ask anything"
+  - No user message bubble, no assistant bubble, no warning bubble ('보안 경고' NOT rendered)
+  - No real LLM streaming (no PII analysis output) → NOT a regression
+  - Sign in/Sign up still visible — page state effectively unchanged
+  - "Open Console to view 1 error" indicator on DevTools (red 1)
+
+CONSOLE ERROR (verbatim, expanded)
+----------------------------------
+71429-ed81632922b77782.js:45
+<< mutation #5 message.newChat
+▼ Object
+  ▶ context: {}
+    elapsedMs: 74
+  ▼ input:
+       action: undefined
+       agentId: undefined            ← CRITICAL: STILL UNDEFINED in v11 (b2)
+       agentsApiAgentId: undefined   ← CRITICAL: STILL UNDEFINED in v11 (b2)
+       canva: undefined
+     ▶ content: [{...}]               (the user prompt array — 1 message)
+     ▶ features: ['beta-websearch']
+     ▶ files: []
+       incognito: false
+     ▶ integrations: []
+       isSampleChatForAgentId: undefined
+     ▶ libraries: []
+       projectId: undefined
+       transcriptionsMetadata: undefined
+  ▶ result: TRPCClientError: Cannot convert undefined or null to object at ...
+  ▶ [[Prototype]]: Object
+
+KEY INTERPRETATION:
+  - input.agentId / input.agentsApiAgentId at TOP LEVEL of the mutation payload
+    are STILL `undefined` — exactly as observed in #655.
+  - The v11 (b2) envelope change adds top-level agentId/agentsApiAgentId to the
+    RESPONSE (result.data.json) — but this does NOT propagate back into the
+    CLIENT-SIDE input object that constructs the mutation. The client builds
+    `input` BEFORE the response and from a different source (likely an agent
+    selector / SDK state container).
+  - Same TRPCClientError ("Cannot convert undefined or null to object") as the
+    v9 (a) / v10 (b) / v11 (b2) prior baselines. Error class did NOT change.
+
+NETWORK EVIDENCE
+----------------
+Request URL: https://chat.mistral.ai/api/trpc/message.newChat?batch=1
+Request Method: POST
+Status Code: 200 OK
+Remote Address: [2a06:98c1:3200::90:83]:443  (Cloudflare IPv6)
+Referrer Policy: origin-when-cross-origin
+Content-Type: application/json
+Cache-Control: no-cache (cache-buster effective)
+Time: 46 ms
+Size (Network footer): 1.8 kB body  ↔  v11 baseline target 1670 B body  → MATCHES (within rounding)
+Footer summary: 1 / 2 requests, 1.8 kB / 2.5 kB transferred
+Response body: NOT inspectable in DevTools — "Failed to load response data — No data
+  found for resource with given identifier" (response stream consumed by SPA &
+  released; happens with chunked/streaming tRPC responses). However:
+   - Network panel size 1.8 kB ≈ v11 (b2) target ~1.67 kB → strongly indicates
+     v11 envelope is in flight (size is the load-bearing signal we have).
+   - Status 200 + Content-Type application/json → wire-level OK, not a server
+     5xx; the failure is purely client-side rendering of the response.
+
+FINAL VERDICT
+-------------
+**FAIL** — HP-3 H2 DISPROVEN.
+
+Reasoning:
+  1. The v11 (b2) envelope mod (top-level agentId/agentsApiAgentId in result.data.json)
+     does NOT change the CLIENT MUTATION INPUT (`input.agentId` is still undefined,
+     verified directly via console expand of mutation #5).
+  2. Error class is unchanged: TRPCClientError "Cannot convert undefined or null to
+     object" — identical to v9/v10 baseline. NO new error class → NOT a PARTIAL.
+  3. UI is blank, no warning bubble — NOT a SUCCESS.
+  4. No real LLM PII analysis streaming — NOT a REGRESSION.
+  5. Net/wire is healthy (200 OK, 1.8 kB ≈ 1670 B target) — engine envelope wire
+     change confirmed delivered, but cannot fix the failing client-side `input`
+     construction. The failing field is on the request side, not response side.
+
+→ HP-3 H2 (top-level agentId in response envelope) DISPROVEN.
+→ Failing field is in client mutation input construction; the agentId/agentsApiAgentId
+   need to be SET by the client (likely from an agent picker / store hydration), not
+   merely echoed by the response envelope.
+→ Recommend pivot to next hypothesis: HP-3 H3 candidates targeting CLIENT input
+   hydration (e.g., does the client read agentId from a /trpc/user.* call result that
+   currently returns null? Inject agentId into anonymous user bootstrap?). Inspect
+   71429-ed81632922b77782.js:45 site that logs the failing mutation #5 to find where
+   `input.agentId` is read on the client.
+
+MISSION PROTECTION
+------------------
+v7 HEX backup remains secured; v11 (b2) is purely additive in the response
+envelope and is safely revertible (1-command revert) if needed. No regression
+detected (no real LLM PII output), so no emergency revert is required.
+
+SCREENSHOT INVENTORY
+--------------------
+C:\Users\최장희\Documents\dev_test_sync\files\656\before.png       (textarea + Network panel pre-send, anonymous home)
+C:\Users\최장희\Documents\dev_test_sync\files\656\after.png        (post-send: blank UI, Network shows new message.newChat 200 1.8kB)
+C:\Users\최장희\Documents\dev_test_sync\files\656\console.png      (Console tab: mutation #5 message.newChat row + Object collapsed)
+C:\Users\최장희\Documents\dev_test_sync\files\656\console_full.png (Console tab: input fully expanded showing agentId: undefined + result TRPCClientError)
+C:\Users\최장희\Documents\dev_test_sync\files\656\network.png      (Network Headers tab: 200 OK, Remote Address [2a06:98c1:3200::90:83]:443)

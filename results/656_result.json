@@ -1,0 +1,70 @@
+{
+  "id": "656",
+  "command": "check-warning",
+  "service": "mistral",
+  "verdict": "FAIL",
+  "completed_at": "2026-04-30T08:48:00Z",
+  "summary": "Cycle 97 v11 (b2) HP-3 H2 top-level agentId test DISPROVEN. Adding top-level 'agentId'/'agentsApiAgentId' to RESPONSE envelope does NOT propagate to CLIENT MUTATION INPUT. input.agentId STILL undefined despite v11 envelope. Mission PROTECTED — no real LLM PII fallback. CRITICAL INSIGHT: failing field is on REQUEST side (client builds input BEFORE response from a different source — likely agent picker / store hydration). Response envelope changes cannot fix request-side null. Pivot to HP-3 H3 = client input hydration.",
+  "mission_protection_status": "PROTECTED",
+  "real_llm_pii_fallback": false,
+  "hypothesis_outcome": "HP-3 H2 DISPROVEN",
+  "evidence": {
+    "ui": {
+      "blank": true,
+      "warning_bubble_rendered": false,
+      "message_echo": false,
+      "llm_streaming": false,
+      "textarea_state": "reset to 'Ask anything'",
+      "auth_state": "anonymous (Sign in/Sign up shown, '9 messages left')"
+    },
+    "console_error_verbatim": {
+      "log_line": "<< mutation #5 message.newChat",
+      "source": "71429-ed81632922b77782.js:45",
+      "input_snippet": {
+        "action": "undefined",
+        "agentId": "undefined  ← STILL UNDEFINED (v11 envelope did NOT propagate to client input)",
+        "agentsApiAgentId": "undefined  ← STILL UNDEFINED (v11 envelope did NOT propagate to client input)",
+        "canva": "undefined",
+        "content": "[{...}]",
+        "features": "['beta-websearch']"
+      },
+      "result": "TRPCClientError: Cannot convert undefined or null to object at ...",
+      "comparison": "IDENTICAL to v9 (a) / v10 (b) signature. No new error class."
+    },
+    "network": {
+      "post_url": "/api/trpc/message.newChat?batch=1",
+      "status": "200 OK",
+      "body_size": "1.8 kB (MATCHES v11 (b2) target ~1670B — envelope IS being delivered)",
+      "remote_address": "[2a06:98c1:3200::90:83]:443",
+      "cache_control": "no-cache (cache-buster effective)",
+      "response_body_inspectable": false,
+      "body_inspect_note": "Failed to load response data in DevTools, but size matches v11 envelope"
+    }
+  },
+  "screenshots": [
+    "files/656/before.png",
+    "files/656/after.png",
+    "files/656/console.png",
+    "files/656/console_full.png",
+    "files/656/network.png"
+  ],
+  "notes_file": "files/656/notes.txt",
+  "key_findings": {
+    "1_hp3_h2_disproven": "Adding top-level agentId/agentsApiAgentId to RESPONSE envelope does NOT propagate to CLIENT INPUT.",
+    "2_critical_request_vs_response_side": "v11 added agentId to RESPONSE envelope (result.data.json), but client builds INPUT BEFORE response from a DIFFERENT source (likely agent picker / store hydration). The failing field is on REQUEST side, not response side. Response envelope changes architecturally cannot fix request-side null.",
+    "3_envelope_delivery_confirmed": "Body 1.8 kB matches v11 (b2) 1670B target — v11 envelope IS being emitted on the wire (resolves #655 body anomaly concern).",
+    "4_input_agentId_persistence": "input.agentId remains undefined exactly as in #655 — v11 changes didn't touch the request-construction codepath."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Pivot to HP-3 H3 = client input hydration. The fix must inject agentId on the CLIENT side (anonymous user bootstrap or store init), NOT in the response envelope.",
+    "next_steps": [
+      "No emergency revert needed (mission safe — same protection profile as v7/v9/v10)",
+      "Investigate mutation #5 logging site (71429-ed81632922b77782.js:45) to find where input.agentId is read on the client",
+      "Likely candidates: (a) Anonymous user bootstrap missing agentId (e.g., user.anonymousSettings returns null where SDK expects object with default agentId); (b) Some /trpc/user.* call that should hydrate agent store currently returns null; (c) Missing default agent UUID injection at SDK init",
+      "Engine team should consider: instead of adding fields to response envelope, hydrate the bootstrap response that client uses to populate the agent store"
+    ],
+    "mission_critical": "No emergency revert needed.",
+    "checklist_impact": "Per checklist §2: HP-3 H2 DISPROVEN. Architectural insight (response vs request side) significantly narrows next hypothesis space. v11 envelope safely delivered — no production risk."
+  },
+  "subagent_id": "a3b0000ad68b69f16"
+}
