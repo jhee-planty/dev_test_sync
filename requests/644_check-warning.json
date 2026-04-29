@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "you",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://you.com/search?q=test&fromSearchBar=true&chatMode=default",
+    "context": "Cycle 96 you envelope schema alignment. Cycle 95 #635/#636 결과 chrome 'Streaming search unknown error' fallback — engine 547B emit fire 됐으나 chrome SSE dispatcher reject. 632 capture 에서 native done event sentinel = \"I'm Mr. Meeseeks. Look at me.\" 식별. DB you_sse_v3 envelope 의 data: blocked → data: I'm Mr. Meeseeks. Look at me. 변경 + reload_templates done. 본 검증: chrome 의 streaming dispatcher 가 native sentinel 인식 → APF warning chat bubble 안에 렌더링. expected: error fallback 아닌 PII warning visible inside chat bubble."
+  },
+  "notes": "Cycle 96 you native done sentinel alignment",
+  "attachments": [],
+  "id": "644",
+  "created": "2026-04-29T04:15:45Z"
+}
