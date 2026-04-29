@@ -241,6 +241,29 @@ ScheduleWakeup chain (D21 ★★★ — auto-prepend hook active):
 - [x] Polling plan 명시
 - [x] D19b honest idle exit condition 정의
 
+## §12 — Cycle 97 종료 — Honest Idle State 4
+
+본 cycle 97 single-step autonomous mission progress 완료:
+- §1 huggingface DONE_candidate (#653 SUCCESS)
+- §7 A4.3 SQL DROP COLUMN apply COMPLETE
+- §2 mistral cycle 97 (a) DISPROVEN with diagnostic + v7 restored
+- §3 gemini3 M0 Option B baseline (Option C cycle 98+ defer)
+
+### Cycle 98+ followup tasks
+→ `apf-operation/docs/cycle97-followup-tasks-2026-04-29.md`
+- F1 huggingface 167-byte mojibake fix (low, UX)
+- F2 gemini3 Option C engine rewrite (high, mission)
+- F3 mistral HP-3 (b) HAR (medium, user M4)
+- F4 gamma slide intent (low, design M4)
+- F5 copilot/character ws_inspect (medium, multi-cycle)
+- F6 poe/zeta HAR (low, user M4)
+- F7 cleanup audit (chained)
+
+### autonomous_candidates count == 0 (D19b)
+모든 잔여 = user M4 / HAR / multi-cycle engine work. Single-step autonomous boundary 소진.
+
+**ScheduleWakeup chain 자연 종료**: 다음 wakeup 진입 시 동일 state (queue empty + count==0) 감지 → honest idle 상태 보고 + 사용자 directive 대기.
+
 ---
 
 **Document anchor**: 본 file 은 cycle 97 자율 모드 작업 진행 시 매 turn 진입 직후 read 의무 (TodoList 첫 item). 변경 시 in-place edit + git push (force-add 의무 아님 — 본 file 은 dev_test_sync local_archive/, push 시 commit).
