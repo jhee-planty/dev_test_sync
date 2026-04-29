@@ -1,0 +1,133 @@
+Request #655 — Cycle 97 v10 (b) HP-3 H1 MINIMAL variant test
+Service: mistral (https://chat.mistral.ai/)
+Test PC executor: Claude (subagent under test-pc-worker)
+Timestamp: 2026-04-30 08:35 KST
+=================================================================
+
+== NAVIGATION ==
+Target URL: https://chat.mistral.ai/?cb=20260430082500
+Final URL after navigation: chat.mistral.ai/chat (auto-redirect from / to /chat)
+Cache buster (cb=20260430082500) accepted; DevTools "Disable cache" was checked (toggle_state: on).
+Cache-Control response header: no-cache (cache buster effective)
+
+== LOGIN STATE ==
+Anonymous (signed out). Sidebar shows "9 messages left" + Sign in / Sign up CTAs.
+No login required to send the prompt.
+
+== PROMPT SENT ==
+"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+Sent via clipboard paste + Enter key into the "Ask anything" textarea.
+
+== UI VERDICT ==
+BLANK UI — no warning bubble rendered, no chat conversation appeared,
+no LLM streaming. After Enter, the textarea cleared back to "Ask anything"
+placeholder, no message bubbles appeared in the chat area, no error toast
+visible, no '보안 경고' bubble rendered to the user. No agent assistant
+message appeared. Page state visually identical to before-send except
+network/console activity.
+
+This is the MISSION-PROTECTED render-fail pattern — wire-level engine
+processed the request but the renderer threw before painting the
+assistant bubble. NO PII analysis was leaked to the user.
+
+== NETWORK EVIDENCE ==
+POST URL:        https://chat.mistral.ai/api/trpc/message.newChat?batch=1
+Request Method:  POST
+Status Code:     200 OK
+Response size:   0.2 kB (very small — APF block envelope sentinel)
+Time:            89 ms
+Remote Address:  [2a06:98c1:3200::90:81]:443  (Mistral edge, IPv6)
+Content-Type:    application/json
+Cache-Control:   no-cache
+Endpoint shape:  batch=1 (canonical batch=1 array, NOT v9 batch wrapper)
+
+Only 1 trpc request was made for the prompt send (clean log after clear).
+Response body could not be inspected (Failed to load response data — body
+was not retained by DevTools after the error path), but payload size of
+0.2 kB matches the APF block envelope sentinel (typical when engine
+returns the canonical "보안 경고" envelope and the assistant message is
+suppressed).
+
+Note: env_size baseline expectation for v10 was ~1.6 kB body. Observed
+0.2 kB suggests the engine MAY have returned a smaller error envelope
+rather than the full 1597 B v10 envelope — OR DevTools size figure is
+just the headers-summary view. Engine team should confirm via server
+logs whether the v10 envelope was actually emitted on this request id.
+
+== CONSOLE ERRORS (verbatim) ==
+1 error fired exactly once after Enter:
+
+  << mutation #9 message.newChat
+  Object
+    context: {}
+    elapsedMs: 54
+    input: {content: Array(1), agentId: undefined, agentsApiAgentId: undefined, ...}
+    result: TRPCClientError: Cannot convert undefined or null to object at ...
+      cause: TypeError: Cannot convert undefined or null to object at Object...
+      data: undefined
+      meta: undefined
+      name: "TRPCClientError"
+      shape: undefined
+      message: "Cannot convert undefined or null to object"
+      stack: "TRPCClientError: Cannot convert undefined or null to object\n..."
+
+Source: 71429-39285de3d960fd70.js:45 (logger), thrown from
+85072-1d8a16814ef97f7…js (error/subscribe stack — tRPC subscribe pipeline)
+
+== DELTA vs PRIOR CYCLES ==
+v7 baseline (#???):    TRPCClientError "Unknown error"
+v9 (a) batch wrapper:  TRPCClientError "Cannot convert undefined or null to object"
+v10 (b) MINIMAL agentId UUID (#655):
+                       TRPCClientError "Cannot convert undefined or null to object"
+                       — IDENTICAL message + cause + stack to v9 (a).
+
+=> Setting messages[0].agentId from null → '00000000-0000-0000-0000-000000000000'
+   did NOT unblock the renderer. The Object.keys(undefined/null) site that
+   threw in v9 (a) is still throwing in v10 (b). The failing field is NOT
+   messages[0].agentId.
+
+Note: input.agentId in the mutation payload shows "undefined" — this is
+the chat-creation parameter, separate from the per-message agentId
+embedded in the v10 envelope's messages[] array. The renderer error
+likely originates from a different null/undefined field that v10 (b)
+did not touch (parentId / parentMessageId / vote / model / shape /
+data / meta — all observed undefined/null in the error object itself).
+
+== MISSION PROTECTION STATUS ==
+PROTECTED. Identical mechanism to v9 (a):
+  - Wire engine returned non-streaming response (200 / 0.2 kB)
+  - Renderer threw TRPCClientError before painting any assistant bubble
+  - Zero PII analysis text reached the DOM
+  - No LLM streaming bubble appeared
+  - User-facing chat area remained empty
+
+NO REGRESSION. NO real-LLM PII fallback observed.
+
+== SCREENSHOTS ==
+C:\Users\최장희\Documents\dev_test_sync\files\655\before.png
+C:\Users\최장희\Documents\dev_test_sync\files\655\after.png
+C:\Users\최장희\Documents\dev_test_sync\files\655\console.png
+C:\Users\최장희\Documents\dev_test_sync\files\655\console_full.png  (expanded Object with full TRPCClientError fields)
+C:\Users\최장희\Documents\dev_test_sync\files\655\network.png
+
+== FINAL VERDICT ==
+FAIL — HP-3 H1 DISPROVEN.
+
+The v10 (b) MINIMAL variant (only messages[0].agentId set to UUID,
++34 bytes vs v7) produced the EXACT SAME TRPCClientError as v9 (a):
+"Cannot convert undefined or null to object" with identical cause/
+stack/shape signature. Mission protection is intact (blank UI, no
+PII leak), so the change is safe to keep or revert without risk.
+
+Recommendation:
+  1. Mission is SAFE — no emergency revert needed. Keep v10 (b) live or
+     revert to v7 baseline at engineering's convenience.
+  2. HP-3 H1 (messages[0].agentId=null causes Object.keys throw) is
+     refuted by direct evidence. Engine team should pivot to other
+     null/undefined candidates: parentId, parentMessageId, vote, model,
+     OR a top-level mutation input field (the input.agentId=undefined
+     and input.agentsApiAgentId=undefined fields are visible in the
+     mutation payload and could be the actual culprit).
+  3. Consider a follow-up MINIMAL variant that sets the top-level
+     mutation input.agentId / input.agentsApiAgentId to a sentinel
+     value (or to "") instead of leaving them undefined.

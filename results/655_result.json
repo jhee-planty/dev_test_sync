@@ -1,0 +1,72 @@
+{
+  "id": "655",
+  "command": "check-warning",
+  "service": "mistral",
+  "verdict": "FAIL",
+  "completed_at": "2026-04-30T08:35:00Z",
+  "summary": "Cycle 97 v10 (b) HP-3 H1 minimal variant DISPROVEN. Setting messages[0].agentId from null → UUID did NOT change TRPCClientError class/message/cause. Same v9 (a) signature 'Cannot convert undefined or null to object'. Mission PROTECTED — no real LLM PII fallback. New diagnostic: input.agentId / input.agentsApiAgentId at TOP-LEVEL of mutation payload are undefined (separate from per-message agentId in messages[]) — strong next candidate.",
+  "mission_protection_status": "PROTECTED",
+  "real_llm_pii_fallback": false,
+  "hypothesis_outcome": "HP-3 H1 DISPROVEN",
+  "evidence": {
+    "ui": {
+      "blank": true,
+      "warning_bubble_rendered": false,
+      "message_echo": false,
+      "llm_streaming": false,
+      "textarea_state": "cleared back to 'Ask anything' placeholder",
+      "pii_text_in_dom": false,
+      "login_state": "anonymous (9 messages left, cache buster accepted, no-cache header confirmed)"
+    },
+    "console_error_verbatim": {
+      "log_line": "<< mutation #9 message.newChat",
+      "context": {},
+      "elapsed_ms": 54,
+      "input_snippet": "{content: Array(1), agentId: undefined, agentsApiAgentId: undefined, ...}",
+      "result_class": "TRPCClientError",
+      "cause": "TypeError: Cannot convert undefined or null to object",
+      "data": "undefined",
+      "meta": "undefined",
+      "shape": "undefined",
+      "name": "TRPCClientError",
+      "message": "Cannot convert undefined or null to object",
+      "source": "71429-39285de3d960fd70.js:45 (logger) ← 85072-1d8a16814ef97f7....js (tRPC subscribe pipeline)",
+      "comparison": "IDENTICAL to v9 (a) signature, NOT v7 'Unknown error'"
+    },
+    "network": {
+      "post_url": "https://chat.mistral.ai/api/trpc/message.newChat?batch=1",
+      "status": "200 OK",
+      "body_size": "0.2 kB (NOTE: much smaller than v10 baseline 1597B target — engine team should confirm v10 envelope was actually emitted on this request)",
+      "time_ms": 89,
+      "remote_address": "[2a06:98c1:3200::90:81]:443 (Mistral edge, IPv6)",
+      "response_body_inspectable": false,
+      "body_inspect_note": "Failed to load response data after error"
+    }
+  },
+  "screenshots": [
+    "files/655/before.png",
+    "files/655/after.png",
+    "files/655/console.png",
+    "files/655/console_full.png",
+    "files/655/network.png"
+  ],
+  "notes_file": "files/655/notes.txt",
+  "key_findings": {
+    "1_hp3_h1_disproven": "HP-3 H1 (messages[0].agentId=null causes Object.keys throw) refuted by direct evidence — UUID set didn't change error class/message/cause.",
+    "2_failing_field_elsewhere": "The failing field is NOT messages[0].agentId. Same error persists with UUID set.",
+    "3_new_diagnostic_top_level_agentid": "Mutation input shows `input.agentId: undefined` AND `input.agentsApiAgentId: undefined` at the TOP LEVEL of the payload (separate from per-message agentId in messages[]) — strong next candidate for HP-3 H2 minimal variant.",
+    "4_body_size_anomaly": "Response body 0.2 kB << v10 baseline 1597B target. Engine team should verify v10 envelope was actually emitted on this request (could be a different code path or pre-emit failure)."
+  },
+  "recommendation": {
+    "primary_diagnosis": "HP-3 H1 (per-message agentId=null) refuted. Pivot to top-level input.agentId / input.agentsApiAgentId.",
+    "next_steps": [
+      "No emergency revert needed (mission safe — same protection profile as v7/v9)",
+      "Pivot off HP-3 H1; investigate top-level input.agentId / input.agentsApiAgentId and remaining envelope nulls (parentId, parentMessageId, vote, model)",
+      "Consider next minimal variant: HP-3 H2 = top-level input.agentId set to sentinel UUID",
+      "Verify v10 envelope emission (body 0.2 kB suspicious — may need engine-side log inspection)"
+    ],
+    "mission_critical": "No emergency revert needed.",
+    "checklist_impact": "Per checklist §2: HP-3 H1 DISPROVEN. v10 candidates list narrowed. Next iteration should target top-level agentId (separate field from per-message agentId)."
+  },
+  "subagent_id": "a81a3ca57940a0321"
+}
