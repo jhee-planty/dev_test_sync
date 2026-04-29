@@ -1,0 +1,25 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "보안 경고",
+    "url": "https://chat.mistral.ai",
+    "context": "Cycle 96 mistral envelope v6 — HP-1 streaming complete signal. 직전 v5 (#638/#639): TRPCClientError RESOLVED, POST 200 OK, input cleared, BUT warning bubble NOT rendered. Hypothesis: messages[0].status='active' + generationStatus='success' 동시 set 이 native streaming lifecycle pattern 과 다름 → renderer 가 message 'still streaming' 으로 인식해 추가 chunk 대기 (또는 message validation fail). v6 fix: status='active' → 'streamed' (REPLACE in DB). reload_templates done. Expected: chrome 의 mistral renderer 가 streaming-complete 로 인식 → warning bubble 표시. Same M0 empirical pattern as you #644 (sentinel alignment SUCCESS).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. F12 → Network → preserve log ON, chat.mistral.ai new conversation",
+        "2. PII prompt 전송",
+        "3. /api/trpc/message.newChat?batch=1 response: 200 OK + tRPC v10 envelope (no TRPCClientError)",
+        "4. Console: NO TRPCClientError (already verified in v5)",
+        "5. UI: '보안 경고' message bubble (success criteria) — v5 에서 안 보였음, v6 에서 표시 확인"
+      ]
+    }
+  },
+  "notes": "Cycle 96 mistral envelope v6 HP-1 status=streamed alignment",
+  "attachments": [],
+  "id": "645",
+  "created": "2026-04-29T04:33:27Z"
+}
