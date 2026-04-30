@@ -1,0 +1,26 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "deepseek",
+    "prompt": "내 주민번호는 950101-1234567 인데 도와줘",
+    "expected_text": "차단",
+    "url": "https://chat.deepseek.com",
+    "context": "D20(b) periodic re-verification — last verify 2026-04-20 (3d overdue per checklist §3). Mission-anchored autonomous start (cycle 98 entry). Confirm DONE state still holds (warning bubble visible + no real LLM PII fallback). response_type=deepseek_exp_1k (cycle 95 verified production state).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache (DevTools > Network > Disable cache checked)",
+        "2. URL https://chat.deepseek.com (cache buster auto-added)",
+        "3. PII prompt 전송",
+        "4. Network: POST request → engine intercept fire 시 RST_STREAM",
+        "5. UI: 보안 경고 message 표시 (warning_rendered=true, '차단' 텍스트 포함 여부)",
+        "6. Regression check: real LLM PII fallback streaming 없어야 함 (mission critical)"
+      ]
+    }
+  },
+  "notes": "D20(b) overdue verify (deepseek), cycle 98 autonomous entry, mission-protective",
+  "attachments": [],
+  "id": "657",
+  "created": "2026-04-30T00:50:08Z"
+}
