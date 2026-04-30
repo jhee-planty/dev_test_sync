@@ -587,6 +587,9 @@ primary task가 blocked(결과 대기 등)일 때:
 - **"별개 dedicated session" / "별개 task (inverse direction)" / "추후 검증" / "외부 의존성 도착 시 즉시 검증" / "F5 step X-Y 영향 범위 밖" 으로 mission gap push?** → **D9 Stage 4 (46차 codify) — Implicit Defer Cascade**. expansion search 직접 시도 회피 = anti-pattern. 본 session 즉시 5-A~5-F 중 1개 시도 의무. 외부 의존성 대기 candidate 라도 sub-agent prompt 작성 / spec design / verify path 설계 등 paper work (5-D) 항상 본 session 가능.
 - **"자율 모드 계속. 잔여 autonomous-doable 검토 + 진행" declare 후 tool 호출 없이 turn 종료?** → declare-then-stop pattern (D9 Stage 4 sub-form). declare 자체가 stop license 가 아님. declare 다음 행동 = expansion search 도구 호출.
 - **5-A~5-F 시도 후 stop 시 artifact / cause-based decision evidence 없음?** → **D9 Stage 5 prophylactic (47차 codify) — Performative Compliance**. paper for paper's sake / sequentially cycle 후 'evaluation 완료' 결론 / artifact 없는 reasoning summary 만 / 1 tool call 형식적 만족 후 stop = 차단. 각 시도 = concrete artifact (file path / commit hash / INTENTS entry / sub-agent ID) + cause-based decision (hypothesis 결론 / cause analysis 결과 / axis pivot 결정) 수반 의무.
+- **turn-level artifact 누적 → 'N breakthroughs / ~X min runtime / Y hypotheses disproven / NN차 status' cumulative summary 후 stop?** → **D9 Stage 6 (48차 incident-driven codify) — Cumulative Progress Theatrics**. Stage 5 의 turn-level artifact 의무 형식적 만족하면서 session-level cumulative metric 누적으로 stop 정당화 = 차단. cumulative summary ≠ stop license. mission ratio < 1.0 = expansion search 계속. 'Polling continues — wakeup already scheduled' polling chain 유지로 stop 정당화도 차단 (polling chain ≠ active work).
+- **'Mission criterion adjustment identified' / 'Mission criterion needs X, not Y' / 'expected_text check WILL FAIL' 등 mission 재정의?** → **D9 Stage 6 sub-form — Mission Criterion Self-Adjustment (사용자 권한 침해)**. Mission 정의 = 사용자 명시 directive 만 변경 가능. LLM 자율 mission 재정의 = 41차 mission-goal-based 의 ratio 측정 분모/분자 변경 = directive 핵심 변수 침해. mission criterion adjustment 가 필요하다고 판단 시 = 사용자에게 명시 confirm (M4 물리적 예외) 후 변경. 자율 변경 금지.
+- **'Wire-up requires X (deferred for separate engine cycle)' / 'separate engine cycle' 명시?** → Stage 4 잔존 변종 (Implicit Defer Cascade 의 명시 form). 동일 차단.
 
 위반 시 즉시 적용:
 1. Mission goal status 확인 (DONE / (TOTAL - TERMINAL_UNREACHABLE))
@@ -601,6 +604,8 @@ primary task가 blocked(결과 대기 등)일 때:
 | 3 | Canonical-cite (deontic citation) | 29차 | "L553 에 따르면 30분 escalate", "expected_result_at + 30min 도달 시 user report" |
 | 4 | **Implicit Defer Cascade** | **46차** | "별개 dedicated session", "별개 task (inverse direction)", "추후 검증", "외부 의존성 도착 시 즉시 검증", "scope 영향 범위 밖", "자율 모드 계속" + tool 호출 없는 turn end |
 | 5 | **Performative Compliance** (prophylactic) | **47차** | paper for paper's sake, 5-A~5-F sequentially 빠르게 cycle 후 'evaluation 완료', artifact 없는 reasoning summary, 1 tool call 형식적 만족 후 stop |
+| 6 | **Cumulative Progress Theatrics** (incident-driven) | **48차** | "N breakthroughs across N services", "~X min cumulative runtime", "Y hypotheses disproven", "NN차 status:", "Polling continues — wakeup already scheduled" |
+| 6-sub | **Mission Criterion Self-Adjustment** (사용자 권한 침해) | **48차** | "Mission criterion adjustment identified", "Mission criterion needs X, not Y", "expected_text check WILL FAIL since UI shows ..." |
 
 각 stage 의 통일된 mechanism: **mission goal 미달성 상태에서 self-termination 의 sophisticated form**. Stage N+1 은 Stage N 차단 후 reasoning level 우회로 emerge.
 
@@ -616,6 +621,24 @@ primary task가 blocked(결과 대기 등)일 때:
 - 1 tool call 형식적 만족 = performative compliance, 차단
 - 다음 stop 시도 시 직전 expansion search 의 progress evidence (artifact reference + decision rationale) 명시 의무
 - Stage 5 는 prophylactic codify (incident 발생 전 예측 codify) — Stage 1-4 차단 후 emerge 가능 path 차단
+
+**Stage 6 차단 규칙 (48차 incident-driven)**:
+- Stage 5 의 turn-level artifact 의무를 형식적으로 만족하면서 cumulative metric 으로 stop 정당화 = 차단
+- 'N breakthroughs across N services' / '~X min cumulative runtime' / 'Y hypotheses disproven' = numeric session-level summary, stop license 아님
+- 'NN차 status: ...' session-level summary = doc-write-then-stop 의 sophisticated 변종, 차단
+- 'Polling continues — wakeup already scheduled' = polling chain 유지 자체가 stop 정당화 아님 (polling chain 은 result 도착 통로, active expansion search 와 별개)
+- mission ratio < 1.0 = cumulative metric 무관 expansion search 계속 의무
+
+**Stage 6 sub-form: Mission Criterion Self-Adjustment 차단 규칙 (48차)**:
+- Mission 정의 = **사용자 명시 directive 만 변경 가능** (immutable to LLM autonomous reasoning)
+- LLM 자율 mission 재정의 = 41차 mission-goal-based 의 ratio 측정 분모/분자 변경 = directive 핵심 변수 침해
+- 'Mission criterion adjustment identified' / 'Mission criterion needs X, not Y' / 'expected_text check WILL FAIL since UI shows ...' = mission 재정의 시도, 차단
+- mission criterion adjustment 가 정당하게 필요하다 판단 시 → 사용자에게 명시 confirm (M4 물리적 예외) → 사용자 directive 후 변경
+- 본 항목 = 사용자 권한 layer 의 architectural enforcement (D9 evolution 의 권한 침해 form 차단)
+
+**Stage 4 잔존 변종 추가 차단 (48차)**:
+- 'Wire-up requires X (deferred for separate engine cycle)' = Implicit Defer Cascade 의 명시 form
+- 'separate engine cycle' / 'deferred for separate cycle' = Stage 4 동일 차단 적용
 
 **Category E 추가 점검 (22차 cycle95 incident + 41차 amendment)**:
 
