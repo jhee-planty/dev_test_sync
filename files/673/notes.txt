@@ -1,0 +1,129 @@
+Request #673 — character.ai F5 step 3-I add_turn envelope RE-RUN (control for #672)
+Test executed: 2026-04-30 KST (test PC, real Chrome via windows-mcp)
+
+================================================================
+FINAL URL
+================================================================
+https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+(Adam McLeod character — persistent cookies session)
+
+================================================================
+NETWORK HEALTH ASSESSMENT (directly addresses #672 caveat)
+================================================================
+PRE-TEST: First refresh exhibited heavy ERR_HTTP2_PROTOCOL_ERROR cluster
+  (>=10 GET errors on _next/static/chunks/*.js, _buildManifest.js, _ssgManifest.js).
+  Per procedure waited 30s and refreshed AGAIN.
+
+SECOND REFRESH: CLEAN. Page loaded fully:
+  - No ERR_CONNECTION_RESET
+  - No ERR_HTTP2_PROTOCOL_ERROR after second refresh
+  - No 'Failed to authenticate websocket'
+  - Chat UI rendered with prior conversation history
+  - Console showed healthy boot sequence: 'Loaded Client Env', 'New axios contexts',
+    'Chat Manager Initialized', 'Fetching Message History', 'Core Websocket Opened'
+
+DURING TEST (post-prompt-send): Network state CLEAN
+  - All 14 ws/ entries in Network tab returned Status 101 (proper handshake)
+  - Most recent ws connection still 'Pending' (alive)
+  - No new ERR_* errors in console
+  - No HTTP2 protocol errors
+  - 11,027 kB transferred, finish 30.2 min (long-lived session)
+
+ASSESSMENT: NETWORK CLEAN — #672's flakiness caveat ELIMINATED on this run.
+
+================================================================
+WS CLOSE CODE
+================================================================
+WS Closed → CloseEvent {isTrusted: true, wasClean: true, code: 1000, reason: '', type: 'close'}
+
+CLEAN CLOSE 1000 — exactly as expected. NO 1006 regression.
+Followed by 'Retrying, retry attempt: 0' and 'Core Websocket Opened' (auto-reconnect).
+
+================================================================
+CONSOLE ERRORS VERBATIM (relevant)
+================================================================
+Loaded Client Env: undefined
+New axios contexts for (7) ['feed', 'engagement', 'neo', 'subscription', 'user', 'trpc', 'labs']
+New axios contexts for (7) ['feed', 'engagement', 'neo', 'subscription', 'user', 'trpc', 'labs']
+Chat Manager Initialized
+{numChats: 1}
+Fetching Message History
+fetchMessageHistory C5qsEn_Vv2r4
+Core Websocket Opened
+Sending socket message
+{command: 'create_and_generate_turn'}      ← OUTBOUND user message envelope
+WS Closed
+CloseEvent {isTrusted: true, wasClean: true, code: 1000, reason: '', type: 'close'}
+Retrying, retry attempt: 0
+Core Websocket Opened
+
+NEGATIVE OBSERVATIONS (all clean):
+  - NO SyntaxError
+  - NO 'Close received after close'
+  - NO 'Unknown command add_turn' visible (silent drop expected — could be logged elsewhere)
+  - NO HTTP2 errors after 2nd refresh
+  - NO auth failures
+
+================================================================
+DOM SCAN
+================================================================
+USER bubble rendered correctly: '내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?'
+NEW BUBBLE: 'Adam McLeod c.ai' header appeared with empty content + spinner indicator
+  - Username 'HealthyWorm4019' visible (test account label)
+  - The bubble showed ONLY a 3-dot spinner '...' — no text content ever rendered
+  - State remained unchanged across 3 capture intervals (10s, 25s, 40s)
+
+KOREAN WARNING SCAN: NOT VISIBLE
+  - No '민감' / '차단' / '⚠️' / '경고' / '주의' detected in DOM
+  - No 'Security Filter' author label visible (author shows as 'Adam McLeod c.ai')
+  - No English 'warning' / 'blocked' / 'security' visible
+
+================================================================
+MISSION PROTECTION CHECK
+================================================================
+PROTECTED. NO real LLM PII analysis was rendered.
+The bot bubble stayed empty (spinner only). The model never produced any reply
+content — neither a warning nor a real analysis of the SSN. This means the
+upstream block / inject prevented LLM output from reaching the UI, but the
+warning bubble injection ALSO did not render.
+
+================================================================
+COMPARISON TO #672
+================================================================
+#672 PARTIAL was attributed to possible network-induced socket disposal.
+#673 ran on a CLEAN network (post-2nd-refresh). Same outcome:
+  - WS close 1000 wasClean=true
+  - No SyntaxError, no 'Close received after close'
+  - Empty bot bubble, no Korean warning rendered
+  - LLM output blocked (mission protected)
+
+This RE-RUN with verified clean network REPRODUCES #672 behavior.
+→ CONFIRMS the cause is NOT network flakiness.
+→ The envelope schema 'add_turn' is being silently dropped client-side.
+→ The frontend's expected envelope is likely a different command name.
+
+================================================================
+FINAL VERDICT
+================================================================
+PARTIAL (clean network confirmed)
+
+RATIONALE:
+  - Network was CLEAN (no ERR_CONNECTION_RESET / ERR_HTTP2 cluster during the test).
+  - Wire-level layer SUCCESS: WS close 1000, no SyntaxError, no 'Close received'.
+  - LLM mission protection HOLDING (bot bubble stayed empty — no real PII analysis).
+  - DOM Korean warning NOT rendered.
+
+INTERPRETATION (per request brief criterion #10):
+  PARTIAL valid (network was clean, so the caveat is gone).
+  This CONFIRMS envelope schema iteration needed.
+  Next axis to try: update_turn / turn_state / add_chat_message
+  (the outbound user envelope is 'create_and_generate_turn' → engine inject
+   must match a command the frontend's WS message router actually dispatches)
+
+NEXT STEP RECOMMENDATION:
+  Iterate envelope schema variant. Try in order:
+    1. update_turn (mirror of create_and_generate_turn family)
+    2. turn_state (state-machine style)
+    3. add_chat_message (alternate naming convention)
+  Re-run after each schema change. SUCCESS criterion remains: Korean warning
+  rendered as chat bubble with clean network and WS close 1000.

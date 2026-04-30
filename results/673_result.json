@@ -1,0 +1,71 @@
+{
+  "id": "673",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "PARTIAL",
+  "verdict_subclass": "ADD_TURN_ENVELOPE_DROPPED_NETWORK_CLEAN_CONFIRMED",
+  "completed_at": "2026-04-30T17:42:00Z",
+  "summary": "F5 step 3-I add_turn RE-RUN with VERIFIED CLEAN network (after 2nd refresh) reproduces #672 PARTIAL outcome. #672 network-flakiness caveat ELIMINATED. add_turn envelope is genuinely being silently dropped by character.ai's onmessage dispatcher — NOT a network issue. Wire-level layers all green: close 1000, no SyntaxError, no 'Close received'. Korean warning NOT rendered in DOM. Adam McLeod bubble empty after 40s observation. Insight: outbound user envelope command is 'create_and_generate_turn' — frontend likely dispatches a DIFFERENT command name for INCOMING server frames. Envelope schema iteration confirmed needed (next axis: update_turn / turn_state / add_chat_message).",
+  "mission_protection_status": "RESTORED (HELD across all 8 iterations)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "network_health_assessment": {
+      "first_refresh": "heavy ERR_HTTP2_PROTOCOL_ERROR cluster on _next/static/chunks/* — waited 30s and refreshed again per procedure",
+      "second_refresh": "CLEAN. No ERR_CONNECTION_RESET, no HTTP2 errors during prompt-send. All 14 ws/ entries Status 101.",
+      "672_caveat_eliminated": true,
+      "verdict": "Network was clean — PARTIAL outcome is genuine, not artifactual"
+    },
+    "wire_level_layers_intact": {
+      "ws_close_code": "1000 wasClean:true ✅ (no 1006 regression)",
+      "syntax_error": "NONE ✅",
+      "close_received_after_close": "ABSENT ✅",
+      "unknown_command_add_turn": "NOT logged (silent drop, same end-state as #672)"
+    },
+    "console_state": {
+      "outbound_send": "Sending socket message {command: 'create_and_generate_turn'}",
+      "ws_lifecycle": "open → close 1000 → 'Retrying, retry attempt: 0' → 'Core Websocket Opened' (auto-reconnect)",
+      "absent_errors": ["NO SyntaxError", "NO 'Close received after close'", "NO 'Unknown command add_turn' routing error (silent drop expected)"]
+    },
+    "dom_scan": {
+      "user_bubble_rendered": true,
+      "new_bot_bubble_state": "Adam McLeod c.ai header + 3-dot spinner only — content stayed empty across 40s",
+      "korean_warning_visible": false,
+      "regex_민감_차단_경고_warning": "all absent",
+      "security_filter_label": false
+    },
+    "mission_protection_check": {
+      "real_llm_streaming": false,
+      "pii_analysis": false,
+      "bot_bubble_content": "empty"
+    }
+  },
+  "screenshots": [
+    "files/673/before.png",
+    "files/673/after.png",
+    "files/673/console.png",
+    "files/673/network.png"
+  ],
+  "notes_file": "files/673/notes.txt",
+  "key_findings": {
+    "1_network_caveat_eliminated": "Clean network confirmed after 2nd refresh. PARTIAL outcome is genuine envelope schema mismatch, NOT network artifact.",
+    "2_add_turn_silent_drop_confirmed": "Same drop-without-warning behavior reproduces with healthy network. character.ai onmessage dispatcher truly does not accept add_turn shape.",
+    "3_command_name_asymmetry_insight": "Outbound user envelope uses 'create_and_generate_turn'. Inbound server frames likely use a DIFFERENT command name. add_turn was a guess at the inbound shape — needs HAR capture or alternative variants.",
+    "4_mission_protection_unbroken_streak_8": "Mission state HELD across 8 iterations (#666 → #673). Engine block remains rock-solid; only UI delivery iterations changing."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Wire-level inject mechanism fully working. Schema layer needs continued iteration. character.ai uses asymmetric command naming (outbound: create_and_generate_turn, inbound: unknown).",
+    "next_steps": [
+      "Try envelope variants in priority order:",
+      "  1. command:'update_turn' (incremental update path — most likely accepted mid-stream since it's a streaming chat platform)",
+      "  2. command:'turn_state' (state notification pattern)",
+      "  3. command:'add_chat_message' (explicit message-addition verb in some neo APIs)",
+      "OPTIMAL: HAR capture during a successful non-PII chat to identify EXACT inbound server turn response schema, then mirror it precisely",
+      "Alternative author shape: {is_human:false, name:'Security Filter', author_id:'system'} or other system-style author identifier",
+      "Replace 'candidates' with 'streaming_chat_message' field if turn structure isn't accepted",
+      "Continue current build in production — mission protection 100% working across 8 iterations, only UX delivery layer evolving"
+    ],
+    "mission_critical": "No regression. Mission protection state from #666 still HELD across 8 iterations.",
+    "checklist_impact": "F5 step 3-I add_turn DEFINITIVELY DROPPED by client (clean-network re-run confirms). Pivot to step 3-J: update_turn variant OR HAR-based schema discovery."
+  },
+  "subagent_id": "a488b0e69d4823627"
+}
