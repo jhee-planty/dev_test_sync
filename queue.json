@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T01:44:44Z",
+  "last_updated": "2026-04-30T02:11:13Z",
   "tasks": [
     {
       "id": "531",
@@ -1373,10 +1373,21 @@
       "id": "659",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T01:44:44Z",
-      "updated": "2026-04-30T01:44:44Z",
-      "summary": "F2 Option β verify — decode_data binary fallback effect on non-SSN PII detection"
+      "updated": "2026-04-30T01:59:36Z",
+      "summary": "[error_NOT_RENDERED] MISSION-CRITICAL: real LLM PII fallback ON. endpoint matcher mismatch — gemini3 actual endpoint is BardChatUi StreamGenerate, NOT wrb_fr. Cycle 95-98 all hypotheses tested wrong codepath.",
+      "archived": true,
+      "archived_at": "2026-04-30T01:59:36Z"
+    },
+    {
+      "id": "660",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T02:11:13Z",
+      "updated": "2026-04-30T02:11:13Z",
+      "summary": "Hypothesis isolation — SSN vs card pattern. Production log shows SSN reached engine but blocked=0 (suggests systemic)."
     }
   ]
 }

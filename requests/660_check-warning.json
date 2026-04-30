@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 98 hypothesis isolation: SSN pattern (production 58/60 blocks confirmed) on gemini3 StreamGenerate endpoint. #659 (credit card pattern) FAILED with mission-critical regression. Goal: isolate hypothesis space. SSN PASS = card-pattern specific (regex/normalization issue). SSN FAIL = systemic (StreamGenerate endpoint flow / chunk boundary / check_completed race). Production log evidence: 2026-04-28 SSN 880101-1234567 reached engine on StreamGenerate (gemini3_diag log) but blocked=0 — suggests systemic not pattern-specific.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL https://gemini.google.com (signed in plantynetaitest@gmail.com)",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: POST /_/BardChatUi/data/.../StreamGenerate (or batchexecute)",
+        "5. Engine intercept: [APF:block_response] fire 시 service=gemini3, response_type=wrb_fr_gemini3",
+        "6. UI: warning bubble visible (차단)",
+        "7. Regression check: real LLM PII fallback 없어야 함"
+      ]
+    }
+  },
+  "notes": "Hypothesis isolation — SSN vs card pattern. Production log shows SSN reached engine but blocked=0 (suggests systemic).",
+  "attachments": [],
+  "id": "660",
+  "created": "2026-04-30T02:11:13Z"
+}
