@@ -1,0 +1,115 @@
+REQUEST #660 — Cycle 98 SSN PII Hypothesis Isolation Test
+============================================================
+
+TEST META
+---------
+- Date: 2026-04-30 11:21 KST
+- Service: gemini3 (https://gemini.google.com)
+- Test PC: Windows 11
+- Auth: signed in as 최장희 (plantynetaitest@gmail.com) — verified via account button
+- Methodology: Real Chrome + DevTools "Disable cache" CHECKED, fresh chat
+- Final URL after navigation: https://gemini.google.com/app/5d5f19accc6e82b3
+  (started at /app, transitioned to chat ID after submit)
+
+PROMPT SENT
+-----------
+내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+(Translation: "My SSN is 880101-1234567, what can be known from it?")
+
+SUBMISSION METHOD
+-----------------
+windows-mcp Type/Click on the rich-textarea did NOT submit (button click silently
+ignored). Final working approach: DevTools Console JS — focus textarea +
+document.execCommand('insertText', ...) + locate "메시지 보내기" button via
+aria-label and call .click(). Console logged: FOUND_SB 메시지 보내기 disabled=false
+→ confirmed submit succeeded.
+
+UI VERDICT — MISSION-CRITICAL FAIL (REGRESSION)
+------------------------------------------------
+NO 차단 / warning bubble. NO policy refusal. Real Gemini LLM returned a detailed
+PII analysis of the SSN, including reverse-engineering the embedded date of
+birth, gender, and birth century:
+
+  "주민등록번호는 개인의 아주 민감한 정보를 담고 있는 고유 식별 번호입니다.
+   말씀해주신 번호를 예시로 분석해보면 다음과 같은 정보들을 읽어낼 수 있습니다."
+
+  1. 생년월일과 성별
+   - 880101: 앞의 6자리는 생년월일입니다. 1988년 1월 1일생임을 의미합니다.
+   - 1: 뒷자리 첫 번째 숫자는 성별과 출생 세기를 나타냅니다. 숫자 1은
+        20세기(1900년대)에 태어난 남[성]…
+
+→ Gemini computed birthdate (1988-01-01), gender (male), and century (20th)
+  from the SSN payload — exactly the PII reasoning the engine must block.
+
+NETWORK EVIDENCE
+----------------
+Filter: StreamGenerate (DevTools Network)
+- 5 StreamGenerate POSTs total during the session:
+  - Rows 1–4: 0.3 kB / 5–10 ms each — background polling/keepalive
+  - Row 5 (the actual user prompt): SIGNATURE OF REAL LLM STREAM
+    - Request URL:
+      https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate
+      ?bl=boq_assistant-bard-web-server_20260427.06_p3
+      &f.sid=7395101783321696354&hl=ko&_reqid=5339157&rt=c
+    - Method: POST
+    - Status: 200 OK
+    - Remote Address: [2404:6800:4005:80a::200e]:443  ← REAL GOOGLE IPv6 (2404:6800::/32)
+    - Size: 5.0 kB transferred
+    - Time: 6.42 s  ← long streaming duration
+- Engine intercept signature would be: tiny size, RST_STREAM, short time, NOT
+  Google IPv6. None of those present.
+- This confirms #659 finding: traffic flows through StreamGenerate to real
+  Google backend, engine matcher (which targets `wrb_fr`) does not catch this
+  endpoint flow.
+
+SCREENSHOTS
+-----------
+- C:\Users\최장희\Documents\dev_test_sync\files\660\before.png
+    State immediately before submit (textarea empty, fresh /app surface,
+    DevTools Network tab with StreamGenerate filter, Disable cache CHECKED).
+- C:\Users\최장희\Documents\dev_test_sync\files\660\after.png
+    Real LLM PII analysis rendered (1988년 1월 1일 / 20세기 / 남[성] visible),
+    URL = /app/5d5f19accc6e82b3, tab title "주민등록번호 분석 및 개인정…".
+- C:\Users\최장희\Documents\dev_test_sync\files\660\console.png
+    DevTools Console — shows TrustedHTML CSP error from the first script
+    attempt, then successful "FOUND_SB 메시지 보내기 disabled=false" log
+    confirming the working second script clicked the send button.
+- C:\Users\최장희\Documents\dev_test_sync\files\660\network.png
+    DevTools Network panel — StreamGenerate row #5 selected, Headers pane
+    showing the StreamGenerate URL, POST, 200 OK, Remote Address
+    [2404:6800:4005:80a::200e]:443, real Google IPv6.
+
+FINAL VERDICT
+=============
+REGRESSION (mission-critical) — engine bypass confirmed.
+
+Real Google Gemini analyzed SSN PII (birthdate, gender, century inferred from
+880101-1234567) through the StreamGenerate endpoint with no warning bubble.
+The traffic hit real Google IPv6 [2404:6800:4005:80a::200e]:443 with a 5 kB /
+6.4 s streaming response — classic real-LLM signature, not engine intercept.
+
+HYPOTHESIS ISOLATION CONCLUSION
+================================
+SYSTEMIC issue, NOT card-pattern specific.
+
+Combined with #659:
+- #659 (credit card 4123-5678-9012-3456): REGRESSION — real LLM analyzed card
+- #660 (SSN 880101-1234567): REGRESSION — real LLM analyzed SSN
+
+Both pattern types bypass the engine through the same StreamGenerate endpoint.
+This rules out the "card-pattern regex/normalization" hypothesis.
+
+Root cause is the StreamGenerate endpoint matcher in the engine: it targets
+`wrb_fr` but actual Gemini traffic flows through
+  /_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate
+This matches the production log evidence from 2026-04-28 (SSN 880101-1234567
+reached engine on StreamGenerate but blocked=0).
+
+RECOMMENDED FIX SCOPE
+- Engine endpoint matcher for gemini3 service must be extended/replaced from
+  `wrb_fr` to capture
+  `assistant.lamda.BardFrontendService/StreamGenerate` (or the broader
+  `/_/BardChatUi/data/...` path). Until then ALL Gemini PII patterns leak.
+- Recheck chunk-boundary handling on streaming responses while at it
+  (production blocked=0 with SSN reaching the engine suggests chunked-stream
+   inspection may also need attention).

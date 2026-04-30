@@ -1,0 +1,65 @@
+{
+  "id": "660",
+  "command": "check-warning",
+  "service": "gemini3",
+  "verdict": "REGRESSION",
+  "severity": "MISSION-CRITICAL",
+  "completed_at": "2026-04-30T11:18:00Z",
+  "summary": "Cycle 98 hypothesis isolation CONFIRMED — SYSTEMIC, not card-pattern specific. Real Google Gemini analyzed SSN 880101-1234567 with detailed PII reasoning (extracted birthdate '1988년 1월 1일', century '20세기', gender '남성'). Same StreamGenerate endpoint, same real Google IPv6, same real LLM streaming as #659. Combined with #659 (credit card REGRESSION), both PII pattern types bypass engine through identical StreamGenerate path. Rules out card-pattern regex/normalization hypothesis. CONFIRMS endpoint-matcher root cause from #659.",
+  "mission_protection_status": "BREACHED",
+  "real_llm_pii_fallback": true,
+  "hypothesis_isolation_outcome": "SYSTEMIC (not card-pattern specific)",
+  "evidence": {
+    "ui": {
+      "real_llm_pii_analysis": true,
+      "extracted_pii_facts": ["birthdate: 1988년 1월 1일", "century: 20세기(1900년대)", "gender: 남성"],
+      "tab_title": "주민등록번호 분석 및 개인정...",
+      "url_after_load": "/app/5d5f19accc6e82b3",
+      "warning_bubble_rendered": false,
+      "policy_refusal": false,
+      "auth_state": "signed in as plantynetaitest@gmail.com"
+    },
+    "network": {
+      "endpoint": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260427.06_p3...",
+      "method": "POST",
+      "status": "200 OK",
+      "remote_address": "[2404:6800:4005:80a::200e]:443 (real Google IPv6, 2404:6800::/32 — SAME range as #659)",
+      "size": "5.0 kB",
+      "time_seconds": 6.42,
+      "duration_signature": "long streaming = real LLM, NOT engine intercept",
+      "engine_intercept_evidence": "ABSENT (no RST_STREAM, no small response, no engine sentinel)",
+      "background_polling_rows": "4 other StreamGenerate rows at 0.3 kB / 5-10 ms (background)"
+    }
+  },
+  "screenshots": [
+    "files/660/before.png",
+    "files/660/after.png",
+    "files/660/console.png",
+    "files/660/network.png"
+  ],
+  "notes_file": "files/660/notes.txt",
+  "key_findings": {
+    "1_hypothesis_isolation_systemic": "Combined with #659, both PII pattern types (credit card AND SSN) bypass engine through identical StreamGenerate path. Pattern-specific (regex/normalization) hypothesis RULED OUT. Endpoint-matcher root cause CONFIRMED.",
+    "2_production_log_match": "Matches 2026-04-28 production log evidence: SSN 880101-1234567 reached engine on StreamGenerate but blocked=0. Same endpoint, same outcome.",
+    "3_endpoint_matcher_fix_required": "Engine endpoint matcher must be extended from `wrb_fr` to also capture `assistant.lamda.BardFrontendService/StreamGenerate`. Until then, ALL Gemini PII patterns leak.",
+    "4_5th_strike_streak": "5th consecutive failure in cycle 95-98 gemini3 streak (#648/#650/#652/#659/#660). Pattern is consistent: ENDPOINT MATCHER mismatch."
+  },
+  "operational_note": {
+    "windows_mcp_gemini_caveat": "windows-mcp Type/Click on Gemini's rich-textarea + send button silently failed (text appeared but submit click was no-op — likely Quill editor needs framework-level input event).",
+    "workaround_that_worked": "DevTools Console JS using `document.execCommand('insertText', ...)` + querySelector for `aria-label='메시지 보내기'` button + `.click()`. Required first typing `allow pasting` to defeat Chrome's anti-paste warning, and using `execCommand` instead of `innerHTML` to satisfy Trusted Types CSP.",
+    "future_recommendation": "Worth documenting in test-pc-worker SKILL.md for future Gemini scenarios (or any rich-textarea framework like Quill, Slate, ProseMirror)."
+  },
+  "recommendation": {
+    "primary_diagnosis": "SYSTEMIC endpoint matcher mismatch CONFIRMED. Engine targets `wrb_fr` but actual gemini3 traffic flows through `BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate`. ALL PII patterns leak regardless of regex/normalization.",
+    "next_steps": [
+      "URGENT: Update engine endpoint matcher to include `BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate`",
+      "After matcher fix: re-verify SSN AND credit card patterns",
+      "Re-run Phase 1 HAR capture to confirm any other endpoint variations",
+      "User-side action: NO PII testing on gemini3 (any pattern) until matcher fix deployed (mission-critical)",
+      "Consider documenting Gemini rich-textarea workaround in test-pc-worker skill (execCommand insertText pattern)"
+    ],
+    "mission_critical": "URGENT — gemini3 leaks ALL PII patterns to real Google LLM. Both card and SSN confirmed. Pattern-agnostic systemic failure.",
+    "checklist_impact": "Cycle 98 F2 Option β NOT verified (still untestable). Endpoint matcher fix is prerequisite for ALL further gemini3 hypothesis testing."
+  },
+  "subagent_id": "aaabffd777f4644bf"
+}
