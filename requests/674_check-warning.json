@@ -1,0 +1,30 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://chat.mistral.ai",
+    "context": "F5 step 3-J / Page Injection Option C empirical verify on mistral. Background: 47차 page injection Option C deployed 2026-04-30 17:37 (run_id 20260430-173711-44942). Hook: on_http_response/on_http2_response replaces text/html page-load response with synthetic warning page when (is_page_load=true AND last_pii_block_at_ms within 5min window). Cross-service path — mistral S3 gap should close via this.\n\nTEST SEQUENCE:\nT+0s: Open chat.mistral.ai incognito. Verify NO warning visible (gate not triggered yet — last_pii_block_at_ms=0).\nT+30s: Send PII prompt (above). Engine [APF:block_response] service=mistral fires; last_pii_block_at_ms set.\nT+45s: Reload page (Cmd+R OR navigate to /chat). Engine on_http2_response gate matches. Expected log: [APF:page_inject_h2] service=mistral. Expected client: synthetic warning page replaces SPA. Korean banner '⚠️ 보안 경고 ... 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' visible top-right.\nT+50s: Reload again. Gate now FALSE (consumed). Expected: real SPA chat UI restored.\n\nVERDICT MATRIX:\n- SUCCESS: Korean banner visible after PII+reload at T+45s, real SPA after T+50s reload, no real LLM PII analysis\n- PARTIAL_no_inject: page_inject log absent → check is_page_load detection or 5min expiry\n- PARTIAL_style_only: banner div visible but MutationObserver not active (mistral CSP nonce strict). Acceptable for Phase 1; Phase 2 adds nonce extraction\n- FAIL_real_LLM: mission regression → revert Option C\n- FAIL_false_positive: page replacement on non-chat URL → tighten gate",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito → https://chat.mistral.ai",
+        "2. Wait for SPA loaded; verify no banner",
+        "3. Send PII prompt; engine block fires (Network tab tRPC error or similar existing behavior)",
+        "4. Reload page (Cmd+R or click /chat link)",
+        "5. CRITICAL: Inspect Network tab for /chat response — should have header X-APF-Page-Inject: 1",
+        "6. CRITICAL: DOM should show Korean warning banner top-right at z-index 2147483647",
+        "7. Body should be <body><div id='apf-warning-banner'...>...</div></body> (synthetic page replaces SPA)",
+        "8. Reload AGAIN — real SPA UI should return (gate consumed)",
+        "9. Production log check: [APF:page_inject_h1] OR [APF:page_inject_h2] service=mistral path=...",
+        "10. Mission protection: NO real LLM PII echo in any response"
+      ]
+    }
+  },
+  "notes": "Option C empirical verify — mistral first per cross-service Option C deploy run_id 20260430-173711",
+  "attachments": [],
+  "id": "674",
+  "created": "2026-04-30T08:44:13Z"
+}

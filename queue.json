@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T08:33:44Z",
+  "last_updated": "2026-04-30T08:44:13Z",
   "tasks": [
     {
       "id": "531",
@@ -1531,6 +1531,15 @@
       "created": "2026-04-30T08:33:44Z",
       "updated": "2026-04-30T08:33:44Z",
       "summary": "F5 step 3-I add_turn RE-RUN — control for #672 network flakiness"
+    },
+    {
+      "id": "674",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T08:44:13Z",
+      "updated": "2026-04-30T08:44:13Z",
+      "summary": "Option C empirical verify — mistral first per cross-service Option C deploy run_id 20260430-173711"
     }
   ]
 }
