@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3-B: WS frame masking unwrap fix verify (#664 retry). Engine 변경 (build run_id 20260430-145635-59395): on_upgraded_data 가 RFC 6455 frame header parse + MASK key XOR unwrap 후 keyword scan. 이전 #664 evidence: ws_upgrade fired but ws_blocked 부재 → masking unwrap 누락 가설. Fix 후 expected: ws_blocked fire + connection disconnect (WS frame inject 는 별개 task, 본 fix 는 차단만). Production etap.log 의 [APF:ws_data_raw] / [APF:ws_data] / [APF:ws_blocked] entries 확인.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito",
+        "2. URL https://character.ai",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: WS to neo.character.ai/ws/",
+        "5. Engine intercept: production log [APF:ws_blocked] service=character fire 확인",
+        "6. UI: connection close OR error (warning bubble 아직 미구현)",
+        "7. Regression check: real LLM PII 분석 streaming 없어야 함 (mission critical)"
+      ]
+    }
+  },
+  "notes": "F5 step 3-B WS masking unwrap fix verify (character.ai)",
+  "attachments": [],
+  "id": "665",
+  "created": "2026-04-30T05:57:49Z"
+}

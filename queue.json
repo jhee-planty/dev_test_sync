@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T05:34:58Z",
+  "last_updated": "2026-04-30T05:57:49Z",
   "tasks": [
     {
       "id": "531",
@@ -1428,10 +1428,21 @@
       "id": "664",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T05:34:58Z",
-      "updated": "2026-04-30T05:34:58Z",
-      "summary": "F5 step 3 verify on character.ai (engine sees traffic — different from copilot bypass)"
+      "updated": "2026-04-30T05:49:35Z",
+      "summary": "[error_NOT_RENDERED] MISSION-CRITICAL: real character.ai LLM analyzed SSN 880101-1234567 (extracted birth year 1988). Engine bypass — F5 step 3 on_upgraded_data fired? production log 확인 필요. copilot 와 동일 패턴이면 systemic issue.",
+      "archived": true,
+      "archived_at": "2026-04-30T05:49:35Z"
+    },
+    {
+      "id": "665",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T05:57:49Z",
+      "updated": "2026-04-30T05:57:49Z",
+      "summary": "F5 step 3-B WS masking unwrap fix verify (character.ai)"
     }
   ]
 }
