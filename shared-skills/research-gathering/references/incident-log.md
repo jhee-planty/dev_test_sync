@@ -342,6 +342,51 @@ bash runtime/feedback.sh --report-incident "<description>" \
 
 ---
 
+## Incident 12 (2026-04-30, 30차 misdirection — Governance/Operational Scope Confusion)
+
+### 사건
+
+사용자 정규화 작업 요청 (원문 "AI 서비스 작업 과정을 정규화 할거야 ... apf-pipeline에 적용할") 에 대해, Claude 의 30차 1st attempt 가 governance/SSOT meta-layer 산출 (`cowork-micro-skills/references/work-process-canonical/` 8 reference + 4 tooling) 로 misdirect. discussion-review Phase 0-3 + 16-action Phase 4 자율 적용까지 진행 후, 사용자 catch ("apf-pipeline에 적용할 정규화 작업이었어. 당신이 착각한 부분이 있는것 같은데"). Self-reflection 결과 사용자 의도 = apf-pipeline (genai-apf-pipeline) 자체의 workflow 정규화 (5 source = historical workflow pattern mining source). 31차 정정 cycle 로 재진행.
+
+### Anti-pattern category
+
+**Cat E (Premature completion / scope creep)** + **Governance/Operational scope confusion**.
+
+### 미스를 지원한 메커니즘
+
+1. **Reflexive governance interpretation**: 23-29차 동안 governance D-codify 가 default scope 으로 cement.
+2. **Discussion Phase 1 Key Assumptions 약점**: "정규화 의 operational vs governance 의미 spectrum" stress-test 부재.
+3. **Master-plan argument misuse**: option (b) "genai-apf-pipeline enrich" reject 명분이 scope creep alibi.
+4. **Specific target word 무시**: "apf-pipeline 에 적용할" → genai-apf-pipeline 직접 갱신 mapping 을 외부 reference 로 우회.
+
+### Hook detection
+
+**부재**. 30차 산출물 자체는 D9 패턴 없음 (scope layer misalign, keyword/state 매치 없음). Hook layer 외 영역 — Phase 1 Key Assumptions audit 영역.
+
+### 차후 방지 (lessons.md §12 cross-ref)
+
+1. Discussion Phase 1 Key Assumptions 강화 (D-candidate, 31차 surface) — 사용자 발언 verbatim + 의미 spectrum + most-likely intent + 근거. specific target word 가 plug-in default.
+2. Phase 4 Step 1 self-check — "산출물이 specific target 을 직접 갱신하는가?"
+3. Governance reflexive bias 인지.
+
+### Recovery
+
+30차 functional 산출물 cleanup (work-process-canonical/ + hook + settings.json + SKILL.md §Schema Validation + progress-current.md + progress.md banner + handoff narrative). INV-2 준수: INTENTS §5 30차 entry / discussions / decision file 보존 + supersession 표시. 31차 정정 cycle 로 재진행.
+
+### Cross-references
+
+- INTENTS §5 30차 SUPERSEDED note + 31차 entry
+- lessons.md §12
+- discussions/2026-04-30_ai-work-process-normalization.md (30차, SUPERSEDED 보존)
+- discussions/2026-04-30_apf-pipeline-workflow-normalization.md (31차 정정, 작성 예정)
+- decisions/20260430_085800_M3_work-process-canonical.json (30차, SUPERSEDED 보존)
+
+### Rule-of-3 Watch
+
+Incident 11 (29차) + Incident 12 (30차) = Cat E + Cat G + scope discipline 의 연속 2회. 1회 추가 발생 시 D-codify trigger.
+
+---
+
 ## 재현 명령 (검증용)
 
 모든 incident 는 동일 transcript 에서 재현 가능:
