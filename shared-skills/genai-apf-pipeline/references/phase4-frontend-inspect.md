@@ -159,3 +159,22 @@ test PC Cowork: PowerShell SendKeys로 test prompt ("Hello") 입력 → Enter
 
 이 목록이 Phase 5 (warning-design, `references/phase5-warning-design.md` sub-agent prompt)의 입력이 된다.
 Phase 5는 이 중 가장 효과적인 방식을 선택하여 설계한다.
+
+---
+
+## Phase 4 Decision Checklist (31차 normalized)
+
+> 출처: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) Round 2 PD.
+
+| ID | Decision Point | Criteria | Source of Truth |
+|----|---------------|----------|-----------------|
+| **D4.1** | delivery_method enum 결정 | `http_api` / `websocket` / `sse` / `grpc` / `webtransport` 중 1개 — HAR + DOM profile 기반 | HAR + DOM profile result |
+| **D4.2** | streaming-vs-block + is_http2 | `is_http2 = 0/1/2` (h1 / h2 server-init / h2 client-init) + frame_type + envelope sequence | HAR network analysis |
+| **D4.3** | Native vs custom envelope | services/{svc}_analysis.md 에 envelope structure 기록 (Phase 5 sub-agent input) | Phase 1 HAR + Phase 4 DOM 통합 |
+
+**FAIL handling**:
+- D4.1 multiple methods 가능 → primary delivery_method 선택 + secondary 도 services/{svc}_analysis.md 에 기록 (D14(c) 모든 발견 통합)
+- D4.2 ambiguous (frame_type 미확인) → debug_envelope:har_capture re-baseline
+- D4.3 custom envelope encountered → service profile 에 native vs custom 둘 다 기록
+
+**Cross-references**: SKILL.md §Phase Decision Checklist D4. Phase 5 input doc.

@@ -348,3 +348,22 @@ After receiving sub agent output, Cowork reviews in two stages:
 - **`genai-apf-pipeline`**: Master orchestrator — triggers this skill for Phase 2.
 - **`genai-frontend-inspect`**: Phase 1 — produces the input for this skill.
 - **`apf-warning-impl`**: Phase 3 — consumes this skill's output.
+
+---
+
+## Phase 5 Decision Checklist (31차 normalized)
+
+> 출처: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) Round 2 PD.
+
+| ID | Decision Point | Criteria | Source of Truth |
+|----|---------------|----------|-----------------|
+| **D5.1** | Strategy 선택 | A (DOM injection) / B (SSE intercept) / C (envelope replace) / D (END_STREAM frame) / E (custom render layer) — Phase 4 delivery_method + envelope 구조 기반 | sub-agent design doc + services/{svc}_design.md |
+| **D5.2** | HTTP version | `is_http2 = 0/1/2` 결정 (Phase 4 D4.2 inheritance) | Phase 4 결과 |
+| **D5.3** | Sub-agent dispatch | `claude -p {prompt-file} --model=sonnet` (3-step 패턴 per `~/.claude/memory/...`) → design doc 초안 저장 | invoke-subagent.sh 결과 |
+
+**FAIL handling**:
+- D5.1 strategy 모호 → M0 empirical comparison (testable strategies 모두 평가 후 winner)
+- D5.2 mismatch (is_http2 결정 후 Phase 6 에서 frame 거부) → Phase 4 재진입 + envelope rev
+- D5.3 sub-agent timeout → 3-Step 패턴 (start_process + ps poll + cat output) 적용
+
+**Cross-references**: SKILL.md §Phase Decision Checklist D5. Phase 6 (apf-warning-impl) input.

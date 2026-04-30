@@ -73,3 +73,22 @@ Phase 3 완료 후 기존 block이 동작하는 서비스들을 리그레션 테
 Always update `services/status.md` based on test results:
 - Change state (e.g., BLOCK_TESTING → BUILD_FAIL or BLOCK_VERIFIED)
 - Add row to re-entry history table (date, cause, action, result)
+
+---
+
+## Phase 3 Decision Checklist (31차 normalized)
+
+> 출처: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) Round 2 PD.
+
+| ID | Decision Point | Criteria | Source of Truth |
+|----|---------------|----------|-----------------|
+| **D3.1** | Block evidence ground-truth | test-PC UI screenshot **AND** etap log `[APF:block_response]` entry — both required (single source 부족) | result.json artifacts + etap log |
+| **D3.2** | BLOCK_ONLY gate | `apf-technical-limitations.md` 의 모든 listed 접근법 시도 + 결과 명시 + inapplicable 증명 후만 `terminate:block_only_accepted` | apf-technical-limitations.md, D14(b) |
+| **D3.3** | Engine fire 확정 | 200 OK + bytes received + RST_STREAM = engine fire confirmed (chrome dispatcher 수용 별개 이슈, Phase 4) | etap log + DOM evidence |
+
+**FAIL handling**:
+- D3.1 single source only → 다른 source 보완 (UI 만 있으면 log 확보, log 만 있으면 UI 캡처 재요청)
+- D3.2 architectural BLOCK_ONLY → service profile (services/{svc}_analysis.md) 에 listed 접근법 모두 시도 결과 기록 후 `terminate:block_only_accepted` allowed
+- D3.3 부분 fire → failure_class=PROTOCOL_MISMATCH (P3 default debug_envelope:schema_revise)
+
+**Cross-references**: SKILL.md §Failure Classification P3, §Verdict Transition Matrix.

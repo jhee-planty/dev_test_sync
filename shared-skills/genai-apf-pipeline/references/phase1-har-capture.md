@@ -340,3 +340,22 @@ playwright install chromium
 | New service category or session management pattern | Session Management section |
 | New error/symptom during capture | → `SKILL_debug.md` Troubleshooting |
 | Service-specific behavior confirmed | → `SKILL_debug.md` Known Service Notes |
+
+---
+
+## Phase 1 Decision Checklist (31차 normalized)
+
+> 출처: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) Round 2 PD.
+
+| ID | Decision Point | Criteria | Source of Truth |
+|----|---------------|----------|-----------------|
+| **D1.1** | HAR scope 결정 | single-prompt vs multi-thread vs login flow — service known auth mode 기반 | `service-known-issues.md`, 사용자 directive |
+| **D1.2** | HAR validity check | status 200 + body non-empty + endpoint matches expected (envelope structure observable) | HAR file |
+| **D1.3** | Phase 2 진입 gate | HAR provides envelope structure (not empty wrapper / login redirect) | HAR analysis result |
+
+**FAIL handling**:
+- D1.1 ambiguous → service-known-issues.md 등록 + Phase 0 research-gathering sub-agent dispatch
+- D1.2 fail (status non-200, empty body) → re-emit har-capture request with refined scope
+- D1.3 fail (empty wrapper) → user HAR 필요, `defer:user_har` next_action
+
+**Cross-references**: P1 macro-cycle (SKILL.md §Service Iteration Workflow), P3 SERVICE_CHANGED → debug_envelope:har_capture default.

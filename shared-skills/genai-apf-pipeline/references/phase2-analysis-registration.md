@@ -571,3 +571,22 @@ Return value: complete HTTP/1.1 response string including headers and body (with
 | New C++ pitfall found | Append row to Common Pitfalls table |
 | New event 0 init-only field discovered | Append row to Step 4-4 Known Init Fields table |
 | Service-specific capture issue | → `genai-har-capture/SKILL_debug.md` Known Service Notes |
+
+---
+
+## Phase 2 Decision Checklist (31차 normalized)
+
+> 출처: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) Round 2 PD.
+
+| ID | Decision Point | Criteria | Source of Truth |
+|----|---------------|----------|-----------------|
+| **D2.1** | SQL draft naming convention | `apf_db_driven_{service}_{timestamp}.sql` — canonical naming | `apf-cli-commands.md` |
+| **D2.2** | Generator naming canonical | C++ generator function 이름 = service id 와 1:1 (synonym 금지, e.g., `chatgpt_block_response_generator`) | apf-warning-impl §generator-name-discipline |
+| **D2.3** | reload command 구분 | envelope_template DB change → `etapcomm ai_prompt_filter.reload_templates`. Service registration change → `reload_services`. 혼용 금지 | `feedback_etapcomm_reload_distinction` (MEMORY note), apf-cli-commands.md |
+
+**FAIL handling**:
+- D2.1 violation → SQL re-name before commit
+- D2.2 synonym detected → INTENTS append (lessons.md §generator-name-discipline 강화)
+- D2.3 wrong reload → reload-correct command 다시 호출 + result.notes 에 기록
+
+**Cross-references**: SKILL.md §Workflow Pattern P1 / failure-class PROTOCOL_MISMATCH (P3 default = debug_envelope:schema_revise).

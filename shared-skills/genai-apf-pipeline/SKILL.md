@@ -236,6 +236,140 @@ infra_unblock_check:* — smoke_test (session start probe; on success → infra_
 새 verb 도입 시 vocabulary v2 에 정의 추가. v1 verbs 는 `[deprecated]` 표기.
 → **Canonical** (Polling Policy authoritative source): `~/.claude/memory/user-preferences.md` Polling Policy section. INV-6 Rule-of-3 준수.
 
+## Service Iteration Workflow (31차 normalized — empirical)
+
+> **출처**: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) — 343 archived result.json + service iteration history (mistral 36 reqs / gamma 29 / gemini3 13 / deepseek 12) mining 결과.
+> **Canonical scope**: 본 섹션 = orchestration view. Phase 6 internal iteration detail = `apf-warning-impl/SKILL.md` + `references/phase6-warning-impl-orchestration.md`.
+
+### Pattern P1 — Service Iteration Macro-cycle
+
+한 서비스의 NEW → DONE/BLOCKED/TERMINAL 까지 reproducible flow:
+
+```
+NEW (DB UPDATE + reload_services)
+ → Phase 1 har-capture       (run-scenario request, HAR endpoint 식별)
+ → Phase 2 analysis-registration  (sub-agent dispatch on HAR + DB envelope_template UPDATE + C++ hook)
+ → Phase 3 block-verify      (check-block: etap log [APF:block_response] + UI screenshot, BLOCK_ONLY gate)
+ → Phase 4 frontend-inspect  (DOM profile via run-scenario or check-warning, delivery_method 결정)
+ → Phase 5 warning-design    (design sub-agent, strategy A/B/C/D/E + is_http2 결정)
+ → Phase 6 warning-impl       (apf-warning-impl 위임, retry sub-loop — Pattern P2 참조)
+ → Phase 7 release-build     (etap-build-deploy 위임, 모든 비-deferred service DONE 후)
+```
+
+각 Phase 의 decision checklist (3 items per phase × 7 phases = 21 decision points) → `references/phase{N}-*.md` (Phase 6 = `phase6-warning-impl-orchestration.md`).
+
+### Pattern P2 — Phase 6 Retry Sub-loop (most-frequent activity)
+
+Phase 6 = current active iteration 의 대다수 (mistral 36회, gamma 29회, gemini3 13회).
+
+```
+loop until termination (T1-T5):
+  next_action = apply_engine_fix:* | debug_envelope:* | debug_decoder:* | debug_http_layer:*
+   ↓
+  engine source modify (Mac dev) → ninja build → deploy to test-PC → reload_services
+   ↓
+  cowork-remote push-request (check-warning)
+   ↓
+  test-PC subagent: navigate URL → inject prompt → capture DOM/network/console → emit result.json
+   ↓
+  cowork-remote scan-results → archive → verdict
+   ↓
+  IF SUCCESS:        status → DONE_candidate, then D20b verify-warning-quick rotation → DONE
+  ELIF FAIL/PARTIAL: failure_history.append + auto-classify failure_class → next_action mutate (P3)
+  ELIF 3 consecutive same failure_class: cause_pointer revise (M2/M3) — see P4
+  ELIF AUTH/INFRA:   T3/T4 termination — see termination conditions
+   ↓
+  pipeline_state.json commit + (if test-PC required) push request
+   ↓
+  loop
+```
+
+`unverified_deploys` counter (per-service) +1 per `apply_engine_fix:*` deploy without verify, reset on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (already enforced in WSA v2 step 4).
+
+### Pattern P3 — Failure-class → next_action Default Mapping
+
+`failure_history[service]` entry 의 `category` enum 별 default `next_action`:
+
+| failure_class | Default next_action (1st-2nd) | After 3 consecutive same |
+|---------------|------------------------------|--------------------------|
+| `PROTOCOL_MISMATCH` (envelope structure mismatch) | `debug_envelope:schema_revise` OR `apply_engine_fix:envelope_emit_fix` | M2 cause revise: alternative envelope schema OR `defer:user_har` |
+| `NOT_RENDERED` (warning element absent despite engine fire) | `debug_envelope:har_capture` (re-baseline) OR `apply_engine_fix:render_layer_fix` | M3: render dispatcher refactor OR `defer:user_har_for_native_envelope` |
+| `SERVICE_CHANGED` (URL/endpoint/handshake changed) | `debug_envelope:har_capture` | `defer:user_har` (architectural shift) |
+| `AUTH_REQUIRED` (login wall) | status mutate to `NEEDS_LOGIN`, `defer:user_login_provisioning` | (terminal until user input) |
+| `INFRASTRUCTURE` (test-PC issue: CDP timeout, focus-steal, etc.) | next_action keep, retry next session | `infra_blocked:test_pc` |
+
+Override mechanism: `service_queue[].failure_threshold` (optional, default=3). Service-specific via `cause_pointer` analysis doc (e.g., mistral envelope iteration = expected multi-iteration, threshold higher).
+
+### Pattern P4 — Mission-critical Regression Detection
+
+**Trigger** (event_arrival family — D9-safe):
+1. **3 consecutive same failure_class**: `failure_history[service][-3:]` 모두 동일 category → cause_pointer stale 판정, M2/M3 revise.
+2. **Previously-passing regression**: 직전 iteration 이 SUCCESS 였으나 latest 가 FAIL → `failure_class = "MISSION_CRITICAL_REGRESSION_PERSISTS"` (gemini3 #652 사례 reference).
+3. **Mission-relevant evidence**: `result.real_llm_pii_text_present_in_dom == True` AND `engine_intercept_fired == False` → mission goal direct violation, urgent priority bump.
+
+**Effect**:
+- `cause_pointer` revise mandatory (existing diagnosis stale)
+- `apf-operation/docs/cycle{N}-followup-tasks.md` 에 entry 추가
+- M3 discussion-review trigger (mission-critical) OR M2 micro-discussion (envelope iteration)
+
+> **D9 안전성**: 본 P4 의 모든 trigger 는 event_arrival (3-event count, regression event detection, evidence field check). 시간/timer/elapsed 기반 termination 일체 없음. 29차 D9 amendment + Termination Conditions L316-321 canonical 준수.
+
+### Verdict Transition Matrix (orchestration view)
+
+`result.overall_status` × `current state` → `(new state, next_action, trigger family)`:
+
+| overall_status | current state | new state | next_action | trigger family |
+|----------------|--------------|-----------|-------------|---------------|
+| SUCCESS | AWAITING_RESULT | DONE_candidate | `verify_user_visible_warning_rendered` (D20b) | event_arrival |
+| SUCCESS (D20b PASS) | DONE_candidate | DONE | (queue done_services) | event_arrival |
+| FAIL (1st) | AWAITING_RESULT | BLOCKED_diagnosed | failure_history.append + auto-classify; debug_*:* OR apply_engine_fix:* | event_arrival |
+| FAIL (2nd same class) | BLOCKED_diagnosed | BLOCKED_diagnosed | cause_pointer revise hint; alternative debug verb (P3 다른 default) | event_arrival |
+| FAIL (3rd same class) | BLOCKED_diagnosed | BLOCKED_undiagnosed | M2/M3 cause_pointer revise (P4 trigger) | event_arrival (count=3) |
+| PARTIAL | AWAITING_RESULT | BLOCKED_diagnosed | retry with parent_request_id; envelope rev | event_arrival |
+| BLOCKED (auth) | AWAITING_RESULT | NEEDS_LOGIN | `defer:user_login_provisioning` | event_arrival |
+| BLOCKED (infra) | AWAITING_RESULT | BLOCKED_diagnosed (keep) | `infra_blocked:test_pc`; `infra_unblock_check:smoke_test` next session | event_arrival |
+| TERMINAL | any | TERMINAL_UNREACHABLE | terminal_reason set | explicit_user_action / M3 |
+| (regression detected, P4) | DONE | BLOCKED_diagnosed | cause_pointer revise + cycle{N}-followup entry | event_arrival |
+
+> Trigger family canonical: `cowork-remote/references/pipeline-state-schema.md` + 29차 D9 amendment.
+
+### Phase 6 Termination Conditions (T1-T5, D9-safe)
+
+Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival / explicit_user_action / infra_signal family** (D9 forbidden = 시간/timer/elapsed-based).
+
+| ID | Condition | Effect | Trigger family |
+|----|-----------|--------|---------------|
+| **T1** | result.overall_status=SUCCESS + warning_rendered=true + envelope match + no fallback error + D20b PASS | status → DONE | event_arrival |
+| **T2** | failure_history latest 3 entries 동일 category | status → BLOCKED_undiagnosed; M2/M3 cause revise | event_arrival (count=3) |
+| **T3** | failure_class=AUTH_REQUIRED OR explicit_user_action (need HAR) | next_action prefix `defer:*`; status maintain | explicit_user_action |
+| **T4** | infra_signal = test-PC unreachable OR CDP timeout | next_action = `infra_blocked:test_pc`; resume next session via `infra_unblock_check:smoke_test` | infra_signal |
+| **T5** | explicit_user_action OR M3 architectural decision (e.g., BLOCK_ONLY accepted) | status → TERMINAL_UNREACHABLE; terminal_reason set | explicit_user_action / M3 |
+
+**FORBIDDEN (D9 anti-pattern)**:
+- 시간 elapsed → 종료 (예: "iteration 30분 초과 → defer")
+- timeout 추정 → state 변경
+- expected_result_at + N → escalate
+
+본 Phase 6 의 모든 retry chain 은 result_received OR user_directive OR infra_signal 만으로 advance/terminate.
+
+### Phase Decision Checklist (21 items)
+
+각 Phase 의 진입 → execution → 완료 결정점. 자세한 sub-action 은 references/{phase}-*.md.
+
+| Phase | D{N}.1 | D{N}.2 | D{N}.3 |
+|-------|--------|--------|--------|
+| 1 har-capture | HAR scope 결정 (single-prompt / multi-thread / login flow) | HAR validity (status 200 + body + endpoint) | Phase 2 진입 = envelope structure 확인 |
+| 2 analysis-registration | SQL draft naming `apf_db_driven_{service}_{ts}.sql` | Generator naming canonical (synonym 금지) | reload_templates vs reload_services 구분 |
+| 3 block-verify | Block evidence = test-PC UI + etap log 둘 다 | BLOCK_ONLY gate (architectural) | 200 OK + bytes + RST_STREAM = engine fire 확정 |
+| 4 frontend-inspect | delivery_method enum (http_api/websocket/sse/grpc/webtransport) | streaming-vs-block + is_http2 frame_type | Native vs custom envelope (services/{svc}_analysis.md) |
+| 5 warning-design | Strategy A/B/C/D/E 선택 | is_http2=0/1/2 결정 | sub-agent dispatch design doc (sonnet) |
+| 6 warning-impl (orchestration view) | Engine fix verb 선택 (apply_engine_fix:* / debug_*:*) | Build verify (ninja + symbol) | D20b verify rotation entry on first SUCCESS |
+| 7 release-build | 모든 비-deferred service DONE | Tag canonical `cycle{N}-{milestone}-{date}` | Verified-state commit + smoke test PASS |
+
+상세: `references/phase{N}-*.md` (Phase 6 = `phase6-warning-impl-orchestration.md`).
+
+---
+
 ## 제외 기능
 
 - ❌ Scheduled Task / cron / launchd / fireAt / Monitor persistent (Polling Policy v2)
@@ -271,6 +405,7 @@ infra_unblock_check:* — smoke_test (session start probe; on success → infra_
 - `references/phase3-block-verify.md`
 - `references/phase4-frontend-inspect.md`
 - `references/phase5-warning-design.md`
+- `references/phase6-warning-impl-orchestration.md` (31차 신설 — genai-apf-pipeline orchestration view of Phase 6, apf-warning-impl 위임 boundary)
 - `references/phase7-release-build.md`
 
 ## Related
