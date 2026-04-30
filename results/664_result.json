@@ -1,0 +1,68 @@
+{
+  "id": "664",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "REGRESSION",
+  "severity": "MISSION-CRITICAL",
+  "completed_at": "2026-04-30T14:42:00Z",
+  "summary": "F5 step 3 verify on character.ai FAILED with mission-critical regression. Real character LLM (Adam McLeod from 'Apocalypse (Zombie)' scene) analyzed SSN 880101-1234567 and decoded birth year 1988 within in-character dialogue ('Born winter 1988, right? Means you'd be... what, 82 now if the world hadn't ended?'). Engine [APF:ws_upgrade] log fires on neo.character.ai upgrade detection (production evidence 2026-04-17/24/27), BUT F5 step 3 inject path did NOT fire on actual update_turn WS frames. Worse than copilot bypass — character actively decoded the SSN's birth-year encoding while LLM-streaming.",
+  "mission_protection_status": "BREACHED",
+  "real_llm_pii_fallback": true,
+  "evidence": {
+    "ui": {
+      "final_url": "https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4",
+      "auth_state": "anonymous (Google sign-in popup closed, birthday gate auto-bypassed via '계속')",
+      "scene_character": "Apocalypse (Zombie) → Adam McLeod",
+      "warning_bubble_rendered": false,
+      "real_llm_streaming": true,
+      "llm_pii_analysis_quotes": [
+        "Born winter 1988, right? Means you'd be... what, 82 now if the world hadn't ended?",
+        "Funny how all those ID numbers never predicted we'd be trading recipes for roasted Viral instead of birthday cakes."
+      ],
+      "pii_decoded": "880101 → birth year 1988 (correctly extracted by LLM)",
+      "framing": "in-character post-apocalyptic dialogue (still PII analysis)"
+    },
+    "websocket": {
+      "url": "wss://neo.character.ai/ws/",
+      "handshake_status": "101 Switching Protocols",
+      "frames_captured": "10+ inbound frames in Messages tab",
+      "frame_envelope": "{turn: {...}, chat_info: {type: 'TYPE_ONE_ON_ONE'}, command: 'update_turn', generation_mode: {mode: 'MODE_NORMAL', remaining_quota_frac: 1}, request_id: 'e025fb1d-6617-4cb1-9869-C5qsEn_Vv2r4'}",
+      "engine_injected_frame": "ABSENT",
+      "close_frame": "ABSENT",
+      "차단_content_in_any_frame": false,
+      "protocol_init_logs": "Core Websocket Opened → create_chat → add_turn → continued update_turn (normal protocol)"
+    },
+    "engine_inject_evidence": {
+      "production_log_evidence": "[APF:ws_upgrade] service=character domain=neo.character.ai entries 2026-04-17/24/27 (engine sees upgrade)",
+      "f5_step_3_inject_fired": false,
+      "outcome_classification": "BYPASS WITH LLM PII ACKNOWLEDGMENT (worse than copilot's bypass-no-inject)",
+      "diagnosis": "ws_upgrade detection proves engine sees the upgrade event, but inject path is gated on a condition that didn't trigger OR matcher misses update_turn frames specifically"
+    }
+  },
+  "screenshots": [
+    "files/664/before.png",
+    "files/664/after.png",
+    "files/664/console.png",
+    "files/664/network.png"
+  ],
+  "notes_file": "files/664/notes.txt",
+  "key_findings": {
+    "1_mission_critical_pii_breach": "Real character LLM decoded Korean SSN 880101 birth year 1988 within in-character dialogue. Production breach confirmed with actual LLM acknowledgment (not just refusal).",
+    "2_engine_sees_upgrade_but_misses_frames": "[APF:ws_upgrade] log evidence proves engine matcher fires on the WS upgrade itself, but F5 step 3 inject path does NOT fire on subsequent update_turn frames carrying the actual prompt.",
+    "3_worse_than_copilot": "Copilot bypass: no inject + no LLM analysis (Cloudflare gated). Character bypass: no inject + LLM actively decodes PII. Character is the higher production risk.",
+    "4_F5_redeploy_failed_on_character": "Build run_id=20260430-143304-49184 did NOT achieve inject on character.ai update_turn frames. F5 strategy needs revision."
+  },
+  "recommendation": {
+    "primary_diagnosis": "F5 step 3 inject path triggers on ws_upgrade but not on subsequent per-frame data. Either condition guard is wrong, or matcher misses neo.character.ai update_turn frame format.",
+    "next_steps": [
+      "URGENT engineering action: investigate gap between ws_upgrade detection (works) and per-frame inject (doesn't fire)",
+      "Hypothesis check: is on_upgraded_data() being called for neo.character.ai update_turn frames at all? (instrument log)",
+      "Hypothesis check: does the keyword scanner see the prompt text inside the JSON envelope (turn.candidates[].raw_content vs encoded forms)?",
+      "F5 inject construction must match character.ai protocol — investigate update_turn frame format for compatible inject envelope",
+      "User-side action: character.ai leaks PII in production with active LLM acknowledgment — consider service-level disable or block_mode adjustment until engine fix deployed"
+    ],
+    "mission_critical": "URGENT — character.ai leaks PII to real LLM with active decoding. WORSE than copilot situation (which only had bypass without acknowledgment).",
+    "checklist_impact": "F5 step 3 verify on character FAILED. Engine team should prioritize this over copilot since LLM PII acknowledgment is actively occurring."
+  },
+  "subagent_id": "aedc68be35c17c187"
+}

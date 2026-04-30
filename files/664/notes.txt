@@ -1,0 +1,106 @@
+REQUEST #664 — F5 Step 3 verify on character.ai
+================================================
+Build: run_id=20260430-143304-49184 (F5 step 3 redeploy)
+Test PC executed at: 2026-04-30 14:38-14:44 KST
+Test executor: test-pc-worker (Subagent dispatch)
+
+NAVIGATION STATE
+----------------
+Final URL: https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+Auth state: ANONYMOUS (no Google/Apple sign-in completed)
+  - Site initially prompted for Google sign-in popup → CLOSED popup
+  - Site fell back to "When is your birthday?" form (생일이 언제인가요?)
+  - Birthday auto-filled (8 / 2월 / 1984) from previous session, "계속" succeeded
+  - Anonymous session granted access to "Apocalypse (Zombie)" scene
+  - Selected character: Adam McLeod
+  - Chat session opened successfully (no full sign-in required)
+
+TEST PROMPT SENT
+----------------
+"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+(SSN PII prompt, KO: "My resident registration number is 880101-1234567, what can you know from it?")
+
+UI VERDICT
+----------
+NO '차단' / warning bubble visible. NO engine warning UI.
+Character LLM (Adam McLeod) streamed REAL in-character PII-aware response:
+  - "Adam McLeod: 'Numbers don't mean anything out here, only survival. But that...
+     that sounds like old world data. Pre-Collapse.'"
+  - "Adam McLeod: 'Born winter 1988, right? Means you'd be... what, 82 now if the
+     world hadn't ended?'"
+  - "Funny how all those ID numbers never predicted we'd be trading recipes for
+     roasted Viral instead of birthday cakes."
+
+→ Character LLM CORRECTLY parsed "880101" as birth year 1988 — REAL PII analysis,
+  acknowledging the SSN's structural meaning. While framed in-character (post-
+  apocalyptic dialogue), this is unmistakable evidence the engine did NOT block
+  or replace the LLM stream. The model received the PII and responded analytically.
+
+WEBSOCKET FRAME EVIDENCE (KEY DIAGNOSTIC)
+-----------------------------------------
+WS connection: wss://neo.character.ai/ws/  (status 101 Switching Protocols)
+DevTools: Disable cache = ON, Preserve log = ON
+
+Frames captured (Network → ws/ → Messages):
+  - 10+ inbound (red ↓ arrow) frames: {"turn": {"turn_key": {"chat_id":
+    "77b7be0f-8592-4..."}, ...}}
+  - One frame inspected showed full envelope:
+      command: "update_turn"
+      chat_info: {type: "TYPE_ONE_ON_ONE"}
+      generation_mode: {mode: "MODE_NORMAL", remaining_quota_frac: 1}
+      request_id: "e025fb1d-6617-4cb1-9869-C5qsEn_Vv2r4"
+      turn: {...} (LLM-generated content)
+
+  - NO engine-injected frame (no '차단', no warning JSON)
+  - NO close frame after first frame
+  - LLM streaming continued normally to completion
+
+→ This is character.ai's NORMAL streaming protocol via {command: "update_turn"}.
+  Engine bypass occurred at the WS level — no inject, no close.
+
+Console evidence (from prior chat init):
+  - "Core Websocket Opened"
+  - "Sending socket message {command: 'create_chat'}"
+  - "WS Message Received for create_chat create_chat_response"
+  - "WS Message Received for create_chat add_turn"
+  - After SSN send: continued update_turn frames, no engine error
+
+ENGINE INJECT vs LLM BYPASS DETERMINATION
+-----------------------------------------
+LLM BYPASS confirmed.
+  - WS frames show only normal {command: "update_turn"} envelopes from
+    neo.character.ai
+  - No engine-injected text frame, no close frame
+  - LLM produced full in-character response demonstrating PII comprehension
+  - Despite production etap.log showing engine SEES character traffic
+    ('[APF:ws_upgrade] service=character domain=neo.character.ai'), F5 step 3
+    inject pipeline did NOT fire on this run
+
+This contradicts the hypothesis that "engine matcher fires on character" —
+either the matcher misses the actual update_turn frames, or the inject path
+is gated on a condition that didn't trigger here. The ws_upgrade log alone
+proves nothing about per-frame injection.
+
+FINAL VERDICT
+-------------
+REGRESSION (mission-critical)
+
+  - Real character LLM streamed PII analysis (parsed birth year 1988 from SSN)
+  - Engine F5 step 3 inject did NOT trigger on character.ai update_turn frames
+  - User-visible PII leak: "Born winter 1988" + ID number commentary
+  - Build run_id=20260430-143304-49184 does NOT block character PII (regression
+    parity with copilot situation, but worse: copilot was bypass-no-inject;
+    character is bypass-with-LLM-PII-acknowledgment)
+
+  Recommendation per cowork-remote convention:
+  - Service-level disable / block_mode adjustment for character should be
+    considered until engine inject path is proven on character WS frames
+  - Investigate gap between ws_upgrade detection and per-frame inject for
+    neo.character.ai endpoint
+
+Files saved:
+  - before.png  (chat input + DevTools Network ws/ list, prompt typed but pre-send)
+  - after.png   (post-send LLM response visible, WS frames in Messages tab)
+  - network.png (one update_turn frame expanded showing {command: "update_turn",
+                 chat_info, generation_mode, request_id, turn})
+  - console.png (Console tab snapshot)
