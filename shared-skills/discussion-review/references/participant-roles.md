@@ -97,7 +97,7 @@ Each role has a **mandatory contribution burden** — a hard constraint, not a s
 1. Analyze the discussion topic
 2. Extract key aspects: domain, technology stack, stakeholders, constraints
 3. Check domain-profiles/ for pre-configured participant sets
-   → If found: load profile, confirm with user
+   → If found: load profile, output 1-line summary + proceed (autonomous; user override only on explicit request)
    → If not found: proceed to auto-selection
 4. Auto-selection matching:
    - "browser", "Chrome", "DOM", "screenshot", "CSS" → FE
@@ -112,7 +112,7 @@ Each role has a **mandatory contribution burden** — a hard constraint, not a s
    - "user", "experience", "accessibility", "UI" → UX
    - "document", "skill", "instruction", "readability" → SA
 5. Select 3-4 roles maximizing perspective conflict
-6. Present configuration + mandatory burdens to user for confirmation
+6. Output configuration + mandatory burdens as 1-line summary + proceed to Round 0 (autonomous; explicit user override only)
 ```
 
 ## Perspective Conflict Matrix

@@ -33,9 +33,9 @@ Canonical path doc: `test-pc-worker/references/git-push-guide.md`
 ### 모드 1 — 내가 지시하면 작업 (기본)
 내가 "새 요청 확인해줘" 하면 requests/를 확인하고 처리해.
 
-### 모드 2 — 자동 폴링
+### 모드 2 — 자동 폴링 (Polling Policy v2)
 내가 "자동으로 확인해줘" 또는 "폴링 시작" 하면:
-- 1분마다 requests/를 자동 확인
+- ScheduleWakeup(270s cache-warm) 으로 requests/ 자동 확인 (test-PC worker 의 own polling — dev session ScheduleWakeup chain 과 무관)
 - 새 요청이 있으면 **나에게 물어보지 말고 바로 처리**하고 결과를 results/에 작성
 - 작업 완료 후 결과만 간단히 보고해
 - 새 요청이 없으면 조용히 대기 (보고 불필요)

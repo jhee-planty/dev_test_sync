@@ -155,7 +155,7 @@ Define the exact HTTP response that Phase 3 will implement:
 - Required fields and their values
 - Expected total body size
 - **SSE 구분자**: `\n\n` 또는 실제 서버가 사용하는 구분자 명시
-- **HTTP/2 전략**: A/B/C/D 중 어떤 것을 사용할지와 그 근거
+- **HTTP/2 전략**: A/B/C/D/E 중 어떤 것을 사용할지와 그 근거
 
 ### Step 5 — Define Test Criteria and Log Points
 

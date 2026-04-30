@@ -56,11 +56,13 @@ foreach ($req in $requests | Sort-Object Name) {
 
 ---
 
-## 자동 폴링 (Auto-Polling)
+## 자동 폴링 (Auto-Polling — Polling Policy v2)
 
-적응형 폴링으로 requests/를 스캔 (1분×10→10분×6→1시간). 새 요청 있으면 **사용자 확인 없이 즉시 실행**.
-사용자가 폴링을 시작한 시점에 자율 실행에 동의한 것으로 간주한다.
-완료 후 결과만 간단히 보고한다.
+→ Canonical: `~/.claude/memory/user-preferences.md` Polling Policy v2.
+허용: ScheduleWakeup(60-270s cache-warm OR 1200-1800s long-idle) only.
+금지: 적응형 stage polling (1분→10분→1시간) / cron / fireAt / Monitor / in-session bash loop 전부.
+새 요청 있으면 **사용자 확인 없이 즉시 실행** (사용자가 폴링 시작 시점에 자율 동의).
+완료 후 결과만 간단히 보고.
 
 ```
 종료 조건:

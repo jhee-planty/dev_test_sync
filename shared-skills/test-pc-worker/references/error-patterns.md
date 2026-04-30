@@ -4,7 +4,7 @@
 
 1. `status: "error"`로 result 작성, `error_detail`에 원인 기록
 2. 가능하면 에러 상태 스크린샷 첨부
-3. 사용자에게 보고 (폴링 모드에서는 보고만 하고 다음 작업 진행)
+3. result.json 에 status="error_*" + 진단 details push (test PC = user channel 부재; dev side 가 통지 받음). 폴링 모드에서는 다음 작업 진행.
 
 ## 흔한 에러 패턴
 

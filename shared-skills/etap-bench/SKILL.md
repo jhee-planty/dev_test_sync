@@ -135,9 +135,11 @@ ssh -p 12222 solution@61.79.198.110 "pgrep -c etapd && cat /etc/etap/module.xml"
 
 ---
 
-## Step 2 — pktgen 테스트 (L2/L3)
+## Step 2 — pktgen 테스트 (L2/L3) `[REFERENCE-ONLY — 본 testbed 실행 불가]`
 
-### 기본 테스트 (단일 패킷 크기)
+> **★ SKIP**: 본 testbed 에서 pktgen-dpdk 정상 작동 불가 (canonical: `~/.claude/memory/feedback_etap_dpdk_unavailable.md`). 본 Step 은 reference 만, 실행 X. **실행 가능 path**: ab/hi (L7 HTTPS, etap-testbed §VT MITM) + etapcomm 통계.
+
+### 기본 테스트 (단일 패킷 크기) `[참조용]`
 
 Dell-1에서 pktgen 실행하여 Dell-2 방향으로 트래픽 전송:
 

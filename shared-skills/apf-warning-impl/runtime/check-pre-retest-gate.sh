@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # check-pre-retest-gate.sh --service <id>
-# Reads count-attempts.sh output and enforces:
-#   - builds_attempted >= 5 → stderr SUSPEND_GATE (exit 1 → caller should ask user approval)
+# Reads count-attempts.sh output and enforces (38차 SOFT_WARN amendment):
+#   - builds_attempted >= 7 → stderr BUILD_CAP (exit 2, terminal)
 #   - completed >= 5 → stderr NEEDS_ALTERNATIVE (exit 2)
-#   - builds_attempted >= 7 → stderr BUILD_CAP (exit 2)
-#   - same sub_category in last 3 verdicts (all error_*) → exit 1 (RETRY_BLOCKED)
+#   - builds_attempted >= 5 → stderr SOFT_WARN (exit 0 + advisory, autonomous STRATEGY_REVISIT trigger)
+#   - same sub_category in last 3 verdicts (all error_*) → exit 1 (RETRY_BLOCKED, autonomous frontend-inspect 재진입)
 #   - otherwise → exit 0 (PROCEED)
 
 set -eu
@@ -44,10 +44,10 @@ if (( COMPLETED >= 5 )); then
     exit 2
 fi
 
-# Build suspend gate (warn)
+# Build soft warn (38차: SUSPEND_GATE → SOFT_WARN, autonomous progression 유지)
 if (( BUILDS >= 5 )); then
-    echo "SUSPEND_GATE: builds=${BUILDS} >= 5 — user approval required before continuing" >&2
-    exit 1
+    echo "SOFT_WARN: builds=${BUILDS} >= 5 — STRATEGY_REVISIT autonomous trigger; 7회 도달 시에만 ESCALATE" >&2
+    # exit 0 (advisory only) — autonomous loop continues with STRATEGY_REVISIT verdict
 fi
 
 # Same-category 3-Strike (checked via last 3 verdicts if all error_*)

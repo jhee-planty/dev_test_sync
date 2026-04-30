@@ -196,7 +196,9 @@ APF 진단 (기본 경로):
 etapcomm ai_prompt_filter.show_stats       # APF 상태/통계
 etapcomm ai_prompt_filter.show_config       # APF 설정
 etapcomm "ai_prompt_filter.test_keyword[주민번호 123456-7890123]"  # 키워드 매칭 테스트
-etapcomm ai_prompt_filter.reload_services   # DB 변경 후 리로드
+etapcomm ai_prompt_filter.reload_services   # ai_prompt_services (서비스 등록) 변경 후
+etapcomm ai_prompt_filter.reload_templates  # envelope_template (Phase 6 작업) 변경 후 — 필수
+etapcomm ai_prompt_filter.reload_keywords   # PII keyword 변경 후
 ```
 
 → See `references/etapcomm-commands.md` for 전체 모듈별 명령어 (APF, VT, 브릿지/NIC).

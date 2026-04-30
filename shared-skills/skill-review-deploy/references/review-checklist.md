@@ -1,6 +1,6 @@
 # Review Checklist — 자동 검증 명령어
 
-SKILL.md의 8가지 품질 기준을 자동으로 검증하는 명령어 모음.
+SKILL.md의 11 검증 항목 (§1-§7 static + §8-§11 library-wide sweep) 을 자동으로 검증하는 명령어 모음.
 Phase 1에서 이 명령어들을 순서대로 실행하여 문제를 검출한다.
 
 ---
