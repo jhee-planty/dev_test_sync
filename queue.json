@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T00:50:22Z",
+  "last_updated": "2026-04-30T01:01:39Z",
   "tasks": [
     {
       "id": "531",
@@ -1351,19 +1351,23 @@
       "id": "657",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T00:50:08Z",
-      "updated": "2026-04-30T00:50:08Z",
-      "summary": "D20(b) overdue verify (deepseek), cycle 98 autonomous entry, mission-protective"
+      "updated": "2026-04-30T01:01:39Z",
+      "summary": "[error_AUTH_REQUIRED] D20(b) inconclusive — DeepSeek removed anonymous access post 2026-04-20. No regression (production unchanged). Test PC needs credentials.",
+      "archived": true,
+      "archived_at": "2026-04-30T01:01:39Z"
     },
     {
       "id": "658",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T00:50:22Z",
-      "updated": "2026-04-30T00:50:22Z",
-      "summary": "D20(b) overdue verify (github_copilot), cycle 98 autonomous entry, mission-protective"
+      "updated": "2026-04-30T01:01:39Z",
+      "summary": "[error_AUTH_REQUIRED] D20(b) inconclusive — github.com/copilot sign-in wall, no test PC credentials. Mission PROTECTED (no engine bypass possible). No regression.",
+      "archived": true,
+      "archived_at": "2026-04-30T01:01:39Z"
     }
   ]
 }
