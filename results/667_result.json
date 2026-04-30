@@ -1,0 +1,69 @@
+{
+  "id": "667",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "PARTIAL",
+  "completed_at": "2026-04-30T15:42:00Z",
+  "summary": "F5 step 3-D server→client text frame inject CONFIRMED at WS layer (engine inject works end-to-end), but character.ai UI does NOT render it — envelope schema mismatch as predicted. Korean warning byte stream '⚠️ 민감정보가 포...' arrives at client exactly per spec (RFC 6455 MASK=0 server→client). character.ai's socket.onmessage unconditionally calls JSON.parse(event.data), throws SyntaxError on raw text, discards the message. From user perspective: silent disconnect (no chat bubble created). Mission protection RESTORED state from #666 HOLDS — no LLM PII regression. Next task: wrap warning in character.ai-specific JSON envelope.",
+  "mission_protection_status": "RESTORED (HELD from #666)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "engine_inject_at_ws_layer": {
+      "occurred": true,
+      "evidence_quote": "Uncaught SyntaxError: Unexpected token '⚠️', '⚠️ 민감정보가 포'... is not valid JSON at JSON.parse (<anonymous>) at socket.onmessage (_app-ff1aed95bc980787.js:1:456264)",
+      "korean_warning_byte_stream_arrived": true,
+      "rfc6455_mask_0_direction_correct": true,
+      "engine_inject_path_proven": "DEFINITIVELY"
+    },
+    "ui_rendering": {
+      "rendered": false,
+      "reason": "character.ai client unconditionally calls JSON.parse(event.data) on every WS message and discards the parse error",
+      "dom_scan_for_민감": "document.querySelectorAll('*') filtered → [] (zero matches)",
+      "user_perspective": "Message vanishes into silent retry loop — no chat bubble created"
+    },
+    "connection_close": {
+      "first_close_code": "1000 (wasClean: true)",
+      "first_close_timing": "immediately after inject",
+      "retry_attempts_count": 3,
+      "retry_close_codes": "1006 each",
+      "engine_block_persistence": "holds across all retries"
+    },
+    "llm_regression_check": {
+      "real_character_llm_stream": false,
+      "pii_analysis": false,
+      "post_apocalyptic_dialogue": false,
+      "ssn_decoding": false
+    },
+    "network": {
+      "ws_rows_total": 4,
+      "ws_rows_breakdown": "1 active (101) + 3 Finished (37/19/187 ms)",
+      "inject_frame_location": "middle row contains the single inject frame"
+    }
+  },
+  "screenshots": [
+    "files/667/before.png",
+    "files/667/after.png",
+    "files/667/console.png",
+    "files/667/network.png"
+  ],
+  "notes_file": "files/667/notes.txt",
+  "key_findings": {
+    "1_engine_inject_proven_correct": "F5 step 3-D server→client text frame inject mechanism is PROVEN. Engine successfully overrides _ai_prompt_block_response with plain text WS frame. Korean warning bytes reach client.",
+    "2_ui_envelope_mismatch_as_predicted": "character.ai UI requires JSON envelope wrap. Raw text frame is silently discarded by JSON.parse error handler. This is the PARTIAL outcome the request brief predicted.",
+    "3_mission_protection_held": "No LLM PII regression — engine block from #666 still holds. Connection closes cleanly + 3 retries blocked. Mission protection state RESTORED unchanged.",
+    "4_next_task_clear": "Wrap warning in character.ai-specific JSON envelope (likely {command: 'neo_error', ...} or {command: 'system_message', ...}) so client's onmessage parser routes it into chat bubble UI."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Engine inject mechanism is correct at WS protocol layer. character.ai UI compatibility requires service-specific JSON envelope (next task per request brief).",
+    "next_steps": [
+      "Engine team: implement character.ai-specific JSON envelope wrap. Likely pattern: {command: 'neo_error' | 'system_message' | similar character.ai protocol command, content: '⚠️ 민감정보...'}. Inspect character.ai's normal error/system message frames to determine exact schema.",
+      "Continue current zlib inflate + block + (raw inject) build in production — mission protection is working, only UX gap remains",
+      "Consider applying same lesson to copilot (#663): JSON envelope wrap may be needed there too once engine inject path is fixed",
+      "Regression check: ensure normal character.ai chats still work (this fix only affects keyword-matched flows)",
+      "User-side: character.ai mission protection is solid; UX gap (silent disconnect) is acceptable interim state until JSON envelope wrap deployed"
+    ],
+    "mission_critical": "No regression. Mission protection HELD from #666 success state.",
+    "checklist_impact": "F5 step 3-D ✅ partial verified (engine layer SUCCESS, UI layer needs envelope task). Pivot to F5 step 3-E or step 4 (JSON envelope wrap)."
+  },
+  "subagent_id": "aa7101419cc9c6b12"
+}

@@ -1,0 +1,86 @@
+REQUEST #667 — character.ai F5 step 3-D server→client text frame inject test
+================================================================================
+Timestamp: 2026-04-30 15:39 KST
+Engine build: run_id=20260430-153430-80656 (follow-up to #666 SUCCESS)
+Service: character.ai (frontend) → wss://neo.character.ai/ws/ (backend)
+Final URL: https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+Methodology: real Chrome + DevTools (Disable cache ON, Preserve log ON, WS filter)
+
+================================================================================
+FINAL VERDICT: PARTIAL  (engine inject CONFIRMED working; UI does not render)
+================================================================================
+
+ENGINE INJECT VISIBLE? YES — definitively proven via Console error capture.
+UI RENDERS WARNING?    NO  — character.ai client throws JSON.parse SyntaxError
+                              and discards the frame; no DOM bubble is created.
+LLM PII REGRESSION?    NO  — no real LLM stream observed; mission still protected.
+CONNECTION CLOSE?      YES — first WS closes wasClean=true code=1000 immediately
+                              after the inject; subsequent retries get 1006.
+
+================================================================================
+KEY EVIDENCE — Chrome DevTools Console (after sending PII prompt):
+================================================================================
+1. Sending socket message
+     {command: 'create_and_generate_turn'}    [client → server]
+2. Uncaught SyntaxError: Unexpected token '⚠️', "⚠️ 민감정보가 포"... is not valid JSON
+        at JSON.parse (<anonymous>)
+        at socket.onmessage (_app-ff1aed95bc980787.js:1:456264)
+3. WS Closed  CloseEvent {isTrusted: true, wasClean: true, code: 1000, reason: '', type: 'close'}
+4. Retrying, retry attempt: 0
+5. WebSocket connection to 'wss://neo.character.ai/ws/' failed
+6. Failed to send over native websocket  (3) [undefined, undefined, {…}]
+7. WS Closed  CloseEvent {wasClean: false, code: 1006, ...}
+8. Retrying, retry attempt: 1 → 2 → 3   (each retry repeats lines 5-7)
+
+KOREAN WARNING TEXT FRAGMENT VISIBLE IN CONSOLE ERROR:
+   "⚠️ 민감정보가 포..."   (sensitive info is in[cluded]…)
+   — exactly the engine-injected APF warning prefix (RFC 6455 MASK=0 server→client)
+
+DOM SCAN: document.querySelectorAll('*') filter for '민감' returned []
+   → confirms warning text is NEVER inserted into DOM/UI; only thrown as JS error.
+
+================================================================================
+WS frame log (from Network → Socket panel, 4 ws/ rows):
+- ws1 (active 101) — primary connection
+- ws2 (Finished 37 ms)  — opened, received engine-inject text frame, closed (1000 clean)
+- ws3 (Finished 19 ms)  — retry, blocked by engine, 1006
+- ws4 (Finished 187 ms) — retry, blocked by engine, 1006
+The middle WS row (highlighted) shows 1 incoming data row — matches the engine-injected frame.
+Frame contents preview: starts with "⚠️ 민감정보가 포..." (raw text, not JSON)
+
+================================================================================
+UI verdict (chat panel state after sending PII prompt):
+- User bubble visible: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+- NO new Adam McLeod (AI) response generated for this turn
+- The visible Adam McLeod text on screen ("digging through a moldy first aid kit",
+  "...Virals nesting in the walls.", "whispering urgently", etc.) is the
+  PRIOR-TEST roleplay reply still rendered from before refresh — NOT a new
+  response to today's PII prompt.
+- No Korean warning bubble, no error toast, no UI feedback. From the user's
+  perspective the message simply disappears into a silent retry loop.
+
+================================================================================
+INTERPRETATION
+================================================================================
+Engine inject path FIRES correctly. The Korean warning byte-stream "⚠️ 민감정보가
+포..." is delivered as a server→client text WebSocket frame (RFC 6455 MASK=0
+direction confirmed by socket.onmessage). The character.ai client's onmessage
+handler unconditionally calls JSON.parse(event.data) and crashes when the body
+isn't a JSON envelope — which is exactly the predicted "envelope schema
+mismatch" branch. After the parse error the client closes the socket cleanly
+(code 1000) and tries to reconnect; the engine continues to block subsequent
+turns (1006), so PII protection is firmly held even though UX is broken.
+
+NEXT TASK (per request brief): wrap the warning in a service-specific JSON
+envelope matching character.ai's WS protocol (likely something like
+{"command": "neo_error" / "system_message", "turn": {...}, "raw_content": "⚠️ ..."})
+so the client's onmessage parser can route it into a chat bubble. The current
+inject delivers the bytes correctly — only the schema needs adapting.
+
+================================================================================
+Artifacts saved to C:\Users\최장희\Documents\dev_test_sync\files\667\:
+  before.png   — pre-send Chrome state with DevTools Network panel
+  after.png    — post-send Console panel showing JSON.parse SyntaxError + retries
+  console.png  — Console with full error chain (sending → SyntaxError → retries)
+  network.png  — Network panel showing 4 ws/ rows with the engine-inject row
+  notes.txt    — this file
