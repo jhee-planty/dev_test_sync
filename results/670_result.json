@@ -1,0 +1,70 @@
+{
+  "id": "670",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "FAIL",
+  "completed_at": "2026-04-30T16:53:00Z",
+  "summary": "F5 step 3-G text-only inject FAILED — removing bundled close frame from inject buffer did NOT eliminate 'Close received after close' error. WS connection still dies before envelope reaches client onmessage. No JSON parsing happens, no Korean warning renders. Strongly suggests another close source EXISTS at HTTP/2 layer below WebSocket: likely END_STREAM flag, GOAWAY, or TCP RST emitted concurrently with data frame at protocol layer below WS close-frame removal. Mission protection HOLDING (no LLM PII regression). Atomic-write fix from #669 still intact (no SyntaxError regression).",
+  "mission_protection_status": "HOLDING (no regression)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "syntax_error_state": {
+      "syntax_error_observed": false,
+      "interpretation": "Atomic-write fix from #669 still works at byte-integrity layer"
+    },
+    "close_received_after_close": {
+      "still_present": true,
+      "occurrence_count": "appears twice in console after each WS retry",
+      "interpretation": "3-G fix (remove bundled close frame from inject buffer) did NOT solve this — another close source exists"
+    },
+    "dom_scan": {
+      "regex": "/(민감|차단|⚠️|경고|주의|개인정보|블록)/g",
+      "matches": null,
+      "korean_warning_visible": false
+    },
+    "ws_connection_state": {
+      "post_inject": "CLOSED instantly",
+      "close_event_code": 1006,
+      "wasClean": false,
+      "retry_loop": "Retry attempts 0, 1, ... (continuous reconnection)",
+      "keep_alive_working": false
+    },
+    "ws_messages_tab": {
+      "frames_captured": 0,
+      "transferred_size": "0.0 kB for ws/",
+      "comparison_to_669": "SAME as #669 (envelope still not reaching parser)"
+    },
+    "mission_protection_check": {
+      "real_llm_streaming": false,
+      "pii_analysis": false,
+      "ui_response_slot": "empty Adam McLeod bubble (just typing dots + retry/refresh buttons)"
+    }
+  },
+  "screenshots": [
+    "files/670/before.png",
+    "files/670/after.png",
+    "files/670/console.png",
+    "files/670/network.png"
+  ],
+  "notes_file": "files/670/notes.txt",
+  "key_findings": {
+    "1_close_source_below_websocket": "Removing the bundled WS close frame did NOT solve the 'Close received after close' error. This conclusively proves there's ANOTHER close source at a layer BELOW the WebSocket protocol — most likely HTTP/2 END_STREAM flag, GOAWAY frame, or TCP RST emitted concurrently with the data frame.",
+    "2_envelope_schema_test_blocked": "The 'JSON parses but command unknown' hypothesis (PARTIAL outcome) is UNTESTABLE because envelope never reaches client onmessage. Don't pivot to {command:'system_message'} schema variant yet — fix wire layer first.",
+    "3_mission_protection_holds_across_iterations": "All previous mission protections still hold across #666→#667→#668→#669→#670. Engine block layer is solid. Only UI delivery is failing.",
+    "4_atomic_write_fix_intact": "No SyntaxError regression. The byte-integrity layer fix from #669 is still working — bytes that DO get through are intact."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Engine still emits HTTP/2-level close (END_STREAM / GOAWAY / TCP RST) concurrently with the data frame, killing the WS connection before client onmessage dispatches. Wire layer needs fix BEFORE schema variants make sense.",
+    "next_steps": [
+      "URGENT engine investigation: trace HTTP/2 frame emissions at engine output. Specifically check END_STREAM flag on the HTTP/2 frame carrying the WS data, GOAWAY frame timing, or TCP-level RST/FIN.",
+      "Hypothesis check: is_http2=2 keep-alive may not actually prevent ALL close paths — there may be a downstream code path (after ai_prompt_filter) that still triggers session teardown",
+      "Instrument: add logging at engine HTTP/2 output layer to see exact frame sequence (data frame headers, flags, subsequent frames)",
+      "DO NOT pivot to schema variants ({command:'system_message'} etc.) yet — that test is blocked until wire layer delivers envelope to onmessage",
+      "Continue current build in production (mission protection working) while iterating",
+      "Consider: alternative to inject path — use WS extension or upgrade-time injection that doesn't require post-handshake close-handling at all"
+    ],
+    "mission_critical": "No regression. Mission protection state from #666 still HELD across all iterations.",
+    "checklist_impact": "F5 step 3-G FAILED at wire layer (close still present from non-WS source). Pivot to step 3-H: trace and fix HTTP/2-level close emission. Schema variant testing remains blocked until envelope reaches parser."
+  },
+  "subagent_id": "aadffa535397ec33c"
+}

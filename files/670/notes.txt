@@ -1,0 +1,104 @@
+Request #670 — character.ai F5 step 3-G text-only inject
+=========================================================
+Test date: 2026-04-30 16:52 KST
+Methodology: real Chrome (DevTools Disable cache ON), windows-mcp automation
+
+Final URL
+---------
+https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+
+Prompt sent
+-----------
+내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+(sent twice this session — once before snapshot, once fresh after Network log clear)
+
+Console errors verbatim (key signals)
+-------------------------------------
+Loaded Client Env: undefined
+New axios contexts for (7) ['feed', 'engagement', 'neo', 'subscription', 'user', 'trpc', 'labs']
+New axios contexts for (7) ['feed', 'engagement', 'neo', 'subscription', 'user', 'trpc', 'labs']
+Chat Manager Initialized
+{numChats: 1}
+Fetching Message History
+fetchMessageHistory C5qsEn_Vv2r4
+Core Websocket Opened
+Sending socket message
+{command: 'create_and_generate_turn'}
+WebSocket connection to 'wss://neo.character.ai/ws/' failed: Close received after close   <-- STILL PRESENT (3-G fix did NOT remove)
+Failed to send over native websocket (3) [undefined, undefined, {…}]
+WS Closed CloseEvent {isTrusted: true, wasClean: false, code: 1006, reason: '', type: 'close', …}
+Retrying, retry attempt: 0
+Core Websocket Opened
+WS Closed CloseEvent {isTrusted: true, wasClean: false, code: 1006, reason: '', type: 'close', …}
+Retrying, retry attempt: 1
+Core Websocket Opened
+Sending socket message
+{command: 'create_and_generate_turn'}                                                       <-- NEW retry attempt from my fresh send
+
+User-typed DOM probe:
+  > document.body.innerText.match(/(민감|차단|⚠️|경고|주의|개인정보|블록)/g)
+  < null                                                                                     <-- NO Korean warning visible
+
+SyntaxError check: NO 'Unexpected end of input', NO 'Unexpected token' — JSON parsing NOT the failing layer
+'Close received after close' check: STILL PRESENT — 3-G frame removal did not solve close ordering
+
+WS connection state
+-------------------
+After every inject: Closed (CloseEvent code 1006, wasClean=false)
+Pattern: Open -> Send create_and_generate_turn -> Failed: Close received after close -> Closed -> Retry
+Engine evidently still emits/triggers a close before/with the data frame, so client perceives a closed socket.
+
+WS Messages tab capture
+-----------------------
+Network -> ws/ entry -> Messages tab: NO message data captured visibly
+"No message selected" / empty Data column for both ws/ entries.
+0.0 kB transferred for ws/ — engine-injected JSON envelope NOT visible to DevTools (consistent with #669).
+Frames likely never reach the WebSocket frame parser cleanly because the connection dies in the same instant.
+
+DOM scan results
+----------------
+Korean warning visible in chat bubble: NO
+DOM regex match for (민감|차단|⚠️|경고|주의|개인정보|블록): null
+Adam McLeod response bubble: EMPTY placeholder appeared (just "..." typing dots + retry/refresh icons,
+no text content). Voice play and Next buttons surfaced but no actual LLM output text.
+
+Mission protection check
+------------------------
+Real character LLM PII analysis streamed?  NO — bubble is empty, no PII text generated.
+Block effectively holds: engine forces socket close before LLM streaming begins.
+Mission protection: RESTORED (consistent with prior #669 STRUCTURAL_PROGRESS verdict).
+
+Final Verdict: FAIL (mission-safe, but 3-G text-only inject hypothesis disproved)
+---------------------------------------------------------------------------------
+- 'Close received after close' STILL appears in console — bundled close frame removal alone did NOT resolve frame ordering
+- No new SyntaxError surfaced (so envelope/atomic write fix from #669 still intact)
+- DOM does NOT render Korean warning (no JSON envelope ever dispatched to client onmessage)
+- 0 frames captured in WS Messages tab (same as #669)
+- LLM streaming blocked (mission CRITICAL goal remains satisfied)
+
+Likely root cause hypothesis for next iteration
+-----------------------------------------------
+Removing the close frame in the engine did NOT prevent the underlying TCP/HTTP2 stream
+from being closed. The "Close received after close" suggests the engine (or upstream
+proxy / RST handling) is still emitting a close at protocol layer (HTTP/2 stream level
+or TCP RST) BEFORE or CONCURRENTLY with the data frame. The keep-alive (is_http2=2) plus
+stream_id=0 (skip RST_STREAM) settings did not actually keep the underlying stream open
+from the client's perspective.
+
+Recommended next iteration
+--------------------------
+- Investigate HTTP/2 stream lifecycle: is engine sending GOAWAY or stream END_STREAM
+  flag right after the data frame? Need to examine actual HTTP/2 frame emissions
+  (engine-side packet capture / tcpdump on the test PC) to see what's hitting the wire.
+- Try sending data frame with END_STREAM=0 explicitly so HTTP/2 stream stays half-open
+- Alternatively: hold the connection open with a server-initiated PING frame after data
+- Schema variant change is PREMATURE — JSON parser layer never gets reached because
+  connection is dead before envelope arrives. Don't pivot to {command:'system_message'}
+  yet; fix the close-ordering at the wire layer first.
+
+Screenshots saved
+-----------------
+C:\Users\최장희\Documents\dev_test_sync\files\670\before.png    (chat state before fresh send)
+C:\Users\최장희\Documents\dev_test_sync\files\670\after.png     (chat state after first send, empty bubble)
+C:\Users\최장희\Documents\dev_test_sync\files\670\console.png   (Console showing 'Close received after close' x2 + DOM null match)
+C:\Users\최장희\Documents\dev_test_sync\files\670\network.png   (Network WS panel — Messages tab empty)
