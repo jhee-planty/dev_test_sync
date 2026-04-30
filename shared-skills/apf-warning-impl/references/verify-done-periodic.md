@@ -41,6 +41,19 @@ Mission goal (D20a) 와의 매핑:
 ./d20b-l1-canary.sh --days 14
 ```
 
+**Recurring monitor wrapper**: `apf-operation/scripts/d20b-l1-canary-monitor.sh`
+- Runs canary + saves dated snapshot + compares against prior snapshot
+- Detects regressions:
+  - PASS_BLOCKED_FIRED → STALE_NO_TRAFFIC transition
+  - block_count >50% drop (vs prior snapshot, threshold ≥5 blocks to ignore noise)
+- Output: PASS summary or REGRESSION report (exit 1 on regression)
+
+**Recurring schedule (caller-discipline, not auto)**:
+- Polling Policy v2 의 ScheduleWakeup max 3600s (1hr) 제한 — cross-session recurring 불가
+- 운영자 패턴: 매 session 진입 시 또는 의미있는 milestone 후 manual run
+- SessionStart hook 통한 자동 invocation 은 cycle 99+ 가능 (D22 후보)
+- ad-hoc 호출 = `bash apf-operation/scripts/d20b-l1-canary-monitor.sh`
+
 **Output schema** (JSON to stdout):
 ```json
 {
