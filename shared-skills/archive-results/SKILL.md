@@ -141,7 +141,7 @@ lessons/가 추출되었으므로 원본은 더 이상 필요하지 않다.
 - `lessons/` → 영구 보존 (추출된 교훈, warning pipeline 환류에 사용)
 - `failures/` → 미해결 실패만 보존, 해결 후 삭제
 
-**실행:** 아카이브 스크립트 완료 후 Cowork이 cleanup 여부를 사용자에게 제안한다.
+**실행:** 아카이브 스크립트 완료 후 `cleanup_pipeline.sh --target archive` 자동 실행 (lessons/ 보존, failures/ 미해결만 유지). 보존 정책 명시되어 있어 추가 승인 불필요.
 수동 실행 시 `cleanup_pipeline.sh --target archive` 사용.
 
 ---

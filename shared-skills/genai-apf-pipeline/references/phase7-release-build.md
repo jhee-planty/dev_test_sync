@@ -12,7 +12,7 @@
 ```
 1. Test log 제거: grep -r "APF_WARNING_TEST" → 해당 라인 삭제
 2. etap-build-deploy 스킬 호출 → clean 빌드 + 배포
-3. 최종 검증: user confirms warning display on test server
+3. 최종 검증: cowork-remote check-warning rotation across all DONE services + D20b verify-warning-quick PASS → autonomous DONE
 4. 성공 → DONE
 ```
 

@@ -33,7 +33,7 @@ RT="$SKILL_DIR/runtime"
 
 | 상한 | 값 | 위반 시 |
 |------|-----|---------|
-| 유효 빌드 상한 | 7회 | 5회 시 runtime 이 SUSPEND_GATE 반환 → 사용자 승인 필요 |
+| 유효 빌드 상한 | 7회 | 5회 시 SOFT_WARN 로깅 + verdict 분포 분석 → STRATEGY_REVISIT 자동 trigger. 7회 도달 시에만 ESCALATE (terminal). |
 | 3-Strike (같은 sub_category 연속) | 3회 | 4회째 SKIP (runtime 이 Pre-retest Gate 에서 차단) |
 | 총 시도 상한 | 5회 | 6회째 NEEDS_ALTERNATIVE (runtime 차단) |
 
@@ -48,7 +48,7 @@ RT="$SKILL_DIR/runtime"
 bash $RT/check-pre-retest-gate.sh --service {id}
 ```
 - exit 0 : PROCEED (진행 가능)
-- exit 1 : SKIP (동일 category 3회) → verdict=RETRY_BLOCKED, 사용자 보고
+- exit 1 : SKIP (동일 category 3회) → verdict=RETRY_BLOCKED, next_action 자동 = `frontend-inspect` (genai-apf-pipeline Phase 4) 재진입 (sub_category 변경 후) — escalation-protocol.md 23 canonical
 - exit 2 : ESCALATE (총 시도 5회 초과 또는 빌드 7회 초과)
 
 ### 1. Record iteration START

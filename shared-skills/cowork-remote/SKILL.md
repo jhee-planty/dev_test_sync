@@ -56,7 +56,7 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 
 **흐름**:
 1. Runtime: `bash $RT_DIR/scan-results.sh` — git pull + filesystem scan + 새 결과 ID 목록 stdout (newline separated)
-2. 새 결과 없음 (stdout empty) → "대기 중" 짧게 보고 + 종료 (추가 polling 여부는 사용자 지시)
+2. 새 결과 없음 (stdout empty) → `ScheduleWakeup(delaySeconds=600, prompt="<<autonomous-loop-dynamic>>")` 자동 재예약 후 turn 종료 (Polling Policy v2 / HR3 — chain 유지)
 3. 새 결과 있음 → **각 ID 별로 아래 루프**:
    a. `cat $GIT_SYNC_REPO/results/{id}_result.json` 읽기
    b. **Claude 판단** (§Result Classification 가이드) — verdict ∈ `{done, error_PROTOCOL_MISMATCH, error_NOT_RENDERED, error_SERVICE_CHANGED, error_AUTH_REQUIRED, error_INFRASTRUCTURE}`
@@ -166,7 +166,7 @@ UI verify 가 auth gate 로 short-circuit 되는 경우 — regression 아님 + 
 
 ## Rate Limit Gate
 
-runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2). 초과 시 exit 1 + stderr 에 현재 pending ID 목록 출력. Claude 는 사용자에게 "대기 후 재시도" 안내.
+runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2). 초과 시 exit 1 + stderr 에 현재 pending ID 목록 출력. Claude 자동 처리: `scan-results.sh` 우선 실행 → pending 처리 → push 재시도. inbound 도 비어 있으면 `ScheduleWakeup(600s)` 후 재시도.
 
 ## Git Sync 단일 경로
 
@@ -183,7 +183,7 @@ runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2)
 ## 에러 복구
 
 - `git push` 실패 : runtime 이 자동 3-retry (즉시 / `pull --rebase` / `stash+pull+pop`). 그래도 실패면 exit 2.
-- `scan_results.sh` 실패 : exit 2 → Claude 는 사용자에게 "scan runtime error" 보고 + 원인 전달.
+- `scan_results.sh` 실패 : exit 2 → 1회 retry (`git fetch && git reset --hard origin/main`) → 여전히 실패 시 `state.json.notes` 에 "scan_runtime_error: {원인}" 기록 + `ScheduleWakeup(900s)` 후 재시도.
 
 ---
 

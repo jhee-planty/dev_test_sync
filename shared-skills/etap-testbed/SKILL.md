@@ -137,7 +137,7 @@ ssh -p 10000 planty@61.79.198.73 "ip -br link show ens5f0 2>/dev/null || echo 'F
 
 > **판정:** 모든 항목 OK + 프로세스 수 1 → 테스트 진행 가능.
 > - [3/8] 수 > 1 → §Failure recovery 참조
-> - [6/8] 디렉토리가 여러 개면 어느 디렉토리로 작업할지 확인
+> - [6/8] 디렉토리가 여러 개면 가장 최근 mtime 자동 선택 (`ls -dt /home/solution/source_for_test/EtapV3* | head -1`)
 > - [7/8] `ETAP_V_v*` 또는 `ETAP_OPENSSL_V_v*` PASS, `_main` 접미사 FAIL (릴리스 부적합)
 > - [8/8] `ens5f0` 찾지 못하면 이전 DPDK 테스트 잔여 — 아래 복원 절차 수행
 
@@ -298,11 +298,11 @@ grep -i "visible_tls\|tls_proxy\|bypass" /var/log/etap.log | tail -20
 # APF 파일 로그 (CSV 형식)
 cat /var/log/ai_prompt/$(date +%Y-%m-%d).log
 
+# APF DB 로그 (sudo mysql — local root password-less 2026-04-20 설정 이후)
+sudo mysql etap -e "SELECT id, service_name, matched_keyword, keyword_category, block_time FROM ai_prompt_block_log ORDER BY id DESC LIMIT 10;"
+
 # APF 통계
 etapcomm ai_prompt_filter.show_stats
-
-# APF DB 로그 — testbed 서버에서 mysql root 직접 접근 불가 (실증 2026-04-20).
-# 대안: 위 2개 (file log + show_stats)로 대체. DB 쿼리가 필요하면 `references/db-queries.md` 참조.
 ```
 
 ### 검증 체크리스트
@@ -316,7 +316,7 @@ etapcomm ai_prompt_filter.show_stats
 | 통과 요청 | curl 응답 본문 (정상 요청) | Dell-2 서버 정상 응답 |
 | 통계 카운터 | `etapcomm ai_prompt_filter.show_stats` | 요청수/차단수 증가 |
 | 파일 로그 | `cat /var/log/ai_prompt/$(date +%Y-%m-%d).log` | BLOCKED 행 기록 |
-| DB 로그 | testbed에서 mysql root 접근 불가. 대안: `etapcomm ai_prompt_filter.show_stats`의 `DB log - success` 카운터 확인 | `DB log - success` 증가 |
+| DB 로그 | `sudo mysql etap -e "SELECT id, service_name, matched_keyword, block_time FROM ai_prompt_block_log ORDER BY id DESC LIMIT 5;"` | INSERT 성공 (최근 id + block_time 증가) |
 
 ---
 
@@ -376,9 +376,7 @@ APF 미탐지(모듈 disabled, 서비스 미등록, 키워드 미등록), etapd 
 
 ## DB 참고
 
-APF 서비스/키워드/차단로그, VT 설정/대상 조회용 SQL 모음.
-
-> ⚠️ **testbed 서버에서는 mysql root 직접 접근 불가** (실증 2026-04-20). testbed 세션의 DB 조회 대안(etapcomm + file log)과 쿼리 원문은 아래 reference 참조.
+testbed 서버에서 `sudo mysql etap` 또는 `sudo mysql ogsv` 로 접속 (local root password-less, 2026-04-20 설정). APF 서비스/키워드/차단로그, VT 설정/대상 조회.
 
 → See `references/db-queries.md`
 

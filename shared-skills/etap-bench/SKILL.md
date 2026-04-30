@@ -79,7 +79,7 @@ echo "=== [6/6] Dell-1 pktgen 확인 ==="
 ssh -p 10000 planty@61.79.198.72 "which pktgen && echo 'pktgen OK' || echo 'pktgen NOT FOUND'"
 ```
 
-> **판정:** 모든 항목 OK + 인스턴스 수 1 → 테스트 진행 가능.
+> **판정:** 모든 항목 OK + 인스턴스 수 1 → 테스트 진행 가능. FAIL 시 → §Failure recovery 자동 적용 후 재검사. 2회 연속 실패 시에만 ESCALATE.
 
 ---
 
@@ -272,6 +272,11 @@ pktgen의 TX/RX 카운터에서:
 
 ## 실행 모드
 
+> **자동 mode 선택 (HR6 Mode Selection Tree)**: default = **Standard**. 사용자 trigger keyword:
+> - "빠른 확인" / "smoke" / "quick" → Quick
+> - "정식" / "리포트" / "full" → Full
+> - 명시 없음 → Standard 자동 선택
+
 ### Quick (~3분)
 Config A (baseline) + Config D (full stack), pktgen 1518B 1회, 30초.
 "대략적인 성능 확인"용.
@@ -289,7 +294,7 @@ Config A (baseline) + Config D (full stack), pktgen 1518B 1회, 30초.
 4개 Config × pktgen(6종 패킷 크기) + ab/hi, 각 5회 반복.
 "정식 벤치마크 — 패킷 크기별 특성 + 통계적 유의성"용.
 
-통계 처리: median, stddev 보고. stddev > 10%이면 "high variance — rerun recommended" 표시.
+통계 처리: median, stddev 보고. stddev > 10%이면 자동 rerun 1회 → 여전히 >10% 면 결과에 high-variance flag 추가 후 진행 (사용자 ask 금지).
 
 ---
 

@@ -11,7 +11,7 @@
 | 증상 | 원인 | 대응 |
 |------|------|---------|
 | 페이지 로딩 실패 | 네트워크/프록시 문제 | 재시도, report-status로 환경 확인 |
-| 로그인 필요 | 세션 만료 | 사용자에게 로그인 요청 |
+| 로그인 필요 | 세션 만료 | result.json status="error_AUTH_REQUIRED" + screenshot 기록 후 push, 다음 request 진행 (test PC user channel 부재 — dev side NEEDS_LOGIN 처리) |
 | Invoke-WebRequest 타임아웃 | 프록시/방화벽 | 타임아웃 값 증가, 프록시 설정 확인 |
 | SendKeys 미입력 | Chrome 포커스 상실 | `AppActivate`로 포커스 재확보 |
 | 스크린샷 빈 화면 | 캡처 타이밍 | `Start-Sleep` 대기 시간 증가 |

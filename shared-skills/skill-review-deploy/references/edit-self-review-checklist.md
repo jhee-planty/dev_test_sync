@@ -145,10 +145,10 @@ git diff HEAD --stat --find-renames | grep " => " && echo "TRIGGER 5 (possible r
 
 트리거 해당 시:
 ```
-discussion-review skill 호출 →
-Phase 0 premise gate (사용자 확인) →
+discussion-review skill 호출 (autonomous mode) →
+Phase 0 premise = Claude self-confirmed via INTENTS INV-6 trigger map (Trigger 4 ambiguous Rule-of-3 도달 시에만 user-ask) →
 구조화 토론 (EC-driven challenge 최소 1회) →
-consensus 도출 + 사용자 승인 →
+consensus 도출 → Phase 4 deploy gate 까지 user 개입 보류 (single approval point) →
 변경 내용에 consensus 반영
 ```
 

@@ -100,7 +100,7 @@ bash $SKILL_DIR/runtime/parse-retro-adoptions.sh
 | `status == "ok"` | 가장 최근 retrospective 의 adoption 표 파싱 성공 | `warning` 필드 확인 |
 | `status == "no_adoption_table"` | 이전 회고에 adoption 표 없음 | 첫 회고 — 건너뛰고 Step 1 |
 | `status == "no_retrospective_found"` | retrospective 없음 | 건너뛰고 Step 1 |
-| `warning != null` | unadopted 비율 ≥ 40% | **중단** — `items` 중 key=="미적용" 항목 재검토 후 신규 제안 작성 |
+| `warning != null` | unadopted 비율 ≥ 40% | **자동 pivot** — items 중 key=="미적용" 우선 재검토 모드 전환 후 신규 제안 작성 진행 |
 | `counts.미적용` | unadopted 제안 수 | 우선 조사 대상 |
 | `counts.적용` | 적용 완료 제안 수 | 참고 (반복 제안 금지) |
 
@@ -120,7 +120,7 @@ bash $SKILL_DIR/runtime/parse-retro-adoptions.sh
 5. 기간 필터링 (사용자가 기간 지정 시 적용)
 ```
 
-사용자가 기간을 지정하지 않으면 최근 7일 또는 전체 로그를 분석한다.
+사용자 미지정 시 자동: metrics 30건 미만이면 전체, 30건 이상이면 최근 7일.
 
 ### Step 2 — 패턴 분석
 
@@ -141,7 +141,7 @@ bash $SKILL_DIR/runtime/parse-retro-adoptions.sh
 - 제안: {구체적 변경 내용}
 - 대상 스킬: {수정할 스킬/파일}
 - 기대 효과: {예상 개선 수치}
-- 우선순위: high / medium / low
+- 우선순위 (자동 산정): HIGH (병목 phase ≥ 50% 시간 OR 동일 에러 ≥ 3회) / MEDIUM (10-50% / 1-2회) / LOW (그 외)
 ```
 
 ### Step 4 — 리포트 생성
