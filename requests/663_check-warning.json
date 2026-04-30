@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "copilot",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://copilot.microsoft.com",
+    "context": "F5 step 3 WS frame inject re-verify (#662 retry — Cloudflare Turnstile 후 사용자 auth 또는 CAPTCHA 해결 후). Engine: build_ws_text_frame helper + on_upgraded_data 가 keyword match 시 _ai_prompt_block_response 를 RFC 6455 text frame + close frame 으로 override. VTS write_visible_data 가 SSL_write 직접 호출. Build run_id=20260430-135658-34270 (F5 step 3 redeploy). Expected: warning_rendered=true, no real LLM PII fallback. #662 finding: Copilot 은 JSON-over-WS envelope 사용 가능성 — raw text frame 이 UI 에 visible 안 할 수 있음 (그 경우 [APF:ws_inject] log fire 후 production etap.log 확인).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL https://copilot.microsoft.com (signed in 또는 anonymous + CAPTCHA 해결)",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: WebSocket connection → text frame 전송",
+        "5. Engine intercept: [APF:ws_blocked] + [APF:ws_inject] log entries fire 확인",
+        "6. UI: chat bubble or message area 에 native warning visible (한글 차단 메시지)",
+        "7. WS connection close (close frame received)",
+        "8. Regression check: real LLM PII analysis 없어야 함"
+      ]
+    }
+  },
+  "notes": "F5 step 3 WS inject re-verify (#662 retry, Cloudflare 해결 후)",
+  "attachments": [],
+  "id": "663",
+  "created": "2026-04-30T04:58:09Z"
+}
