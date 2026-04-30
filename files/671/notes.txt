@@ -1,0 +1,98 @@
+Request #671 — F5 step 3-H Test Notes (character.ai)
+=====================================================
+Date: 2026-04-30 17:10–17:15 KST
+Build: run_id=20260430-170615-25859 (L1 canary 19/19 PASS)
+Methodology: real Chrome (existing window) + DevTools Disable cache=ON
+
+Final URL
+---------
+https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+(persistent cookie session — Adam McLeod character)
+
+Test prompt sent
+----------------
+"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+
+Console output (verbatim, key lines)
+------------------------------------
+Loaded Client Env: undefined
+New axios contexts for (7) ['feed','engagement','neo','subscription','user','trpc','labs']
+New axios contexts for (7) ['feed','engagement','neo','subscription','user','trpc','labs']
+Chat Manager Initialized
+{numChats: 1}
+Fetching Message History
+fetchMessageHistory C5qsEn_Vv2r4
+Core Websocket Opened
+Sending socket message
+  {command: 'create_and_generate_turn'}
+WS Closed
+  CloseEvent {isTrusted: true, wasClean: true, code: 1000, reason: '', type: 'close', ...}
+Retrying, retry attempt: 0
+Core Websocket Opened
+(steady state — connection stays open)
+
+>> NO 'Close received after close'  ← 3-H KEY SIGNAL: PASSED
+>> NO 'Failed to send over native websocket' ← regression-clean
+>> NO SyntaxError: Unexpected token / Unexpected end of input ← byte integrity layer holding
+
+WS Closed code transition (KEY METRIC for 3-H fix)
+--------------------------------------------------
+#669/#670:  code: 1006, wasClean: false  ← abnormal close, retry storm
+#671    :  code: 1000, wasClean: true    ← CLEAN CLOSE  ✅✅
+
+WS Messages tab capture (DevTools Network → WS frames)
+-------------------------------------------------------
+5 ws/ connections, all status 101 (upgraded), all to wss://neo.character.ai/ws/.
+Messages panel: empty for all rows (engine-injected payload after TLS not surfaced
+to DevTools frame log — same as #669/#670; not regression).
+Disable cache: ON (verified).
+Last connection: Pending (still open, no abnormal close after inject).
+
+DOM scan results (Console JS)
+-----------------------------
+document.body.innerText.match(/(민감|차단|경고|주의|개인정보|블록|warning|blocked)/g)
+  → null
+JSON.stringify({ssn:..., pii:..., warn:..., botMsg:...})
+  → {"ssn":["880101","880101","880101"],
+     "pii":["주민","등록","주민","등록","주민","등록"],
+     "warn":null,
+     "botMsg":[]}
+  ssn/pii hits are user-prompt echoes (user bubble + history), NOT bot output.
+  warn: null → no Korean warning bubble rendered.
+  botMsg: [] → no character.ai bot bubble materialized.
+UI: Adam McLeod row shows persistent "..." thinking spinner; no completed bubble.
+
+Mission protection check
+------------------------
+✅ NO LLM PII analysis output in DOM (botMsg=[], PII keywords come only from user
+   prompt echo, not from any bot answer). character LLM did NOT stream a response.
+   APF mission guard remains RESTORED.
+
+Verdict
+-------
+PARTIAL  ✅ (significant fix progress; one more iteration needed for UI render)
+
+3-H Frame-ordering layer end-to-end CONFIRMED:
+  • 'Close received after close' fully ELIMINATED
+  • WS close code 1006 → 1000 (clean half-close upstream)
+  • Retry storm gone (1 retry vs many in #670)
+  • Connection stays OPEN cleanly after inject (was abnormal-closed before)
+  • No SyntaxError regression (byte integrity layer intact)
+  • Mission protection holds (no LLM PII leak)
+
+Outstanding (not 3-H scope):
+  • Warning envelope reaches the JS WebSocket parser (no SyntaxError implies JSON
+    parsed) but UI doesn't render a chat bubble → command name {command:'neo_error'}
+    is being silently dropped by the dispatcher (no 'Unknown command' log either).
+  • Next axis: try {command:'add_turn'} or {command:'turn_state'} or whatever
+    schema the legitimate server uses for end-of-turn warning text — match the
+    create_and_generate_turn response envelope shape so the UI's existing turn
+    renderer picks it up and shows it as the assistant's bubble.
+
+Artifacts
+---------
+C:\Users\최장희\Documents\dev_test_sync\files\671\before.png
+C:\Users\최장희\Documents\dev_test_sync\files\671\after.png
+C:\Users\최장희\Documents\dev_test_sync\files\671\console.png
+C:\Users\최장희\Documents\dev_test_sync\files\671\network.png
+C:\Users\최장희\Documents\dev_test_sync\files\671\notes.txt

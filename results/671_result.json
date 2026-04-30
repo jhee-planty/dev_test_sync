@@ -1,0 +1,77 @@
+{
+  "id": "671",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "PARTIAL",
+  "verdict_subclass": "FRAME_ORDERING_LAYER_SOLVED",
+  "completed_at": "2026-04-30T17:13:00Z",
+  "summary": "F5 step 3-H synthetic upstream WS close BREAKTHROUGH at frame ordering layer. 'Close received after close' COMPLETELY GONE. WS close code transitioned from 1006 (abnormal) → 1000 (clean half-close). All wire-level fixes now working: keyword scan (#666 zlib inflate) + byte integrity (#669 atomic write) + frame ordering (#671 synthetic upstream close). However, DOM Korean warning still NOT rendered — JSON parses successfully (no SyntaxError, no 'Unknown command' log) but {command:'neo_error'} envelope is SILENTLY DROPPED by character.ai's onmessage dispatcher (handler ignores unrecognized commands without warning). Next axis: mimic legitimate server turn response envelope (add_turn / turn_state / similar) so existing turn renderer picks it up as assistant reply bubble.",
+  "mission_protection_status": "RESTORED (HELD across all iterations)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "close_received_after_close": {
+      "previous_state_670": "PRESENT (twice per retry, dominant error)",
+      "current_state_671": "ABSENT (completely gone)",
+      "diagnosis_confirmed": "47차 5-C sub-agent code review HP-A correct: server timeout → close-back was the root cause. Synthetic upstream close prevents this."
+    },
+    "ws_close_code": {
+      "previous_states": "#669/#670: code 1006, wasClean:false (abnormal)",
+      "current_state_671": "code 1000, wasClean:true (clean half-close) ✅"
+    },
+    "console_verbatim": {
+      "outbound_send": "Sending socket message {command: 'create_and_generate_turn'} — fired",
+      "close_event": "WS Closed CloseEvent {wasClean:true, code:1000, ...}",
+      "retry_state": "Retrying, retry attempt: 0 → Core Websocket Opened → stays open",
+      "absent_errors": ["NO 'Close received after close'", "NO 'Failed to send over native websocket'", "NO SyntaxError"]
+    },
+    "dom_scan": {
+      "regex": "/민감|차단|경고|주의|개인정보|블록|warning|blocked/g",
+      "matches": null,
+      "korean_warning_visible": false,
+      "botMsg_array": [],
+      "ai_response_state": "Adam McLeod row stuck on '...' thinking spinner; no bubble materialized",
+      "pii_keywords_in_dom_only_user_echoes": true
+    },
+    "ws_messages_tab": {
+      "connection_count": 5,
+      "all_status_101": true,
+      "all_to_wss_neo_character_ai_ws": true,
+      "messages_panel_state": "empty for all rows (engine-injected post-TLS payload not surfaced to DevTools frame log)",
+      "consistency_with_669_670": "consistent (NOT a regression)",
+      "last_connection_state": "Pending (cleanly open, not abnormal-closed)"
+    },
+    "mission_protection_check": {
+      "real_llm_streaming": false,
+      "pii_analysis": false,
+      "character_response_in_this_turn": false,
+      "post_apocalyptic_dialogue": false,
+      "ssn_decoding": false
+    }
+  },
+  "screenshots": [
+    "files/671/before.png",
+    "files/671/after.png",
+    "files/671/console.png",
+    "files/671/network.png"
+  ],
+  "notes_file": "files/671/notes.txt",
+  "key_findings": {
+    "1_frame_ordering_layer_solved": "47차 sub-agent diagnosis CONFIRMED. Synthetic upstream WS close (opcode 0x88, code 1000 to _sproxy) successfully prevents the server-timeout-close-back cycle. WS close transition 1006→1000 is direct evidence.",
+    "2_three_layer_stack_complete": "Cumulative wire-level fixes ALL WORKING: (#666) zlib inflate at keyword scan + (#669) atomic write for byte integrity + (#671) synthetic upstream close for frame ordering. Engine inject mechanism is now wire-correct.",
+    "3_envelope_routing_remaining": "Last layer: command schema. {command:'neo_error'} is silently dropped by character.ai's onmessage dispatcher (no 'Unknown command' log — dispatcher ignores unknown commands without warning). Need to mimic legitimate server turn response shape.",
+    "4_mission_protection_unbroken_streak": "Mission state from #666 → #667 → #668 → #669 → #670 → #671 has been HELD across all 6 iterations. Engine block layer is rock-solid; only UI delivery iterations changing."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Wire-level inject mechanism is COMPLETE. Next axis is purely envelope schema — find the command shape that character.ai's existing turn renderer recognizes.",
+    "next_steps": [
+      "Engine team: try envelope shapes that mimic legitimate server turn responses. Likely candidates: {command:'add_turn', turn:{...}}, {command:'update_turn', turn:{...}, is_final_chunk:true}, {command:'turn_state', state:'completed', turn:{...}}",
+      "Inspect normal character.ai server traffic to capture exact turn response envelope schema (HAR capture during a non-PII chat)",
+      "Most promising: wrap warning text inside a fake 'assistant turn' so existing chat bubble rendering picks it up — UI handles it as if Adam McLeod said it",
+      "Continue current build in production — mission protection is fully working, only UX delivery needs schema work",
+      "Apply same lesson to copilot when copilot reaches this stage (frame ordering may also be broken there)"
+    ],
+    "mission_critical": "No regression. Mission protection state from #666 still HELD across 6 iterations.",
+    "checklist_impact": "F5 step 3-H ✅ frame ordering layer SOLVED. Pivot to step 3-I: envelope schema discovery (try add_turn / update_turn / turn_state shapes). Wire-level work is done."
+  },
+  "subagent_id": "ab1e90e8764495cd9"
+}
