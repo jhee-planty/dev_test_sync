@@ -1,6 +1,6 @@
 # Verify-Done Periodic — D20(b) Verification Reference (v2 hybrid)
 
-> **Canonical anchor**: `apf-warning-impl/SKILL.md §Verify-Done Hybrid v2` (2026-04-30 cycle 98 F8 codify)
+> **Canonical anchor**: `apf-warning-impl/SKILL.md §Verify-Done Hybrid v2` (2026-04-30 F8 codify)
 > **Design source**: `apf-operation/docs/cycle98-f8-d20b-methodology-network-canary-design.md`
 > **Decision provenance**: `apf-operation/state/decisions/20260430_100200_M1_d20b-methodology-pivot.json`
 
@@ -23,7 +23,7 @@ Mission goal (D20a) 와의 매핑:
 
 ### 2.1 Trigger
 
-매 cycle 시작 시. ScheduleWakeup chain 또는 명시적 `bash apf-operation/scripts/d20b-l1-canary.sh` 실행.
+매 session 진입 또는 의미있는 milestone 후. ScheduleWakeup chain 또는 명시적 `bash apf-operation/scripts/d20b-l1-canary.sh` 실행.
 
 ### 2.2 Implementation
 
@@ -51,7 +51,7 @@ Mission goal (D20a) 와의 매핑:
 **Recurring schedule (caller-discipline, not auto)**:
 - Polling Policy v2 의 ScheduleWakeup max 3600s (1hr) 제한 — cross-session recurring 불가
 - 운영자 패턴: 매 session 진입 시 또는 의미있는 milestone 후 manual run
-- SessionStart hook 통한 자동 invocation 은 cycle 99+ 가능 (D22 후보)
+- SessionStart hook 통한 자동 invocation 은 future implementation (D22 후보)
 - ad-hoc 호출 = `bash apf-operation/scripts/d20b-l1-canary-monitor.sh`
 
 **Output schema** (JSON to stdout):
@@ -76,7 +76,7 @@ Mission goal (D20a) 와의 매핑:
 | **STALE_NO_TRAFFIC** | block_count == 0 + service likely inactive (e.g., DISABLED, no users) | escalate to L2 OR mark stale + skip cycle |
 | **ACTIVE_NO_BLOCKS** | block_count == 0 BUT service has total_traffic > 0 | escalate to L2 — engine may be silently broken (regression risk) |
 
-**Note**: L1 cannot distinguish STALE_NO_TRAFFIC vs ACTIVE_NO_BLOCKS without `total_traffic` query. Phase A v1 만 block_count 사용 → STALE 표시. Phase A v2 (cycle 99+) 에서 traffic count 추가 시 ACTIVE_NO_BLOCKS 분리.
+**Note**: L1 cannot distinguish STALE_NO_TRAFFIC vs ACTIVE_NO_BLOCKS without `total_traffic` query. Phase A v1 만 block_count 사용 → STALE 표시. Phase A v2 (future) 에서 traffic count 추가 시 ACTIVE_NO_BLOCKS 분리.
 
 ### 2.4 Cost + speedup
 
@@ -104,7 +104,7 @@ Mission goal (D20a) 와의 매핑:
 | fail_wrong_content | FAIL_WRONG_CONTENT | DONE → BLOCKED partial regression |
 | unable_offline | UNABLE_OFFLINE | infrastructure, retry |
 
-### 3.3 L2-2A: Auth gate handling (cycle 98 F8 신규)
+### 3.3 L2-2A: Auth gate handling (F8 신규)
 
 UI verify 가 sign-in wall 로 차단:
 
@@ -138,7 +138,7 @@ Test PC 가 sign-in 우회 직접 production endpoint hit:
 
 ### 4.1 pipeline_state.json done_services entry extension
 
-(cycle 99+ schema extension):
+(future schema extension):
 ```json
 {
   "service_id": "deepseek",
