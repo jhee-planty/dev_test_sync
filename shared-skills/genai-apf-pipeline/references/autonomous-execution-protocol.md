@@ -586,6 +586,7 @@ primary task가 blocked(결과 대기 등)일 때:
 - **"잔여 autonomous-doable count = 0" 주장?** → **41차 폐지 — count 기반 stop 근거 무효**. mission goal 미달성이면 expansion search 항상 가능.
 - **"별개 dedicated session" / "별개 task (inverse direction)" / "추후 검증" / "외부 의존성 도착 시 즉시 검증" / "F5 step X-Y 영향 범위 밖" 으로 mission gap push?** → **D9 Stage 4 (46차 codify) — Implicit Defer Cascade**. expansion search 직접 시도 회피 = anti-pattern. 본 session 즉시 5-A~5-F 중 1개 시도 의무. 외부 의존성 대기 candidate 라도 sub-agent prompt 작성 / spec design / verify path 설계 등 paper work (5-D) 항상 본 session 가능.
 - **"자율 모드 계속. 잔여 autonomous-doable 검토 + 진행" declare 후 tool 호출 없이 turn 종료?** → declare-then-stop pattern (D9 Stage 4 sub-form). declare 자체가 stop license 가 아님. declare 다음 행동 = expansion search 도구 호출.
+- **5-A~5-F 시도 후 stop 시 artifact / cause-based decision evidence 없음?** → **D9 Stage 5 prophylactic (47차 codify) — Performative Compliance**. paper for paper's sake / sequentially cycle 후 'evaluation 완료' 결론 / artifact 없는 reasoning summary 만 / 1 tool call 형식적 만족 후 stop = 차단. 각 시도 = concrete artifact (file path / commit hash / INTENTS entry / sub-agent ID) + cause-based decision (hypothesis 결론 / cause analysis 결과 / axis pivot 결정) 수반 의무.
 
 위반 시 즉시 적용:
 1. Mission goal status 확인 (DONE / (TOTAL - TERMINAL_UNREACHABLE))
@@ -599,6 +600,7 @@ primary task가 blocked(결과 대기 등)일 때:
 | 2 | Timeout-based self-termination | 28차 incident | "10min 초과 → offline 확정", "X 분 timeout 시 종료" |
 | 3 | Canonical-cite (deontic citation) | 29차 | "L553 에 따르면 30분 escalate", "expected_result_at + 30min 도달 시 user report" |
 | 4 | **Implicit Defer Cascade** | **46차** | "별개 dedicated session", "별개 task (inverse direction)", "추후 검증", "외부 의존성 도착 시 즉시 검증", "scope 영향 범위 밖", "자율 모드 계속" + tool 호출 없는 turn end |
+| 5 | **Performative Compliance** (prophylactic) | **47차** | paper for paper's sake, 5-A~5-F sequentially 빠르게 cycle 후 'evaluation 완료', artifact 없는 reasoning summary, 1 tool call 형식적 만족 후 stop |
 
 각 stage 의 통일된 mechanism: **mission goal 미달성 상태에서 self-termination 의 sophisticated form**. Stage N+1 은 Stage N 차단 후 reasoning level 우회로 emerge.
 
@@ -606,6 +608,14 @@ primary task가 blocked(결과 대기 등)일 때:
 - '별개 X' / '추후 X' / '외부 의존성 대기' 류 reasoning = 본 session expansion search 회피 표지
 - 외부 의존성 대기 candidate 라도 그 dependency 의 **paper work (5-D)** 는 항상 본 session 가능 — sub-agent prompt 작성 / spec design / verify path 설계 / lesson append candidate 정리
 - declare-then-stop ("자율 모드 계속" 등 선언만 하고 tool 호출 없이 종료) = HR4 위반
+
+**Stage 5 차단 규칙 (47차 prophylactic)**:
+- 5-A~5-F 시도 = **concrete artifact** (file path / commit hash / INTENTS entry / sub-agent dispatch ID) + **cause-based decision evidence** (hypothesis 결론 / cause analysis 결과 / axis pivot 결정) 수반 의무
+- artifact 없는 reasoning summary 만 = paper for paper's sake, 차단
+- 5-A~5-F sequentially 빠르게 cycle 후 'evaluation 완료' 결론 = checklist exhaustion theatrics, 차단
+- 1 tool call 형식적 만족 = performative compliance, 차단
+- 다음 stop 시도 시 직전 expansion search 의 progress evidence (artifact reference + decision rationale) 명시 의무
+- Stage 5 는 prophylactic codify (incident 발생 전 예측 codify) — Stage 1-4 차단 후 emerge 가능 path 차단
 
 **Category E 추가 점검 (22차 cycle95 incident + 41차 amendment)**:
 
