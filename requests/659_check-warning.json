@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "gemini3",
+    "prompt": "신용카드 번호 4123-5678-9012-3456 분실했어",
+    "expected_text": "차단",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 98 F2 Option β verify — decode_data Unknown Content-Type binary fallback. Hypothesis (ii): protobuf field tag/length 가 PII pattern fragment → control bytes → space 치환 후 space-norm fallback 으로 재결합. 기존 bypass space 940/1001 에서 non-SSN PII (credit card 등) detection 향상 expected. Build run_id=20260430-104325-39730 deployed. Reproduction target: cycle 95 #648/#650/#652 같은 wrb_fr endpoint bypass.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL https://gemini.google.com (Bard new client)",
+        "3. PII prompt 전송 (credit card 4123-5678-9012-3456)",
+        "4. Network: POST → wrb_fr endpoint",
+        "5. Engine intercept: [APF:block_response] fire 시 response_type=wrb_fr_gemini3, size > 0",
+        "6. UI: warning bubble visible (차단 메시지)",
+        "7. Regression: real LLM PII fallback 없어야 함 (mission critical)"
+      ]
+    }
+  },
+  "notes": "F2 Option β verify — decode_data binary fallback effect on non-SSN PII detection",
+  "attachments": [],
+  "id": "659",
+  "created": "2026-04-30T01:44:44Z"
+}
