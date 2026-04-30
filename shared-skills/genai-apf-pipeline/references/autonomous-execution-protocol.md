@@ -6,25 +6,7 @@
 
 ## Hard Rules (위반 시 훅이 교정)
 
-> **HR enforcement table (28차 R2/R6 #7 added)** — 각 HR 의 architectural / cognitive enforcement layer 명시. 4-mechanism overlap (R2 correlated-failure 발견) 회피 위해 *primary* enforcement 가 어디인지 surface. Cognitive backup 없이 architectural 만 있는 HR 은 hook fail 시 catch-all 부재 — 의도적 design 인지 인지.
-
-| HR | Primary | Backup | Notes |
-|----|---------|--------|-------|
-| 1 질문으로 끝맺기 금지 | Cognitive (Self-Check Cat A) | Stop hook (block on no-tool-call termination) | Stop hook D16(a) 가 architectural backup |
-| 2 상태 정리 후 멈추기 금지 | Cognitive (Self-Check Cat E) | Stop hook + Watchdog idle gate | 3-mechanism overlap, R2 finding |
-| 3 폴링 체인 끊기 금지 | Cognitive (Self-Check Cat C/D) | (ScheduleWakeup 자체가 forcing function — D11 queue) | Hook 보다 protocol 의 architectural shape 가 primary |
-| 4 선언 후 멈추기 금지 | Cognitive (HR4 phrasing) | Stop hook (no-tool-call block) | HR 와 hook 부분 redundant |
-| 5 idle 대기 금지 | Cognitive (Self-Check Cat E) | Watchdog idle gate (post-tool-use) | Hook 가 architectural primary; HR 는 cognitive 명시 |
-| 6 복수 options → Empirical Comparison default | Cognitive (Mode Selection Tree judgment) | (Hook layer 없음 — 의도적, M0-M4 cognitive judgment 가 핵심) | Architectural enforcement 부재 = caller-discipline tier (★★) |
-| 7 Idle Gate + Stop Hook | Architectural (이중 hook enforcement) | Cognitive (Self-Check Cat E) | Self-defining architectural rule |
-
-**해석 가이드**:
-- HR 1/2/4/5 = Architectural backup 보유 → cognitive 약화 시 hook 가 catch
-- HR 3/7 = Architectural primary → 본 HR 은 hook 동작 명시
-- HR 6 = Cognitive only → judgment 영역, hook layer 없음 (caller-discipline)
-- 모든 mechanism (HR / Cat / Hook / D-principle) 동시 fail 사례 (Incident 8/9/10) = correlated failure, R2 finding. Layered redundancy 는 *uncorrelated* failure 만 catch.
-
----
+> Enforcement layer matrix → `cowork-micro-skills/INTENTS.md §3.5 Cross-Mechanism Integration Matrix`.
 
 1. **질문으로 끝맺기 금지** — `~할까요?`, `~있으신가요?`, `~진행할까요?` 등 사용자에게 판단을 넘기는 모든 질문 금지. *(Enforced by: Self-Check Cat A primary; Stop hook backup)*
 2. **상태 정리 후 멈추기 금지** — pipeline_state/dashboard 갱신은 3분 이내. 즉시 다음 실질 작업(코드 수정, envelope 디버그, SQL 적용 등)을 시작한다. *(Enforced by: Self-Check Cat E primary; Stop hook + Watchdog idle gate backup)*
@@ -779,8 +761,4 @@ Ambiguous user questions ("다음 작업 없어?" / "뭐 하고 있어?" / "할 
 
 ## 과거 해석 오류 (참고)
 
-- ❌ "No schedulers" → "모든 polling 금지" (2026-04-23 Claude 오판 사례; INTENTS D1 확대 해석 경고)
-- ❌ cron-based polling (2026-04-16 ~ 2026-04-20 시기 protocol; 2026-04-23 7차 정책 변경으로 금지)
-- ❌ "in-session bash loop 유일 허용" (2026-04-23 7차 wording lock; Test PC use case functionally 불가능으로 11차 재정립)
-- ❌ "ScheduleWakeup 사용 금지" (2026-04-20 pipeline_state.json; cron/fireAt 과 mechanism category error 로 재분류 → 11차 rescinded)
-- ✅ 정확한 해석 (v2, 11차): **session-internal scheduled re-fire (ScheduleWakeup) 허용. OS-level + external notification 기반 trigger 금지. bash loop 도 금지.**
+→ Polling 정책 misinterpretation 이력 (확대/축소 해석) 은 `~/.claude/memory/user-preferences.md` Polling Policy 의 "과거 확대/축소 해석 주의" 섹션 + INTENTS §5 D1 entry 참조.
