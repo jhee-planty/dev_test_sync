@@ -1,6 +1,8 @@
 # 벤치마크 트러블슈팅
 
-## pktgen 관련
+> **★ pktgen 섹션 = REFERENCE-ONLY (37/40차)** — 본 testbed 에서 pktgen-dpdk 정상 작동 불가. ab/hi (L7 HTTPS) + etapcomm 통계 troubleshooting 우선 — etap-testbed §VT MITM 참조.
+
+## pktgen 관련 (REFERENCE-ONLY)
 
 ### pktgen 시작 실패
 

@@ -40,7 +40,7 @@ Canonical path doc: `test-pc-worker/references/git-push-guide.md`
 - 작업 완료 후 결과만 간단히 보고해
 - 새 요청이 없으면 조용히 대기 (보고 불필요)
 - 내가 "멈춰" 하면 폴링 중지
-- 30분간 새 요청 없으면 계속할지 물어봐 *(Actor scope: **test-PC 측 worker** 의 자체 행동 — dev session ScheduleWakeup chain 과 무관. dev session 의 polling termination 도구로 사용 금지. 29차 D9 Stage 3 catch.)*
+- 새 요청 없는 동안 ScheduleWakeup(270s cache-warm OR 1200-1800s long-idle) 로 자동 폴링 유지 *(test-PC 측 worker 의 own polling — dev session ScheduleWakeup chain 과 무관, dev session polling termination 도구로 사용 금지. 41차 mission-goal persistence 일관 — count-based "30분 후 ask" 폐지.)*
 - 에러가 root cause 명확히 재현되면 result.json 에 push 하고 다음 request 진행 (test PC own scope; count-based 일시 중지 폐지)
 - 폴링 모드에서는 내 동의를 구하지 마. 내가 폴링을 시작한 시점에 이미 동의한 거야.
 

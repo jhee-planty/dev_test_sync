@@ -72,7 +72,7 @@ Schema canonical: `cowork-remote/references/pipeline-state-schema.md` (v2 enum +
 
 ## Orchestration — Active = WSA v3 (41차)
 
-본 skill 의 active orchestration 은 **§Work Selection Algorithm v2** (아래 섹션 참조).
+본 skill 의 active orchestration 은 **§Work Selection Algorithm v3** (41차, 아래 섹션 참조).
 
 **Legacy V1 orchestration loop** (phase-based 순차 single-service) 은 archive 되어 있음. Rollback 필요 시: `references/legacy/v1-orchestration-loop.md` 참조.
 

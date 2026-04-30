@@ -105,7 +105,7 @@ bash $SKILL_DIR/runtime/parse-retro-adoptions.sh
 | `counts.적용` | 적용 완료 제안 수 | 참고 (반복 제안 금지) |
 
 **원칙 (INTENTS §3 I3)**:
-- 같은 카테고리의 제안이 2회 연속 "미적용" 이면 Step 3 개선안 도출에서 해당 제안을 **삭제 후보** 로 별도 분류
+- 같은 카테고리의 제안이 distinct retrospective 들에서 재현되며 미적용 상태 이면 Step 3 개선안 도출에서 해당 제안을 **삭제 후보** 로 별도 분류
 - unadopted → 적용 전환을 위한 **사용자 대화 항목** 으로 리포트 상단에 포함
 
 **참조**: `runtime/parse-retro-adoptions.sh`
@@ -141,7 +141,7 @@ bash $SKILL_DIR/runtime/parse-retro-adoptions.sh
 - 제안: {구체적 변경 내용}
 - 대상 스킬: {수정할 스킬/파일}
 - 기대 효과: {예상 개선 수치}
-- 우선순위 (자동 산정): HIGH (병목 phase ≥ 50% 시간 OR 동일 에러 ≥ 3회) / MEDIUM (10-50% / 1-2회) / LOW (그 외)
+- 우선순위 (자동 산정): HIGH (병목 phase 가 전체 시간의 majority OR 패턴이 다른 conditions 에서도 재현) / MEDIUM (intermediate evidence) / LOW (single occurrence) — count threshold 가 아닌 evidence-based
 ```
 
 ### Step 4 — 리포트 생성

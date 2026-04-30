@@ -2,6 +2,8 @@
 
 > SKILL.md §Step 4 의 결과 리포트 형식 상세. 각 측정 항목 + Etap internal stats + Packet Loss + Notes 섹션 구조.
 > 2026-04-28 21차 다이어트 — SKILL.md 슬림화 위해 분리. 정보 손실 없음.
+>
+> **★ pktgen 섹션 = REFERENCE-ONLY (37/40차)** — 본 testbed 에서 pktgen-dpdk 정상 작동 불가. 실행 path = ab/hi 섹션 우선. pktgen 결과 섹션은 향후 testbed 복구 시 활성화.
 
 ## 사용법
 

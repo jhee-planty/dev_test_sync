@@ -107,10 +107,10 @@ END_VERDICT
 | Mode | 조건 | Main fallback |
 |------|------|--------------|
 | F-A | Subagent 응답 없음 (5min soft / 10min hard timeout) | `runtime/skeleton-timeout-result.json` 사용 → `overall_status=TIMEOUT` 결과 push |
-| F-B | 텍스트 반환 but `WINDOWS_MCP_VERDICT...END_VERDICT` schema 깨짐 | 1회 재시도 (prompt 에 "STRICT FORMAT" 강조). 2번째도 실패 → F-D 경로 |
+| F-B | 텍스트 반환 but `WINDOWS_MCP_VERDICT...END_VERDICT` schema 깨짐 | 다른 axis (prompt 에 "STRICT FORMAT" 강조 / format hint 변경) 시도. root cause 재현 시 → F-D 경로 |
 | F-C | Schema parse OK but 필수 필드 누락 (overall_status 등) | 누락 필드 한정 supplementary subagent |
 | F-D | 동일 root cause 가 새 axis 시도 (다른 strategy / CDP fallback / Chrome restart) 후에도 재현 | `result.json` 에 `error_INFRASTRUCTURE` + notes "subagent unstable, axis exhausted" 기록 후 push (test PC = user channel 부재, dev side 가 통지 받음). 다음 request 진행. |
-| F-E | Agent tool 자체 error (rate limit / auth) | 1회 retry (다른 axis: 다른 model / 다른 prompt) → 지속되면 F-D |
+| F-E | Agent tool 자체 error (rate limit / auth) | 다른 axis (다른 model / 다른 prompt / wait-then-retry) 시도. root cause 재현 시 → F-D |
 | F-F | Verdict 반환 정상이지만 factually 의심 (silent drift) | **OPT-IN spot-check** (default OFF) — milestone trigger (예: D20b cycle 시작) 시 parallel 검증 subagent. 두 verdict 불일치 시 escalate |
 
 **Retry policy (41차 amendment)**: count-based hard cap (2/3 attempts) 폐지. **Cause-based**: 새 axis (다른 entry path / 다른 input strategy / 다른 tool) 시도 후 동일 root cause 재현 시 escalate. test PC = user channel 부재 — escalate 도 result.json push 형태 (dev side 가 NEEDS_LOGIN/INFRASTRUCTURE 분류).

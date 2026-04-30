@@ -1,5 +1,7 @@
 # pktgen-dpdk 명령어 레퍼런스
 
+> **★ REFERENCE-ONLY (37/40차)** — 본 testbed 에서 pktgen-dpdk 정상 작동 불가 (canonical: `~/.claude/memory/feedback_etap_dpdk_unavailable.md`). 본 file 은 향후 testbed 복구 시 활용 reference 만.
+
 ## 기본 실행
 
 ```bash

@@ -1,5 +1,9 @@
 # 벤치마크 시나리오 상세
 
+> **★ pktgen 시나리오 = REFERENCE-ONLY (37/40차)** — 본 testbed 에서 pktgen-dpdk 정상 작동 불가 (canonical: `~/.claude/memory/feedback_etap_dpdk_unavailable.md`).
+> **실행 가능 시나리오**: ab/hi (L7 HTTPS) + etapcomm 통계 — etap-testbed §VT MITM 참조.
+> 본 doc 의 pktgen 절차는 향후 testbed 복구 시 사용용 reference.
+
 ## 시나리오 1 — Config 비교 (핵심)
 
 4개 모듈 구성별 성능을 동일 조건에서 비교.

@@ -1,7 +1,7 @@
 ---
 name: apf-warning-impl
 type: A
-description: APF warning hands-on 구현 iteration skill. design doc 에 정의된 HTTP/2 strategy(A/B/C/D) 대로 C++ generator 함수 작성/수정 → etap-build-deploy 로 빌드·배포 → cowork-remote 로 test PC 검증 요청 → 결과 판정 → 다음 iteration. Use when user says "warning 구현", "generator 함수", "blocked=1", "warning 표시 안 됨", "is_http2", "iteration N", "{service} impl 계속", "경고 구현 중", "C++ 수정 후 빌드". 결정론 runtime 은 impl journal 기록, Pre-retest Gate (총 5회/같은 category 3회 제한), 빌드 카운트 추적. Claude 는 C++ 코드 수정 + 결과 verdict 판단 담당. 3-Strike / 빌드 상한 7 회 초과 시 자동 ESCALATE. 의존: etap-build-deploy, cowork-remote.
+description: APF warning hands-on 구현 iteration skill. design doc 에 정의된 HTTP/2 strategy(A/B/C/D/E) 대로 C++ generator 함수 작성/수정 → etap-build-deploy 로 빌드·배포 → cowork-remote 로 test PC 검증 요청 → 결과 판정 → 다음 iteration. Use when user says "warning 구현", "generator 함수", "blocked=1", "warning 표시 안 됨", "is_http2", "iteration N", "{service} impl 계속", "경고 구현 중", "C++ 수정 후 빌드". 결정론 runtime 은 impl journal 기록 + sub_category recurrence axis-pivot signal (41차 cause-based). Claude 는 C++ 코드 수정 + 결과 verdict 판단 담당. 모든 axis exhausted AND mission goal 미달성 시에만 ESCALATE. 의존: etap-build-deploy, cowork-remote.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 
@@ -53,7 +53,7 @@ bash $RT/check-pre-retest-gate.sh --service {id}
 ```
 - exit 0 : PROCEED (진행 가능)
 - exit 1 : SKIP (동일 sub_category recurrence) → verdict=RETRY_BLOCKED, next_action 자동 = `frontend-inspect` (genai-apf-pipeline Phase 4) 재진입 (sub_category axis pivot)
-- exit 2 : ESCALATE (terminal) — 모든 axis exhausted AND mission goal 미달성 (M3 discussion-review trigger)
+- (exit 2 폐지 — 41차/42차 cause-based: terminal ESCALATE 는 cognitive verdict 만, runtime 은 PROCEED/axis-pivot 두 path 만 emit)
 
 ### 1. Record iteration START
 ```bash
@@ -86,7 +86,7 @@ test 결과 + etap 로그 종합 해석 → 5-verdict 중 하나:
 - `SUCCESS` : warning visible + text match
 - `RETRY` : 단순 실행 오류 (인프라)
 - `NEEDS_NEW_HYPOTHESIS` : 같은 접근 반복 실패 예상 (sub_category 변경)
-- `ESCALATE` : 빌드 상한 / 총 시도 상한 도달
+- `ESCALATE` : 모든 axis exhausted AND mission goal 미달성 (M3 discussion-review trigger; runtime count 도달 자체는 ESCALATE 사유 X)
 - `STRATEGY_REVISIT` : design doc 의 strategy 자체 의심
 
 ### 7. Record iteration END

@@ -70,7 +70,7 @@ network_error:    2회 (17%)
 - 특정 시간대에 실패 집중 → 네트워크 혼잡, 서버 점검 등 외부 요인
 
 ### 개선 신호
-- 동일 에러 3회 이상 연속 → 자동 대응 로직 추가 검토
+- 동일 에러가 distinct conditions 에서 재현 → 자동 대응 로직 추가 검토 (count threshold 가 아닌 재현성 evidence)
 - `focus_lost` 반복 → AppActivate 로직 보강, 또는 창 최소화 방지
 - `timeout` 반복 → 대기 시간 조정, 또는 Invoke-WebRequest 사전 확인 추가
 
