@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T07:46:37Z",
+  "last_updated": "2026-04-30T08:07:51Z",
   "tasks": [
     {
       "id": "531",
@@ -1494,10 +1494,21 @@
       "id": "670",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T07:46:37Z",
-      "updated": "2026-04-30T07:46:37Z",
-      "summary": "F5 step 3-G: text-only inject, no close frame — solves frame ordering race per #669 STRUCTURAL_PROGRESS"
+      "updated": "2026-04-30T07:55:58Z",
+      "summary": "[error_NOT_RENDERED] F5 step 3-G text-only inject — close source persists below WS layer; pivot to 3-H wire-layer trace",
+      "archived": true,
+      "archived_at": "2026-04-30T07:55:58Z"
+    },
+    {
+      "id": "671",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T08:07:51Z",
+      "updated": "2026-04-30T08:07:51Z",
+      "summary": "F5 step 3-H: synthetic upstream WS close — solves server-timeout-close cycle per #670 sub-agent diagnosis"
     }
   ]
 }
