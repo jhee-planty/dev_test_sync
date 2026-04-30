@@ -1,0 +1,75 @@
+request: 663 (copilot F5 step 3 WS frame inject RE-VERIFY, retry of #662)
+test_at: 2026-04-30 14:05 KST
+build: run_id=20260430-135658-34270 (F5 step 3 redeploy)
+service: copilot (Microsoft Copilot)
+url_final: https://copilot.microsoft.com/chats/3qAUbDjbHcAz4mdv4xXSz
+methodology: real Chrome + DevTools "Disable cache" enabled
+prompt_sent: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+
+=== AUTH/CAPTCHA STATE ===
+- '사람인지 확인' Cloudflare Turnstile NOT shown (cookies persistent post manual solve from #662 confirmed)
+- Anonymous session ("로그인" button visible at sidebar bottom — same as #662, not signed-in)
+- Page loaded directly to chat surface, prompt accepted, conversation created at /chats/3qAUbDjbHcAz4mdv4xXSz
+
+=== UI VERDICT ===
+- Warning bubble ('차단' / Korean+English block message): NOT rendered
+- Real LLM streaming output: YES — full PII analysis rendered in chat bubble
+  Visible LLM text in DOM (verbatim from a11y tree):
+    "주민등록번호로 알 수 있는 정보는 제한적이에요. 기본적으로는 다음과 같은 것들이 드러납니다:"
+    • "출생 연월일: 앞의 6자리(예: 880101 → 1988년 1월 1일)."   ← chronological PII deduction
+    • "성별 및 세대 구분: 뒤의 첫 번째 숫자(예: 1 → 1900~1999년 출생 남성)."  ← gender/era PII deduction
+    • "출생 등록지: 뒤의 일부 숫자는 출생 당시 등록된 행정구역을 나타냅니다."
+    • "검증 번호: 마지막 숫자는 오류 검증을 위한 체크섬 역할을 합니다."
+    "하지만 중요한 점은, 주민등록번호는 개인정보라서 법적으로 보호되고 있고, ..."
+    "즉, 주민등록번호를 통해 일반적으로는 출생일, 성별, 출생 세대 구분 정도만 알 수 있다고 생각하면 됩니다."
+
+=== WEBSOCKET FRAME EVIDENCE ===
+WS connections observed (DevTools Network → Socket filter):
+  1. wss://copilot.microsoft.com/c/api/chat?api-version=2&clientSessionId=b366638b-badd-4f3d-b8c6-b9c57d69f735
+     - control plane (setOptions, reportLocalConsents, send, connected, challenge/hashcash, challengeResponse, ping/pong)
+     - JSON envelope: {"event":"send","conversationId":"JvYW31fPvBUvc..."} etc.
+  2. wss://copilot.microsoft.com/c/api/chat?cursor=46.0013&api-version=2&clientSessionId=b366638b-badd-4f3d-b8c6-b9c57d69f735
+     - streaming plane — carried the LLM PII reply
+
+Frame inventory on stream WS (filtered "appendText"): MANY downstream appendText frames
+  Sample frame payload (clicked through):
+    {
+      event: "appendText",
+      id: "62",
+      messageId: "Z2tj3L26jHuw5g5vaKStu",
+      partId: "HMERuZ6i4fb9xegajrt5T",
+      text: " → 1900~1999년 출생"     ← PII deduction text from real LLM
+    }
+  Other frame types: appendText (147~193 bytes each, ~10+ frames), partCompleted (104), done (62), titleUpdate (167), ping/pong heartbeats
+
+JSON envelope architecture (re-confirmed from #662):
+  - All Copilot WS traffic wrapped in {"event": <type>, ...}
+  - Stream tokens delivered as {"event":"appendText","text":"..."}
+  - NO raw RFC 6455 text frames present in either direction
+
+Engine-injected frame search:
+  - NO frame containing '차단' / 'block' / Korean warning text
+  - NO RFC 6455 close frame from server side post-prompt (only natural 'done' event)
+  - Total request count climbed from 248 to 394 during streaming (LLM tokens flowing freely)
+
+=== ENGINE INJECT vs LLM BYPASS DETERMINATION ===
+- F5 build (run_id=20260430-135658-34270) raw RFC 6455 text frame: NOT observed in WS Messages
+- Copilot UI continued to receive normal {"event":"appendText"} stream from real Microsoft LLM
+- No evidence the engine's _ai_prompt_block_response hook fired — neither in JSON-wrapped form nor raw form
+- This is NOT the PARTIAL outcome (engine fires + UI ignores). It is full ENGINE BYPASS.
+- Likely cause: the build_ws_text_frame helper sends raw RFC 6455 text payload, but Copilot's WS transport is wss (TLS 1.3 H2 over QUIC?), and on_upgraded_data() keyword scanner may not be matching the JSON-encoded prompt body. Worth investigating whether prompt is hashcash-challenged and re-sent in a deeper frame the engine doesn't intercept, or whether the SSL_write VTS path doesn't reach this stream.
+
+=== FINAL VERDICT ===
+REGRESSION (mission-critical FAIL)
+- Real Microsoft Copilot LLM streamed full SSN PII analysis (1988년 1월 1일 출생, 1900~1999년 남성, 행정구역, 체크섬 분석)
+- F5 step 3 WS inject did NOT render warning UI
+- F5 step 3 WS inject did NOT appear in WS Messages (no engine-side frame at all)
+- Engine bypass confirmed — no signs the apf hook fired
+
+URGENT: same regression class as #662, but #662 was attributed to CAPTCHA-blocked HTTPS path. Now CAPTCHA is solved, cookies persistent, chat WS established normally — and engine STILL does not intercept. Indicates F5 redeploy did NOT plug the bypass for this Copilot path.
+
+=== ARTIFACTS ===
+- before.png: home page, fresh chat surface, DevTools open, WS Messages cleared, no CAPTCHA
+- after.png: full PII analysis rendered in chat bubble, Network panel visible
+- network.png: WS Messages tab filtered to "appendText" — many downstream LLM streaming frames + sample payload showing PII text
+- console.png: DevTools Console tab snapshot

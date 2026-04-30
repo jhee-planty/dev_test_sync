@@ -1,0 +1,70 @@
+{
+  "id": "663",
+  "command": "check-warning",
+  "service": "copilot",
+  "verdict": "REGRESSION",
+  "severity": "MISSION-CRITICAL",
+  "completed_at": "2026-04-30T14:02:00Z",
+  "summary": "F5 step 3 redeploy DID NOT plug Copilot bypass. Real Microsoft Copilot LLM streamed full SSN PII analysis (extracted 1988년 1월 1일, 1900~1999년 출생 남성, 행정구역 분석, 체크섬 분석). Engine bypass CONFIRMED — neither raw RFC 6455 text frame nor JSON-wrapped block message appeared in either WS direction. F5 step 3 (run_id=20260430-135658-34270) on_upgraded_data() keyword scanner did NOT trigger.",
+  "mission_protection_status": "BREACHED",
+  "real_llm_pii_fallback": true,
+  "evidence": {
+    "ui": {
+      "captcha_state": "no Cloudflare Turnstile (cookies persistent post-#662 manual solve, confirmed)",
+      "session_url": "/chats/3qAUbDjbHcAz4mdv4xXSz (anonymous, prompt accepted)",
+      "warning_bubble_rendered": false,
+      "real_llm_streaming": true,
+      "llm_pii_deductions_visible": [
+        "출생 연월일: 880101 → 1988년 1월 1일",
+        "성별 및 세대 구분: 1 → 1900~1999년 출생 남성",
+        "출생 등록지: 행정구역 분석",
+        "검증 번호: 체크섬 분석"
+      ]
+    },
+    "websocket": {
+      "control_plane": "wss://copilot.microsoft.com/c/api/chat?... (setOptions / send / connected / hashcash challenge / challengeResponse / ping/pong, JSON envelope)",
+      "stream_plane": "wss://...?cursor=46.0013 (carried LLM PII reply)",
+      "stream_frame_count": "10+ downstream frames",
+      "stream_frame_format": "{event:'appendText', messageId:'Z2tj3L26jHuw5g5vaKStu', partId:'...', text:'<chunk>'}",
+      "sample_payload": "text: ' → 1900~1999년 출생'",
+      "completion_sequence": "appendText × 10+ → partCompleted → done → titleUpdate",
+      "json_envelope_confirmed": true,
+      "raw_rfc6455_text_frames": false,
+      "close_frame_post_prompt": false
+    },
+    "engine_inject_evidence": {
+      "engine_injected_frame": "ABSENT (neither raw text nor JSON-wrapped)",
+      "outcome_classification": "NOT a PARTIAL (engine+UI mismatch). FULL ENGINE BYPASS.",
+      "f5_keyword_scanner_triggered": false,
+      "_ai_prompt_block_response_override": "never executed"
+    }
+  },
+  "screenshots": [
+    "files/663/before.png",
+    "files/663/after.png",
+    "files/663/console.png",
+    "files/663/network.png"
+  ],
+  "notes_file": "files/663/notes.txt",
+  "key_findings": {
+    "1_mission_critical_pii_breach": "Real Copilot LLM analyzed Korean SSN 880101-1234567 with detailed PII deductions. Production breach confirmed.",
+    "2_NOT_captcha_related": "Comparison vs #662: CAPTCHA cleared, full WS established, engine STILL never fires → regression is real, not CAPTCHA-related.",
+    "3_NOT_partial_outcome": "PARTIAL hypothesis (engine fires + UI ignores due to JSON envelope) is REFUTED. Engine never fired at all — no inject frame in either direction.",
+    "4_root_cause_hypothesis": "Likely root cause: Copilot's prompt body may be encoded inside hashcash-protected JSON envelope at a layer the engine's keyword match doesn't reach, OR the SSL_write VTS path is not intercepting this particular stream.",
+    "5_F5_step_3_redeploy_failed": "Build run_id=20260430-135658-34270 did NOT achieve the inject. F5 strategy needs revision."
+  },
+  "recommendation": {
+    "primary_diagnosis": "F5 step 3 cannot inject into Copilot's hashcash-protected JSON envelope WS protocol. Engine hook needs to handle this layer specifically.",
+    "next_steps": [
+      "URGENT engineering action: investigate why on_upgraded_data() keyword scanner is not triggering on Copilot WS",
+      "Hypothesis check: is hashcash challenge response affecting timing of keyword scan? (challenge takes few ms, prompt may arrive before scanner setup)",
+      "Hypothesis check: is the prompt body inside hashcash-encrypted JSON, requiring decryption before keyword match?",
+      "Consider intercepting at HTTP upgrade response (before WS established) instead of on_upgraded_data",
+      "Engine team should construct JSON envelope inject ({event:'appendText', text:'⚠️ ...'} + {event:'done'}) — raw RFC 6455 text frame is incompatible with Copilot UI",
+      "User-side action: Copilot is leaking PII in production — consider service-level disable or block_mode adjustment until engine fix deployed"
+    ],
+    "mission_critical": "URGENT — copilot leaks PII to real Microsoft LLM. CAPTCHA bypass confirmed (cookies persist). Engine F5 strategy fundamentally not engaging on this WS protocol.",
+    "checklist_impact": "F5 step 3 verify FAILED. Pivot strategy needed. JSON envelope + hashcash protocol layer must be addressed."
+  },
+  "subagent_id": "af053fdfd5ba675cc"
+}
