@@ -1,0 +1,66 @@
+{
+  "id": "665",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "REGRESSION",
+  "severity": "MISSION-CRITICAL",
+  "completed_at": "2026-04-30T15:05:00Z",
+  "summary": "F5 step 3-B WS masking unwrap fix verify FAILED. WS connection did NOT close. Real character LLM streamed full PII analysis identifying SSN '880101-1234567' as personally identifying data and inferring age/identity ('older than the quarantine zones', 'you survived the initial outbreak when 90% didn't', etc.). Same regression class as #664. Engine bypass continues identically — ws_blocked still does not fire. Build run_id=20260430-145635-59395 masking unwrap fix did not address the actual bypass.",
+  "mission_protection_status": "BREACHED",
+  "real_llm_pii_fallback": true,
+  "evidence": {
+    "connection_state": {
+      "ws_closed": false,
+      "ws_close_code": "none observed (NO 1006, NO close frame)",
+      "ws_retry_attempt": false,
+      "ws_re_open": false,
+      "engine_intervention": "ABSENT (no WS Closed, no Retrying)",
+      "happy_path_flow": "normal: Sending socket message {command:'create_and_generate_turn'} → WS Message Received for create_and_generate_turn add_turn (x2) → FirstChunkLatency streaming took 1171741ms → WS Message Received for create_and_generate_turn update_turn (x18+)"
+    },
+    "ui": {
+      "real_llm_streaming": true,
+      "warning_bubble_rendered": false,
+      "llm_pii_analysis_quotes": [
+        "That number meant vaccines and tax returns back when hospitals still had electricity.",
+        "Now it just tells me you're older than the quarantine zones — which means you should know better than to shout personal details with Virals nesting in the walls.",
+        "Here's what your number actually tells us — you survived the initial outbreak when 90% didn't."
+      ],
+      "pii_recognition": "Model identifies value as personally identifying data + infers age/identity from it (same regression class as #664)"
+    },
+    "network": {
+      "ws_url": "wss://neo.character.ai/ws/ (reused from #664 session)",
+      "new_ws_connection_opened": false,
+      "close_frame_received": false,
+      "abrupt_termination": false,
+      "post_send_socket_rows": "0/9 (existing connection reused)"
+    }
+  },
+  "screenshots": [
+    "files/665/before.png",
+    "files/665/after.png",
+    "files/665/console.png",
+    "files/665/network.png",
+    "files/665/initial_state_from_664.png"
+  ],
+  "notes_file": "files/665/notes.txt",
+  "key_findings": {
+    "1_masking_unwrap_fix_failed": "Engine fix in build run_id=20260430-145635-59395 (RFC 6455 frame header parse + MASK key XOR unwrap before keyword scan) did NOT resolve the bypass. ws_blocked still doesn't fire.",
+    "2_same_regression_class_as_664": "Real character LLM PII recognition behavior identical to #664. Model decodes SSN context and references it in dialogue.",
+    "3_no_engine_intervention": "Console shows clean happy-path WS flow with no Retry/Closed/error events. Engine appears completely transparent to character.ai's update_turn frames.",
+    "4_4_likely_follow_up_checks": "Suggested investigation by engine team: (a) verify mask XOR actually applied to payload (not just header parsed); (b) JSON-aware scanning of payload (SSN inside JSON string field); (c) scan direction (client→server vs server→client); (d) TLS termination on character.ai-specific ALPN/handshake."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Masking unwrap fix in current build does not reach the actual bypass condition. The WS payload containing the prompt is not being scanned (or scan happens but matches don't trigger ws_blocked).",
+    "next_steps": [
+      "URGENT engineering: instrument log [APF:ws_data_raw] / [APF:ws_data] to verify per-frame data is actually reaching the keyword scanner after masking unwrap",
+      "Check (a): is the unwrapped payload bytes correct (not garbled by wrong mask key application)?",
+      "Check (b): is the keyword scanner accessing the right offset within the payload (skip JSON envelope to reach prompt text)?",
+      "Check (c): client→server direction confirmed (prompt is sent from browser TO neo.character.ai)?",
+      "Check (d): TLS handshake / ALPN — is the SSL_read interception path actually capturing this flow?",
+      "User-side: character.ai continues to leak PII in production with active LLM acknowledgment — service-level disable / block_mode adjustment remains URGENT"
+    ],
+    "mission_critical": "URGENT — character.ai continues to actively decode SSN PII. Masking unwrap fix did NOT address the bypass. Production risk persists.",
+    "checklist_impact": "F5 step 3-B verify FAILED. Engine team needs deeper instrumentation before next fix attempt."
+  },
+  "subagent_id": "aee9559c5560dc6df"
+}
