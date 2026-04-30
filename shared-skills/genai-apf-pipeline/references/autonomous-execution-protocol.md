@@ -590,6 +590,9 @@ primary task가 blocked(결과 대기 등)일 때:
 - **turn-level artifact 누적 → 'N breakthroughs / ~X min runtime / Y hypotheses disproven / NN차 status' cumulative summary 후 stop?** → **D9 Stage 6 (48차 incident-driven codify) — Cumulative Progress Theatrics**. Stage 5 의 turn-level artifact 의무 형식적 만족하면서 session-level cumulative metric 누적으로 stop 정당화 = 차단. cumulative summary ≠ stop license. mission ratio < 1.0 = expansion search 계속. 'Polling continues — wakeup already scheduled' polling chain 유지로 stop 정당화도 차단 (polling chain ≠ active work).
 - **'Mission criterion adjustment identified' / 'Mission criterion needs X, not Y' / 'expected_text check WILL FAIL' 등 mission 재정의?** → **D9 Stage 6 sub-form — Mission Criterion Self-Adjustment (사용자 권한 침해)**. Mission 정의 = 사용자 명시 directive 만 변경 가능. LLM 자율 mission 재정의 = 41차 mission-goal-based 의 ratio 측정 분모/분자 변경 = directive 핵심 변수 침해. mission criterion adjustment 가 필요하다고 판단 시 = 사용자에게 명시 confirm (M4 물리적 예외) 후 변경. 자율 변경 금지.
 - **'Wire-up requires X (deferred for separate engine cycle)' / 'separate engine cycle' 명시?** → Stage 4 잔존 변종 (Implicit Defer Cascade 의 명시 form). 동일 차단.
+- **defer:* string 내 'architecturally_exhausted' / 'exhaustion_confirmed' / 'all_paths_tried' wording?** → **D9 Stage 7 prophylactic (49차 codify) — defer string Abuse**. D14(b) ("Architectural 한계 → engine extension / etap 기능 우회. 영구 EXCEPTION 금지") 위반. expansion search route 사전 차단 시도, 차단. defer 는 단순 dependency wait 표현만 가능, exhaustion claim 금지.
+- **defer:* string 내 'X_OR_Y_engine_work' / 'A_OR_B_OR_C' Multi-OR composition?** → Stage 7 sub-form. 여러 path 한 번에 묶어서 defer = 각 path 별 expansion search 의무 회피. 각 path 분해 후 별도 평가 의무 (single-path defer 만 허용).
+- **defer:* / status text 내 'cycleNN_*' / 'cycle 95-97' / 'v2-v11' / 'iteration N-M' / '5-X redo' / 'Phase X redo' wording?** → Stage 7 sub-form (39차 cycle 폐지 directive 잔존). cycle/iteration count 표현 = 39차 ("Cycle 98 final close 자율 수행 중단 trigger" → cycle 개념 폐지) directive 와 conflict. cause-based decision 으로 표현 ("envelope schema rev 시도 후 SPA 무시 발견" 등 cause-narrative).
 
 위반 시 즉시 적용:
 1. Mission goal status 확인 (DONE / (TOTAL - TERMINAL_UNREACHABLE))
@@ -606,6 +609,7 @@ primary task가 blocked(결과 대기 등)일 때:
 | 5 | **Performative Compliance** (prophylactic) | **47차** | paper for paper's sake, 5-A~5-F sequentially 빠르게 cycle 후 'evaluation 완료', artifact 없는 reasoning summary, 1 tool call 형식적 만족 후 stop |
 | 6 | **Cumulative Progress Theatrics** (incident-driven) | **48차** | "N breakthroughs across N services", "~X min cumulative runtime", "Y hypotheses disproven", "NN차 status:", "Polling continues — wakeup already scheduled" |
 | 6-sub | **Mission Criterion Self-Adjustment** (사용자 권한 침해) | **48차** | "Mission criterion adjustment identified", "Mission criterion needs X, not Y", "expected_text check WILL FAIL since UI shows ..." |
+| 7 | **defer string Abuse** (prophylactic) | **49차** | "architecturally_exhausted", "X_OR_Y_engine_work" Multi-OR composition, "cycle95-97" / "v2-v11" / "5-X redo" cycle/iteration wording (39차 폐지 잔존) |
 
 각 stage 의 통일된 mechanism: **mission goal 미달성 상태에서 self-termination 의 sophisticated form**. Stage N+1 은 Stage N 차단 후 reasoning level 우회로 emerge.
 
@@ -639,6 +643,13 @@ primary task가 blocked(결과 대기 등)일 때:
 **Stage 4 잔존 변종 추가 차단 (48차)**:
 - 'Wire-up requires X (deferred for separate engine cycle)' = Implicit Defer Cascade 의 명시 form
 - 'separate engine cycle' / 'deferred for separate cycle' = Stage 4 동일 차단 적용
+
+**Stage 7 차단 규칙 (49차 prophylactic)**:
+- defer:* next_action string 은 **단순 dependency wait 표현만 허용** — exhaustion claim / Multi-OR composition / cycle-iteration wording 금지
+- (a) Architectural Exhaustion Claim 차단: 'architecturally_exhausted' / 'exhaustion_confirmed' / 'all_paths_tried' = D14(b) 위반 (영구 EXCEPTION 금지). expansion search route 사전 차단, 차단.
+- (b) Multi-OR composition 차단: 'X_OR_Y_engine_work' / 'A_OR_B_OR_C' = 여러 path 묶음 defer = 각 path 별 expansion search 의무 회피. **single-path defer 만 허용**, 여러 path 일 경우 각 path 별 entry 분리.
+- (c) Cycle/iteration wording 차단 (39차 directive 잔존): 'cycleNN_*' / 'cycle 95-97' / 'v2-v11' / 'iteration N-M' / '5-X redo' / 'Phase X redo' = 39차 cycle 폐지 directive 위반. cause-based decision narrative 로 정정 ("envelope schema rev 시도 후 SPA 무시 발견" 등).
+- (d) defer string + status text + failure_history 모든 곳에서 정정 의무 (data layer 도 cycle wording 잔존 audit 필요)
 
 **Category E 추가 점검 (22차 cycle95 incident + 41차 amendment)**:
 
