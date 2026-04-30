@@ -145,16 +145,16 @@ Result JSON 의 `status` 와 `result` 필드를 읽고 다음 분기:
 | `status == "error"` && notes 에 "timeout" / "crash" / "desktop-commander" | `error_INFRASTRUCTURE` |
 | 분류 불확실 | `error_INFRASTRUCTURE` + notes 에 "CATEGORIZATION_UNCERTAIN" 명시 |
 
-### D20(b) verify-warning-quick 전용 추가 verdict (cycle 98 F8)
+### D20(b) verify-warning-quick 전용 추가 verdict (F8 2026-04-30)
 
 UI verify 가 auth gate 로 short-circuit 되는 경우 — regression 아님 + S3 검증 불가 (semantic gap):
 
 | 조건 | verdict | mission impact |
 |------|---------|----------------|
-| `dom_assertion == "unable_no_login"` OR sign-in wall short-circuit | `UNABLE_AUTH_GATE` | regression 아님 (production state unchanged). L1 canary 가 mission protection 실증, L2-2B synthetic probe 로 향후 보완 (cycle 100+) |
-| `dom_assertion == "unable_offline"` | `UNABLE_OFFLINE` | infrastructure issue, retry next cycle |
+| `dom_assertion == "unable_no_login"` OR sign-in wall short-circuit | `UNABLE_AUTH_GATE` | regression 아님 (production state unchanged). L1 canary 가 mission protection 실증, L2-2B synthetic probe 로 향후 보완 (future) |
+| `dom_assertion == "unable_offline"` | `UNABLE_OFFLINE` | infrastructure issue, retry next session |
 
-→ `error_AUTH_REQUIRED` 와 `UNABLE_AUTH_GATE` 차이: 전자는 일반 check-warning 실패 시, 후자는 D20(b) verify 의 명시적 semantic gap (status=DONE 유지). cycle 98 #657/#658 = 후자 사례.
+→ `error_AUTH_REQUIRED` 와 `UNABLE_AUTH_GATE` 차이: 전자는 일반 check-warning 실패 시, 후자는 D20(b) verify 의 명시적 semantic gap (status=DONE 유지). 2026-04-30 #657/#658 = 후자 사례.
 
 → Canonical: `apf-warning-impl/SKILL.md §Verify-Done Hybrid v2` + `apf-operation/docs/cycle98-f8-d20b-methodology-network-canary-design.md`.
 
