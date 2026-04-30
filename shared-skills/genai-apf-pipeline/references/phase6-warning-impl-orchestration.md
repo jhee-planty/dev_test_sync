@@ -74,7 +74,7 @@ loop until termination (T1-T5, see SKILL.md §Phase 6 Termination Conditions):
   loop
 ```
 
-`unverified_deploys` counter (per-service entry, vocabulary v2): +1 per `apply_engine_fix:*` deploy without verify, reset to 0 on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (WSA v3 step 4 enforce).
+`unverified_deploys` counter (per-service entry, vocabulary v2): +1 per `apply_engine_fix:*` deploy without verify, reset to 0 on SUCCESS verify. **41차/45차 amendment**: hard ≥3 threshold 폐지 (count cap 일괄 cause-based 변환). counter 는 verification gap 가시화 metric. WSA v3 step 4 pre-deploy check 가 cause-based 평가 수행 — counter > 0 + verification axis 동일 fail 재현 시에만 axis pivot (D20(b) verify rotation / alternative method / sub-agent dispatch / `defer:awaiting_verification`). count 자체로 자동 force transition 안 함.
 
 ---
 

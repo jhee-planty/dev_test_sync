@@ -56,7 +56,7 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 
 **흐름**:
 1. Runtime: `bash $RT_DIR/scan-results.sh` — git pull + filesystem scan + 새 결과 ID 목록 stdout (newline separated)
-2. 새 결과 없음 (stdout empty) → `ScheduleWakeup(delaySeconds=270, prompt="<<autonomous-loop-dynamic>>")` 자동 재예약 후 turn 종료 (cache-warm 영역, Polling Policy v2 / HR3 — chain 유지). 장시간 idle (autonomous_candidates count==0 증명 시) 만 1200-1800s 허용.
+2. 새 결과 없음 (stdout empty) → `ScheduleWakeup(delaySeconds=270, prompt="<<autonomous-loop-dynamic>>")` 자동 재예약 후 turn 종료 (cache-warm 영역, Polling Policy v2 / HR3 — chain 유지). 장시간 idle (mission ratio = 1.0 maintenance mode OR test PC 명시적 unavailable) 만 1200-1800s 허용 (41차 mission-goal-based, "count==0 증명" 폐지).
 3. 새 결과 있음 → **각 ID 별로 아래 루프**:
    a. `cat $GIT_SYNC_REPO/results/{id}_result.json` 읽기
    b. **Claude 판단** (§Result Classification 가이드) — verdict ∈ `{done, error_PROTOCOL_MISMATCH, error_NOT_RENDERED, error_SERVICE_CHANGED, error_AUTH_REQUIRED, error_INFRASTRUCTURE}`

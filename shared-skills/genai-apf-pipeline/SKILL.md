@@ -149,10 +149,16 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
    AND status NOT in {NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE}
 4. If primary candidates non-empty:
    - Sort by priority asc → Pop head
-   - Pre-deploy check: if next_action starts with 'apply_engine_fix:' AND
-     entry.unverified_deploys >= 3 → force entry.next_action = 'defer:awaiting_verification', loop
+   - Pre-deploy check (41차/45차 amendment — hard count threshold 폐지, cause-based):
+     if next_action starts with 'apply_engine_fix:' AND entry.unverified_deploys > 0:
+        evaluate verification axis health (test PC alive / UI verify path / regression suite).
+        Same axis 가 deploy 사이 변동 없이 fail 누적 (axis_signature recurrence) →
+          axis pivot: D20(b) verify rotation OR alternative verify method OR sub-agent dispatch OR
+          `defer:awaiting_verification` (cause-based decision).
+        Axis still healthy → proceed deploy.
+        (counter 자체는 visibility metric 으로만 유지. count 도달로 자동 force transition 안 함.)
    - Execute next_action (한 step만)
-   - On 'apply_engine_fix:*' deploy → entry.unverified_deploys += 1
+   - On 'apply_engine_fix:*' deploy → entry.unverified_deploys += 1 (visibility only)
    - On successful verify → entry.unverified_deploys = 0
    - Update entry next_action OR status as result dictates
    - Commit pipeline_state.json
@@ -214,7 +220,8 @@ debug_http_layer:*  — transport_probe | force_h2 (etap visible_tls._block_quic
                                                   / DPDK-level QUIC drop)
 
 apply_engine_fix:*  — wrb_fr_decoder | ws_body_inspector | (other engine work)
-                      [unverified_deploys ≥ 3 → defer:awaiting_verification 강제]
+                      [unverified_deploys > 0 + verification axis 동일 fail 재현 →
+                       cause-based axis pivot (41차/45차, hard threshold 폐지)]
 
 defer:*             — *_user_har / user_login_provisioning / vpn_or_region_change /
                       awaiting_verification / ...
@@ -281,7 +288,7 @@ loop until termination (T1-T5):
   loop
 ```
 
-`unverified_deploys` counter (per-service) +1 per `apply_engine_fix:*` deploy without verify, reset on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (already enforced in WSA v3 step 4).
+`unverified_deploys` counter (per-service) +1 per `apply_engine_fix:*` deploy without verify, reset on SUCCESS verify. **41차/45차 amendment**: hard ≥3 threshold 폐지 (count cap 일괄 cause-based 변환). counter 는 visibility metric. WSA v3 step 4 pre-deploy check 가 cause-based 평가 수행 (verification axis 동일 fail 재현 시에만 axis pivot).
 
 ### Pattern P3 — Failure-class → next_action Default Mapping
 
