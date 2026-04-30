@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # check-pre-retest-gate.sh --service <id>
-# Reads count-attempts.sh output and enforces (38차 SOFT_WARN amendment):
-#   - builds_attempted >= 7 → stderr BUILD_CAP (exit 2, terminal)
-#   - completed >= 5 → stderr NEEDS_ALTERNATIVE (exit 2)
-#   - builds_attempted >= 5 → stderr SOFT_WARN (exit 0 + advisory, autonomous STRATEGY_REVISIT trigger)
-#   - same sub_category in last 3 verdicts (all error_*) → exit 1 (RETRY_BLOCKED, autonomous frontend-inspect 재진입)
-#   - otherwise → exit 0 (PROCEED)
+# 41차 amendment: count-based hard caps 폐지, cause-based axis-exhaustion only.
+# Build/total counts = ADVISORY logging (no exit 2 terminal).
+# Stop license = mission goal achieved (HR7) — runtime 은 axis pivot signal 만 emit.
+#
+# Exit codes:
+#   - same sub_category recurrence in last 3 verdicts (all error_*) → exit 1 (axis pivot signal)
+#   - otherwise → exit 0 (PROCEED + optional ADVISORY logging)
 
 set -eu
 # shellcheck disable=SC1091
@@ -32,22 +33,17 @@ BUILDS=$(echo "$STATE_JSON" | jq -r '.builds_attempted')
 COMPLETED=$(echo "$STATE_JSON" | jq -r '.completed')
 LAST3=$(echo "$STATE_JSON" | jq -r '.last_verdicts | join("|")')
 
-# Build cap hard
-if (( BUILDS >= 7 )); then
-    echo "BUILD_CAP: builds_attempted=${BUILDS} >= 7" >&2
-    exit 2
-fi
-
-# Total iterations cap
-if (( COMPLETED >= 5 )); then
-    echo "NEEDS_ALTERNATIVE: completed=${COMPLETED} >= 5" >&2
-    exit 2
-fi
-
-# Build soft warn (38차: SUSPEND_GATE → SOFT_WARN, autonomous progression 유지)
+# 41차: count-based hard cap 폐지 → cause-based axis-exhaustion gate
+# Build/iteration count 자체는 stop trigger 아님 — sub_category recurrence + axis pivot 만 trigger.
+# Numbers below = ADVISORY logging only (operational visibility), no exit non-zero.
 if (( BUILDS >= 5 )); then
-    echo "SOFT_WARN: builds=${BUILDS} >= 5 — STRATEGY_REVISIT autonomous trigger; 7회 도달 시에만 ESCALATE" >&2
-    # exit 0 (advisory only) — autonomous loop continues with STRATEGY_REVISIT verdict
+    echo "ADVISORY: builds=${BUILDS} (mission goal persistence — axis pivot 권장 시 STRATEGY_REVISIT verdict 사용)" >&2
+fi
+if (( COMPLETED >= 5 )); then
+    echo "ADVISORY: completed=${COMPLETED} (axis pivot 권장 시 STRATEGY_REVISIT)" >&2
+fi
+if (( BUILDS >= 7 )); then
+    echo "ADVISORY: builds=${BUILDS} >= 7 (mission still incomplete? continue expansion search per HR7 41차)" >&2
 fi
 
 # Same-category 3-Strike (checked via last 3 verdicts if all error_*)

@@ -74,7 +74,7 @@ loop until termination (T1-T5, see SKILL.md §Phase 6 Termination Conditions):
   loop
 ```
 
-`unverified_deploys` counter (per-service entry, vocabulary v2): +1 per `apply_engine_fix:*` deploy without verify, reset to 0 on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (WSA v2 step 4 enforce).
+`unverified_deploys` counter (per-service entry, vocabulary v2): +1 per `apply_engine_fix:*` deploy without verify, reset to 0 on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (WSA v3 step 4 enforce).
 
 ---
 

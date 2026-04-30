@@ -616,7 +616,7 @@ primary task가 blocked(결과 대기 등)일 때:
   1. 사용자 직전 메시지 (현 turn) 에 explicit directive 있는가?
   2. INTENTS.md / progress.md / handoff.md 의 user-quoted directive 인가?
   3. summary / progress / status doc 의 narrative 를 "instruction" 으로 misclassify 안 했는가? (reference != instruction)
-- **Self-imposed instruction 차단 후**: 원래 목적 (사용자 underlying intent) 재구성 + autonomous WSA v2 candidate 우선순위 따라 진행.
+- **Self-imposed instruction 차단 후**: 원래 목적 (사용자 underlying intent) 재구성 + autonomous WSA v3 candidate 우선순위 따라 진행.
 - **위반 시 cascade**: self-imposed "instruction" → "종합 보고 작성 trigger" → polling chain 절단 → "polling 미도착" 단정 (D9) → premature stop. 24차 incident 8 패턴.
 
 ### Category H: Last-mile Result Scan Obligation (24차 incident 8 반영)
@@ -742,16 +742,15 @@ Ambiguous user questions ("다음 작업 없어?" / "뭐 하고 있어?" / "할 
 
 이는 **work-shaped output bias** 의 직접 발현. P3 (sycophancy bias) 의 cognitive failure mode.
 
-### 의무 — Honest verification interpretation
+### 의무 — Mission-goal verification (41차 redefined)
 
 ```
-1. Run autonomous_doable evaluation (D19(a) provenance check 적용)
+1. Mission goal status 평가: DONE / (TOTAL - TERMINAL_UNREACHABLE) ratio
 2. Report finding:
-   - autonomous_candidates count
-   - 각 candidate 의 next_action + provenance pointer
-   - blockers (있으면)
-   - pending directives (있으면)
-3. 사용자 next step 결정 대기
+   - Mission ratio (e.g., "13/35 = 37%, mission incomplete")
+   - 다음 expansion source (5-A~5-F 중) 선택 + 즉시 진행
+   - count 보고 = 정보용 only, stop 근거 아님
+3. 사용자 explicit termination keyword 만 stop license
 ```
 
 ### 25차 instance 의 self-acknowledgment (incident 9 reference)

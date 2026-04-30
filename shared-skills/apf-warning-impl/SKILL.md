@@ -29,15 +29,19 @@ SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)"
 RT="$SKILL_DIR/runtime"
 ```
 
-## 핵심 상한 (BLOCKER)
+## Cause-based Escalation (41차 — count cap 폐지)
 
-| 상한 | 값 | 위반 시 |
-|------|-----|---------|
-| 유효 빌드 상한 | 7회 | 5회 시 SOFT_WARN 로깅 + verdict 분포 분석 → STRATEGY_REVISIT 자동 trigger. 7회 도달 시에만 ESCALATE (terminal). |
-| 3-Strike (같은 sub_category 연속) | 3회 | 4회째 SKIP (runtime 이 Pre-retest Gate 에서 차단) |
-| 총 시도 상한 | 5회 | 6회째 NEEDS_ALTERNATIVE (runtime 차단) |
+mission-goal persistence 원칙 적용. count-based hard cap 대신 **root cause 재현 + axis 고갈** 평가.
 
-`runtime/apf-warning-impl/check-pre-retest-gate.sh` 가 매 iteration 시작 시 자동 판정.
+| Trigger | 조건 | 동작 |
+|---------|------|------|
+| SOFT_WARN | 동일 sub_category 가 ≥3 회 연속 시도 (Pre-retest Gate) | next_action 자동 = `frontend-inspect` Phase 4 재진입 (sub_category 변경, axis pivot). exit 1. |
+| STRATEGY_REVISIT | 새 sub_category axis 시도 후에도 동일 root cause 재현 | design doc strategy 자체 재검토 (M2/M3 trigger). advisory only, autonomous progression 유지. |
+| ESCALATE (terminal) | 모든 axis exhausted (sub_category 모든 variant 시도 + design strategy 재검토 후에도 재현) AND mission goal 미달성 | discussion-review (M3) 또는 사용자 escalation. |
+
+`runtime/check-pre-retest-gate.sh` 가 매 iteration 시작 시 sub_category recurrence 판정 (count 가 아닌 *axis-exhaustion* 기준).
+
+> **41차 amendment**: 기존 "유효 빌드 상한 7회 / 총 시도 상한 5회" count cap 은 mission-goal persistence (HR7) 와 충돌하여 폐지. count 도달 시 stop 이 아닌 axis pivot 으로 동작.
 
 ---
 
@@ -48,8 +52,8 @@ RT="$SKILL_DIR/runtime"
 bash $RT/check-pre-retest-gate.sh --service {id}
 ```
 - exit 0 : PROCEED (진행 가능)
-- exit 1 : SKIP (동일 category 3회) → verdict=RETRY_BLOCKED, next_action 자동 = `frontend-inspect` (genai-apf-pipeline Phase 4) 재진입 (sub_category 변경 후) — escalation-protocol.md 23 canonical
-- exit 2 : ESCALATE (총 시도 5회 초과 또는 빌드 7회 초과)
+- exit 1 : SKIP (동일 sub_category recurrence) → verdict=RETRY_BLOCKED, next_action 자동 = `frontend-inspect` (genai-apf-pipeline Phase 4) 재진입 (sub_category axis pivot)
+- exit 2 : ESCALATE (terminal) — 모든 axis exhausted AND mission goal 미달성 (M3 discussion-review trigger)
 
 ### 1. Record iteration START
 ```bash

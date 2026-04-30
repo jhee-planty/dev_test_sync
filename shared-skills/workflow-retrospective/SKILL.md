@@ -23,13 +23,13 @@ APF 테스트 자동화 파이프라인(HAR 캡처 → 분석 → 등록 → 빌
 > **방안 2 — 자동 회고 스케줄:**
 > schedule 스킬을 활용하여 일정 주기(매일 또는 N건 작업 완료 후)로
 > 자동 회고 태스크를 실행. 사용자는 리포트만 확인하고 "적용해"로 승인.
-> → 전환 조건: metrics 로그가 30건 이상 쌓이고, 반복되는 비효율 패턴이 3개 이상 확인될 때.
+> → 전환 조건: 반복 가능한 비효율 패턴이 evidence 기반으로 식별 (metrics 데이터 + experience.jsonl observation 모두 cross-reference). count threshold 무관 — 패턴 재현성 가 evidence.
 >
 > **방안 3 — workflow-optimizer 전용 스킬:**
 > 회고 + 패치 제안 + 적용까지 하나의 사이클로 캡슐화.
 > 다른 스킬의 SKILL.md를 직접 읽고 개선 diff를 생성하여 사용자 승인 후 적용.
 > experience에 "적용 전/후 비교"를 기록하여 개선 효과를 추적.
-> → 전환 조건: 방안 2로 3회 이상 회고를 완료하고, 스킬 패치가 2건 이상 발생했을 때.
+> → 전환 조건: 방안 2 회고가 안정적으로 작동하고 (반복 가능), 패치 후에도 회귀 없이 효과 유지 — evidence-based 판정.
 
 ---
 
@@ -120,7 +120,7 @@ bash $SKILL_DIR/runtime/parse-retro-adoptions.sh
 5. 기간 필터링 (사용자가 기간 지정 시 적용)
 ```
 
-사용자 미지정 시 자동: metrics 30건 미만이면 전체, 30건 이상이면 최근 7일.
+사용자 미지정 시 자동: 데이터 양 적으면 전체 / 많으면 최근 7일 (analyzer 가 자동 판정, count threshold 명시 X — count 기반 stop 인식 회피).
 
 ### Step 2 — 패턴 분석
 

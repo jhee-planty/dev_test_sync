@@ -219,7 +219,7 @@ bash .../runtime/self-test.sh [--bootstrap]
 
 ## 13 품질 기준 대응
 
-13 기준 전체 대응 상세는 `skill-design-tiers.md` (Tier 0/1/2/3) + 본 skill 의 `references/` 참조. 요약: Tier 1 Must 5 범주 ✅, Tier 2 Should 5 범주 ✅ (Type B 기준), Tier 3 은 domain-dependent.
+13 기준 전체 대응 상세는 `cowork-micro-skills/skill-design-tiers.md` (Tier 0/1/2/3) + 본 skill 의 `references/` 참조. 요약: Tier 1 Must 5 범주 ✅, Tier 2 Should 5 범주 ✅ (Type B 기준), Tier 3 은 domain-dependent.
 
 ---
 
@@ -236,4 +236,4 @@ bash .../runtime/self-test.sh [--bootstrap]
 
 - **v1 (2026-04-22)** — 최초. 토론 Phase 3 consensus 10 항목 반영.
 - **v1.1 (2026-04-23)** — 토론 consensus 4 방안: bug fix (verified/contradicted), edit-ops 문서 정직화, disconfirmation_check 노드, --scope flag.
-- **v1.2 (2026-04-23)** — skill-design-tiers.md 의 Tier 0 + 원칙 7-8 적용: Type B 선언, allowed-tools 추가, SKILL.md 간소화 (406→약 220 줄), references/justification.md 신규, 제외된 기능 섹션 추가.
+- **v1.2 (2026-04-23)** — `cowork-micro-skills/skill-design-tiers.md` 의 Tier 0 + 원칙 7-8 적용: Type B 선언, allowed-tools 추가, SKILL.md 간소화 (406→약 220 줄), references/justification.md 신규, 제외된 기능 섹션 추가.

@@ -67,7 +67,7 @@ foreach ($req in $requests | Sort-Object Name) {
 ```
 종료 조건:
   - 사용자가 "멈춰", "중단" → 즉시 종료
-  - 에러 3회 연속 → 일시 중지
+  - 에러 root cause 재현 → result.json push + 다음 request 진행 (count cap 폐지, 41차)
 ```
 
 ---

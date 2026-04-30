@@ -70,7 +70,7 @@ Schema canonical: `cowork-remote/references/pipeline-state-schema.md` (v2 enum +
 
 ---
 
-## Orchestration — Active = WSA v2
+## Orchestration — Active = WSA v3 (41차)
 
 본 skill 의 active orchestration 은 **§Work Selection Algorithm v2** (아래 섹션 참조).
 
@@ -281,7 +281,7 @@ loop until termination (T1-T5):
   loop
 ```
 
-`unverified_deploys` counter (per-service) +1 per `apply_engine_fix:*` deploy without verify, reset on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (already enforced in WSA v2 step 4).
+`unverified_deploys` counter (per-service) +1 per `apply_engine_fix:*` deploy without verify, reset on SUCCESS verify. ≥3 → forced `defer:awaiting_verification` (already enforced in WSA v3 step 4).
 
 ### Pattern P3 — Failure-class → next_action Default Mapping
 
