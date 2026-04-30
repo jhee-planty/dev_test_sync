@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3 verify on character.ai (separate from copilot — engine SEES character traffic per production etap.log evidence: '[APF:ws_upgrade] service=character domain=neo.character.ai' multiple entries 2026-04-17/24/27). Hypothesis: character WS path goes through HTTP/1.1 Upgrade → on_upgraded_data fires → F5 step 3 inject path triggers. Build run_id=20260430-143304-49184 (F5 step 3 redeploy). Expected verdict: SUCCESS (warning visible) OR FAIL_no_warning (engine fires but UI doesn't render → JSON envelope mismatch like copilot). Note: character may use modern framework similar to Gemini Quill — test PC tooling may have similar issue (#661 pattern).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL https://character.ai (signed in 또는 anonymous)",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: WebSocket connection to neo.character.ai → text frame 전송",
+        "5. Engine intercept: production etap.log 의 [APF:ws_blocked] + [APF:ws_inject] log 확인",
+        "6. UI: chat bubble 또는 message area 에 native warning visible (한글 차단 메시지)",
+        "7. WS connection close",
+        "8. Regression: real LLM character response 없어야 함"
+      ]
+    }
+  },
+  "notes": "F5 step 3 verify on character.ai (engine sees traffic — different from copilot bypass)",
+  "attachments": [],
+  "id": "664",
+  "created": "2026-04-30T05:34:58Z"
+}

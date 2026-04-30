@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T04:58:09Z",
+  "last_updated": "2026-04-30T05:34:58Z",
   "tasks": [
     {
       "id": "531",
@@ -1417,10 +1417,21 @@
       "id": "663",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T04:58:09Z",
-      "updated": "2026-04-30T04:58:09Z",
-      "summary": "F5 step 3 WS inject re-verify (#662 retry, Cloudflare 해결 후)"
+      "updated": "2026-04-30T05:11:38Z",
+      "summary": "[error_NOT_RENDERED] MISSION-CRITICAL: real Copilot LLM analyzed SSN 880101-1234567 (extracted birthdate, gender, etc). F5 step 3 on_upgraded_data scanner DID NOT fire. Full engine bypass. Hypothesis: Copilot uses H2 extended CONNECT (RFC 8441) for WS, HTTP/1.1 parser FIRE_NETWORK doesn't dispatch on_upgraded_data for that path.",
+      "archived": true,
+      "archived_at": "2026-04-30T05:11:38Z"
+    },
+    {
+      "id": "664",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T05:34:58Z",
+      "updated": "2026-04-30T05:34:58Z",
+      "summary": "F5 step 3 verify on character.ai (engine sees traffic — different from copilot bypass)"
     }
   ]
 }
