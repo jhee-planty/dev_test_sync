@@ -413,13 +413,14 @@ Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival
 
 ---
 
-## 제외 기능
+## Out-of-scope (대신 사용할 패턴)
 
-- ❌ Scheduled Task / cron / launchd / fireAt / Monitor persistent (Polling Policy v2)
-- ❌ In-session bash loop (11차 제외, Polling Policy v2)
-- ❌ 자동 STALLED escalation
-- ❌ monolithic SKILL.md 의존 (본 skill 이 truth)
-- ❌ 사용자에게 선택지 제시 + 지시 대기 패턴 (Hard Rule 6, 13차 추가)
+| 영역 | 본 skill 외부 | 대신 사용 |
+|------|-------------|----------|
+| Polling | OS-level scheduler / bash loop / cron | `ScheduleWakeup(delaySeconds, prompt, reason)` (session-internal) — Polling Policy v2 |
+| 응답 대기 | 자동 STALLED escalation | 결과 도착까지 scan 반복 (cowork-remote `scan-results.sh`) |
+| Truth source | monolithic SKILL.md 추정 | 본 skill 이 truth — references 는 on-demand |
+| 복수 옵션 | 사용자에게 선택지 제시 | Mode Selection Tree (M0 Empirical → M1 reasoning → M2 Micro-Discussion → M3 full review → M4 user ask) |
 
 ## Service Journals (operational artifact)
 
