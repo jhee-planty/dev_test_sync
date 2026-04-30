@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T06:35:50Z",
+  "last_updated": "2026-04-30T06:50:34Z",
   "tasks": [
     {
       "id": "531",
@@ -1461,10 +1461,21 @@
       "id": "667",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T06:35:50Z",
-      "updated": "2026-04-30T06:35:50Z",
-      "summary": "F5 step 3-D server→client warning text frame inject (character.ai)"
+      "updated": "2026-04-30T06:48:47Z",
+      "summary": "[error_NOT_RENDERED] F5 step 3-D PARTIAL. Engine inject mechanism PROVEN (raw text frame reaches client). character UI silently discards (JSON envelope mismatch). Mission protection HELD from #666. Next: JSON envelope wrap (HP-character-envelope: {command:'system_message', text:'...'}) per #667 finding.",
+      "archived": true,
+      "archived_at": "2026-04-30T06:48:47Z"
+    },
+    {
+      "id": "668",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T06:50:34Z",
+      "updated": "2026-04-30T06:50:34Z",
+      "summary": "F5 step 3-E character JSON envelope wrap (neo_error command try)"
     }
   ]
 }

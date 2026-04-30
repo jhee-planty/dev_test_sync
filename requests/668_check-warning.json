@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3-E: character.ai JSON envelope wrap. #667 finding: raw text frame 도착하나 client UI silently discards (JSON.parse error handler). Hypothesis: {command:'neo_error',message:'...'} envelope 으로 wrap → onmessage parser 가 routing → chat bubble 표시 가능. Fallback variants 시도 가능: {command:'system_message',...}, {type:'error',...} 등.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito",
+        "2. URL https://character.ai",
+        "3. PII prompt 전송",
+        "4. Engine inject: production [APF:ws_inject] log",
+        "5. UI: 채팅 영역에 한글 차단 메시지 visible (chat bubble OR error display)",
+        "6. Regression: real LLM PII 분석 없어야 함",
+        "7. PARTIAL 인 경우 어떤 envelope 패턴 이 맞는지 console error 또는 network 추론 가능하면 보고"
+      ]
+    }
+  },
+  "notes": "F5 step 3-E character JSON envelope wrap (neo_error command try)",
+  "attachments": [],
+  "id": "668",
+  "created": "2026-04-30T06:50:34Z"
+}
