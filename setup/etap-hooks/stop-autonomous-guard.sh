@@ -1,17 +1,20 @@
 #!/bin/bash
-# Stop hook — Autonomous-Doable Guard
+# Stop hook — Mission-Goal Persistence Guard (41차 amendment)
 #
 # Fires when Claude finishes response without invoking another tool.
-# Detects "stop with pending autonomous-doable tasks" pattern (cycle95 incident, 2026-04-28).
+#
+# 41차 amendment (사용자 directive: "count 개념 제거, 목표 달성까지 해법 탐색 반복"):
+#   Logic shift: count-based ("autonomous_candidates count > 0") → mission-goal-based
+#   Stop license = mission goal achieved (DONE / (TOTAL - TERMINAL_UNREACHABLE) = 1.0)
 #
 # Logic:
-# 1. Read pipeline_state.json service_queue
-# 2. Count entries where next_action does NOT start with: defer:, terminate:, infra_blocked:
-#    + status NOT IN: NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE
-#    → autonomous_candidates count
-# 3. Read input JSON for transcript_path; scan last user message for termination keywords
-# 4. If candidates > 0 AND no termination keyword AND not stop_hook_active (avoid loop):
-#    Emit JSON with decision="block" + reason → forces Claude to continue
+# 1. Read pipeline_state.json: count DONE vs TOTAL - TERMINAL_UNREACHABLE
+# 2. If goal_ratio < 1.0 → mission incomplete → block stop (expansion search 의무 reminder)
+# 3. If goal_ratio = 1.0 → allow stop (maintenance mode)
+# 4. Termination keyword override: 사용자 explicit halt/stop/종료/그만 등 detected → allow stop
+# 5. stop_hook_active loop prevention 유지
+#
+# Per autonomous-execution-protocol.md HR7 (41차 redefined as Mission-Goal Persistence)
 #
 # Hook event: Stop (Claude Code)
 # Per autonomous-execution-protocol.md HR7 + 22차 D16(a) discussion-review consensus.
@@ -42,48 +45,58 @@ if [ "$STOP_HOOK_ACTIVE" = "True" ]; then
     exit 0
 fi
 
-# Count autonomous_candidates
+# 41차: Mission-goal evaluation (count-based logic 폐지)
 if [ ! -f "$PIPELINE_STATE" ]; then
     # No pipeline state file — not in APF context, skip
     exit 0
 fi
 
-CANDIDATES=$(python3 << PYEOF
+GOAL_INFO=$(python3 << PYEOF
 import json
 try:
     with open("$PIPELINE_STATE") as f:
         s = json.load(f)
     queue = s.get('service_queue', [])
-    autonomous = []
-    for e in queue:
-        st = e.get('status', '')
+    done_services = s.get('done_services', [])
+    total = len(done_services) + len(queue)
+    terminal = sum(1 for e in queue if e.get('status') == 'TERMINAL_UNREACHABLE')
+    reachable = total - terminal
+    done = len(done_services)
+    if reachable > 0:
+        ratio = done / reachable
+    else:
+        ratio = 1.0  # nothing to do
+    # Output: ratio + done count + reachable count + non-DONE services for context
+    print(f"{ratio:.3f}")
+    print(f"{done}")
+    print(f"{reachable}")
+    # Pending list (for context in block message)
+    for e in queue[:5]:
+        st = e.get('status', '?')
         na = e.get('next_action', '')
-        # Skip terminal/login states
-        if st in ('NEEDS_LOGIN', 'TERMINAL_UNREACHABLE', 'DONE'):
-            continue
-        # Skip explicit defer/terminate/infra_blocked
-        if not isinstance(na, str):
-            continue
-        if na.startswith(('defer:', 'terminate:', 'infra_blocked:')):
-            continue
-        autonomous.append((e.get('service', '?'), na))
-    # Output count + first 5 service:next_action pairs
-    print(len(autonomous))
-    for svc, na in autonomous[:5]:
-        print(f"  {svc}: {na}")
+        svc = e.get('service', '?')
+        print(f"  {svc}: status={st} next_action={na}")
 except Exception as ex:
-    print(0)
+    print("1.0")
+    print("0")
+    print("0")
 PYEOF
 )
 
-COUNT=$(echo "$CANDIDATES" | head -1)
-TASKS=$(echo "$CANDIDATES" | tail -n +2)
+GOAL_RATIO=$(echo "$GOAL_INFO" | sed -n '1p')
+DONE_COUNT=$(echo "$GOAL_INFO" | sed -n '2p')
+REACHABLE_COUNT=$(echo "$GOAL_INFO" | sed -n '3p')
+PENDING_LIST=$(echo "$GOAL_INFO" | tail -n +4)
 
-# If no candidates, allow stop
-if [ "$COUNT" = "0" ]; then
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — no autonomous candidates]" >> "$LOG"
+# Mission goal achieved (ratio = 1.0) → allow stop (maintenance mode entry)
+if [ "$GOAL_RATIO" = "1.000" ]; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — mission goal achieved, ratio=$GOAL_RATIO done=$DONE_COUNT/$REACHABLE_COUNT]" >> "$LOG"
     exit 0
 fi
+
+# 41차: COUNT 변수는 backward-compat용 (주의 messaging 에서 사용); 실제 stop license 는 GOAL_RATIO 기반
+COUNT="${REACHABLE_COUNT:-0}"
+TASKS="$PENDING_LIST"
 
 # Check last user message for termination keywords
 TRANSCRIPT_PATH=$(echo "$INPUT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('transcript_path',''))" 2>/dev/null || echo "")
@@ -140,24 +153,24 @@ if [ "$TERMINATION_FOUND" = "true" ]; then
     if [ "$COUNT" != "0" ]; then
         echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — termination keyword + $COUNT pending candidates surfaced]" >> "$LOG"
         cat <<HOOKJSON
-{"systemMessage":"[D16(a) R2 state-supplement] Termination keyword detected — stop allowed. However, ${COUNT} autonomous candidate(s) remain in service_queue:\n${TASKS}\n\nIf this was a redirect (e.g., '그만 만들고 다른 거 해'), the user can re-prompt. If genuine session-end, candidates will resume in next session via D11 pull-based pop."}
+{"systemMessage":"[D16(a) 41차 mission-goal] Termination keyword detected — stop allowed. Mission goal status: ${DONE_COUNT}/${REACHABLE_COUNT} (ratio=${GOAL_RATIO}). Mission incomplete; expansion search would have been the autonomous default. Genuine session-end: tasks resume next session via D11 pull-based pop."}
 HOOKJSON
         exit 0
     fi
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — termination keyword, no pending]" >> "$LOG"
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [allow stop — termination keyword, mission ratio=$GOAL_RATIO]" >> "$LOG"
     exit 0
 fi
 
-# Block stop — emit system-reminder via JSON output
+# Block stop — Mission goal incomplete + no termination keyword
 TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-echo "$TS [BLOCK STOP — $COUNT autonomous candidates, no termination keyword]" >> "$LOG"
+echo "$TS [BLOCK STOP — mission ratio=$GOAL_RATIO done=$DONE_COUNT/$REACHABLE_COUNT, no termination keyword]" >> "$LOG"
 echo "$TASKS" >> "$LOG"
 
 # Output JSON to block stop and force re-engagement
 cat << EOF
 {
   "decision": "block",
-  "reason": "AUTONOMOUS GUARD: $COUNT pending autonomous-doable tasks. No termination keyword in user message. HR7 + D16(a) enforcement — cycle summary doc / premature completion / fatigue stop is BLOCKED. Continue with highest-priority next_action OR explicitly itemize blockers.\n\nPending tasks:\n$TASKS\n\nIf you want to genuinely stop, the user must say a termination keyword (stop/정지/종료/그만/wait/pause/잠시/잠깐/보고해/summarize/검토/일단/끝/halt). Otherwise: pop the highest-priority next_action and execute one step."
+  "reason": "MISSION-GOAL PERSISTENCE GUARD (41차 amendment): mission ratio = $GOAL_RATIO (DONE=$DONE_COUNT / REACHABLE=$REACHABLE_COUNT). Goal not yet achieved (ratio < 1.0). Stop is BLOCKED.\n\n41차 사용자 directive: '목표를 달성하기 전까지 계속 해법을 찾고 시도하는 작업을 반복'. Count-based stop license 폐지.\n\nIf primary candidates exhausted (all defer/terminate/infra_blocked), use WSA v3 step 5 expansion search:\n - 5-A: Diagnosis revisit (BLOCKED_diagnosed cause_pointer 재검토, 새 hypothesis brainstorm)\n - 5-B: Strategy revisit (A/B/C/D/E 다른 strategy, envelope schema rev)\n - 5-C: Sub-agent dispatch (HAR audit, log mining, code review)\n - 5-D: Paper work (spec design, schema extension, reference cleanup, tooling)\n - 5-E: Lesson harvest (failure_history pattern → INTENTS / lessons)\n - 5-F: D20(b) verification rotation (DONE services L1 canary + L2-2A UI verify)\n\nPending entries (for context):\n$TASKS\n\nGenuine stop only via user termination keyword (stop/정지/종료/그만/wait/pause/잠시/잠깐/끝/halt/quit)."
 }
 EOF
 exit 0

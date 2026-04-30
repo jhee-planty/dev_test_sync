@@ -164,10 +164,10 @@ CAND_COUNT=$(echo "$AUTONOMOUS_CANDIDATES" | head -1)
 CAND_LIST=$(echo "$AUTONOMOUS_CANDIDATES" | tail -1)
 
 if [ "$CAND_COUNT" -gt 0 ]; then
-  # Emit system-reminder
+  # Emit system-reminder (41차: count 무관, mission-goal persistence 강조)
   cat <<HOOKJSON
 {
-  "systemMessage": "[WATCHDOG] Idle Gate triggered: ${IDLE_COUNT} consecutive idle ticks (only polling/git-pull). service_queue has ${CAND_COUNT} autonomous-doable next_action(s): ${CAND_LIST}. Per Hard Rule 7: long-idle prohibited when autonomous candidates exist. Pop next_action and execute now, OR explicit per-candidate rejection rationale required."
+  "systemMessage": "[WATCHDOG] Idle Gate triggered: ${IDLE_COUNT} consecutive idle ticks (only polling/git-pull). Mission-Goal Persistence (HR7 41차): mission goal 미달성 시 expansion search 의무. Primary candidates 가 ${CAND_COUNT} 개 있음 (${CAND_LIST}) — 즉시 pop + execute. Primary 모두 exhausted 라도 WSA v3 step 5-A~5-F (diagnosis revisit / strategy revisit / sub-agent dispatch / paper work / lesson harvest / D20b verify) 항상 가능."
 }
 HOOKJSON
   # Reset counter to avoid spamming

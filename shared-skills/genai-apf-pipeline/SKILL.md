@@ -134,10 +134,10 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
 
 → See `references/autonomous-execution-protocol.md` for Hard Rules 1-7 v3 + Empirical Comparison Pattern + Micro-Discussion Pattern + Polling Policy v2 usage.
 
-## Work Selection Algorithm v2 (2026-04-27 18차 + 2026-04-28 20차 consensus)
+## Work Selection Algorithm v3 (41차 — count-based stop logic 폐지)
 
-> Push-based decision making → Pull-based queue processing.
-> Idle 가 자율 수행 의 자연 종료 신호가 아닌, **service_queue 가 autonomous-doable next_action 미보유** 시에만 허용되는 명시 상태.
+> **41차 사용자 directive**: "작업 과정에 count 하는 개념을 제거. 목표를 달성하기 전까지 계속 해법을 찾고 시도하는 작업을 반복."
+> count==0 증명 → idle 허용 패턴 폐지. **Mission goal achieved (DONE/TOTAL = 1.0) 만이 stop license**.
 
 ### Loop (매 polling tick 또는 result 처리 후)
 
@@ -145,14 +145,10 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
 1. (Session start only) Run infra_unblock_check:smoke_test for any infra_blocked entries.
    If smoke test passes → re-classify infra_blocked → standard verbs.
 2. Read pipeline_state.json service_queue
-3. Filter entries where next_action does NOT start with 'defer:'
-                                AND does NOT start with 'terminate:'
-                                AND does NOT start with 'infra_blocked:'
-                                AND status is NOT in {NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE}
-   → autonomous_candidates list
-4. If autonomous_candidates non-empty:
-   - Sort by priority asc
-   - Pop head
+3. Filter primary candidates: next_action does NOT start with 'defer:'/'terminate:'/'infra_blocked:'
+   AND status NOT in {NEEDS_LOGIN, TERMINAL_UNREACHABLE, DONE}
+4. If primary candidates non-empty:
+   - Sort by priority asc → Pop head
    - Pre-deploy check: if next_action starts with 'apply_engine_fix:' AND
      entry.unverified_deploys >= 3 → force entry.next_action = 'defer:awaiting_verification', loop
    - Execute next_action (한 step만)
@@ -161,27 +157,27 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
    - Update entry next_action OR status as result dictates
    - Commit pipeline_state.json
    - Push request if next_action requires test PC, else return to loop
-5. If autonomous_candidates empty (all defer: / terminate: / infra_blocked:):
-   - Compose explicit "needs_user_input" status report
-   - Report to user with itemized defer / terminate / infra_blocked reasons
-   - Allow long-idle ScheduleWakeup
-6. Empty queue (no entries at all):
-   - Goal achieved OR user has not enqueued more services
-   - Report to user
+5. If primary candidates 없음 (모두 defer/terminate/infra_blocked) — **stop 금지, expansion search 진행**:
+   - (5-A) Diagnosis revisit: BLOCKED_diagnosed services 의 cause_pointer 재검토. 새 hypothesis brainstorm.
+   - (5-B) Strategy revisit: 동일 service 다른 strategy (A/B/C/D/E) 또는 envelope schema rev.
+   - (5-C) Sub-agent dispatch: 분석/검토/HAR audit/log mining 가능 task 식별 + dispatch.
+   - (5-D) Paper work: spec design / schema extension / reference cleanup / tooling 작성.
+   - (5-E) Lesson harvest: failure_history 패턴 분석 → INTENTS / lessons append candidate.
+   - (5-F) D20(b) verification rotation: DONE services L1 canary + L2-2A UI verify.
+   - 위 5-A~5-F 모두 exhausted 증명 후만 stop (mission goal 미달성 시에는 사실상 도달 불가 — 항상 새 시도 가능).
+6. Mission goal achieved (DONE / (TOTAL - TERMINAL_UNREACHABLE) = 1.0) AND 30-day D20b PASS:
+   - Maintenance mode 진입 — D20(b) periodic verification 만.
 ```
 
-**Stop hook (D16(a), 22차 + 24차 D18(b) refinement)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시, `.claude/hooks/stop-autonomous-guard.sh` 가 자동 fire. autonomous_candidates count > 0 AND 사용자 마지막 메시지에 termination keyword 없음 → stop block + system-reminder emit. Cycle summary doc 작성 후 stop / premature completion / fatigue stop / M4 overgeneralization 모두 catch.
+**Stop hook (D16(a), 22차 + 41차 amendment)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시 `.claude/hooks/stop-autonomous-guard.sh` 자동 fire. **mission goal 미달성 (DONE/TOTAL < 1.0) AND termination keyword 없음 → stop block**. count 무관 — count 가 0 이라도 mission 미달성이면 expansion search (5-A~5-F) 의무.
 
-**Termination keyword list** (D18(b) refined — incident 8 root cause 였던 status-update keywords 제거):
+**Termination keyword list** (D18(b) refined):
 - **Allow stop** (12): `stop` / `정지` / `종료` / `그만` / `그만해` / `wait` / `pause` / `잠시` / `잠깐` / `끝` / `halt` / `quit`
-- **NOT termination** (D18(b)): `보고해` / `보고` / `summarize` / `검토` / `일단` — status-update request (사용자 보고 받고 다시 진행 의도). polling chain 유지.
+- **NOT termination** (D18(b)): `보고해` / `보고` / `summarize` / `검토` / `일단` — status-update request (사용자 보고 받고 다시 진행 의도)
 
-### Idle Gate (Hard Rule 7 enforcement)
+### (구) Idle Gate — 41차 폐지
 
-ScheduleWakeup ≥1200s OR 연속 ≥3 idle ticks (no Edit/Write/non-trivial Bash):
-- **Mandatory work-selection re-run**
-- Output: itemized list of service_queue with next_action + autonomous_doable count
-- Long-idle 허용 = autonomous_doable count == 0 증명
+count-based gate 폐지. Mission goal 미달성 시 expansion search (5-A~5-F) 가 default. 진정한 idle = mission goal achieved 시점만.
 
 ## Service Status & Goal Accounting (2026-04-28 20차)
 
