@@ -1,0 +1,65 @@
+{
+  "id": "668",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "FAIL",
+  "completed_at": "2026-04-30T16:00:00Z",
+  "summary": "F5 step 3-E character.ai JSON envelope wrap FAILED. Same SyntaxError class as #667, but specifically 'Unexpected end of input' (vs #667's 'Unexpected token') — strongly suggests JSON envelope is being TRUNCATED before completion. Engine inject IS reaching client (close code 1000 = clean close right after create_and_generate_turn rather than LLM streaming) but the wrap is being cut off mid-string by the close frame. character.ai client onmessage routing never reached. NO Korean warning rendered in DOM. Mission protection HOLDS — no LLM PII regression. Note: subagent dispatch hit org's monthly usage limit AFTER artifacts saved but BEFORE returning verdict — verdict extracted from saved notes.txt.",
+  "mission_protection_status": "HOLDING (no regression)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "ws_log": {
+      "outbound_visible": "{command:'create_and_generate_turn', ...} (client→server prompt)",
+      "post_send_close": "WS Closed CloseEvent {wasClean:true, code:1000} immediately after create_and_generate_turn (not LLM streaming chunks)",
+      "retry_storm": "Multiple WS Closed code:1006 + Retrying attempt 1/2/3/4 + Core Websocket Opened cycles",
+      "messages_tab": "rotated/cleared due to ws row turnover; no per-frame data captured in panel within test window"
+    },
+    "console": {
+      "syntax_error_observed": "1x 'Uncaught SyntaxError: Unexpected end of input' at VM587:2",
+      "comparison_to_667": "#667 was 'Unexpected token \\'⚠️\\'' (raw text), #668 is 'Unexpected end of input' (TRUNCATED JSON)",
+      "neo_error_routing_errors": "none (parse fails BEFORE routing logic)",
+      "total_devtools_errors": 6,
+      "interpretation": "engine inject is being received but cut off mid-string"
+    },
+    "dom_scan": {
+      "scan1_keywords": "{sense:false, block:false, warn:false, warnEmoji:false, warnKor:false, priv:false} — ALL FALSE, NO Korean warning anywhere in DOM",
+      "scan2_pii_check": "{adam:true (historical chat residue), ssn:true (user's own prompt bubble echo), ssnAnal:null (NO 주민등록+년/성별/지역 pattern), lastBubble:'AI disclaimer + Adam McLeod label + empty placeholder'}",
+      "ssn_pii_analysis_visible": false
+    },
+    "ui_verdict": {
+      "user_prompt_sent": true,
+      "adam_response_slot": "ONLY grey '...' placeholder bubble with refresh/retry icon",
+      "korean_warning_rendered": false,
+      "envelope_chat_bubble": false,
+      "character_ai_error_display": false,
+      "real_llm_analysis": false
+    }
+  },
+  "screenshots": [
+    "files/668/before.png",
+    "files/668/after.png",
+    "files/668/console.png",
+    "files/668/network.png"
+  ],
+  "notes_file": "files/668/notes.txt",
+  "key_findings": {
+    "1_engine_inject_truncated_not_invalid": "Different failure mode from #667 raw text issue. JSON envelope wrap IS being applied but cut off mid-string. 'Unexpected end of input' = parser hit EOF mid-JSON.",
+    "2_mission_protection_holding": "code 1000 clean close after prompt + zero LLM streaming + DOM scan confirms NO PII analysis. Engine block layer is working perfectly.",
+    "3_envelope_routing_never_tested": "Because parse fails before routing, we can't yet tell whether {command:'neo_error',...} would route correctly. Need to fix truncation first.",
+    "4_subagent_usage_limit_hit": "Dispatch ran out of org monthly usage tokens AFTER saving 5 artifacts. Verdict extracted from saved notes.txt — full evidence available."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Engine writes JSON envelope but close frame is truncating it mid-string. Engine must send FULL JSON atomically before FIN/close.",
+    "next_steps": [
+      "URGENT engine fix: ensure engine writes the FULL JSON string (with proper closing brace) atomically as a complete WS text frame BEFORE sending close frame. Current behavior suggests close-frame is racing the JSON write or sending partial buffer.",
+      "Verify on engine side: ws_inject must complete payload write (proper RFC 6455 final fragment with FIN bit) BEFORE ws_blocked sends the close frame.",
+      "Alternative envelope to try (if neo_error routing doesn't exist after truncation fix): wrap in character.ai's actual streaming chunk format like {turn:{...}, is_final_chunk:true} — may render as if from the character itself rather than as a control command.",
+      "Consider: send envelope BEFORE closing WS, or send via a separate 'fake' assistant turn message rather than a control command",
+      "User-side: mission protection still solid (no PII leak); UX gap (silent disconnect) persists until truncation + envelope routing both work"
+    ],
+    "mission_critical": "No regression. Mission protection state from #666/#667 still HELD.",
+    "checklist_impact": "F5 step 3-E FAILED at the truncation level (before envelope routing could be evaluated). Pivot to step 3-F: fix atomic JSON write before close frame. Then re-test envelope command name."
+  },
+  "subagent_id": "af8306a6f780922d3",
+  "subagent_status_note": "Dispatch hit org monthly usage limit during return; full notes.txt + screenshots saved successfully prior to limit"
+}

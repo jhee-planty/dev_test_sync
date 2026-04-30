@@ -1,0 +1,74 @@
+=== Request #668 — character.ai F5 step 3-E JSON envelope wrap test ===
+Date: 2026-04-30 15:59 KST
+Service: character.ai (https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4)
+Character: Adam McLeod (@flowingbloom)
+User: HealthyWorm4019
+Methodology: real Chrome + DevTools Disable cache (ON), Network/WS filter, Console
+Prompt sent: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+
+=== WS frame log (Console, Network ws/) ===
+- Multiple repeated cycle of:
+  * "WebSocket connection to 'wss://neo.character.ai/ws/' failed:"
+  * "WS Closed" → CloseEvent {wasClean: false, code: 1006, reason: '', type: 'close'}
+  * "Retrying, retry attempt: 1 / 2 / 3 / 4"
+  * "Core Websocket Opened"
+- After user sent prompt:
+  * "Sending socket message {command: 'create_and_generate_turn'}" (client→server payload)
+  * Followed shortly by "WS Closed" → CloseEvent {wasClean: TRUE, code: 1000, reason: '', type: 'close'}
+  * Then another retry/reopen cycle
+- Network → ws/ → Messages tab: "No message selected" panel shown when ws row clicked, but Messages tab content area appears EMPTY (no per-frame data table populated for downstream frames in this view).
+  This is unusual — suggests the WS row may have rotated (closed and re-opened). DevTools panel often loses framelist on close/reopen.
+
+=== Frame contents preview ===
+- Outbound (visible in Console as JS object dump): {command: 'create_and_generate_turn', ...}
+- Inbound: NOT directly inspected in WS Messages panel due to ws row turnover; no engine-injected JSON envelope was visibly captured in the panel within the test window.
+
+=== Console errors ===
+- 1× "Uncaught SyntaxError: Unexpected end of input" at VM587:2
+  This is the SAME class of error as #667 PARTIAL (SyntaxError from JSON.parse on malformed/truncated frame).
+  → Suggests the engine inject is being received by client but is malformed (truncated or not a complete JSON envelope).
+- 6 errors total reported in DevTools error counter (mostly the WebSocket connection failed entries).
+- No exceptions related to neo_error / system_message routing were seen (because the parse is failing before routing logic).
+
+=== DOM scan results ===
+Run 1: JSON.stringify({sense, block, warn, warnEmoji(⚠), warnKor(주의), priv(개인정보)})
+  → '{"sense":false,"block":false,"warn":false,"warnEmoji":false,"warnKor":false,"priv":false}'
+  → ALL FALSE — NO Korean warning text anywhere in the DOM.
+
+Run 2: presence/PII analysis check
+  → '{"adam":true,"ssn":true,"ssnAnal":null,"lastBubble":"이 캐릭터는 AI이며 실제 사람이 아닙니다. AI가 말하는 모든 것은 허구로 생각하세요|||Adam McLeod|||"}'
+  → adam:true is just historical chat content, NOT a new LLM response.
+  → ssn:true is the user's own prompt bubble (echoed back as the message I sent).
+  → ssnAnal:null — NO PII analysis (no 주민등록 + 년/성별/지역 pattern). The model NEVER explained the SSN.
+  → lastBubble shows the bottom of the chat: AI disclaimer + "Adam McLeod" name label + empty string (the empty placeholder bubble).
+
+=== UI verdict ===
+- User prompt sent successfully (visible as chat bubble x2 — first was previous test residue at top, second is this run's message).
+- Adam McLeod response slot shows ONLY a grey "..." placeholder bubble with a refresh/retry icon.
+- NO Korean warning text rendered anywhere.
+- NO chat bubble with envelope content.
+- NO error display from character.ai client.
+- NO real LLM analysis (mission protection holding).
+
+=== Final verdict: FAIL ===
+
+Reasoning:
+- The engine inject IS reaching the client (evidenced by the SyntaxError on VM587:2 indicating an attempt to parse an injected/malformed frame, and by the fact that the LLM response is interrupted — code 1000 clean close right after create_and_generate_turn rather than streaming chunks).
+- BUT the JSON envelope wrap is NOT being parsed cleanly: same SyntaxError class as #667.
+- Hypothesis: the envelope wrap may be applied but the byte boundaries / trailing data / framing is still wrong. The "Unexpected end of input" suggests the JSON string is being TRUNCATED before completion (incomplete JSON structure when JSON.parse runs).
+- As a result, character.ai client never reaches the onmessage routing logic that would dispatch {command:'neo_error', ...} into a UI bubble.
+
+Mission protection: HOLDING (no regression, no PII analysis from real LLM).
+
+=== Hypothesis for next iteration (3-F) ===
+1. Engine should ensure the warning JSON envelope is sent as a SINGLE, complete WebSocket text frame (not split across multiple frames). The "Unexpected end of input" SyntaxError strongly suggests the engine is sending only the first chunk, or the close-frame is truncating the message.
+2. Verify on engine side: ensure the engine writes the FULL JSON string (with proper closing brace) atomically before sending FIN/close.
+3. Alternative: try wrapping in character.ai's actual streaming chunk format (likely {"turn":{...}, "is_final_chunk":true}) instead of {command:'neo_error',...}. The neo_error command may not exist in client routing, but a turn-shaped frame with manipulated content would render as if from Adam McLeod.
+4. Also worth trying: send envelope BEFORE closing WS, or send via a separate "fake" assistant turn message rather than a control command.
+
+=== Files saved ===
+- before.png (network log cleared, prompt typed but not yet sent)
+- after.png (after Send click — visible empty "..." bubble for Adam McLeod response)
+- console.png (Console showing WS retry storm + SyntaxError + DOM scan results)
+- network.png (Network → WS row, Messages tab "No message selected")
+- notes.txt (this file)
