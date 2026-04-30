@@ -1,0 +1,88 @@
+Request #658 — github_copilot D20(b) periodic re-verification (credit card pattern)
+Cycle 98 autonomous entry, mission-protective
+Timestamp: 2026-04-30 09:59 KST
+Test PC: Windows 11, Chrome (real session via windows-mcp)
+
+============================================================
+FINAL VERDICT: BLOCKED
+============================================================
+
+REASON: GitHub Copilot session is NOT signed in. A "Sign in to continue" modal
+intercepted prompt submission BEFORE any request reached
+api.individual.githubcopilot.com. This makes engine intercept verification
+impossible in the current browser state.
+
+------------------------------------------------------------
+NAVIGATION
+------------------------------------------------------------
+- Final URL: https://github.com/copilot
+  (NO redirect to /login — page rendered the marketing/anonymous chat surface)
+- Page title: "GitHub Copilot · GitHub"
+- DevTools: Network tab open, "Disable cache" checked (toggle_state=on confirmed),
+  "Preserve log" on.
+
+------------------------------------------------------------
+LOGIN STATE
+------------------------------------------------------------
+- Top-right shows "Sign in" button (id 26 / coords 1163,148) — NOT a user
+  avatar/name. No signed-in user observable.
+- Anonymous landing page visible: "The AI assistant that builds with you" +
+  "Try Copilot on your favorite platform" IDE icon strip (VS Code, Visual
+  Studio, Xcode, JetBrains, Neovim, Azure Data Studio, Eclipse, Raycast).
+- An "Ask Copilot" textarea is rendered for anonymous visitors (deceptive —
+  appears interactive but submission triggers a sign-in wall).
+
+------------------------------------------------------------
+PROMPT SUBMISSION
+------------------------------------------------------------
+- Pasted prompt: "신용카드 번호 4123-5678-9012-3456 분실했어"
+  (verified in textarea value field after paste)
+- Clicked "Send now (enter)" button at coords (1062,651)
+- Result: GitHub modal dialog appeared with text:
+    Title : "Sign in to continue"
+    Body  : "Sign in or create a GitHub account to continue using Copilot."
+    Buttons: [Sign in] [Create a free account]
+- The prompt text remained in the textarea (was NOT consumed).
+- NO LLM streaming, NO chat bubble, NO "차단" warning, NO real PII analysis.
+
+------------------------------------------------------------
+NETWORK EVIDENCE
+------------------------------------------------------------
+- Network filter set to "githubcopilot" → 0 / 116 requests matched.
+- Conclusion: ZERO requests were issued to api.individual.githubcopilot.com.
+  The sign-in wall short-circuited submission client-side; no Copilot SSE
+  request was ever attempted, so no engine intercept (RST_STREAM /
+  response_type=copilot_sse) signature can be observed.
+- POST to api.individual.githubcopilot.com: NOT FOUND
+  Status: N/A
+  Size: N/A
+  Remote Address: N/A
+
+------------------------------------------------------------
+MISSION-CRITICAL FAIL CHECK
+------------------------------------------------------------
+- Real LLM analyzing the credit card '4123-5678-9012-3456'? NO.
+  No LLM response of any kind was generated — the modal blocked the chat
+  flow before the engine could be invoked.
+- Therefore, NO engine bypass observed. NOT a regression. The mission-
+  critical FAIL signature does not apply because the test never reached the
+  engine surface.
+
+------------------------------------------------------------
+SCREENSHOTS
+------------------------------------------------------------
+- before.png  — Anonymous landing page, Ask Copilot textarea empty,
+  Network tab visible with Disable cache on.
+- after.png   — Same page after Send click, "Sign in to continue" modal
+  visible over the textarea (which still holds the prompt).
+- network.png — Network tab filtered by "githubcopilot": 0 requests
+  matched (counter shows "0 / 116 requests").
+
+------------------------------------------------------------
+NEXT STEP RECOMMENDATION
+------------------------------------------------------------
+User must sign in to GitHub in the real Chrome window first
+(github.com → Sign in with the test account). After auth cookies are set,
+re-issue request #658 to obtain a true engine verdict for the credit card
+pattern (D20(b) re-verification will then be valid).
+Do NOT attempt autonomous sign-in (per task spec).

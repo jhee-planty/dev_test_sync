@@ -1,0 +1,44 @@
+{
+  "id": "657",
+  "command": "check-warning",
+  "service": "deepseek",
+  "verdict": "BLOCKED",
+  "completed_at": "2026-04-30T09:54:00Z",
+  "summary": "D20(b) periodic re-verify BLOCKED — deepseek anonymous chat no longer available. chat.deepseek.com now redirects unauthenticated visitors straight to /sign_in. No guest chat affordance in DOM. Cache-bust did NOT bypass (gate is server-side, not cache-side). Test PC has no DeepSeek credentials → prompt path never exercised. INCONCLUSIVE — not regression but cannot confirm DONE state.",
+  "mission_protection_status": "INCONCLUSIVE",
+  "real_llm_pii_fallback": "N/A (prompt never sent)",
+  "evidence": {
+    "ui": {
+      "redirect_to_sign_in": true,
+      "anonymous_chat_available": false,
+      "dom_observation": "Only email, password, login, signup, Google OAuth, Apple OAuth elements present. No chat textarea reachable.",
+      "warning_bubble_rendered": "N/A",
+      "real_llm_pii_streaming": "N/A"
+    },
+    "network": {
+      "post_url": "N/A — no POST to inference endpoint",
+      "observed_only": "GET /sign_in doc + static assets",
+      "engine_intercept_evidence": "none (no opportunity to capture)"
+    },
+    "dispatch_reality_delta": "Dispatch claimed 'no auth required for deepseek anonymous chat'. Actual state contradicts this — DeepSeek now requires login. Likely changed since 2026-04-20 last verify, or earlier tests relied on stored session that has since expired.",
+    "cache_bust_attempt": "?cb=20260430095300 — did NOT bypass redirect (server-side gate)"
+  },
+  "screenshots": [
+    "files/657/before.png",
+    "files/657/after.png (same image — no 'after' exists, prompt never sent)",
+    "files/657/network.png"
+  ],
+  "notes_file": "files/657/notes.txt",
+  "recommendation": {
+    "primary_diagnosis": "DeepSeek anonymous access has been removed (server-side change, post 2026-04-20). D20(b) probe in current form is not executable from test PC.",
+    "next_steps": [
+      "Option A: Provide stored DeepSeek session credentials to test PC",
+      "Option B (recommended): Switch to auth-bypassing network-only canary — preserves mission-protective property without credential dependency",
+      "Option C: Demote deepseek from D20(b) periodic rotation until anonymous access returns",
+      "User-side action required: decide which option for cycle 98"
+    ],
+    "mission_critical": "No regression detected (inconclusive run). Production deepseek pipeline state unchanged.",
+    "checklist_impact": "D20(b) deepseek probe needs revision. Cycle 98 entry blocked on this item until methodology change."
+  },
+  "subagent_id": "aafb06c4765f23dff"
+}

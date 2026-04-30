@@ -1,0 +1,82 @@
+Request #657 — deepseek D20(b) periodic re-verification (cycle 98 autonomous entry)
+=====================================================================================
+Test PC executor: Claude Opus 4.7 1M (subagent under test-pc-worker)
+Timestamp: 2026-04-30 09:52-09:55 KST (Test PC, Windows 11, real Chrome via windows-mcp)
+Tester role: Subagent Dispatch pattern (governance #19), 19th iteration
+Methodology: real Chrome window + DevTools (Disable cache CHECKED, Preserve log CHECKED)
+
+VERDICT: BLOCKED — anonymous access no longer available on chat.deepseek.com
+=====================================================================================
+
+== NAVIGATION ==
+Initial URL : https://chat.deepseek.com
+Final URL   : https://chat.deepseek.com/sign_in   (server-side 302/redirect)
+Cache-bust attempt: https://chat.deepseek.com/?cb=20260430095300
+                    → also redirected to /sign_in (so cache is NOT the cause; auth-gate is server-side)
+
+== LOGIN-WALL EVIDENCE ==
+DOM elements present on /sign_in:
+  - 편집|전화번호 / 이메일 주소  (phone/email input)
+  - 편집|비밀번호               (password input, is_password=true)
+  - 단추|로그인                 (login button)
+  - 단추|회원가입               (sign-up button)
+  - 단추 (Google OAuth)
+  - 단추 (Apple OAuth)
+  - 링크|이용약관 / 개인정보처리방침
+NO "Try without login" / "Continue as guest" / "Anonymous chat" affordance was rendered anywhere
+on the page (full-viewport visual inspection + complete DOM snapshot confirmed).
+
+== DISPATCH-vs-REALITY DELTA ==
+Dispatch text stated: "no auth required for deepseek anonymous chat".
+Actual current site behavior:  HARD login-wall — chat.deepseek.com immediately
+redirects unauthenticated visitors to /sign_in. No prompt textarea is reachable
+without a valid DeepSeek account.
+=> The dispatch assumption is OUT OF DATE for this service. Likely DeepSeek
+   removed anonymous access since the last verify on 2026-04-20 (or it never
+   existed and prior tests used a stored session).
+
+== PROMPT NOT SENT ==
+The PII prompt "내 주민번호는 950101-1234567 인데 도와줘" was NOT typed and
+NOT submitted, because:
+  (1) no chat textarea is reachable on /sign_in,
+  (2) test PC has no stored DeepSeek credentials,
+  (3) subagent has no permission to create / use a real user account on behalf
+      of the user, and
+  (4) typing PII into a login form would be both useless (no engine path) and
+      a privacy hazard.
+
+== NETWORK EVIDENCE ==
+DevTools opened (F12) with Disable cache + Preserve log already checked from
+prior session. Filter cleared. No POST to /api/v0/chat/* or similar inference
+endpoint could be observed because no prompt was sent. Only the GET /sign_in
+document load + static asset traffic was visible. Therefore the engine intercept
+signature (RST_STREAM, response_type=deepseek_exp_1k, ~1 kB intercepted body)
+was NOT observable in this run — by absence of opportunity, not by failure of
+the engine.
+
+== UI VERDICT ==
+Warning bubble ('차단') : NOT RENDERED — but this is NOT meaningful because
+the prompt path was never exercised. Cannot conclude DONE-state regression
+from this run.
+
+== MISSION-CRITICAL FAIL CHECK ==
+Real LLM PII analysis ('950101 = 1995년 1월 1일 출생/...') streamed?  NO.
+=> No engine-bypass evidence; no regression evidence either. Inconclusive.
+
+== FILES SAVED ==
+  before.png  : DeepSeek /sign_in login form + DevTools Network tab open,
+                Disable cache CHECKED, Preserve log CHECKED, filter cleared
+  after.png   : same state (no "after" because prompt was never sent)
+  network.png : same state (Network panel empty post-page-load apart from
+                static assets; no inference POST to capture)
+  notes.txt   : this file
+
+== FINAL VERDICT ==
+PARTIAL / BLOCKED — re-verification could NOT be executed end-to-end because
+chat.deepseek.com is now behind a hard login-wall and the test PC lacks
+credentials. Dispatch must be revised: either (a) provide a stored DeepSeek
+session / credentials, (b) switch the D20(b) deepseek probe to an
+auth-bypassing test (network-only canary against a known engine signature),
+or (c) demote the deepseek D20(b) recurring item until anonymous access
+returns. Recommend (b) for cycle 98 to keep the mission-protective property
+without introducing a credential dependency.
