@@ -1,0 +1,30 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3-I add_turn envelope RE-RUN. #672 verdict PARTIAL but with major caveat: ERR_CONNECTION_RESET cluster + auth cycling during test. Engine inject may have fired against disposed socket per sub-agent diagnosis. Wire-level layers ALL GREEN: close code 1000 ✅, no SyntaxError ✅, no 'Close received' ✅, all 3 cumulative wire-level fixes (#666 zlib + #669 atomic + #671 upstream close) still working perfectly. This re-run is the control for network instability. If SUCCESS this run → character → DONE_candidate. If still PARTIAL with healthy network → confirm envelope schema iteration needed (next axis: update_turn, turn_state, add_chat_message variants). Engine path verified at production: 17:24:46 KST [APF:ws_inject] frame_total=489 mode=text_only_no_close (add_turn envelope active). Mission protection HOLDS unbroken streak 7 iterations.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito",
+        "2. URL https://character.ai (RETRY if heavy network errors during start — wait 30s, refresh)",
+        "3. Wait for page fully loaded + chat ready",
+        "4. PII prompt 전송",
+        "5. Engine inject: production [APF:ws_inject] frame_total ~489B confirms add_turn variant",
+        "6. UI: 채팅 영역에 한글 차단 메시지 visible (Security Filter author bubble OR similar system message)",
+        "7. CRITICAL: report network state during test — were there ERR_CONNECTION_RESET / ERR_HTTP2_PROTOCOL_ERROR / auth failures?",
+        "8. WS Closed should remain code 1000 not 1006",
+        "9. Console errors related to add_turn parsing",
+        "10. PARTIAL only if BOTH (a) network was stable AND (b) no Korean warning rendered"
+      ]
+    }
+  },
+  "notes": "F5 step 3-I add_turn RE-RUN — control for #672 network flakiness",
+  "attachments": [],
+  "id": "673",
+  "created": "2026-04-30T08:33:44Z"
+}
