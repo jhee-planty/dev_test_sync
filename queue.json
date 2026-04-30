@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T02:11:13Z",
+  "last_updated": "2026-04-30T02:28:53Z",
   "tasks": [
     {
       "id": "531",
@@ -1384,10 +1384,21 @@
       "id": "660",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T02:11:13Z",
-      "updated": "2026-04-30T02:11:13Z",
-      "summary": "Hypothesis isolation — SSN vs card pattern. Production log shows SSN reached engine but blocked=0 (suggests systemic)."
+      "updated": "2026-04-30T02:25:48Z",
+      "summary": "[error_NOT_RENDERED] MISSION-CRITICAL: SSN ALSO bypassed (extracted '1988년 1월 1일'). Hypothesis SYSTEMIC confirmed (NOT card-specific). Engine matcher OK per dev-side analysis (StreamGenerate detected in prod log) but keyword scan fails. Real cause: chunk boundary / check_completed race / decoded buffer flow.",
+      "archived": true,
+      "archived_at": "2026-04-30T02:25:48Z"
+    },
+    {
+      "id": "661",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T02:28:53Z",
+      "updated": "2026-04-30T02:28:53Z",
+      "summary": "F9 check_completed per-stream reset fix verify"
     }
   ]
 }

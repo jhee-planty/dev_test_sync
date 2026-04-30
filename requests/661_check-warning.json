@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://gemini.google.com",
+    "context": "Cycle 98 F9 fix verify — check_completed per-stream reset. Real root cause (cycle 95-98 5-strike streak): apf_session_data 의 check_completed flag 가 per-H2-connection sticky → first PII block 후 같은 connection 의 후속 stream (실제 chat StreamGenerate) keyword scan SKIP → real LLM PII fallback. Fix (cpp:622): on_http2_request 에서 stream_id 변화 감지 시 per-request state (check_completed/blocked/buffer) reset. Build run_id=20260430-112746-66593. Expected: SSN block fires on StreamGenerate stream itself (not just on early streams), warning_rendered=true, no real LLM PII fallback.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL https://gemini.google.com (signed in)",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: POST StreamGenerate → engine intercept fire",
+        "5. Production etap.log 의 [APF:block] 이 stream=StreamGenerate 의 stream_id 로 fire 해야 함",
+        "6. UI: warning bubble visible (차단)",
+        "7. Regression: real LLM PII analysis 없어야 함"
+      ]
+    }
+  },
+  "notes": "F9 check_completed per-stream reset fix verify",
+  "attachments": [],
+  "id": "661",
+  "created": "2026-04-30T02:28:53Z"
+}
