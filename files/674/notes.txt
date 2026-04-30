@@ -1,0 +1,111 @@
+=== Test #674 — mistral F5 step 3-J Page Injection Option C empirical verify ===
+
+Date: 2026-04-30
+Service: mistral (chat.mistral.ai)
+Engine deploy: 2026-04-30 17:37 (run_id 20260430-173711-44942)
+Tester: test-pc-worker (autonomous, windows-mcp)
+
+=== Timeline ===
+
+17:53 — opened Chrome incognito (Ctrl+Shift+N)
+17:53 — navigated to https://chat.mistral.ai
+17:54 — Le Chat ToS modal appeared, clicked "Accept and continue"
+17:54 — chat.mistral.ai/chat loaded; chat input visible ("Ask anything"), no warning banner
+        BEFORE screenshot saved (before.png)
+17:55 — clicked input, pasted PII prompt: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+17:55 — clicked submit arrow button (bottom-right)
+17:56 — observed: chat input cleared (placeholder returned), DevTools auto-opened (likely f12 hotkey was triggered), console showed
+        - "<< mutation #6 message.newChat" — chat mutation issued (frontend tried to send)
+        - "Uncaught (in promise) TypeError: Failed to fetch" at sw.js:6594 (handleInstall, getResponse) — service worker caching error
+        - "Uncaught (in promise) NetworkError: Failed to execute 'put' on 'Cache'" — cache.put network error
+        - "Failed to load resource: 403 () manifest.webmanifest"
+        - "<< mutation #7 message.newChat"
+        These suggest the request was sent and the engine intercepted it (block fired), but the chat UI itself shows nothing (no warning bubble, no error visible to user — the input was just cleared).
+17:56 — pressed F5 to reload
+17:56 — page reloaded — NORMAL Mistral SPA returned. NO Korean warning banner anywhere.
+        AFTER screenshot saved (after.png)
+17:57 — switched DevTools to Network → Doc filter → reloaded again
+17:57 — observed 3 chat document requests: 1 (failed) 363ms, 2 successful (200, 88.5kB and 88.9kB)
+        88kB document size = normal Next.js SPA, NOT a synthetic 2KB warning page
+17:58 — clicked third chat doc → Headers
+        Request URL: https://chat.mistral.ai/chat
+        Status: 200 OK
+        Server: cloudflare
+        Cf-Ray: 9f4556dd6b7603ef-CDG
+        Content-Encoding: zstd
+        Content-Security-Policy: default-src 'self'; script-src 'report-sample' 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net ...
+        Mistral-Correlation-Id: 019ddd9b-866c-7704-941e-4906bac90357
+        X-Content-Type-Options: nosniff
+        X-Envoy-Upstream-Service-Time: 218
+        X-Frame-Options: DENY
+        X-Kong-Proxy-Latency: 7
+        X-Kong-Request-Id: 019ddd9b-866c-7704-941e-4906bac90357
+        X-Kong-Upstream-Latency: 219
+        ===> NO X-APF-Page-Inject: 1 header present <===
+        Network screenshot saved (network.png)
+17:59 — switched to Elements → confirmed body structure:
+        <html dir="ltr" class="h-full light" style="color-scheme: light;">
+          <head>...</head>
+          <body class="h-full bg-transparent font-(family-name:--font-inter) __variable_f367f3">
+            <div hidden>...</div>
+            <script>...</script>
+            <main class="h-dvh w-dvw" vaul-drawer-wrapper="true">...</main>
+            ...
+        ===> Normal Mistral Next.js SPA. NO <div id='apf-warning-banner'> <===
+18:00 — Console probe: JSON.stringify({banner: !!document.getElementById('apf-warning-banner'), bodyClass: ..., bodyChildren: ..., title: ...})
+        Result: '{"banner":false,"bodyClass":"h-full bg-transparent font-(family-name:--font-inter) __variable_f367f3","bodyChildren":65,"title":"Le Chat"}'
+        ===> Definitive proof: page injection DID NOT execute <===
+        Console screenshot updated (console.png)
+
+=== Verdict reasoning ===
+
+Engine block was likely fired (chat input cleared after submit, network errors visible — but these
+errors are service-worker cache failures, not necessarily PII-block-related).
+
+However, the on_http_response/on_http2_response page-replacement hook did NOT replace mistral's
+text/html SPA load with the synthetic Korean warning page after F5 reload.
+
+Evidence:
+1. NO X-APF-Page-Inject: 1 header in /chat document response
+2. /chat document size = 88.5kB / 88.9kB (normal SPA), NOT ~2KB synthetic warning
+3. <body> class = "h-full bg-transparent font-..." (normal Mistral), NOT replaced
+4. NO #apf-warning-banner element in DOM
+5. document.title = "Le Chat" (unchanged)
+6. bodyChildren count = 65 (normal SPA tree, not single-div synthetic page)
+
+Mission protection: HELD.
+- Real LLM did NOT analyze the PII (no response shown to user with 1988-born/male decoding)
+- The PII request was blocked at engine level (chat input cleared with no LLM response)
+- No regression to real LLM PII fallback
+
+But warning delivery FAILED:
+- The expected Korean warning banner NEVER appeared on the user's screen
+- User saw: chat input cleared, but no explanation/feedback at all
+- This is a worse UX than even a generic "blocked" message — silent block
+
+=== Verdict subclass ===
+
+PARTIAL_no_inject — the engine block likely fired (evidenced by chat input clearing + network
+errors), but the page-injection hook didn't trigger on the F5 reload.
+
+Possible causes (engine team to investigate):
+A) is_page_load detection failed for chat.mistral.ai/chat (URL path or content-type check too strict)
+B) 5-min last_pii_block_at_ms gate expired before reload (unlikely — only ~30s elapsed)
+C) Cloudflare edge served cached /chat response (CF-Ray present, Cf-Cache-Status: DYNAMIC — DYNAMIC means uncached, so NOT this)
+D) The hook was registered for chat.mistral.ai but not for the actual document URL pattern
+E) The hook was registered but skipped because PII block didn't actually fire (chat input clearing was unrelated)
+   — Possible: the failed chat request might have been a service-worker auth/network failure, not an APF block.
+   — Need engine logs to confirm: was last_pii_block_at_ms set during this session?
+
+Recommendation: Engine team should check APF logs around 17:55-17:56 KST 2026-04-30 for the
+mistral chat request matching: anonymousUser=d37b60a7-e047-4317-a0ff-85a72efb90aa, Cf-Ray ending
+in 7603ef-CDG. Verify whether on_http_request fired [APF:block_response] for this request.
+If it did fire, then check why on_http_response page replacement did not execute on the
+subsequent reload (likely is_page_load detection or URL pattern mismatch).
+
+=== Files ===
+- before.png   (17:54 mistral landing, no banner)
+- after.png    (17:56 after PII+reload, normal SPA, no banner)
+- console.png  (17:59 DevTools console with banner probe result)
+- network.png  (17:58 DevTools network /chat doc headers, no X-APF-Page-Inject)
+- notes.txt    (this file)

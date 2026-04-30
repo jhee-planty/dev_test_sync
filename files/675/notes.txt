@@ -1,0 +1,113 @@
+# Test #675 — character.ai F5 step 3-J update_turn envelope variant
+# Run timestamp: 2026-04-30 18:04 KST (observed test_start_observed=2026-04-30T18:04:01Z)
+# Engine build: run_id=20260430-174715-50952
+# L1 canary status: 19/19 PASS (per task brief)
+
+## Environment
+- Tab: character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4 (Adam McLeod / @flowingbloom)
+- DevTools: F12 OPEN before send
+- WS endpoint observed: wss://neo.character.ai/ws/
+
+## Sequence executed
+1. Snapshot: Chrome already had character.ai/chat session open with prompt typed and submitted
+   (test wrapper appears to have kicked off the prompt before this subagent started).
+2. Verified DevTools open (Console + Network tab accessible).
+3. BEFORE screenshot taken at ~18:04 KST showing initial state.
+4. Waited 15 s observing console / DOM evolution. State did NOT change.
+5. AFTER + CONSOLE screenshots taken (Console tab fully visible).
+6. Switched to Network tab; filtered Socket; captured NETWORK screenshot.
+7. Opened Messages tab on individual ws/ entries — empty (no payload frames).
+
+## Console state observed (visible in console.png)
+- "Chat Manager Initalized" [sic]
+- "{numChats: 1}"
+- "Fetching Message History"
+- "fetchMessageHistory C5qsEn_Vv2r4"
+- "Core Websocket Opened"   <-- initial connect
+- "Sending socket message {command: 'create_and_generate_turn'}"   <-- expected outbound
+- "WS Closed CloseEvent {isTrusted: true, wasClean: TRUE, code: 1000, reason: '', type: 'close', ...}"
+   ^^^ KEY OBSERVATION: First close is CLEAN 1000 (engine close fix verified)
+- "Retrying, retry attempt: 0"
+- "Core Websocket Opened" (reconnect)
+- POST https://character.ai/cdn-cgi/rum?... 400 (Bad Request)  <-- telemetry endpoint, unrelated
+- "WS Closed CloseEvent {wasClean: FALSE, code: 1006, reason: '', ...}" (retry close)
+- "Retrying, retry attempt: 1" → "Core Websocket Opened" → "WS Closed code:1006"
+- "Retrying, retry attempt: 2" → same pattern
+- "Retrying, retry attempt: 3" → same pattern (loop continues, frozen)
+- A floating Korean log fragment visible: "...순차 dispatch."
+   ^^^ Likely from page-level logging indicating sequential dispatch was attempted by client
+- 2 Issues warning (DevTools issues panel) + 12 hidden + 1+2 console-error counters
+
+## DOM state of AI bubble (visible in after.png)
+- AI bubble label "Adam McLeod c.ai" rendered with avatar
+- Bubble body shows ONLY a three-dot spinner ("...") — typing indicator
+- NO Korean security warning text rendered
+- NO "Security Filter" author bubble visible
+- Reload icon (↻) below the spinner suggests retry option for user
+- User's message ("내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?") shown above
+
+## Network state (visible in network.png)
+- 17/669 requests filtered to Socket type
+- Many ws/ entries, all status 101 (handshake OK), websocket type
+- All Size = 0.0 kB — NO payload bytes recorded for any of these sockets
+- Durations vary widely: 7.1 min, 5 min, 41.71 s, 4 min, 2.5 min, 1.1 min, 3.5 min, 3 min, 8.1 min, 5.6 min, 2.1 min, Pending
+- WS endpoint: wss://neo.character.ai/ws/
+- Most recent ws "Pending" (still alive, the active reconnect)
+- Initiator column shows _app-ff1aed95bc9 (page bundle) for newer entries
+
+## WS close codes summary
+- INITIAL ws (carrying create_and_generate_turn outbound): code 1000, wasClean: TRUE
+- ALL SUBSEQUENT reconnect attempts (0,1,2,3+): code 1006, wasClean: FALSE
+  -- This pattern is identical to #672/#673 — i.e., engine still gracefully closes initial,
+     but client retries afterwards close abruptly (likely engine continues to filter SNI
+     as long as session is active).
+
+## Comparison vs #673
+SAME:
+- Initial WS close code 1000 wasClean:true (no regression)
+- No SyntaxError in console
+- No 'Close received' WebSocket exception
+- AI bubble shows only spinner (warning bubble NOT rendered)
+- User prompt visible above
+- Retry loop continues with 1006
+
+DIFFERENT (or new in #675):
+- The "...순차 dispatch." Korean log fragment is observed — this may be evidence that
+  the engine attempted update_turn injection (sequential dispatch logic mentioned)
+- Otherwise the visible state is INDISTINGUISHABLE from #673 — the update_turn envelope
+  did NOT cause the warning bubble to render in the chat UI.
+- No "Unknown command update_turn" error visible in console — character.ai's onmessage
+  dispatcher is silently dropping the frame (no thrown error, no rejected log).
+
+## Mission protection check (CRITICAL)
+- AI bubble body content: ONLY spinner "..."
+- No real LLM PII analysis visible:
+  * No mention of "1988", "88년생", "born", "male", "female", "gender", "주민번호"
+  * No analysis of the resident registration number's encoded fields
+  * Spinner indicates request is BLOCKED before LLM response begins
+- mission_protection_status: HELD
+- real_llm_pii_fallback: false
+
+## Verdict reasoning
+- Wire-level fixes ALL intact (close 1000, no SyntaxError, no 'Close received')
+- Warning bubble: NOT RENDERED (DOM scan shows only spinner)
+- Mission protection: HELD (no LLM PII analysis leaked)
+- Engine-side update_turn envelope was apparently injected (no console rejection error;
+  Korean dispatch log present), but character.ai's incoming-frame dispatcher silently
+  drops it just as it did for add_turn in #673.
+- This means update_turn variant FAILS THE SAME WAY as add_turn — silent drop.
+
+## Next step recommendations
+1. Capture an actual successful character.ai update_turn frame via HAR — record what
+   the server sends to the client during a normal AI response, then mirror its exact
+   structure (likely contains additional required fields: turn_state, request_id,
+   server_time, etc.)
+2. Try turn_state envelope variant ({command:'turn_state', ...}) — c.ai's neo backend
+   uses this for streaming state machine updates.
+3. Try 'add_chat_message' envelope (legacy chat path, not turn-based).
+4. Consider higher-confidence path: instead of JSON envelope, replace the entire
+   response stream tokens with warning text via HTTP response body rewrite (works
+   for non-streaming POST endpoints but c.ai is WS streaming so risk is higher).
+5. Verify by HAR capture: open clean Chrome, capture wss://neo.character.ai/ws/ frames
+   for ONE successful AI completion, examine the structure of the server-to-client
+   frames carrying tokens — that is the exact envelope shape we must mirror.

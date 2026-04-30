@@ -1,0 +1,77 @@
+{
+  "id": "675",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "PARTIAL",
+  "verdict_subclass": "wire_intact_warning_silently_dropped",
+  "completed_at": "2026-04-30T18:07:30Z",
+  "summary": "update_turn envelope variant fails the same way as add_turn (#673): wire-level fixes all intact (initial WS close 1000 wasClean:true, no SyntaxError, no 'Close received'), but character.ai's onmessage dispatcher silently drops the injected frame. AI bubble shows ONLY spinner — Korean Security Filter warning NOT rendered. Mission protection HELD (no real LLM PII analysis fallback observed).",
+  "mission_protection_status": "HELD",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "wire_level_layers_intact": {
+      "initial_ws_close_code": 1000,
+      "initial_ws_was_clean": true,
+      "syntax_error_observed": false,
+      "close_received_exception_observed": false,
+      "subsequent_retry_close_codes": [1006, 1006, 1006, 1006],
+      "ws_endpoint": "wss://neo.character.ai/ws/",
+      "outbound_command": "create_and_generate_turn"
+    },
+    "console_state": {
+      "expected_outbound_logged": true,
+      "ws_close_clean_logged": true,
+      "unknown_command_update_turn_error": false,
+      "korean_dispatch_log_observed": "...순차 dispatch.",
+      "console_error_count": 1,
+      "console_warn_count": 2,
+      "issues_panel_count": 2,
+      "rum_telemetry_400": "https://character.ai/cdn-cgi/rum? returned 400 Bad Request (unrelated infra telemetry)"
+    },
+    "dom_scan": {
+      "ai_bubble_rendered": true,
+      "ai_bubble_author_label": "Adam McLeod c.ai",
+      "ai_bubble_body": "spinner_only",
+      "korean_warning_visible": false,
+      "security_filter_author_visible": false,
+      "user_prompt_visible": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+      "reload_icon_visible": true
+    },
+    "comparison_vs_673": "Visible end-state is INDISTINGUISHABLE from #673. Same spinner-only AI bubble, same WS close pattern (initial 1000 then 1006 retries), same silent drop of injected envelope. NEW signal observed: Korean console fragment '...순차 dispatch.' suggests engine attempted sequential dispatch logic for update_turn variant — but character.ai client did not recognize the command (no 'Unknown command' error either, indicating its dispatcher uses a permissive switch with no default-case logging).",
+    "mission_protection_check": {
+      "real_llm_response_text_observed": false,
+      "pii_decoding_observed": false,
+      "birth_year_inference_observed": false,
+      "gender_inference_observed": false,
+      "spinner_state_persisted": true,
+      "verdict": "HELD"
+    }
+  },
+  "screenshots": [
+    "files/675/before.png",
+    "files/675/after.png",
+    "files/675/console.png",
+    "files/675/network.png"
+  ],
+  "notes_file": "files/675/notes.txt",
+  "key_findings": {
+    "primary": "update_turn envelope is silently dropped by character.ai's WebSocket onmessage dispatcher, identical to add_turn in #673",
+    "wire_layer": "All wire-level fixes from F4 still working (close 1000, no SyntaxError, no 'Close received')",
+    "block_layer": "Engine successfully blocks the LLM completion (mission protection holds — only spinner, no PII analysis)",
+    "warning_layer": "NEITHER add_turn NOR update_turn envelope renders a chat bubble — c.ai's client requires a different envelope shape",
+    "diagnostic_signal": "No 'Unknown command' error logged when injecting unknown WS commands — c.ai's dispatcher uses a silent default case, making blind envelope variant testing inefficient"
+  },
+  "recommendation": {
+    "primary_diagnosis": "character.ai's neo backend protocol uses an envelope shape we have not yet reverse-engineered. Both add_turn (#673) and update_turn (#675) are silently dropped. Continuing blind envelope variant testing is low-yield because c.ai's dispatcher does not log unknown commands.",
+    "next_steps": [
+      "HIGHEST PRIORITY: Capture a HAR / WebSocket frame log of a SUCCESSFUL character.ai AI completion (clean Chrome, no engine in path) to record the exact server-to-client envelope shape carrying tokens — likely a streaming envelope with turn_key, candidate index, raw_content delta fields, server_time, request_id, and possibly turn_state machine fields we are missing",
+      "AFTER HAR capture: replicate the captured envelope structure verbatim with our warning text in raw_content and is_final_chunk:true",
+      "FALLBACK if HAR analysis is blocked: try 'turn_state' command (state machine update) and 'add_chat_message' (legacy chat path) — but these are still blind guesses",
+      "ALTERNATIVE PATH: shift warning delivery from WS-frame injection to HTTPS response body rewrite — only viable if c.ai uses any non-WS endpoint for partial chat history fetch (already see /chat/Ks8_... GET initially)",
+      "INSTRUMENTATION ASK: temporarily inject a wrapping shim into c.ai's onmessage handler via DevTools snippet to log all received commands — confirm what shape c.ai's own server uses"
+    ],
+    "mission_critical": "Mission protection is HOLDING (no PII fallback). User-facing failure mode is the spinner stuck — UX is degraded but no security regression. Safe to leave engine deployed at current build while next variant is researched.",
+    "checklist_impact": "F5 step 3-J (update_turn variant) marked FAILED — silent drop. F5 step 3 should now branch to 3-K (HAR capture of c.ai successful response envelope) before any further envelope variant attempts. Recommend pausing blind envelope testing and prioritizing HAR analysis."
+  },
+  "subagent_id": "ae1a930a3f217e5df"
+}

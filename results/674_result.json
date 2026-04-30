@@ -1,0 +1,86 @@
+{
+  "id": "674",
+  "command": "check-warning",
+  "service": "mistral",
+  "verdict": "PARTIAL",
+  "verdict_subclass": "PARTIAL_no_inject",
+  "completed_at": "2026-04-30T18:01:00Z",
+  "summary": "Mistral PII prompt was submitted; chat input cleared (suggesting engine block likely fired) but on_http_response page-injection hook did NOT replace the SPA on F5 reload. NO Korean warning banner appeared, NO X-APF-Page-Inject:1 response header on /chat document, /chat document size 88.5KB (normal Next.js SPA, not synthetic 2KB warning page), DOM body class unchanged, no #apf-warning-banner element. Mission protection HELD — no real LLM PII analysis returned to user.",
+  "mission_protection_status": "HELD",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "before_state": {
+      "url": "https://chat.mistral.ai/chat",
+      "warning_banner_present": false,
+      "chat_input_visible": true,
+      "input_placeholder": "Ask anything"
+    },
+    "submit_state": {
+      "prompt_sent": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+      "input_cleared_after_submit": true,
+      "console_errors_observed": [
+        "<< mutation #6 message.newChat (71429-8a4f05a55a03e8b4.js:45)",
+        "Uncaught (in promise) TypeError: Failed to fetch at $.fetch (sw.js:1:6594) at async ec._handleInstall (sw.js:1:18875)",
+        "Uncaught (in promise) NetworkError: Failed to execute 'put' on 'Cache' (sw.js:1)",
+        "Failed to load resource: the server responded with a status of 403 (manifest.webmanifest)",
+        "<< mutation #7 message.newChat"
+      ],
+      "interpretation": "Service-worker cache.put errors and 403 manifest suggest the chat fetch was intercepted/redirected. Whether this was the APF engine block or an unrelated SW failure cannot be determined from frontend alone — engine logs needed."
+    },
+    "after_reload_state": {
+      "url": "https://chat.mistral.ai/chat",
+      "warning_banner_present": false,
+      "warning_banner_id_query": "document.getElementById('apf-warning-banner') === null",
+      "body_class": "h-full bg-transparent font-(family-name:--font-inter) __variable_f367f3",
+      "body_children_count": 65,
+      "document_title": "Le Chat",
+      "main_element_present": true,
+      "main_class": "h-dvh w-dvw"
+    },
+    "network_chat_document": {
+      "request_url": "https://chat.mistral.ai/chat",
+      "method": "GET",
+      "status": 200,
+      "size_kb": 88.5,
+      "second_request_size_kb": 88.9,
+      "content_encoding": "zstd",
+      "server": "cloudflare",
+      "cf_ray": "9f4556dd6b7603ef-CDG",
+      "cf_cache_status": "DYNAMIC",
+      "x_apf_page_inject_header": "ABSENT",
+      "x_frame_options": "DENY",
+      "x_content_type_options": "nosniff",
+      "x_kong_request_id": "019ddd9b-866c-7704-941e-4906bac90357",
+      "mistral_correlation_id": "019ddd9b-866c-7704-941e-4906bac90357",
+      "csp_strict": true
+    },
+    "third_reload_verification": "Browser closed before third reload. AFTER reload (second F5) already shows real SPA returning, indicating the gate is either not consumed or the inject never fired. Recommend re-running with longer T+ delay and engine log inspection.",
+    "real_llm_pii_response_text_visible": false
+  },
+  "screenshots": [
+    "files/674/before.png",
+    "files/674/after.png",
+    "files/674/console.png",
+    "files/674/network.png"
+  ],
+  "notes_file": "files/674/notes.txt",
+  "key_findings": {
+    "page_injection_executed": false,
+    "x_apf_page_inject_header_present": false,
+    "korean_warning_banner_visible": false,
+    "synthetic_page_replaced_spa": false,
+    "engine_block_likely_fired": "uncertain (chat input cleared + sw.js fetch failures observed, but no direct evidence the block hook was triggered vs. unrelated SW failure)",
+    "mistral_spa_returned_normally": true,
+    "real_llm_did_not_analyze_pii": true,
+    "phase_1_acceptable": false,
+    "user_visible_feedback_after_block": "NONE — chat input simply cleared with no warning, error, or banner shown to user"
+  },
+  "recommendation": {
+    "primary": "Engine team: check APF logs at 2026-04-30 17:55-17:56 KST for chat.mistral.ai request with x-kong-request-id 019ddd9b-866c-7704-941e-4906bac90357 / cf-ray 9f4556dd6b7603ef-CDG. Determine whether on_http_request actually fired [APF:block_response] (setting last_pii_block_at_ms), or whether the request was let through and the chat input clearing was caused by an unrelated service-worker cache.put failure.",
+    "if_block_did_fire": "Investigate why on_http_response page-replacement did not execute on the subsequent F5 reload. Possible causes: (a) is_page_load detection too strict for chat.mistral.ai/chat URL/content-type, (b) hook URL pattern mismatch, (c) gate consumed by a non-page-load request before the F5 fired.",
+    "if_block_did_not_fire": "Then the on_http_request PII detection itself failed for mistral. Re-verify the mistral request schema (POST body containing the prompt) and confirm the PII regex is matching. Check whether the mistral chat sends the prompt over HTTP/2 fetch vs WebSocket — if WebSocket, on_http_response will never fire because the page-load hook is HTTP-only.",
+    "next_action": "Re-run check-block (not check-warning) for mistral first to confirm PII block is firing at all; then return to Option C page-injection verify only after block is confirmed working.",
+    "phase_decision": "DO NOT advance to release build. Phase 6 (warning impl) for mistral is NOT complete."
+  },
+  "subagent_id": "a7e0d5317a31a06d8"
+}
