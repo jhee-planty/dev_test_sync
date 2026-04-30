@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T02:28:53Z",
+  "last_updated": "2026-04-30T04:41:41Z",
   "tasks": [
     {
       "id": "531",
@@ -1395,10 +1395,21 @@
       "id": "661",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T02:28:53Z",
-      "updated": "2026-04-30T02:28:53Z",
-      "summary": "F9 check_completed per-stream reset fix verify"
+      "updated": "2026-04-30T02:46:41Z",
+      "summary": "[error_INFRASTRUCTURE] F9 INCONCLUSIVE — Gemini frontend hardening (Quill delta + Trusted Types) blocked test PC submit. NOT 6th regression strike. Engine-level F9 PROOF (11:30:37 + 11:31:24 prod log) persists. UI verify needs test-pc-worker tooling update.",
+      "archived": true,
+      "archived_at": "2026-04-30T02:46:41Z"
+    },
+    {
+      "id": "662",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T04:41:41Z",
+      "updated": "2026-04-30T04:41:41Z",
+      "summary": "F5 step 3 WS inject verify (RFC 6455 text frame + close frame)"
     }
   ]
 }

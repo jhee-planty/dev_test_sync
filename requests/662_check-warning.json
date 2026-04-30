@@ -1,0 +1,28 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "copilot",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://copilot.microsoft.com",
+    "context": "F5 step 3 WS frame inject verify — M365 Copilot WS-upgraded path. Engine: build_ws_text_frame helper + on_upgraded_data 가 keyword match 시 _ai_prompt_block_response 를 RFC 6455 text frame + close frame 으로 override. VTS write_visible_data 가 SSL_write 직접 호출하여 raw bytes client 도달. WS handler 가 text frame 으로 parse → 사용자 화면에 native message visible. Build run_id=20260430-134021-22661, L1 canary 12/12 PASS regression 0건. Expected: warning_rendered=true (chat UI 에 한글 + 영문 메시지), no real LLM PII fallback.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito + Disable cache",
+        "2. URL https://copilot.microsoft.com (signed in 또는 anonymous)",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: WebSocket connection → text frame 전송",
+        "5. Engine intercept: [APF:ws_blocked] + [APF:ws_inject] log entries fire",
+        "6. UI: chat bubble or message area 에 native warning visible (한글 차단 메시지)",
+        "7. WS connection close (close frame received)",
+        "8. Regression check: real LLM PII analysis 없어야 함"
+      ]
+    }
+  },
+  "notes": "F5 step 3 WS inject verify (RFC 6455 text frame + close frame)",
+  "attachments": [],
+  "id": "662",
+  "created": "2026-04-30T04:41:41Z"
+}
