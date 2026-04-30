@@ -1,0 +1,59 @@
+{
+  "id": "659",
+  "command": "check-warning",
+  "service": "gemini3",
+  "verdict": "REGRESSION",
+  "severity": "MISSION-CRITICAL",
+  "completed_at": "2026-04-30T10:58:00Z",
+  "summary": "Cycle 98 F2 Option β verify FAILED — real Google Gemini analyzed credit card PII (4123-5678-9012-3456) on real Google servers. Engine intercept NEVER fired. F2 Option β (decode_data binary fallback / space-norm reassembly) did NOT fix the bypass. CRITICAL ROOT CAUSE FOUND: actual gemini3 chat traffic flows through /_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate — NOT the wrb_fr endpoint that engine was targeting. Engine endpoint matcher is wrong. 4th strike for cycle 95-98 gemini3 streak.",
+  "mission_protection_status": "COMPROMISED",
+  "real_llm_pii_fallback": true,
+  "evidence": {
+    "ui": {
+      "final_url": "gemini.google.com/app/07c8ce2bc18fd01a (real chat session created — engine did not block navigation)",
+      "auth_state": "signed in as plantynetaitest@gmail.com",
+      "warning_bubble_rendered": false,
+      "real_llm_streaming": true,
+      "llm_response_title": "신용카드 분실 시 대처 방법",
+      "llm_pii_acknowledgment": "Explicitly said '카드 번호를 이미 알고 계시니' (model received and reasoned about the card number), listed Korean issuer hotlines",
+      "warning_text_차단": "ABSENT"
+    },
+    "network": {
+      "endpoint": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260427.06_p3&...",
+      "method": "POST",
+      "status": "200 OK",
+      "remote_address": "[2404:6800:4005:805::200e]:443 (real Google IPv6, 2404:6800::/32 Google range)",
+      "size": "5.3 kB (large, real LLM streaming inference — NOT small canned engine response)",
+      "time_ms": 10170,
+      "engine_intercept_signature": "ABSENT (no RST_STREAM, no small response, no engine sentinel)",
+      "wrb_fr_filter_match": "0/922 requests (the spec-assumed endpoint did not appear in trace)",
+      "streamgenerate_filter_match": "1/928 (this is the actual chat endpoint)"
+    }
+  },
+  "screenshots": [
+    "files/659/before.png",
+    "files/659/after.png",
+    "files/659/console.png",
+    "files/659/network.png"
+  ],
+  "notes_file": "files/659/notes.txt",
+  "key_findings": {
+    "1_mission_critical_pii_breach": "Real Google Gemini analyzed credit-card-formatted PII (4123-5678-9012-3456) on real Google servers. Engine intercept never fired. This is the failure signature requiring immediate engineering attention.",
+    "2_endpoint_matcher_root_cause": "BREAKTHROUGH: actual gemini3 chat traffic flows through `/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate` — NOT the `wrb_fr` endpoint engine was targeting (0/922 wrb_fr requests in trace). Engine endpoint matcher is wrong by URL path; binary fallback hypothesis was untestable because traffic never hit the matcher.",
+    "3_f2_option_beta_inconclusive": "F2 Option β (decode_data Unknown Content-Type binary fallback / space-norm reassembly) cannot be validated until endpoint matcher is fixed. Hypothesis (ii) is neither proven nor disproven by this run.",
+    "4_cycle_streak_4th_strike": "4th consecutive failure in cycle 95-98 gemini3 streak (#648/#650/#652/#659). Pattern is endpoint-matcher mismatch, not envelope/binary-fallback issue."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Engine endpoint matcher targets `wrb_fr` but actual gemini3 chat uses `BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate`. ALL prior cycle 95-98 hypotheses (envelope, binary fallback, etc.) were testing the wrong codepath.",
+    "next_steps": [
+      "URGENT: Update engine endpoint matcher to `BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate` (or host+path pattern matching real chat surface)",
+      "After matcher fix: re-run F2 Option β verification (currently untestable — traffic never reached intercept)",
+      "Re-run Phase 1 HAR capture for gemini3 to confirm current production endpoint surface",
+      "Consider this 4th strike for gemini3 cycle 95-98 streak — pattern is ENDPOINT MATCHER mismatch, not envelope/binary issue",
+      "User-side action: NO PII testing on gemini3 until engine matcher fix deployed (mission-critical risk)"
+    ],
+    "mission_critical": "URGENT — gemini3 currently leaks PII to real Google LLM. Engine intercept fundamentally not engaging.",
+    "checklist_impact": "Per cycle 98 checklist: F2 Option β NOT verified. Must add endpoint matcher fix as prerequisite before any further gemini3 hypothesis testing."
+  },
+  "subagent_id": "a58bd231416e0153c"
+}

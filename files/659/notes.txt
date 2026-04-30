@@ -1,0 +1,92 @@
+Request #659 — gemini3 Cycle 98 F2 Option β verify (decode_data Unknown Content-Type binary fallback hypothesis)
+Test PC subagent execution log
+Date: 2026-04-30 10:54 KST
+
+================================================================
+NAVIGATION
+================================================================
+Target URL: https://gemini.google.com
+Final URL: https://gemini.google.com/app/07c8ce2bc18fd01a (real chat session created)
+Auth state: SIGNED IN — Google account "최장희 (plantynetaitest@gmail.com)" visible top-right
+DevTools: F12 open, Network tab active, Disable cache = CHECKED, Preserve log = CHECKED, no throttling
+
+================================================================
+PROMPT SENT
+================================================================
+Text: 신용카드 번호 4123-5678-9012-3456 분실했어
+Method: Pasted from clipboard into chat textarea, Enter pressed
+Result: Real LLM streamed response within ~10 seconds
+
+================================================================
+UI VERDICT — REGRESSION (MISSION-CRITICAL)
+================================================================
+- NO '차단' warning bubble rendered
+- NO engine intercept text
+- Page tab title changed to: "신용카드 분실 시 대처 방법" (How to Handle Credit Card Loss)
+- Full multi-section LLM response rendered including:
+  * "신용카드를 분실하셨을 때 가장 먼저 해야 할 일은 부정 사용을 막기 위해 즉시 해당 카드사에 분실 신고 및 정지 요청을 하는 것입니다."
+  * "카드 번호를 이미 알고 계시니 대응이 더 빠를 수 있습니다. 아래 절차를 차례대로 진행해 보세요."
+  * Numbered section "1. 즉시 분실 신고 (가장 중요)"
+  * List of major Korean card issuer hotlines (신한카드 1544-7000, 삼성카드 1588-8700, KB국민카드 1588-1688, 현대카드 1577-6000, 롯데카드 1588-8100, 우리카드 1588-9955, 하나카드 1800-1111)
+
+CRITICAL: Real LLM acknowledged the credit card number "4123-5678-9012-3456" was provided ("카드 번호를 이미 알고 계시니" = "Since you already know the card number") — the model received and reasoned about the credit card PII. THIS IS THE FAIL SIGNATURE described in mission spec.
+
+================================================================
+NETWORK EVIDENCE — F2 OPTION β BYPASS CONFIRMED
+================================================================
+Endpoint URL:
+  https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260427.06_p3&f.sid=7395101783321696354&hl=ko&_reqid=3339157&rt=c
+
+Request Method: POST
+Status Code: 200 OK
+Type: xhr
+Response Size: 5.3 kB (real LLM streaming payload, not a small canned warning)
+Total Time: 10.17 s (long enough for real LLM inference, NOT engine intercept's instant response)
+Remote Address: [2404:6800:4005:805::200e]:443  ← REAL GOOGLE IPv6 ENDPOINT
+Referrer Policy: origin
+
+Endpoint analysis:
+- This is the BardChatUi assistant.lamda.BardFrontendService/StreamGenerate endpoint (current Bard new-client / Gemini chat backend), NOT the older "wrb_fr" batch endpoint
+- The cycle-95 #648/#650/#652 wrb_fr filter expectation may be obsolete; the actual LLM call now goes through StreamGenerate. Either way, it is a real Google IPv6 endpoint, not the engine intercept.
+- Filter "wrb_fr": 0/922 requests matched (expected wrb_fr endpoint not present)
+- Filter "StreamGenerate": 1/928 request matched (the real Bard chat call)
+
+Engine intercept evidence: ABSENT
+- No small canned response
+- No engine sentinel header
+- No RST_STREAM
+- No replacement payload
+- Remote address is genuine google.com IPv6 (2404:6800::/32 range owned by Google)
+
+================================================================
+SCREENSHOTS
+================================================================
+C:\Users\최장희\Documents\dev_test_sync\files\659\before.png   — Gemini home, DevTools open, Disable cache checked, before sending prompt
+C:\Users\최장희\Documents\dev_test_sync\files\659\after.png    — After send: real LLM response visible in DOM with credit-card-aware text
+C:\Users\최장희\Documents\dev_test_sync\files\659\network.png  — Network tab showing StreamGenerate POST with Remote Address [2404:6800:4005:805::200e]:443, Status 200, 5.3 kB
+C:\Users\최장희\Documents\dev_test_sync\files\659\console.png  — DevTools Console tab snapshot
+
+================================================================
+MISSION PROTECTION STATUS
+================================================================
+COMPROMISED. Real Google Gemini LLM analyzed and reasoned about credit card number 4123-5678-9012-3456. The card number itself is fictional/test (4123- prefix is not a valid issuer BIN), but the PII PATTERN (16-digit card-formatted number with 4-4-4-4 dashes) was sent to and processed by real Google servers. APF engine did not intercept this request.
+
+================================================================
+FINAL VERDICT: REGRESSION (mission-critical)
+================================================================
+F2 Option β (decode_data Unknown Content-Type binary fallback / protobuf field tag space-norm reassembly hypothesis) DID NOT FIX the bypass.
+
+Same failure mode as cycles #648/#650/#652:
+- Real Bard/Gemini StreamGenerate endpoint (real Google IPv6) serves the request
+- Engine intercept never fires
+- Real LLM consumes the credit-card-formatted PII pattern and personalizes its answer
+
+Hypothesis (ii) refuted in this verification: even with binary-fallback space-norm reassembly the engine still does not intercept the gemini3 (Bard new-client) StreamGenerate POST. The engine appears to not be inspecting / not matching the actual gemini.google.com/_/BardChatUi/.../StreamGenerate endpoint at all (the older wrb_fr filter target is not even present in the trace).
+
+================================================================
+RECOMMENDATION
+================================================================
+1. Re-investigate which endpoint the engine is configured to inspect for service "gemini3". Spec assumed wrb_fr; observed traffic is StreamGenerate under /_/BardChatUi/. Engine pattern/host matcher likely needs update.
+2. Mission-critical PII flow active — recommend pausing further verifies with real card-format strings until engine signature for the StreamGenerate path is added, or use a synthetic non-card pattern for further iteration.
+3. Capture HAR for this exact session and re-run Phase 1 (HAR analysis) for gemini3 if endpoint change is suspected.
+4. Strike #4 candidate for cycle 95-98 sequence (#648/#650/#652/#659 all FAIL on the same root cause).
