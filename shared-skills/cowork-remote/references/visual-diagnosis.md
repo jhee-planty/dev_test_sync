@@ -24,7 +24,7 @@ L3 에스컬레이션 조건:
 > **Intent (29차 D9 Stage 3 catch)**: read-only AnyDesk 스크린샷 = polling chain 과 **parallel** diagnostic.
 > **Non-applicability**: L3 escalation = polling chain **break 아님**. ScheduleWakeup chain 은 termination 2 조건 (결과 / session 종료) 도달까지 계속 fire. L3 는 추가 visibility 만 제공 (사용자에게 read-only 화면 정보).
 > Canonical-cite 형태로 "30분 무응답 시 L3 진행 → polling 종료" 도출 = D9 anti-pattern Stage 3 (deontic citation). L3 와 polling chain 은 **independent layers**.
-> **Termination canonical**: `genai-apf-pipeline/references/autonomous-execution-protocol.md §Termination Conditions L316-321`.
+> **Termination canonical**: `genai-apf-pipeline/references/autonomous-execution-protocol.md §Termination Conditions`.
 
 ## 촬영 절차
 

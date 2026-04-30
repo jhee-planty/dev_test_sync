@@ -88,7 +88,7 @@ import json
 reason = (
     f"D9 anti-pattern Stage detected (${DETECTED_STAGE}). "
     f"ScheduleWakeup prompt contains timeout/state/citation-based self-termination phrasing — "
-    f"violates Termination Conditions (autonomous-execution-protocol.md §Polling Protocol L316-321). "
+    f"violates Termination Conditions (autonomous-execution-protocol.md §Polling Protocol). "
     f"Polling chain termination = ONLY 2 conditions: (1) result arrival, (2) session end. "
     f"All timeout/retry/state/mode-switch self-termination forbidden (D9). "
     f"Pattern matched: ${DETECTED_PATTERN}. "

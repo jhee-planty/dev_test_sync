@@ -313,7 +313,7 @@ Override mechanism: `service_queue[].failure_threshold` (optional, default=3). S
 - `apf-operation/docs/cycle{N}-followup-tasks.md` 에 entry 추가
 - M3 discussion-review trigger (mission-critical) OR M2 micro-discussion (envelope iteration)
 
-> **D9 안전성**: 본 P4 의 모든 trigger 는 event_arrival (3-event count, regression event detection, evidence field check). 시간/timer/elapsed 기반 termination 일체 없음. 29차 D9 amendment + Termination Conditions L316-321 canonical 준수.
+> **D9 안전성**: 본 P4 의 모든 trigger 는 event_arrival (3-event count, regression event detection, evidence field check). 시간/timer/elapsed 기반 termination 일체 없음. 29차 D9 amendment + Termination Conditions canonical 준수.
 
 ### Verdict Transition Matrix (orchestration view)
 
