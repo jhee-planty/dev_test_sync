@@ -589,4 +589,4 @@ Return value: complete HTTP/1.1 response string including headers and body (with
 - D2.2 synonym detected → INTENTS append (lessons.md §generator-name-discipline 강화)
 - D2.3 wrong reload → reload-correct command 다시 호출 + result.notes 에 기록
 
-**Cross-references**: SKILL.md §Workflow Pattern P1 / failure-class PROTOCOL_MISMATCH (P3 default = debug_envelope:schema_revise).
+**Cross-references**: SKILL.md §Service Iteration Workflow > Pattern P1 / Pattern P3 (failure-class PROTOCOL_MISMATCH default = debug_envelope:schema_revise).

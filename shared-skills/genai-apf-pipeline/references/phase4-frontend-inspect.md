@@ -177,4 +177,4 @@ Phase 5는 이 중 가장 효과적인 방식을 선택하여 설계한다.
 - D4.2 ambiguous (frame_type 미확인) → debug_envelope:har_capture re-baseline
 - D4.3 custom envelope encountered → service profile 에 native vs custom 둘 다 기록
 
-**Cross-references**: SKILL.md §Phase Decision Checklist D4. Phase 5 input doc.
+**Cross-references**: SKILL.md §Service Iteration Workflow > Phase Decision Checklist (D4). Phase 5 input doc.

@@ -238,7 +238,8 @@ infra_unblock_check:* — smoke_test (session start probe; on success → infra_
 
 ## Service Iteration Workflow (31차 normalized — empirical)
 
-> **출처**: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) — 343 archived result.json + service iteration history (mistral 36 reqs / gamma 29 / gemini3 13 / deepseek 12) mining 결과.
+> **출처**: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) — 422 archived result.json (343 successfully parsed, 79 parse errors) + service iteration history (mistral 36 reqs / gamma 29 / gemini3 13 / deepseek 12) mining 결과.
+> **32차 amendment**: P5 Mission Lifecycle Pattern 추가 (cycle concept narrow codify) — `cowork-micro-skills/discussions/2026-04-30_cycle-concept-appropriateness.md`.
 > **Canonical scope**: 본 섹션 = orchestration view. Phase 6 internal iteration detail = `apf-warning-impl/SKILL.md` + `references/phase6-warning-impl-orchestration.md`.
 
 ### Pattern P1 — Service Iteration Macro-cycle
@@ -368,6 +369,48 @@ Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival
 
 상세: `references/phase{N}-*.md` (Phase 6 = `phase6-warning-impl-orchestration.md`).
 
+### Pattern P5 — Mission Lifecycle Pattern (32차 추가)
+
+> Service-level (P1-P4) 보완 — mission-level unit (cycle) 의 적정 사용 form.
+> 출처: 32차 discussion `cowork-micro-skills/discussions/2026-04-30_cycle-concept-appropriateness.md`.
+
+#### Cycle 정의
+
+`cycle{N}` = numbered hypothesis batch. session 보다 길고 mission 보다 짧은 mid-level work-batch unit. multi-service hypothesis matrix tracking 의 unique value 단위.
+
+#### 4 Purposes 차등 채택 (empirical evidence-based)
+
+| Purpose | 채택 form |
+|---------|----------|
+| #1 Cross-session continuity | `session-snapshot-{date}.md` 보조 + `cycle{N}-record.md` 의 Open/Closing section |
+| #2 Hypothesis lifecycle | `cycle{N}-record.md` Hypothesis matrix section + INTENTS §5 citation |
+| #3 Forced bookkeeping | `cycle{N}-record.md` write 의무 (single doc, summary/followup separate 의무 폐지) |
+| #4 Decision provenance | decisions standalone (ts+subject) + `cycle_id` field optional |
+
+#### Cycle Lifecycle States
+
+| State | Trigger | Artifact |
+|-------|--------|----------|
+| **Active mission** (현재) | mission completion_ratio < 1.0 | `apf-operation/docs/cycle{N}-record.md` (live + final archive) |
+| **Late / Maintenance** | completion_ratio = 1.0 + 30-day D20b PASS 누적 | `quarterly{Q}-d20b-record.md` 전환 |
+| **Terminal** | mission closure (사용자 explicit) | all docs archive, 새 cycle 생성 X |
+
+#### cycle{N}-record.md template
+
+→ `apf-operation/docs/cycle{N}-record-TEMPLATE.md` (5 sections: Open / Hypothesis matrix / Decisions log / Followup / Closing)
+
+#### Bookkeeping discipline
+
+- **의무**: `cycle{N}-record.md` 1 doc per cycle
+- **Optional**: separate summary doc / separate followup doc / Git tag / decisions `cycle_id` field
+- **폐지**: summary AND followup 동시 작성 의무 — empirical 0 cycles 충족, practice 가 either-or → 의무 해제
+
+#### Provenance 통합
+
+- decisions/ 의 ts+subject = standalone provenance (cycle 미인용 valid)
+- cycle 인용 시 cycle_id field 사용 (optional)
+- INTENTS §5 의 `{N}차 / cycle {M}` cross-citation = governance narrative
+
 ---
 
 ## 제외 기능
@@ -402,6 +445,7 @@ Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival
 
 - `references/phase1-har-capture.md`
 - `references/phase2-analysis-registration.md`
+- `references/phase2-apf-analysis.md` (sub-agent prompt)
 - `references/phase3-block-verify.md`
 - `references/phase4-frontend-inspect.md`
 - `references/phase5-warning-design.md`

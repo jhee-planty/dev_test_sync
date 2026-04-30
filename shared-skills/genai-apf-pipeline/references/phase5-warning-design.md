@@ -366,4 +366,4 @@ After receiving sub agent output, Cowork reviews in two stages:
 - D5.2 mismatch (is_http2 결정 후 Phase 6 에서 frame 거부) → Phase 4 재진입 + envelope rev
 - D5.3 sub-agent timeout → 3-Step 패턴 (start_process + ps poll + cat output) 적용
 
-**Cross-references**: SKILL.md §Phase Decision Checklist D5. Phase 6 (apf-warning-impl) input.
+**Cross-references**: SKILL.md §Service Iteration Workflow > Phase Decision Checklist (D5). Phase 6 (apf-warning-impl) input.

@@ -161,6 +161,17 @@ if latest_result.real_llm_pii_text_present_in_dom == True and \
 
 ---
 
+## Cross-cycle hypothesis batch (P5 reference, 32차)
+
+Phase 6 retry sub-loop 가 multi-service 동시 진행 시, 각 service iteration 의 결과는 cycle{N} 의 hypothesis matrix 에 누적. 예: cycle 97 = mistral v9 (a) + gemini3 Step A revert + huggingface re-login → 한 cycle 안의 가설 batch.
+
+- cycle{N} 의 batch 단위 진행: 단일 service 의 P1-P4 가 cycle 안에서 여러 iteration 거침
+- 가설 exhaustion tracking: 같은 cycle 내 가설 disprove 시 다음 cycle 으로 followup
+- canonical reference: SKILL.md §Service Iteration Workflow > Pattern P5
+- artifact: `apf-operation/docs/cycle{N}-record.md` (Hypothesis matrix section)
+
+---
+
 ## 관련 references
 
 - SKILL.md §Service Iteration Workflow — P1-P4 patterns canonical

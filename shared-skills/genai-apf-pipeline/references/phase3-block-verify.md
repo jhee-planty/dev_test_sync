@@ -91,4 +91,4 @@ Always update `services/status.md` based on test results:
 - D3.2 architectural BLOCK_ONLY → service profile (services/{svc}_analysis.md) 에 listed 접근법 모두 시도 결과 기록 후 `terminate:block_only_accepted` allowed
 - D3.3 부분 fire → failure_class=PROTOCOL_MISMATCH (P3 default debug_envelope:schema_revise)
 
-**Cross-references**: SKILL.md §Failure Classification P3, §Verdict Transition Matrix.
+**Cross-references**: SKILL.md §Service Iteration Workflow > Pattern P3 (Failure Classification), §Verdict Transition Matrix.
