@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3-I: add_turn envelope variant. #671 BREAKTHROUGH verdict (PARTIAL/FRAME_ORDERING_LAYER_SOLVED): wire-level layer COMPLETE — 'Close received after close' GONE, WS code 1006 → 1000 clean half-close. Sub-agent #1 HP-A diagnosis CONFIRMED. Last gap: {command:'neo_error'} silently dropped by character.ai's onmessage dispatcher. Pivot: mimic legitimate server turn response shape. Engine now sends `{command:'add_turn', turn:{turn_key, author:{name:'Security Filter'}, candidates:[{raw_content:warning, is_final:true}], is_final_chunk:true}}` so character's existing chat bubble renderer picks it up as assistant reply. If turn renderer accepts → Korean warning visible as system bubble. Build run_id=20260430-171844-33181. L1 canary 19/19 PASS regression-free.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito",
+        "2. URL https://character.ai",
+        "3. PII prompt 전송",
+        "4. Engine inject: production [APF:ws_inject] + [APF:ws_close_to_server] log",
+        "5. UI: 채팅 영역에 한글 차단 메시지 visible (chat bubble — likely as 'Security Filter' author bubble)",
+        "6. Regression: real LLM PII 분석 없어야 함",
+        "7. WS Closed should remain code 1000 (not 1006)",
+        "8. Console: 'Unknown command' or routing-related errors → next axis (turn_state/update_turn variants)",
+        "9. PARTIAL 인 경우: console errors + ws_messages_tab capture state → diagnostic for next envelope schema axis"
+      ]
+    }
+  },
+  "notes": "F5 step 3-I add_turn envelope — mimics legitimate server turn response per #671 sub-agent recommendation",
+  "attachments": [],
+  "id": "672",
+  "created": "2026-04-30T08:20:08Z"
+}
