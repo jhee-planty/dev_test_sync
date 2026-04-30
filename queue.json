@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T08:44:13Z",
+  "last_updated": "2026-04-30T08:48:52Z",
   "tasks": [
     {
       "id": "531",
@@ -1527,10 +1527,12 @@
       "id": "673",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T08:33:44Z",
-      "updated": "2026-04-30T08:33:44Z",
-      "summary": "F5 step 3-I add_turn RE-RUN — control for #672 network flakiness"
+      "updated": "2026-04-30T08:46:52Z",
+      "summary": "[error_NOT_RENDERED] F5 step 3-I add_turn definitively dropped (clean network confirmed); pivot to 3-J update_turn",
+      "archived": true,
+      "archived_at": "2026-04-30T08:46:52Z"
     },
     {
       "id": "674",
@@ -1540,6 +1542,15 @@
       "created": "2026-04-30T08:44:13Z",
       "updated": "2026-04-30T08:44:13Z",
       "summary": "Option C empirical verify — mistral first per cross-service Option C deploy run_id 20260430-173711"
+    },
+    {
+      "id": "675",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T08:48:52Z",
+      "updated": "2026-04-30T08:48:52Z",
+      "summary": "F5 step 3-J update_turn variant — sub-agent priority #1 envelope per #673 verdict"
     }
   ]
 }
