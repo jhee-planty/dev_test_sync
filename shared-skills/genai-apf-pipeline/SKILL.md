@@ -239,7 +239,7 @@ infra_unblock_check:* — smoke_test (session start probe; on success → infra_
 ## Service Iteration Workflow (31차 normalized — empirical)
 
 > **출처**: 31차 discussion-review (`cowork-micro-skills/discussions/2026-04-30_apf-pipeline-workflow-normalization.md`) — 422 archived result.json (343 successfully parsed, 79 parse errors) + service iteration history (mistral 36 reqs / gamma 29 / gemini3 13 / deepseek 12) mining 결과.
-> **32차 amendment**: P5 Mission Lifecycle Pattern 추가 (cycle concept narrow codify) — `cowork-micro-skills/discussions/2026-04-30_cycle-concept-appropriateness.md`.
+> **39차 amendment**: 32차 P5 Mission Lifecycle Pattern (cycle codify) **REMOVED**. cycle close ceremony 가 자율 수행 중단 trigger 로 작용 (HR2 위반 패턴 반복 발생). Cycle ID 는 historical tag 로만 (decisions/INTENTS §5 의 inline citation), bookkeeping ceremony / record-TEMPLATE / open-close gate 폐지.
 > **Canonical scope**: 본 섹션 = orchestration view. Phase 6 internal iteration detail = `apf-warning-impl/SKILL.md` + `references/phase6-warning-impl-orchestration.md`.
 
 ### Pattern P1 — Service Iteration Macro-cycle
@@ -310,7 +310,7 @@ Override mechanism: `service_queue[].failure_threshold` (optional, default=3). S
 
 **Effect**:
 - `cause_pointer` revise mandatory (existing diagnosis stale)
-- `apf-operation/docs/cycle{N}-followup-tasks.md` 에 entry 추가
+- `apf-operation/docs/{date}-followup-tasks.md` 에 entry 추가 (date-based)
 - M3 discussion-review trigger (mission-critical) OR M2 micro-discussion (envelope iteration)
 
 > **D9 안전성**: 본 P4 의 모든 trigger 는 event_arrival (3-event count, regression event detection, evidence field check). 시간/timer/elapsed 기반 termination 일체 없음. 29차 D9 amendment + Termination Conditions canonical 준수.
@@ -330,7 +330,7 @@ Override mechanism: `service_queue[].failure_threshold` (optional, default=3). S
 | BLOCKED (auth) | AWAITING_RESULT | NEEDS_LOGIN | `defer:user_login_provisioning` | event_arrival |
 | BLOCKED (infra) | AWAITING_RESULT | BLOCKED_diagnosed (keep) | `infra_blocked:test_pc`; `infra_unblock_check:smoke_test` next session | event_arrival |
 | TERMINAL | any | TERMINAL_UNREACHABLE | terminal_reason set | explicit_user_action / M3 |
-| (regression detected, P4) | DONE | BLOCKED_diagnosed | cause_pointer revise + cycle{N}-followup entry | event_arrival |
+| (regression detected, P4) | DONE | BLOCKED_diagnosed | cause_pointer revise + {date}-followup entry | event_arrival |
 
 > Trigger family canonical: `cowork-remote/references/pipeline-state-schema.md` + 29차 D9 amendment.
 
@@ -365,51 +365,21 @@ Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival
 | 4 frontend-inspect | delivery_method enum (http_api/websocket/sse/grpc/webtransport) | streaming-vs-block + is_http2 frame_type | Native vs custom envelope (services/{svc}_analysis.md) |
 | 5 warning-design | Strategy A/B/C/D/E 선택 | is_http2=0/1/2 결정 | sub-agent dispatch design doc (sonnet) |
 | 6 warning-impl (orchestration view) | Engine fix verb 선택 (apply_engine_fix:* / debug_*:*) | Build verify (ninja + symbol) | D20b verify rotation entry on first SUCCESS |
-| 7 release-build | 모든 비-deferred service DONE | Tag canonical `cycle{N}-{milestone}-{date}` | Verified-state commit + smoke test PASS |
+| 7 release-build | 모든 비-deferred service DONE | Tag canonical `release-{milestone}-{date}` | Verified-state commit + smoke test PASS |
 
 상세: `references/phase{N}-*.md` (Phase 6 = `phase6-warning-impl-orchestration.md`).
 
-### Pattern P5 — Mission Lifecycle Pattern (32차 추가)
+### Cycle 개념 — 39차 REMOVED
 
-> Service-level (P1-P4) 보완 — mission-level unit (cycle) 의 적정 사용 form.
-> 출처: 32차 discussion `cowork-micro-skills/discussions/2026-04-30_cycle-concept-appropriateness.md`.
+32차 P5 codify 가 cycle close ceremony / record-TEMPLATE / open-close gate 를 도입했으나 **자율 수행 중단 trigger** 로 작용 (cycle close 시점에 멈춤 발생 반복). 39차 폐지.
 
-#### Cycle 정의
+**현재 처리**:
+- Mission 단위 = service iteration (P1) 만. cycle = bookkeeping ceremony 아님
+- Cycle ID 는 historical tag 로만 사용 (e.g., 기존 decisions/INTENTS §5 의 "cycle 96 #648" 인용 — 보존)
+- 새 cycle open/close artifact 작성 의무 X
+- Mission close = 32/32 DONE 도달 (P1 macro-cycle 완료) — 별도 cycle close 단계 X
 
-`cycle{N}` = numbered hypothesis batch. session 보다 길고 mission 보다 짧은 mid-level work-batch unit. multi-service hypothesis matrix tracking 의 unique value 단위.
-
-#### 4 Purposes 차등 채택 (empirical evidence-based)
-
-| Purpose | 채택 form |
-|---------|----------|
-| #1 Cross-session continuity | `session-snapshot-{date}.md` 보조 + `cycle{N}-record.md` 의 Open/Closing section |
-| #2 Hypothesis lifecycle | `cycle{N}-record.md` Hypothesis matrix section + INTENTS §5 citation |
-| #3 Forced bookkeeping | `cycle{N}-record.md` write 의무 (single doc, summary/followup separate 의무 폐지) |
-| #4 Decision provenance | decisions standalone (ts+subject) + `cycle_id` field optional |
-
-#### Cycle Lifecycle States
-
-| State | Trigger | Artifact |
-|-------|--------|----------|
-| **Active mission** (현재) | mission completion_ratio < 1.0 | `apf-operation/docs/cycle{N}-record.md` (live + final archive) |
-| **Late / Maintenance** | completion_ratio = 1.0 + 30-day D20b PASS 누적 | `quarterly{Q}-d20b-record.md` 전환 |
-| **Terminal** | mission closure (사용자 explicit) | all docs archive, 새 cycle 생성 X |
-
-#### cycle{N}-record.md template
-
-→ Template: `apf-operation/docs/cycle-record-TEMPLATE.md` — copy to `cycle{N}-record.md` per cycle (5 sections: Open / Hypothesis matrix / Decisions log / Followup / Closing)
-
-#### Bookkeeping discipline
-
-- **의무**: `cycle{N}-record.md` 1 doc per cycle
-- **Optional**: separate summary doc / separate followup doc / Git tag / decisions `cycle_id` field
-- **폐지**: summary AND followup 동시 작성 의무 — empirical 0 cycles 충족, practice 가 either-or → 의무 해제
-
-#### Provenance 통합
-
-- decisions/ 의 ts+subject = standalone provenance (cycle 미인용 valid)
-- cycle 인용 시 cycle_id field 사용 (optional)
-- INTENTS §5 의 `{N}차 / cycle {M}` cross-citation = governance narrative
+> 사용자 catch (39차 trigger): "Cycle 98 final close (11:48 KST)" 같은 close 활동이 자율 수행 자연 boundary 가 아닌 stop trigger 로 작용. HR2 (상태 정리 후 멈추기 금지) 위반 패턴.
 
 ---
 

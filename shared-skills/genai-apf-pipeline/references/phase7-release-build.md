@@ -45,7 +45,7 @@ DONE 서비스도 AI 서비스 프론트엔드 업데이트로 인해 깨질 수
 | ID | Decision Point | Criteria | Source of Truth |
 |----|---------------|----------|-----------------|
 | **D7.1** | All non-deferred services DONE | goal_accounting ratio = `DONE / (TOTAL - TERMINAL_UNREACHABLE)` = 1.0 (100%) — `defer:*` / `infra_blocked:*` 는 카운트 제외 | pipeline_state.json |
-| **D7.2** | Tag canonical naming | `cycle{N}-{milestone}-{date}` (e.g., `cycle97-all-services-done-2026-04-30`) | etap-build-deploy convention |
+| **D7.2** | Tag canonical naming | `release-{milestone}-{date}` (e.g., `release-all-services-done-2026-04-30`) | etap-build-deploy convention |
 | **D7.3** | Verified-state commit | `feedback_verify_before_commit` 준수: 소스 → 빌드 → 배포 → 회귀 → 부하 → commit + tag (verified state 만 tag) | etap-build-deploy 결과 |
 
 **FAIL handling**:

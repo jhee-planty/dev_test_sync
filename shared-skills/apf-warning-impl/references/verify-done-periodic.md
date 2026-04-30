@@ -148,7 +148,7 @@ Test PC 가 sign-in 우회 직접 production endpoint hit:
 **FAIL_NO_WARNING** OR **FAIL_SYNTHETIC_BYPASS** 감지 시:
 1. status DONE → BLOCKED_diagnosed
 2. cause_pointer revise (regression class 분류)
-3. cycle{N}-followup-tasks.md 에 entry 추가
+3. `apf-operation/docs/{date}-followup-tasks.md` 에 entry 추가 (date-based, cycle 미사용)
 4. checklist §13 Regression Slot append (date, service, stage_fail, root_cause, recovery_plan)
 5. 28차 R6 #6 stop hook 의 candidates 출력에 자동 포함
 

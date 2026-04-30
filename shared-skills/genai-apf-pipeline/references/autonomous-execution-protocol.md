@@ -587,7 +587,7 @@ primary task가 blocked(결과 대기 등)일 때:
 
 **Category E 추가 점검 (22차 cycle95 incident 반영)** — 같은 카테고리 내 sub-bullets:
 
-- **Cycle summary doc (예: cycle{N}_master_summary) 작성 후 stop 시도?** → **Stop hook 가 reminder 발동**. 그러나 priming-level 자가 점검: autonomous_candidates 0 증명 후만 stop. summary doc 자체는 OK, doc-write-then-stop pattern 차단.
+- **Summary / status / progress doc 작성 후 stop 시도?** → **Stop hook 가 reminder 발동**. 그러나 priming-level 자가 점검: autonomous_candidates 0 증명 후만 stop. doc 작성 자체는 OK, doc-write-then-stop pattern 차단. (39차 amendment: cycle close ceremony 가 가장 빈번한 trigger 였음 — cycle codify 폐지 후에도 status report 작성 후 stop pattern 잔존 가능, 본 점검 유지.)
 - **M4 (user-required) encounter (예: Test PC infra 실패) 발견?** → 해당 task 만 `defer:*` 또는 `infra_blocked:*`, **다른 candidate 영향 없음**. 일부 task 의 M4 = 전체 stop 정당화 X (cycle95 의 "Test PC infra 실패" → 모든 work stop overgeneralization 사례).
 - **7시간+ long-running session 끝 즈음 reasoning 약화 감지?** → 확실치 않으면 마지막 candidate 1개 더 실행 후 stop. fatigue analog 의 stop bias 차단.
 
@@ -610,7 +610,7 @@ primary task가 blocked(결과 대기 등)일 때:
 - **Source 검증 패턴**:
   1. 사용자 직전 메시지 (현 turn) 에 explicit directive 있는가?
   2. INTENTS.md / progress.md / handoff.md 의 user-quoted directive 인가?
-  3. cycle{N}_master_summary 같은 reference doc 의 narrative 를 "instruction" 으로 misclassify 안 했는가? (reference != instruction)
+  3. summary / progress / status doc 의 narrative 를 "instruction" 으로 misclassify 안 했는가? (reference != instruction)
 - **Self-imposed instruction 차단 후**: 원래 목적 (사용자 underlying intent) 재구성 + autonomous WSA v2 candidate 우선순위 따라 진행.
 - **위반 시 cascade**: self-imposed "instruction" → "종합 보고 작성 trigger" → polling chain 절단 → "polling 미도착" 단정 (D9) → premature stop. 24차 incident 8 패턴.
 

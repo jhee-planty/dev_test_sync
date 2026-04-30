@@ -137,7 +137,7 @@ if latest_result.real_llm_pii_text_present_in_dom == True and \
 
 **Effect** (T2 또는 P4 trigger):
 - `cause_pointer` revise mandatory (existing diagnosis stale)
-- `apf-operation/docs/cycle{N}-followup-tasks.md` 에 entry 추가
+- `apf-operation/docs/{date}-followup-tasks.md` 에 entry 추가 (date-based, cycle 미사용)
 - M2 (envelope iteration) OR M3 (mission-critical) trigger
 
 > **D9 안전**: 모든 trigger = event_arrival family (failure_history count, regression event, evidence field check). 시간/timer/elapsed 무관.
@@ -158,17 +158,6 @@ if latest_result.real_llm_pii_text_present_in_dom == True and \
 | State mutation | apf-warning-impl | apf-operation/state/pipeline_state.json | `runtime/apf-warning-impl/record-iteration.sh` (gated) |
 | D20b verify | apf-warning-impl | cowork-remote verify-warning-quick | request push (28차 spec) |
 | cause_pointer revise | genai-apf-pipeline (M2/M3) | discussion-review skill | `claude -p` 또는 manual |
-
----
-
-## Cross-cycle hypothesis batch (P5 reference, 32차)
-
-Phase 6 retry sub-loop 가 multi-service 동시 진행 시, 각 service iteration 의 결과는 cycle{N} 의 hypothesis matrix 에 누적. 예: cycle 97 = mistral v9 (a) + gemini3 Step A revert + huggingface re-login → 한 cycle 안의 가설 batch.
-
-- cycle{N} 의 batch 단위 진행: 단일 service 의 P1-P4 가 cycle 안에서 여러 iteration 거침
-- 가설 exhaustion tracking: 같은 cycle 내 가설 disprove 시 다음 cycle 으로 followup
-- canonical reference: SKILL.md §Service Iteration Workflow > Pattern P5
-- artifact: `apf-operation/docs/cycle{N}-record.md` (Hypothesis matrix section)
 
 ---
 
