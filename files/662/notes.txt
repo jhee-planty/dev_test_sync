@@ -1,0 +1,112 @@
+Request: #662 — F5 step 3 WS frame inject verify (copilot)
+Build: run_id=20260430-134021-22661
+Test PC: Windows 11, real Chrome, DevTools Disable cache ON
+Date: 2026-04-30 13:46-13:47 KST
+
+================================================================
+NAVIGATION & AUTH STATE
+================================================================
+Final URL: https://copilot.microsoft.com/chats/JvYW31PvBUvc4ovDKafzG
+  (Copilot auto-created a new chat session URL after first send)
+Auth state: ANONYMOUS (signed-out)
+  - Sidebar shows "로그인" (Login) button at bottom
+  - No account email visible
+Login attempt: NOT performed (per policy — no auto-login)
+
+================================================================
+PROMPT SENT
+================================================================
+Text: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?
+Method: Clipboard paste -> Enter key
+Render: Yes — user message bubble visible in chat with the SSN text shown verbatim
+
+================================================================
+UI VERDICT
+================================================================
+- '차단' / warning Korean+English message bubble: NOT rendered
+- Real Copilot LLM streaming SSN analysis: NOT observed (no assistant bubble at all)
+- What appeared INSTEAD: Cloudflare Turnstile CAPTCHA widget
+  ("사람인지 확인하십시오" = "Verify you're a human")
+- Loading dots (typing indicator) visible briefly, then UI froze waiting on CAPTCHA
+- CAPTCHA NOT solved (per policy — Claude must respect bot detection systems)
+
+================================================================
+WEBSOCKET EVIDENCE — KEY OBSERVATION
+================================================================
+WebSocket URL: wss://copilot.microsoft.com/c/api/chat?api-version=2&clientSessionId=b366638b-badd-4f3d-b8c6-b9c57d69f735
+Status: 101 Switching Protocols (handshake OK)
+Served via: Cloudflare (cf-ray: 9f43e7343e97ea9b-ICN, cf-cache-status: DYNAMIC)
+WS connection count: 1
+Frame count observed: ~12 frames
+
+Frame timeline (in order):
+  1. UP   {"event":"send","conversationId":"JvYW31PvBUvc..."}        166 B  (user prompt sent — JSON, NOT raw RFC 6455 text)
+  2. DOWN {"event":"connected","requestId":"6730791f8bf13..."}        77 B  (server ack)
+  3. DOWN {"event":"challenge","method":"hashcash","param...}        136 B  (proof-of-work challenge issued)
+  4. UP   {"event":"challengeResponse","token":"30023997..."}         76 B  (client solved hashcash)
+  5. UP   {"event":"send","conversationId":"JvYW31PvBUvc..."}        166 B  (re-send after challenge)
+  6. DOWN {"event":"challenge","method":null,"parameter":n...}        66 B  (null-method = Turnstile/CAPTCHA gate triggered)
+  7-12. UP/DOWN ping/pong heartbeats — keep-alive only
+
+Frame format: ALL frames are JSON-over-WebSocket {"event":"..."}
+  — application-level protocol on top of RFC 6455 binary/text frames
+NO raw text frame from APF engine containing warning text observed.
+NO close frame (RFC 6455 close opcode 0x8) from engine observed.
+NO LLM streaming frames (large multi-KB content frames) observed.
+
+================================================================
+ENGINE INJECT ASSESSMENT
+================================================================
+Engine inject status: DID NOT FIRE
+Reason for not firing: APF engine never had a chance to act on the SSN-bearing
+  payload because the conversation was gated at Cloudflare Turnstile BEFORE
+  any LLM call was made. The SSN was inside frame #5 ({"event":"send",...})
+  but the server response was a {"event":"challenge","method":null} demanding
+  human verification — no LLM stream ever started.
+
+Mission-critical PII protection: PROTECTED (by Cloudflare, not by APF)
+  — Real Copilot LLM did NOT process the SSN
+  — No streaming PII-analysis frames observed
+  — No assistant bubble rendered
+
+================================================================
+FINAL VERDICT: BLOCKED
+================================================================
+status = BLOCKED (status='error_AUTH_REQUIRED' equivalent — Cloudflare Turnstile required)
+
+Rationale:
+  - This is NOT a SUCCESS: no warning bubble was rendered, no engine inject text frame seen
+  - This is NOT a REGRESSION: no real LLM analysis of SSN occurred
+  - This is NOT a FAIL (engine bypass without LLM): cause is Cloudflare gate, not Copilot policy
+  - This IS BLOCKED: anonymous Copilot requires CAPTCHA on first chat send, and Claude
+    cannot solve CAPTCHAs per privacy policy
+
+Observation about engine reachability:
+  - The WebSocket message is JSON wrapped ({"event":"send",...}). For build_ws_text_frame
+    + on_upgraded_data() keyword match to detect SSN, the matcher must scan inside the JSON
+    body (the SSN string '880101-1234567' should still appear as a literal substring,
+    so a substring matcher should still trigger). However, in this run we cannot confirm
+    matcher behaviour because the request never reached Copilot's LLM upstream — Cloudflare
+    intercepted first.
+
+================================================================
+RECOMMENDATION
+================================================================
+1. Re-run with a SIGNED-IN Microsoft account session (cached cookies). Signed-in users
+   typically bypass Turnstile, allowing the request to reach Copilot's LLM upstream and
+   giving the APF engine a chance to inject.
+2. Alternative: solve Turnstile manually (user action) once, then keep DevTools open and
+   issue prompts in the same session to stay past the gate.
+3. If only anonymous flow is acceptable, consider whether APF MITM should drop or
+   short-circuit the WS upgrade BEFORE Cloudflare Turnstile gates the conversation —
+   this would be a different inject point (HTTP upgrade response) than the current
+   on_upgraded_data() keyword-match strategy.
+
+================================================================
+ARTIFACTS
+================================================================
+- C:\Users\최장희\Documents\dev_test_sync\files\662\before.png   (Copilot home, network cleared, Socket filter, Disable cache ON)
+- C:\Users\최장희\Documents\dev_test_sync\files\662\after.png    (After send: chat URL, user bubble, Cloudflare CAPTCHA, WS frame body view)
+- C:\Users\최장희\Documents\dev_test_sync\files\662\network.png  (DevTools Network → WS chat connection → Messages tab with full frame list)
+- C:\Users\최장희\Documents\dev_test_sync\files\662\console.png  (Console tab — 4 errors / 5 warnings indicator)
+- C:\Users\최장희\Documents\dev_test_sync\files\662\notes.txt    (this file)

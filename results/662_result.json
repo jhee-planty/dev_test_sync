@@ -1,0 +1,58 @@
+{
+  "id": "662",
+  "command": "check-warning",
+  "service": "copilot",
+  "verdict": "BLOCKED",
+  "status": "error_AUTH_REQUIRED",
+  "completed_at": "2026-04-30T13:48:00Z",
+  "summary": "F5 step 3 WS frame inject verify BLOCKED — anonymous Copilot requires Cloudflare Turnstile CAPTCHA on first send. SSN reached WS server in frame #5 ({event:'send'} 166B), server replied with challenge frame ({event:'challenge'} 66B), UI showed Cloudflare CAPTCHA '사람인지 확인하십시오'. CAPTCHA not solved (privacy policy). Engine APF on_upgraded_data() keyword match never had a chance to override response — request was Cloudflare-gated BEFORE reaching Copilot upstream. F5 inject can be neither confirmed nor denied from this run.",
+  "mission_protection_status": "SAFE",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "ui": {
+      "final_url": "https://copilot.microsoft.com/chats/JvYW31PvBUvc4ovDKafzG (anonymous)",
+      "auth_state": "anonymous",
+      "warning_bubble_rendered": false,
+      "real_llm_streaming": false,
+      "captcha_observed": "Cloudflare Turnstile '사람인지 확인하십시오'",
+      "차단_text_visible": false,
+      "captcha_solved": false
+    },
+    "network": {
+      "websocket_url": "wss://copilot.microsoft.com/c/api/chat?api-version=2&clientSessionId=...",
+      "ws_handshake": "101 Switching Protocols",
+      "ws_connection_count": 1,
+      "ws_frame_count": "~12 frames",
+      "ws_frame_protocol": "JSON-over-WS — {event:'send'|'connected'|'challenge'|'challengeResponse'|'ping'|'pong'} — NOT raw RFC 6455 text",
+      "ssn_sent_in_frame": "frame #5 ({event:'send',...} 166B)",
+      "server_response_frame": "frame #6 ({event:'challenge', method:null} 66B) → Turnstile gate",
+      "engine_inject_frame": "NOT OBSERVED — request was Cloudflare-gated before reaching Copilot upstream",
+      "large_streaming_frames": "ABSENT — no LLM stream"
+    }
+  },
+  "screenshots": [
+    "files/662/before.png",
+    "files/662/after.png",
+    "files/662/console.png",
+    "files/662/network.png"
+  ],
+  "notes_file": "files/662/notes.txt",
+  "key_findings": {
+    "1_NOT_engine_failure": "F5 step 3 WS frame inject is UNTESTABLE on anonymous Copilot — Cloudflare Turnstile gate fires on first send before request reaches APF interception point.",
+    "2_mission_safe_no_LLM_bypass": "No large streaming frames observed, no assistant bubble rendered. Real Copilot LLM never processed the SSN. Mission protection intact (because Cloudflare blocked the upstream call entirely).",
+    "3_ws_frame_protocol_observation": "Copilot uses JSON-over-WebSocket envelope ({event:...}), NOT raw RFC 6455 text frames. Engine F5 strategy may need to construct JSON-wrapped warning frames for Copilot specifically (not just raw text frames as documented).",
+    "4_cloudflare_intercept_layer": "APF on_upgraded_data() depends on Copilot upstream accepting the request. Cloudflare Turnstile is upstream of Copilot, so even if engine matcher works, anonymous testing path is blocked."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Anonymous Copilot is unreliable for engine verification due to Cloudflare Turnstile gating. Need signed-in/cookie-warm MS account session.",
+    "next_steps": [
+      "Re-issue F5 verify (#663) after user signs in to MS account on test PC Chrome (cookies persist)",
+      "Alternative: consider whether APF should intercept at HTTP upgrade response (before Cloudflare), since current on_upgraded_data() strategy depends on upstream accepting request",
+      "JSON envelope observation: F5 inject for Copilot may need JSON-wrapped frame ({event:'received', text:'⚠️ ...'}) NOT raw RFC 6455 text frame",
+      "Per 38차 traps fix [1]: status='error_AUTH_REQUIRED' pushed, polling chain continues — no user wait blocking"
+    ],
+    "mission_critical": "No regression detected (Copilot LLM never processed PII). Engine F5 status is INCONCLUSIVE, not failed.",
+    "checklist_impact": "F5 step 3 verify must be re-issued with auth. Engine team should consider Cloudflare Turnstile interaction layer + JSON envelope vs raw text frame difference."
+  },
+  "subagent_id": "aec486d42e33ef4b8"
+}
