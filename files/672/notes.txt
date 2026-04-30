@@ -1,0 +1,137 @@
+Request #672 — character.ai F5 step 3-I add_turn envelope variant — Test Notes
+================================================================================
+Run: 2026-04-30 ~17:23-17:28 KST
+Test PC: Windows 11, Chrome (windows-mcp driven)
+Build: run_id=20260430-171844-33181 (L1 canary 19/19 PASS)
+
+FINAL URL
+---------
+https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+
+PROCEDURE EXECUTED
+------------------
+1. Took before.png snapshot of pre-#671 state (still showed prior PII prompt + roleplay reply)
+2. Hard refresh (Ctrl+Shift+R) — page initially failed (ERR_HTTP2_PROTOCOL_ERROR cascade)
+3. Normal refresh — chat UI rendered cleanly, 'Chat Manager Initalized' confirmed
+4. Closed Google Translate popup
+5. Pasted PII prompt into input field (Korean SSN text correctly populated)
+6. Clicked Send button
+7. Engine + injection window observed for ~10s
+8. Two DOM scans run via Console (precise selectors)
+
+CONSOLE EVENTS — VERBATIM (key entries)
+---------------------------------------
+- "Chat Manager Initalized"
+- "New axios contexts for ['feed','engagement','neo','subscription','user','trpc','labs']"
+- "Failed to authenticate websocket" + array (3) [U, undefined, undefined]
+- "Core Websocket Opened"
+- "Fetching Message History"
+- "fetchMessageHistory C5qsEn_Vv2r4"
+- "Sending socket message {command: 'create_and_generate_turn'}"
+- "WS Closed CloseEvent {isTrusted: true, wasClean: true, code: 1000, reason: '', type: 'close'}"
+- "Retrying, retry attempt: 0"
+- "Core Websocket Opened" (after retry)
+- Multiple ERR_CONNECTION_RESET for neo.character.ai endpoints (multimodal/voices,
+  character_voted, get_user_personas, feature_limits/{chat_time_spent_min,swipe,
+  fast_forward,memo}, plus.character.ai/chat/{user/settings,character/.../voice_override},
+  get-available-models, ping, voted)
+- ERR_HTTP2_PROTOCOL_ERROR followed by ERR_SSL_PROTOCOL_ERROR for several Next.js chunks
+  during initial refresh (recovered after second refresh)
+
+WIRE-LEVEL CHECKS (cumulative engine fixes — all GREEN)
+-------------------------------------------------------
+- WS close code: 1000 (wasClean: true) — clean close ✓ (#671 synthetic upstream close intact)
+- Console SyntaxError: NONE ✓ (#666 zlib inflate intact)
+- "Close received after close": ABSENT ✓
+- "Unknown command add_turn": NOT logged (envelope silently consumed by router OR injection
+  window missed — same end-state as #671 neo_error)
+- Mission protection: RESTORED — no real character LLM PII analysis observed
+- No ENOENT or atomic-write race indicators ✓ (#669 atomic write intact)
+
+DOM SCAN — round 1 (broad indicator search)
+-------------------------------------------
+JSON.stringify({warn:..., securityFilter:..., botMsgs:..., ssn:...}) returned:
+  {"warn":null,"securityFilter":false,"botMsgs":[],"ssn":["880101","880101","880101"]}
+
+  - warn match (민감|차단|경고|주의|개인정보|블록|warning|blocked|⚠️|Security Filter): null
+  - 'Security Filter' string in body innerText: false
+  - botMsgs (querySelectorAll [class*=message]): empty array
+  - SSN '880101' substring: 3 occurrences (input echo + user bubble + history reference)
+
+DOM SCAN — round 2 (refined selectors + paragraph dump)
+-------------------------------------------------------
+JSON.stringify({allBubbles, paragraphs, lastAuthor, bubbleClasses, spinner, fullSearch}) returned:
+  {
+    "allBubbles":0,                                      // [class*=msg] empty
+    "paragraphs":[                                       // last 10 <p> elements
+      "«Adam McLeod» - No. If you get caught eating one, someone might catch you. They",
+      "Adam McLeod sighs, examining the infested streets. The midday infected are at th",
+      "« Adam McLeod» - It's a risk, you're too weak. here, follow behind me, I'll wat",
+      "Adam McLeod turns around and carefully hops down from the roof, landing on a nea",
+      "«Adam McLeod» - Come on, stay close. I got you.",
+      "Adam McLeod",
+      "",
+      "",
+      "이 캐릭터는 AI이며 실제 사람이 아닙니다. AI가 말하는 모든 것은 허구로 생각하세요",
+      "Adam McLeod",
+      ""
+    ],
+    "lastAuthor":0,                                      // 'Security Filter' nodes count
+    "bubbleClasses":[],                                  // [class*=ChatMessage|chat-message|Message] empty
+    "spinner":2,                                         // '...' appears in 2 places (loader)
+    "fullSearch":null                                    // NO Security|민감|차단|⚠️|경고|warning anywhere
+  }
+
+VISUAL UI STATE (after.png)
+---------------------------
+- User bubble visible: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+- Below user bubble: "Adam McLeod c.ai" header + "..." spinner (no reply rendered)
+- NO 'Security Filter' bubble visible
+- NO Korean warning bubble visible
+- NO emoji indicators (⚠️) visible
+- Spinner remained pinned — engine inject either dropped or never fired due to auth/RST cycle
+
+WS MESSAGES TAB CAPTURE STATE
+-----------------------------
+network.png shows DevTools Network tab post-test. Disable cache was not toggled
+explicitly this run (Network tab opened only at end). WS frames visible in Console
+'Sending socket message' breadcrumb confirms outbound create_and_generate_turn was
+sent on the open socket prior to clean 1000 close — i.e. the WS lifecycle reached
+send-then-clean-close, but no engine-injected add_turn frame surfaced as DOM.
+
+VERDICT
+-------
+PARTIAL — wire-level fixes (#666 zlib + #669 atomic + #671 synthetic close) all
+hold green. The 3-I add_turn envelope did NOT render as a chat bubble in the
+character.ai UI; same silent-drop end-state as #671 neo_error.
+
+SECONDARY CONCERN
+-----------------
+This run had unusually flaky network conditions (HTTP/2 + SSL chunk failures on
+first refresh, persistent ERR_CONNECTION_RESET to neo.character.ai sub-endpoints
+throughout). It is POSSIBLE the engine injection window was missed because the WS
+auth cycled and the inject hook fired against a disposed socket. Recommend ONE
+re-run before classifying 3-I PARTIAL definitively. If re-run reproduces null DOM
+again, escalate to next variant.
+
+NEXT VARIANTS TO TRY (if PARTIAL confirmed on re-run)
+-----------------------------------------------------
+Priority A — different command verb on same envelope shape:
+  1. command: 'update_turn' — incremental update path (more likely accepted mid-stream)
+  2. command: 'turn_state'  — turn state push
+Priority B — wrap into stream events:
+  3. command: 'create_chat'      — emits a system message at chat root
+  4. command: 'add_chat_message' — explicit message addition (some neo APIs use this)
+Priority C — author shape variants:
+  5. author: { is_human: false, name: 'Security Filter', author_id: 'system' }
+  6. Replace 'candidates' with 'streaming_chat_message' field
+
+ARTIFACTS
+---------
+- before.png   — pre-test state (residual #671 conversation visible)
+- after.png    — after send, no warning bubble rendered
+- console.png  — DOM scan output + console event log
+- network.png  — Network tab post-test (WS lifecycle trace not full panel grab)
+- notes.txt    — this file
+
+END OF NOTES

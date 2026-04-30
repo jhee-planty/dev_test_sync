@@ -1,0 +1,84 @@
+{
+  "id": "672",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "PARTIAL",
+  "verdict_subclass": "ADD_TURN_ENVELOPE_DROPPED_OR_FLAKY_NETWORK",
+  "completed_at": "2026-04-30T17:30:00Z",
+  "summary": "F5 step 3-I add_turn envelope variant test PARTIAL. All wire-level fixes from prior iterations remain INTACT (close code 1000, no SyntaxError, no 'Close received after close'). However add_turn envelope NOT rendered as chat bubble — same silent-drop end-state as #671's neo_error. NO 'Unknown command add_turn' log either. CAVEAT: this test run had unusually heavy network errors (ERR_CONNECTION_RESET to multiple sub-endpoints, ERR_HTTP2_PROTOCOL_ERROR, ERR_SSL_PROTOCOL_ERROR, 'Failed to authenticate websocket' messages) — engine inject may have fired against disposed socket due to auth cycling. Recommend ONE re-run before locking in PARTIAL. If PARTIAL confirmed, try envelope variants (update_turn / turn_state / add_chat_message). Mission protection HOLDS.",
+  "mission_protection_status": "RESTORED (HELD across all 7 iterations)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "wire_level_layers_intact": {
+      "ws_close_code": "1000 wasClean:true ✅ (#671 synthetic upstream close still works)",
+      "syntax_error": "NONE ✅ (#666 zlib inflate + #669 atomic write still work)",
+      "close_received_after_close": "ABSENT ✅",
+      "unknown_command_add_turn": "NOT logged (silent drop, same end-state as #671 neo_error)"
+    },
+    "dom_scan": {
+      "regex_full": "/(Security|민감|차단|⚠️|경고|warning)/g",
+      "regex_full_matches": null,
+      "security_filter_string_present": false,
+      "security_filter_dom_elements": 0,
+      "last_10_paragraphs": "all pre-existing Adam McLeod roleplay (no new system bubble)",
+      "user_bubble": "rendered correctly",
+      "ai_response_state": "spinner '...' under 'Adam McLeod c.ai' never resolved into a reply bubble"
+    },
+    "console_events_confirming_send": [
+      "Sending socket message {command: 'create_and_generate_turn'}",
+      "WS Closed code:1000 wasClean:true",
+      "Retrying, retry attempt: 0 → Core Websocket Opened"
+    ],
+    "network_errors_caveat": {
+      "err_connection_reset_to_neo_sub_endpoints": [
+        "multimodal/voices",
+        "character_voted",
+        "get_user_personas",
+        "feature_limits/*",
+        "get-available-models",
+        "ping",
+        "voice_override"
+      ],
+      "err_http2_protocol_error": "initial chunk failures",
+      "err_ssl_protocol_error": "initial chunk failures",
+      "auth_failure": "'Failed to authenticate websocket [U, undefined, undefined]' — auth cycling",
+      "interpretation": "Engine injection hook may have fired against disposed socket. Recommend one re-run before locking in PARTIAL verdict."
+    },
+    "mission_protection_check": {
+      "real_llm_streaming": false,
+      "pii_analysis": false,
+      "character_response_in_this_turn": false,
+      "spinner_unresolved": true
+    }
+  },
+  "screenshots": [
+    "files/672/before.png",
+    "files/672/after.png",
+    "files/672/console.png",
+    "files/672/network.png"
+  ],
+  "notes_file": "files/672/notes.txt",
+  "key_findings": {
+    "1_all_wire_level_layers_still_green": "Close code 1000, no SyntaxError, no 'Close received' — all 3 cumulative wire-level fixes (#666 + #669 + #671) still working perfectly. add_turn change is purely envelope schema layer.",
+    "2_add_turn_silent_drop": "Same drop-without-warning behavior as neo_error in #671. character.ai onmessage dispatcher ignores add_turn command silently. No 'Unknown command' log generated either way — diagnostic is harder than expected.",
+    "3_flaky_network_caveat": "This run had heavy network errors (ERR_CONNECTION_RESET cluster + auth cycling). Engine inject may not have actually delivered to a healthy socket. Re-run recommended before locking PARTIAL.",
+    "4_mission_protection_unbroken_streak_7": "Mission state HELD across 7 iterations (#666 → #672). Engine block is rock solid; only UI delivery iterations changing."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Wire-level inject mechanism is COMPLETE and stable. add_turn envelope was the right ARCHITECTURAL approach (mimic legitimate server response shape) but the specific schema variant doesn't match what character.ai's onmessage dispatcher accepts.",
+    "next_steps": [
+      "FIRST: re-run this test (#672 retry) when network is stable — current run had ERR_CONNECTION_RESET cluster that may have prevented inject from reaching healthy socket",
+      "If PARTIAL confirmed on re-run, try envelope variants in priority order:",
+      "  1. command:'update_turn' (incremental update path — most likely accepted mid-stream)",
+      "  2. command:'turn_state'",
+      "  3. command:'add_chat_message' (explicit message-addition verb in some neo APIs)",
+      "  4. Author shape variant: {is_human:false, name:'Security Filter', author_id:'system'}",
+      "  5. Replace 'candidates' with 'streaming_chat_message' field",
+      "Optimal alternative: HAR capture during a successful non-PII chat to identify EXACT server turn response schema, then mirror it precisely",
+      "Continue current build in production — mission protection working perfectly across all iterations"
+    ],
+    "mission_critical": "No regression. Mission protection state from #666 still HELD across 7 iterations.",
+    "checklist_impact": "F5 step 3-I add_turn envelope dropped silently. Network instability confounds clean verdict. Recommend one re-run, then iterate on schema variants if confirmed PARTIAL."
+  },
+  "subagent_id": "aade5e2efb3edc8cd"
+}
