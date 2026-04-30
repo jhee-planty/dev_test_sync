@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3-G: text-only inject (NO bundled close frame). #669 verdict STRUCTURAL_PROGRESS — atomic write fix (3-F) WORKED, NO 'Unexpected end of input', NO SyntaxError. New issue: bundled close frame (0x88 02 03 E8) processed BEFORE data frame at WS parser → 'Close received after close' + socket CLOSED state before onmessage dispatches. Fix: removed close frame entirely. Engine sends ONLY the JSON envelope text frame. is_http2=2 keep-alive + stream_id=0 (skip RST_STREAM). Connection stays open after data frame; client onmessage fires → JSON.parse → routing. Engine block_session() flag still prevents LLM streaming. Expectation: client routes {command:'neo_error',message:'...'} via onmessage → Korean warning visible OR specific 'unknown command neo_error' error if envelope schema needs tweak.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito",
+        "2. URL https://character.ai",
+        "3. PII prompt 전송",
+        "4. Engine inject: production [APF:ws_inject] log mode=text_only_no_close",
+        "5. UI: 채팅 영역에 한글 차단 메시지 visible (chat bubble OR error display)",
+        "6. Regression: real LLM PII 분석 없어야 함",
+        "7. Console: 'Close received after close' 가 사라졌는지 확인. WS Closed code 변화 확인 (1006 → 정상 OR 유지).",
+        "8. WS Messages tab: data frame 캡처되었는지 확인 (#669 에서 0 frames)",
+        "9. PARTIAL 인 경우: 'Unknown command neo_error' 또는 routing-related console error 보고 → next axis (system_message envelope)"
+      ]
+    }
+  },
+  "notes": "F5 step 3-G: text-only inject, no close frame — solves frame ordering race per #669 STRUCTURAL_PROGRESS",
+  "attachments": [],
+  "id": "670",
+  "created": "2026-04-30T07:46:37Z"
+}

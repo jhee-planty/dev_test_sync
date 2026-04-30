@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T07:29:45Z",
+  "last_updated": "2026-04-30T07:46:37Z",
   "tasks": [
     {
       "id": "531",
@@ -1472,19 +1472,32 @@
       "id": "668",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T06:50:34Z",
-      "updated": "2026-04-30T06:50:34Z",
-      "summary": "F5 step 3-E character JSON envelope wrap (neo_error command try)"
+      "updated": "2026-04-30T07:31:24Z",
+      "summary": "[error_NOT_RENDERED] F5 step 3-E truncated; pivoting to 3-F atomic write fix",
+      "archived": true,
+      "archived_at": "2026-04-30T07:31:11Z"
     },
     {
       "id": "669",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "error",
       "created": "2026-04-30T07:29:45Z",
-      "updated": "2026-04-30T07:29:45Z",
-      "summary": "F5 step 3-F atomic write fix — is_http2=2 keep-alive mode, skip on_disconnected race"
+      "updated": "2026-04-30T07:46:12Z",
+      "summary": "[error_NOT_RENDERED] F5 step 3-F atomic write WORKED (no truncation), close frame ordering races data frame; pivot to 3-G text-only",
+      "archived": true,
+      "archived_at": "2026-04-30T07:46:12Z"
+    },
+    {
+      "id": "670",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T07:46:37Z",
+      "updated": "2026-04-30T07:46:37Z",
+      "summary": "F5 step 3-G: text-only inject, no close frame — solves frame ordering race per #669 STRUCTURAL_PROGRESS"
     }
   ]
 }
