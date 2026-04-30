@@ -48,7 +48,7 @@ RT="$SKILL_DIR/runtime"
 | 2 | analysis-registration | SQL draft 파일 생성, DB UPDATE 실행, reload_services, C++ hook 추가 | 분석 sub-agent 결과 리뷰, generator naming |
 | 3 | block-verify | etap-build-deploy 호출, cowork-remote check-block 왕복 | 화면+로그 ground truth 판정, BLOCK_ONLY gate |
 | 4 | frontend-inspect | cowork-remote 로 test PC 에서 DOM profile 수집 | delivery_method 결정 (http_api/websocket/sse/grpc) |
-| 5 | warning-design | design sub-agent dispatch, design doc 초안 저장 | strategy A/B/C/D 선택, is_http2 값 결정 |
+| 5 | warning-design | design sub-agent dispatch, design doc 초안 저장 | strategy A/B/C/D/E 선택, is_http2 값 결정 |
 | 6 | warning-impl | **apf-warning-impl 위임** (iteration loop) | (apf-warning-impl 가 담당) |
 | 7 | release-build | **etap-build-deploy 위임** | post-build verify 판정 |
 
@@ -397,7 +397,7 @@ Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival
 
 #### cycle{N}-record.md template
 
-→ `apf-operation/docs/cycle{N}-record-TEMPLATE.md` (5 sections: Open / Hypothesis matrix / Decisions log / Followup / Closing)
+→ Template: `apf-operation/docs/cycle-record-TEMPLATE.md` — copy to `cycle{N}-record.md` per cycle (5 sections: Open / Hypothesis matrix / Decisions log / Followup / Closing)
 
 #### Bookkeeping discipline
 

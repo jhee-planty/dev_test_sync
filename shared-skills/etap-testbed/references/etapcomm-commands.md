@@ -21,9 +21,10 @@ etapcomm ai_prompt_filter.show_config
 # 키워드 매칭 테스트 (트래픽 불필요)
 etapcomm "ai_prompt_filter.test_keyword[주민번호 123456-7890123]"
 
-# 설정 리로드 (DB 변경 후)
-etapcomm ai_prompt_filter.reload_keywords
-etapcomm ai_prompt_filter.reload_services
+# 설정 리로드 (DB 변경 후) — 변경 대상별 명령 구분 (혼용 금지)
+etapcomm ai_prompt_filter.reload_keywords    # PII keyword 변경 후
+etapcomm ai_prompt_filter.reload_services    # ai_prompt_services (서비스 등록) 변경 후
+etapcomm ai_prompt_filter.reload_templates   # envelope_template (Phase 6 작업) 변경 후 — 필수
 
 # 활성화/비활성화
 etapcomm ai_prompt_filter.enable
@@ -32,21 +33,19 @@ etapcomm ai_prompt_filter.disable
 
 ## VT (visible_tls)
 
-VT는 etapcomm 명령이 제한적 — DB 설정과 etap.log로 확인. (마지막 검증: 2026-04-03)
-
-> ⚠️ **testbed 서버에서 `mysql -u root` 작동 안 함** (실증 2026-04-20). 아래 SQL은 다른 환경(staging/admin web)에서만 유효. testbed에서는 `etap.log` grep으로 대체.
+VT는 etapcomm 명령이 제한적 — DB 설정과 etap.log로 확인. (마지막 검증: 2026-04-03, mysql 접근: 2026-04-20 `sudo mysql`)
 
 ```bash
-# VT 설정 확인 (staging/admin web 환경에서만)
-mysql -u root ogsv -e "SELECT name, integer_value, string_value FROM vt_settings;"
+# VT 설정 확인
+sudo mysql ogsv -e "SELECT name, integer_value, string_value FROM vt_settings;"
 
-# VT 대상/바이패스 확인 (staging/admin web 환경에서만)
-mysql -u root ogsv -e "SELECT target, addr FROM vt_targets WHERE \`use\`='true' LIMIT 20;"
+# VT 대상/바이패스 확인
+sudo mysql ogsv -e "SELECT target, addr FROM vt_targets WHERE \`use\`='true' LIMIT 20;"
 
-# forward_mode 토글 (staging/admin web 환경에서만)
-mysql -u root ogsv -e "UPDATE vt_settings SET integer_value=1 WHERE name='forward_mode';"
+# forward_mode 토글 (1=활성, 0=비활성)
+sudo mysql ogsv -e "UPDATE vt_settings SET integer_value=1 WHERE name='forward_mode';"
 
-# VT 관련 로그 확인 (testbed에서 작동)
+# VT 관련 로그 확인
 grep -i "visible_tls\|tls_proxy\|bypass" /var/log/etap.log | tail -20
 ```
 

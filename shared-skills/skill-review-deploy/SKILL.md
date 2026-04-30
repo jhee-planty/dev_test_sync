@@ -86,8 +86,9 @@ Host 경로:
 
 **자동 검증 스크립트 (Phase 1에서 실행):**
 
-검증 항목 (7개): YAML frontmatter, 라인 수, 인코딩 깨짐, 크로스 레퍼런스,
-고아 references, .bak 잔여 파일, 트리거 중복.
+검증 항목 (11개): §1-§7 static (YAML frontmatter / 라인 수 / 인코딩 / 크로스 레퍼런스 /
+고아 references / .bak 잔여 / 트리거 중복) + §8-§11 library-wide sweep
+(C9 runtime / C10 meta-data / C11 process / C12 filesystem).
 
 → See `references/review-checklist.md` for 각 항목별 복사해서 실행할 수 있는 bash 명령어.
 

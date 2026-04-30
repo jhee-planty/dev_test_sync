@@ -1,10 +1,15 @@
 ---
 name: etap-bench
 type: A
-description: "Etap DPDK 브릿지 성능 벤치마크 스킬. Dell 테스트베드에서 pktgen으로 트래픽을 생성하고 모듈 on/off에 따른 처리량(Mpps), 지연(latency), CPU 사용률을 측정한다. Use this skill whenever: \"벤치마크\", \"성능 측정\", \"pktgen\", \"Mpps\", \"throughput\", \"DPDK 성능\", \"모듈별 성능 비교\", \"etap-bench\", \"performance test\". Do NOT trigger for: 기능 테스트(etap-testbed), 빌드/배포(etap-build-deploy)."
+description: "Etap 브릿지 성능 벤치마크 스킬. Dell 테스트베드에서 ab/hi (L7 HTTPS) + etapcomm 통계로 모듈 on/off 비교. pktgen-dpdk (L2/L3 raw packet) 는 본 testbed 사용 불가 (참조-only). 측정: RSS / imissed / dropPps / etapcomm 통계. Use this skill whenever: \"벤치마크\", \"성능 측정\", \"throughput\", \"모듈별 성능 비교\", \"etap-bench\", \"performance test\". Do NOT trigger for: 기능 테스트(etap-testbed), 빌드/배포(etap-build-deploy)."
 ---
 
 # Etap Performance Benchmark (etap-bench)
+
+> **★ 사용 가능성 제약** (canonical: `~/.claude/memory/feedback_etap_dpdk_unavailable.md`):
+> 본 testbed 에서 **pktgen-dpdk 정상 작동 불가**. Step 2 의 pktgen 절차는 reference 만 (실행 X).
+> **실행 가능 path**: ab/hi (L7 HTTPS, etap-testbed §VT MITM) + etapcomm 통계 (RSS/imissed/dropPps).
+> Core packet path 변경 평가는 한계, **APF/VT 변경 평가는 충분**.
 
 Dell-1(pktgen) → Etap(DPDK 브릿지) → Dell-2(수신) 구성에서 모듈 on/off에 따른 DPDK 성능 변화를 측정한다.
 

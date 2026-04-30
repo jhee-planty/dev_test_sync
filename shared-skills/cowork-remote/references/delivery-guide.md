@@ -72,12 +72,8 @@ dev_test_sync repo 의 shared-skills/ 가 git 으로 자동 동기화 + Test PC 
 
 ## 스킬 업데이트 시
 
-스킬 내용이 변경되면:
-
-1. dev PC에서 `test-pc-worker/` 스킬 수정
-2. `package_skill.py`로 `.skill` 파일 재생성
-3. Git 저장소의 `shared-skills/`에 `.skill` 파일 복사 후 `git push`
-4. test PC에서 Cowork 스킬 관리에서 기존 스킬 제거 후 재설치
+> **21차 amendment**: `.skill` bundle install 시나리오 미지원. 스킬 source 는 `shared-skills/` 직접 사용.
+> 변경 반영은 `skill-review-deploy` skill 의 `sync-mirrors.sh` 로 (`.skill` 재패키징 단계 폐기).
 
 ---
 
