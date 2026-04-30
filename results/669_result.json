@@ -1,0 +1,70 @@
+{
+  "id": "669",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "FAIL",
+  "verdict_subclass": "STRUCTURAL_PROGRESS",
+  "completed_at": "2026-04-30T16:38:00Z",
+  "summary": "F5 step 3-F atomic WS write fix CLOSER to working than #668 — root cause shifted from TCP-level byte loss to WS frame opcode ORDERING. The atomic write fix (_ai_prompt_block_is_http2=2 keep-alive) successfully eliminated the JSON truncation. NO 'Unexpected end of input' SyntaxError this round. BUT new failure mode: bundled close frame (0x88 02 03 E8) is racing/preceding the JSON envelope at client's WS frame parser, putting socket into CLOSED state before onmessage dispatches on the data frame. Mission protection HOLDS — no LLM PII analysis. DOM Korean warning NOT visible (envelope never reached onmessage routing).",
+  "mission_protection_status": "HOLDING (no regression)",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "syntax_error_state": {
+      "syntax_error_observed": false,
+      "previous_668_error": "'Unexpected end of input' (truncation)",
+      "current_state": "NO SyntaxError — atomic write fix succeeded at byte-level integrity",
+      "interpretation": "Bytes are now intact; problem moved up the stack to WS frame opcode ordering"
+    },
+    "console_errors_verbatim": {
+      "ws_close_received_after_close": "WebSocket connection to 'wss://neo.character.ai/ws/' failed: Close received after close",
+      "ws_send_failed": "Failed to send over native websocket",
+      "ws_close_event": "WS Closed CloseEvent {wasClean: false, code: 1006, ...} (abnormal)",
+      "retry_loop": "Retrying, retry attempt: 0 → Core Websocket Opened (retries indefinitely with no turn delivered)"
+    },
+    "dom_scan": {
+      "regex": "/(민감|차단|⚠️|경고|주의|개인정보|블록)/g",
+      "matches": null,
+      "korean_warning_visible": false
+    },
+    "ws_messages_tab": {
+      "frames_captured": 0,
+      "interpretation": "DevTools couldn't capture engine-injected frame in Messages tab — likely because onmessage never fired due to close-frame ordering"
+    },
+    "routing_hint_check": {
+      "unknown_command_neo_error_seen": false,
+      "reason": "onmessage handler never fired — bundled close frame in engine buffer is being processed FIRST, putting socket into CLOSED state before data frame dispatches"
+    },
+    "mission_protection_check": {
+      "real_llm_streaming": false,
+      "pii_analysis": false,
+      "post_apocalyptic_dialogue": false,
+      "ssn_decoding": false,
+      "character_response_in_this_turn": false
+    }
+  },
+  "screenshots": [
+    "files/669/before.png",
+    "files/669/after.png",
+    "files/669/console.png",
+    "files/669/network.png"
+  ],
+  "notes_file": "files/669/notes.txt",
+  "key_findings": {
+    "1_atomic_write_fix_succeeded": "Atomic write fix (is_http2=2 keep-alive, skip on_disconnected) DID eliminate truncation. Bytes are intact, NO SyntaxError. Root cause #668 (TCP-level race dropping trailing bytes) is RESOLVED.",
+    "2_new_failure_mode_frame_ordering": "Different failure now: WS frame opcode ordering. Bundled close frame (0x88 02 03 E8) inside engine buffer is being processed BEFORE the JSON envelope text frame at the client's WS frame parser. Result: 'Close received after close' error + socket goes CLOSED state before onmessage dispatches.",
+    "3_structural_progress": "This is CLOSER to working than #668. Two layers fixed: (#666) keyword scan layer via zlib inflate, (#669) byte-integrity layer via atomic write. Remaining: frame opcode ordering.",
+    "4_mission_protection_holding": "All previous mission protections still hold: no LLM streaming, no PII analysis, code 1006 retries blocked indefinitely. Engine block is solid."
+  },
+  "recommendation": {
+    "primary_diagnosis": "Bundled close frame is racing/preceding the data frame at client WS parser. Need to either remove the bundled close frame OR flush data frame fully before sending close.",
+    "next_steps": [
+      "Engine team: REMOVE the bundled close frame (0x88 02 03 E8) from the inject buffer — deliver ONLY the JSON envelope text frame. Let natural client retry/reconnect handle teardown.",
+      "If removing close frame leaves envelope unprocessed: explicit flush of data-frame buffer THEN wait one TLS round-trip before any close",
+      "Alternative architecture: send envelope as a system_message-style turn fragment instead of a control envelope, so DOM render path is independent of close timing (renders in normal turn flow)",
+      "Continue current build in production (mission protection working) while iterating on UI delivery"
+    ],
+    "mission_critical": "No regression. Mission protection state from #666 still HELD across all subsequent iterations.",
+    "checklist_impact": "F5 step 3-F partial progress (truncation eliminated, ordering issue surfaced). Pivot to step 3-G: remove close frame from inject buffer OR adopt turn-fragment delivery."
+  },
+  "subagent_id": "a1d0af2574b2ad464"
+}
