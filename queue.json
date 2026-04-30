@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T00:50:08Z",
+  "last_updated": "2026-04-30T00:50:22Z",
   "tasks": [
     {
       "id": "531",
@@ -1355,6 +1355,15 @@
       "created": "2026-04-30T00:50:08Z",
       "updated": "2026-04-30T00:50:08Z",
       "summary": "D20(b) overdue verify (deepseek), cycle 98 autonomous entry, mission-protective"
+    },
+    {
+      "id": "658",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T00:50:22Z",
+      "updated": "2026-04-30T00:50:22Z",
+      "summary": "D20(b) overdue verify (github_copilot), cycle 98 autonomous entry, mission-protective"
     }
   ]
 }
