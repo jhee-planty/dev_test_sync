@@ -204,6 +204,82 @@ ROTATION = [
 
 ★★★ 구현은 future codify (D22 후보 — mission-mechanism layer expansion, R6 APF-DE 제안).
 
+---
+
+## Verify-Done Hybrid v2 (2026-04-30 cycle 98 F8 — methodology revision)
+
+> **Trigger**: cycle 98 entry (2026-04-30 #657 deepseek + #658 github_copilot 모두 `error_AUTH_REQUIRED`) — anonymous chat erosion 발견.
+> **Design source**: `apf-operation/docs/cycle98-f8-d20b-methodology-network-canary-design.md` (240 lines)
+> **Decision provenance**: `apf-operation/state/decisions/20260430_100200_M1_d20b-methodology-pivot.json`
+> **Status**: Phase A (L1 canary) implemented + empirically validated (12/13 services PASS). Phase B (본 spec) codify. Phase C (L2-2B synthetic probe) cycle 100+.
+
+### v1 (UI-only) → v2 (2-tier hybrid) 전환 사유
+
+v1 의 anonymous-access 가정이 시간 경과로 erosion. cycle 98 entry 에서 deepseek + github_copilot 의 sign-in wall 로 UI verify 차단. 잔여 11 DONE services 도 동일 risk.
+
+### Tier-L1 (always-on, credential-free): Production etap.log canary
+
+**Trigger**: 매 cycle 시작 (vs v1 의 7-day stale check)
+
+**Implementation**: `apf-operation/scripts/d20b-l1-canary.sh` (executable, smoke-tested 2026-04-30 10:09 KST)
+
+**Protocol**:
+```
+For each S in done_services:
+  count = SSH grep '[APF:block_response]' /var/log/etap.log | grep -c "service=$S\b"
+  
+  if count >= 1: verdict = PASS_BLOCKED_FIRED   (mission protection ACTIVE)
+  if count == 0: verdict = STALE_NO_TRAFFIC OR ACTIVE_NO_BLOCKS (escalate L2)
+```
+
+**Cost**: ~13초 for 13 services (single SSH session). **~100x speedup vs v1 UI verify**.
+
+**Semantic coverage**: S1 (engine intercept) + S2 (block delivery). **NOT S3** (UI render).
+
+### Tier-L2 (occasional, 30-day cadence): UI verify + Synthetic probe
+
+**Trigger**: L1 ambiguous (STALE_NO_TRAFFIC / ACTIVE_NO_BLOCKS) OR 30-day rotation.
+
+**Variant 2A — Auth-feasible service**: 기존 `verify-warning-quick` (UI DOM assertion). Covers S1+S2+S3.
+
+**Variant 2B — Auth-gated service** (cycle 100+ implementation): synthetic PII payload 직접 production endpoint 전송 → engine intercept 검증. Covers S1+S2 (S3 skipped, credential-free).
+
+### State transition matrix v2
+
+| L1 | L2 | New status |
+|----|----|------------|
+| PASS_BLOCKED_FIRED | (skipped, except 30d cadence) | DONE maintained |
+| STALE_NO_TRAFFIC | PASS_UI_RENDERED | DONE maintained |
+| STALE_NO_TRAFFIC | UNABLE_AUTH_GATE | DONE maintained (semantic gap flag) |
+| ACTIVE_NO_BLOCKS | PASS_SYNTHETIC_BLOCK | DONE maintained |
+| ACTIVE_NO_BLOCKS | FAIL_SYNTHETIC_BYPASS | **DONE → BLOCKED REGRESSION** |
+| any | FAIL_NO_WARNING | **DONE → BLOCKED REGRESSION** |
+| any | UNABLE_AUTH_GATE | DONE maintained (S3 unverifiable, flag for cycle 100+ synthetic L2-2B) |
+
+### Result schema extension (cowork-remote SKILL.md §Result Classification 와 동기)
+
+`UNABLE_AUTH_GATE` verdict 추가 — UI verify 가 sign-in wall 로 short-circuit (regression 아님 + S3 검증 못함).
+
+### Empirical validation snapshot (2026-04-30 cycle 98)
+
+| Service | L1 verdict | block count |
+|---------|-----------|-------------|
+| chatgpt | PASS | 28 |
+| claude | PASS | 33 |
+| genspark | PASS | 7 |
+| blackbox | PASS | 6 |
+| qwen3 | PASS | 20 |
+| grok | PASS | 30 |
+| deepseek | PASS | 35 |
+| github_copilot | PASS | 4 |
+| huggingface | PASS | 23 |
+| baidu | PASS | 17 |
+| duckduckgo | PASS | 46 |
+| chatgpt2 | STALE_NO_TRAFFIC | 0 (DISABLED 중복) |
+| you | PASS | 79 |
+
+→ 12/13 services mission protection ACTIVE empirically 재확인. Snapshot: `apf-operation/state/d20b-l1-canary-2026-04-30.json`.
+
 ## Related micro-skills
 
 - `genai-apf-pipeline` : Phase 3 에서 본 skill 반복 호출 (최상위 orchestrator).
