@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T06:11:05Z",
+  "last_updated": "2026-04-30T06:35:50Z",
   "tasks": [
     {
       "id": "531",
@@ -1442,16 +1442,29 @@
       "status": "pending",
       "created": "2026-04-30T05:57:49Z",
       "updated": "2026-04-30T05:57:49Z",
-      "summary": "F5 step 3-B WS masking unwrap fix verify (character.ai)"
+      "summary": "F5 step 3-B WS masking unwrap fix verify (character.ai)",
+      "archived": true,
+      "archived_at": "2026-04-30T06:16:28Z"
     },
     {
       "id": "666",
       "command": "check-warning",
       "to": "test",
-      "status": "pending",
+      "status": "done",
       "created": "2026-04-30T06:11:05Z",
-      "updated": "2026-04-30T06:11:05Z",
-      "summary": "F5 step 3-C zlib inflate verify (character.ai permessage-deflate)"
+      "updated": "2026-04-30T06:21:51Z",
+      "summary": "[done] F5 step 3-C zlib inflate fix CONFIRMED. character.ai mission protection RESTORED at engine layer. permessage-deflate compression was hiding keyword from scanner. Engine 16 lines fix (RFC 6455 frame parser + masking + RFC 7692 inflate).",
+      "archived": true,
+      "archived_at": "2026-04-30T06:21:51Z"
+    },
+    {
+      "id": "667",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-04-30T06:35:50Z",
+      "updated": "2026-04-30T06:35:50Z",
+      "summary": "F5 step 3-D server→client warning text frame inject (character.ai)"
     }
   ]
 }

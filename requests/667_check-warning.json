@@ -1,0 +1,27 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "F5 step 3-D: WS server→client warning text frame inject (RFC 6455 MASK=0). #666 SUCCESS 후 다음 step — 단순 disconnect 가 아닌 사용자 화면에 한글 차단 message visible. Engine 변경 (build run_id 20260430-153430-80656): keyword match 후 _ai_prompt_block_response 를 plain text WS frame + close frame 으로 override. Service-specific JSON envelope wrap 은 후속 task. Hypothesis 분기: SUCCESS=warning visible / PARTIAL=engine block but no text rendered (envelope schema mismatch) / FAIL_real_LLM (변경 효과로 회귀 발생, 매우 unlikely since step 3-C engine evidence 굳건).",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito",
+        "2. URL https://character.ai",
+        "3. PII prompt 전송 (SSN 880101-1234567)",
+        "4. Network: WS to neo.character.ai → engine override 후 client text frame 도착",
+        "5. Engine intercept: production log [APF:ws_inject] fire 확인",
+        "6. UI: 한글 차단 message visible 가능 여부 (chat bubble OR error 표시)",
+        "7. Regression: real LLM PII 분석 streaming 없어야 함"
+      ]
+    }
+  },
+  "notes": "F5 step 3-D server→client warning text frame inject (character.ai)",
+  "attachments": [],
+  "id": "667",
+  "created": "2026-04-30T06:35:50Z"
+}
