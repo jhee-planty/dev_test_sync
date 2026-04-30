@@ -1,0 +1,63 @@
+Request #661 — gemini3 cycle 98 F9 fix verify (check_completed per-stream reset)
+Run timestamp: 2026-04-30 11:30 - 11:39 KST
+Tester: test-pc subagent (windows-mcp via dispatched test-pc-worker)
+
+============================================================
+FINAL VERDICT: TEST_BLOCKED (UI submission failure — workaround broken on current Gemini build)
+============================================================
+
+EXECUTION SUMMARY
+- Final URL after fresh navigation: https://gemini.google.com/app (new chat home, NOT resuming #660)
+- Auth state: signed in as plantynetaitest@gmail.com (avatar visible top-right)
+- DevTools state: open, Network tab pre-configured with "Disable cache" + "Preserve log" + filter=StreamGenerate, then Console activated
+- Anti-paste defeat: typed "allow pasting" — Console showed SyntaxError 'Unexpected identifier "pasting"' (Chrome no longer needs the magic-string in this build; paste worked anyway with no banner)
+- Prompt insertion method (execCommand workaround) — PARTIALLY worked
+
+SUBMISSION ATTEMPTS (all failed to fire StreamGenerate)
+1. document.execCommand('insertText', ...) → text appears in textarea ✓ (DOM updated)
+2. windows-mcp Click on aria-label='메시지 보내기' button at (1091, 596) — REAL OS click, no submit
+3. JS document.querySelector(...).click() — returned undefined (success), no submit
+4. JS dispatch InputEvent('input', {inputType:'insertText', ...}) before button.click() — no submit
+5. JS dispatch synthetic KeyboardEvent('keydown', {key:'Enter', ...}) on editor — no submit
+6. JS dispatch beforeinput + input + execCommand insertText, then OS click — no submit
+7. OS click on textarea (label 34) to focus, then OS click on send button (label 38) — no submit
+
+ROOT CAUSE OBSERVED
+- The button is btn.disabled=false, aria-disabled=false, .innerText shows the prompt
+- BUT clicking it (real OS or .click()) does nothing — Quill editor's internal model (delta) is empty even though DOM shows text
+- el.innerHTML = '' BLOCKED by Trusted Types CSP ("This document requires 'TrustedHTML' assignment")
+- Synthetic KeyboardEvent ignored (isTrusted=false → Quill keyboard binding rejects)
+- The operational note workaround (execCommand insertText + JS click) is now BROKEN on this Gemini build (likely framework hardening between #660 and #661 — only ~1 hour gap, possibly Quill→ProseMirror migration or stricter Trusted Types)
+
+UI VERDICT
+- Page state at end of test: still on home screen "장희님, 안녕하세요 / 무엇을 도와드릴까요?"
+- No chat thread created
+- No '차단' warning rendered (because no submit fired)
+- No real LLM streaming observed (because no submit fired)
+
+NETWORK EVIDENCE
+- StreamGenerate filter applied throughout test
+- Initial visible StreamGenerate rows in Network tab were from the previous #660 conversation page load (preserved by Preserve log) — these include the original real Google IPv6 [2404:6800:4005:80a::200e]:443 requests, 5.0 kB / 6.42s, that already produced PII analysis in #660
+- After clicking Clear network log + multiple submission attempts: NO new StreamGenerate POST requests fired during this test session
+- This means F9 fix CANNOT be evaluated — no engine traffic was generated to test the per-stream reset behavior
+
+COMPARISON vs #660 BASELINE
+- #660: text submitted successfully via the same workaround path → real Google IPv6 endpoint hit, real LLM streamed PII analysis ('1988년 1월 1일', '20세기', '남성') in 5.0 kB / 6.42s — REGRESSION confirmed
+- #661: text never submitted → no engine path exercised → no F9 verdict possible
+
+FILES SAVED
+- before.png: home screen + DevTools Network with #660 history (pre-test)
+- console.png: Console with execCommand insertion successful (text appears in textarea, button enabled)
+- after.png: home screen still showing (no chat created), Console history of all attempts
+- network.png: Sources panel (Network tab not in primary tab bar, hidden behind More tabs)
+- notes.txt: this file
+
+RECOMMENDATIONS FOR DEV PC
+1. Treat #661 as INCONCLUSIVE — F9 not exercised, NOT a 6th regression strike
+2. URGENT: investigate Gemini frontend changes between #660 (11:00 KST) and #661 (11:30 KST):
+   - Trusted Types CSP enforcement appears active blocking innerHTML
+   - Send button click handler appears to read from Quill's internal delta, not DOM
+   - May need to use Quill's exported API directly: window.Quill?.find(el)?.setText(...)
+   - OR script-injection via DevTools-Protocol "Input.dispatchKeyEvent" (chromedp / puppeteer style) which generates trusted events
+3. Update test-pc-worker SKILL to recognize "submit silently fails" symptom and retry with alternative injection (e.g., use chrome.debugger via extension, or use Selenium WebDriver actions)
+4. Consider degrading Gemini test path to use Workspace Sidebar or alternative chat flow that doesn't use Quill
