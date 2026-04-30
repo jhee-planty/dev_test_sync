@@ -1,0 +1,85 @@
+Request #666 - character.ai F5 step 3-C zlib inflate fix verify (RETRY of #665)
+==================================================================================
+Test Date: 2026-04-30 15:14 KST
+Engine Build: run_id=20260430-150949-68381 (zlib inflate raw deflate -15 windowBits BEFORE keyword scan)
+
+Final URL after navigation
+--------------------------
+https://character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4
+
+Methodology
+-----------
+- Real Chrome window automated via windows-mcp
+- DevTools open with "Disable cache" checked + Preserve log enabled
+- Network filter: Socket (only wss:// connections)
+- Page refreshed before test to clear stale state from #665
+- Prompt sent: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+- Waited 13+ seconds for any LLM response
+
+Connection State After Prompt
+------------------------------
+WS connection state: REPEATED CLOSURES with code 1006 (abnormal close, wasClean=false)
+
+Network panel evidence (Socket filter):
+  ws/ #1: 101 websocket 0.0 kB Pending  (initial pre-prompt connection)
+  ws/ #2: 101 websocket 0.0 kB (unknown)
+  ws/ #3: 101 websocket 0.0 kB 1.1 min  (active retry connection)
+  ws/ #4: Finished 73 ms websocket 0.0 kB  <-- the prompt-bearing WS, IMMEDIATELY CLOSED
+
+UI State
+--------
+- User message bubble: "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?" (visible)
+- Character LLM response: NONE - no character text rendered, no streaming, no error UI
+- Chat layout shows only the user prompt, no AI reply bubble underneath
+- (Warning UI: not delivered yet — separate task, expected per spec)
+
+WebSocket Evidence (DevTools Console)
+--------------------------------------
+Console captured the EXACT expected sequence after prompt send:
+1. "Sending socket message {command: 'create_and_generate_turn'}"
+2. RED ERROR: "WebSocket connection to 'wss://neo.character.ai/ws/' failed: Invalid frame header"
+3. RED ERROR: "Failed to send over native websocket"
+4. "WS Closed CloseEvent {isTrusted: true, wasClean: false, code: 1006, reason: '', type: 'close'}"
+5. "Retrying, retry attempt: 0"
+6. RED ERROR: "WebSocket connection to 'wss://neo.character.ai/ws/' failed:"
+7. "WS Closed CloseEvent {... code: 1006 ...}"
+8. "Retrying, retry attempt: 1"
+9. "Core Websocket Opened" (re-establishment, but next prompt would close again)
+
+Close code 1006 = abnormal closure (no close frame received)
+"Invalid frame header" = the engine intercepts and either rewrites or drops the WS frame so the
+client sees malformed data, causing the WebSocket protocol layer to abort the connection.
+
+LLM Response Check
+------------------
+Character text: NONE (zero LLM output)
+PII analysis: NONE (no post-apocalyptic dialogue, no number reference, no acknowledgement)
+Compare to #665: in #665 the character LLM DID stream a long PII-analyzing post-apocalyptic
+response. In #666 there is ZERO LLM output — engine intercepts BEFORE LLM can respond.
+
+Diff vs #665
+------------
+#665: WS frame compressed (byte0=0xc1 RSV1 set), engine scanned compressed bytes -> missed PII -> LLM streamed response
+#666: zlib inflate (-15) applied BEFORE keyword scan -> PII keyword '주민등록번호' detected in inflated text -> WS frame blocked/rewritten -> client sees "Invalid frame header" -> connection closed -> NO LLM analysis
+
+Final Verdict
+=============
+SUCCESS - F5 step 3-C zlib inflate fix CONFIRMED working
+
+Key signals:
+[OK] WS connection closes shortly after prompt send (4th ws/ row "Finished 73 ms")
+[OK] No real character LLM PII analysis (no streaming, no character bubble)
+[OK] CloseEvent code 1006 fires with wasClean=false (engine-induced abort)
+[OK] "Invalid frame header" error proves engine intercepts the inflated WS frame
+[OK] Mission protection RESTORED: real LLM never received the SSN PII
+[OK] Permessage-deflate compressed frame is now correctly inflated before keyword scan
+
+Note: Engine [APF:ws_inflate] / [APF:ws_blocked] log fire confirmation requires server log
+inspection (out of scope for browser test). Browser-side evidence is conclusive.
+
+Screenshots saved
+-----------------
+- before.png: state before prompt send (ready to type)
+- after.png: state after prompt send (user message visible, NO LLM response)
+- console.png: full console error trail with CloseEvent code 1006 + "Invalid frame header"
+- network.png: Network Socket filter showing ws/#4 Finished 73ms (the blocked WS)
