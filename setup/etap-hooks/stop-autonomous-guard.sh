@@ -45,6 +45,52 @@ if [ "$STOP_HOOK_ACTIVE" = "True" ]; then
     exit 0
 fi
 
+# 43차: Skill-edit self-review marker check (★★★ architectural enforcement)
+# Pre-edit-skill-self-review hook 가 skill 편집 시 marker 생성 → 본 stop hook 가 verify.
+SKILL_MARKER_DIR="/tmp/claude-skill-edit-markers"
+PENDING_REVIEW=$(python3 << PYEOF 2>/dev/null
+import json, os, glob
+import datetime
+pending = []
+now = datetime.datetime.utcnow()
+try:
+    for m in glob.glob("$SKILL_MARKER_DIR/*.json"):
+        try:
+            with open(m) as f:
+                d = json.load(f)
+            if d.get('self_review_done', False):
+                continue
+            # Marker 가 너무 오래되면 (>4 hours) skip — stale session 보호
+            first = d.get('first_edit_at', '')
+            try:
+                t = datetime.datetime.strptime(first.replace('Z',''), '%Y-%m-%dT%H:%M:%S')
+                if (now - t).total_seconds() > 14400:
+                    continue
+            except Exception:
+                pass
+            skills = d.get('edited_skills', [])
+            count = d.get('edits_count', 0)
+            pending.append((','.join(skills), count, os.path.basename(m)))
+        except Exception:
+            continue
+except Exception:
+    pass
+if pending:
+    print('|'.join(f"{sk}:{ct}:{f}" for sk, ct, f in pending))
+PYEOF
+)
+
+if [ -n "$PENDING_REVIEW" ]; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) [BLOCK STOP — pending skill self-review: $PENDING_REVIEW]" >> "$LOG"
+    cat << EOF
+{
+  "decision": "block",
+  "reason": "[SKILL EDIT GUARD ★★★ — 43차] Skill 편집 후 self-review 미수행. Pending: $PENDING_REVIEW.\n\n의무: 7-check 수행 (lessons.md §11 + feedback_skill_edit_self_review.md):\n1. 원칙/숫자 변경 = 전수 grep 검사\n2. cross-reference 일관성\n3. 의도 vs 실제 변경 일치\n4. forward references (다른 skill 영향)\n5. file path / line number 변경 시 모든 인용 갱신\n6. canonical anchor 영향 (Polling Policy / Termination Conditions / Mission anchor / HR / D-principle)\n7. lessons.md / incident-log codify 필요 여부\n\n완료 후: bash /Users/jhee/Documents/workspace/Officeguard/EtapV3/.claude/hooks/mark-skill-self-review-done.sh \"<요약>\"\n\nSkill 편집 = 전 Claude session 행동에 영향 — drift 방지 마지막 layer."
+}
+EOF
+    exit 0
+fi
+
 # 41차: Mission-goal evaluation (count-based logic 폐지)
 if [ ! -f "$PIPELINE_STATE" ]; then
     # No pipeline state file — not in APF context, skip
