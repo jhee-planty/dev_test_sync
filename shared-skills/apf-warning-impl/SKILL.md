@@ -43,6 +43,21 @@ mission-goal persistence 원칙 적용. count-based hard cap 대신 **root cause
 
 > **41차 amendment**: 기존 "유효 빌드 상한 7회 / 총 시도 상한 5회" count cap 은 mission-goal persistence (HR7) 와 충돌하여 폐지. count 도달 시 stop 이 아닌 axis pivot 으로 동작.
 
+### Sub-agent dispatch 5-D — paper work standard procedure (51차 G2)
+
+iteration 이 stuck 또는 defer:* 상태일 때 sub-agent dispatch 가 본 session 가능한 paper work form. defer-with-paper-work pattern (Stage 4 회피 의 architectural mitigation):
+
+| Stuck condition | Sub-agent prompt form | Return artifact |
+|---|---|---|
+| sub_category recurrence (axis pivot 시도 중) | "Audit failure_history[service] 의 last 5 entries — sub_category transition pattern 분석 + 다음 axis 후보 enumerate. Output: alternative axis matrix (envelope schema rev / decoder layer / transport probe) + recommended next sub_category." | `apf-operation/services/{service}_axis_audit.md` |
+| defer:user_har_for_X | "Existing analysis docs + production etap.log + service frontend HTML/JS 분석 후 X capture 의 specific procedure 설계. Output: HAR capture spec (URL pattern + expected fields + verify method)." | `apf-operation/services/{service}_har_capture_spec.md` |
+| defer:user_login_provisioning | "Engine handler verification 가능 path 탐색 — production canary observation / alternative auth detection / partial verify (engine-level only). Output: verify path spec without login." | `apf-operation/services/{service}_engine_only_verify.md` |
+| Strategy revisit (M2 trigger) | "design doc {service}_design.md + current iteration history 검토 후 strategy A/B/C/D/E reorder rationale + new variant 후보 도출." | `apf-operation/services/{service}_strategy_revisit.md` |
+
+Sub-agent return artifact → 해당 service `last_artifact: {pointer, type, timestamp}` field update (51차 G2 schema). Type enum 은 `apf-operation/state/artifact_type_registry.json` 참조 — paper work artifact 는 일반적으로 T3 (verify_path_established).
+
+Sub-agent boundary effect: scope-completion 이 sub-agent prompt 안 으로 encapsulate. Main session 의 termination signal 은 sub-agent return 시점 = mission-aligned. (51차 LMA architectural fix.)
+
 ---
 
 ## Iteration 흐름 (Claude 수행)

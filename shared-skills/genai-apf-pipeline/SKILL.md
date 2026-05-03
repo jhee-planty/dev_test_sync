@@ -175,6 +175,25 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
    - Maintenance mode 진입 — D20(b) periodic verification 만.
 ```
 
+**51차 G2 — Sub-agent Dispatch 5-D Standard Procedure (positive form)**:
+
+defer-with-paper-work pattern 의 architectural mitigation. Defer candidate 의 dependency (HAR / login / page injection design 등) 에 대해 sub-agent dispatch 가 본 session 가능한 paper work form:
+
+```
+For each defer:* candidate:
+1. Identify dependency type → derive sub-agent prompt:
+   - defer:user_har_for_X → sub-agent prompt = "Audit existing analysis docs + production log + design HAR capture spec for X. Output: capture procedure + expected_field signature + verify method."
+   - defer:user_login_provisioning → sub-agent prompt = "Inspect engine handler + verify path candidates (alternative auth detection / canary observation). Output: verify path spec without login dependency."
+   - defer:user_directive_pending → sub-agent prompt = "Compile decision draft from existing evidence. Output: option matrix + recommended option + rationale doc for user M4."
+2. Dispatch sub-agent with prompt + return-artifact-required form (file path / decision JSON / spec doc).
+3. Sub-agent returns artifact → update entry's `last_artifact: {pointer, type, timestamp}` (51차 G2 schema).
+4. Service current_micro_task progression evidence 기록 (T1/T2/T3 per artifact_type_registry.json).
+```
+
+Sub-agent boundary 의 effect: sub-agent 의 scope-completion 은 prompt-bounded (명시 query 의 답변), main session 의 scope-completion 은 artifact-bounded (sub-agent return 시점). Mission-aligned termination signal 보장 (51차 LMA architectural fix).
+
+`apf-operation/state/artifact_type_registry.json` 참조 — micro-task type enum + auto-detect mapping.
+
 **Stop hook (D16(a), 22차 + 41차 amendment)**: Claude 가 추가 tool 호출 없이 응답 종료 시도 시 `.claude/hooks/stop-autonomous-guard.sh` 자동 fire. **mission goal 미달성 (DONE/TOTAL < 1.0) AND termination keyword 없음 → stop block**. count 무관 — count 가 0 이라도 mission 미달성이면 expansion search (5-A~5-F) 의무.
 
 **Termination keyword list** (D18(b) refined):
