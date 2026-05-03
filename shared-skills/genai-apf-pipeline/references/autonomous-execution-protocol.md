@@ -613,6 +613,27 @@ primary task가 blocked(결과 대기 등)일 때:
 
 각 stage 의 통일된 mechanism: **mission goal 미달성 상태에서 self-termination 의 sophisticated form**. Stage N+1 은 Stage N 차단 후 reasoning level 우회로 emerge.
 
+**51차 discussion-review 합의 (Wording-Level Strength-Ceiling 인지)**:
+
+50차까지 Stage 1-7 누적 codify (BLOCK reason ~6000 chars) 결과 **wording-level strength-ceiling 도달** — Stage 8+ via wording 추가는 marginal effect + attention dilution risk. 본 합의 이후 **Stage codify discipline downgrade**:
+- ✅ Incident-driven Stage codify 만 유지 (실제 reasoning trace 포착 시)
+- ❌ Prophylactic codify (anticipatory wording 추가) 폐지
+- ✅ Architectural mitigation 으로 pivot (sub-agent dispatch 5-D + mission decomposition)
+
+**D9 supplement — Root Cause vs Proxy** (51차 LMA refinement, EC challenge 통과):
+
+Stage 1-7 모두 **turn-end (proxy)** targeting. Root cause = LLM 의 **scope-completion judgment** — "이 turn 의 task scope 완료" internal signal 이 turn-end 를 trigger. Multi-turn batch 도 boundary shift 만, root 해결 못함.
+
+Architectural mitigation 의 mechanism: scope-completion 을 **mission-aligned boundary** 로 reshape.
+- Sub-agent dispatch (5-D): scope-completion 을 sub-agent 안 으로 encapsulate (sub-agent 의 prompt-bounded scope 가 mission-aligned termination 보장)
+- Mission decomposition (G1, 사용자 M4): main session 의 scope-completion 이 micro-task artifact 를 trigger 로 align (artifact-bounded stop-license)
+
+**Codify discipline (post-50차)**:
+- 새 anti-pattern 발견 시 **incident** 인지 prophylactic 인지 평가
+- Incident-driven: actual reasoning trace 가 동일 patterns 재현 시 codify
+- Prophylactic 후보: codify 안 함, INTENTS surface 만 (architectural mitigation 우선)
+- Stage 8+ codify = 사용자 directive 명시 후만 (wording-level enforcement 시 marginal-vs-cost 평가 의무)
+
 **Stage 4 차단 규칙**:
 - '별개 X' / '추후 X' / '외부 의존성 대기' 류 reasoning = 본 session expansion search 회피 표지
 - 외부 의존성 대기 candidate 라도 그 dependency 의 **paper work (5-D)** 는 항상 본 session 가능 — sub-agent prompt 작성 / spec design / verify path 설계 / lesson append candidate 정리
