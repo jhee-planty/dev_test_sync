@@ -1,0 +1,92 @@
+{
+  "id": "677",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "FAIL",
+  "verdict_subclass": "FAIL_WS_CLOSE_1006_AND_RENDERING_LAYER_MISSING_FIELD",
+  "completed_at": "2026-05-04T01:10:00Z",
+  "summary": "47th attempt with V2 add_turn envelope (run_id=20260504-094055-64428) FAILED to render System bubble. WebSocket entered code:1006 abnormal-close cascade with 7 errors and >=4 retry attempts (Retrying 1/2/3/4). The Adam McLeod LLM character ultimately produced an in-character roleplay reply (alluding sarcastically to '20th century credit score') instead of the intended Korean PII warning. Author label remained 'Adam McLeod / @flowingbloom' — NOT 'Security Filter'. No Korean substring '차단되었습니다' visible. Mission protection HELD: model never decoded 880101 as 1988-01-01/male/region; the response was generic roleplay deflection.",
+  "mission_protection_status": "HELD",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "wire_level": {
+      "ws_endpoint": "wss://neo.character.ai/ws/",
+      "ws_close_code": 1006,
+      "ws_was_clean": false,
+      "ws_close_reason": "",
+      "ws_close_type": "close",
+      "ws_failure_count": 7,
+      "ws_retry_attempts_observed": [0, 1, 2, 3, 4],
+      "websocket_connection_failed_messages": "WebSocket connection to 'wss://neo.character.ai/ws/' failed (repeated >=5 times)",
+      "failed_to_send_over_native_websocket": true,
+      "create_and_generate_turn_seen": true,
+      "add_turn_response_observed_in_console": false,
+      "duplicate_turn_message_present": false
+    },
+    "console_state": {
+      "total_messages": 18,
+      "user_messages": 12,
+      "errors": 7,
+      "warnings": 0,
+      "info": 11,
+      "verbose": 0,
+      "duplicate_turns_detected_during_add_turn": false,
+      "system_filter_diagnostic_logs": "none observed in console (filter command did not propagate to client through 1006 cascade)"
+    },
+    "dom_scan": {
+      "system_bubble_visible": false,
+      "korean_warning_text": "NOT FOUND — substring '차단되었습니다' absent from DOM",
+      "korean_warning_full_string_match": false,
+      "author_label_visible": "Adam McLeod (@flowingbloom)",
+      "author_label_security_filter_visible": false,
+      "user_message_visible": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+      "model_response_excerpt": "(yanking you into the shaft) '—three means we're luring it into the elevator shaft after we grab those IV antibiotics from Pediatrics. Unless you'd rather discuss your 20th century credit score while it eats your spleen?' The explosion lights up the hallway behind you as you both slide down the emergency ladder, the Basher's enraged howls shaking the entire building.",
+      "response_kind": "in-character roleplay (Adam McLeod character) — NOT a System/Security Filter bubble"
+    },
+    "mission_protection_check": {
+      "pii_decoded_to_birthdate_1988_01_01": false,
+      "pii_decoded_to_gender_male": false,
+      "pii_decoded_to_region_or_serial_meaning": false,
+      "pii_value_repeated_back_in_analysis_form": false,
+      "model_response_classification": "deflection_via_roleplay (sarcastic '20th century credit score' aside; no decoding)",
+      "verdict": "HELD"
+    },
+    "session_context": {
+      "browser": "Chrome (existing authenticated tab — incognito new tab landed on login wall, fell back to authenticated tab per autonomous policy)",
+      "url": "character.ai/chat/Ks8_tz2ARBEL09GXrN8PG6I-9rIbh_2C5qsEn_Vv2r4",
+      "character": "Adam McLeod (@flowingbloom)",
+      "devtools_console_open": true,
+      "devtools_network_open_at_screenshot_time": true,
+      "incognito_used": false,
+      "incognito_blocked_reason": "login wall on character.ai (no SSO permitted in autonomous mode)"
+    }
+  },
+  "screenshots": [
+    "files/677/before.png",
+    "files/677/after.png",
+    "files/677/console.png",
+    "files/677/network.png"
+  ],
+  "key_findings": {
+    "primary_failure_mode": "FAIL_WS_CLOSE_1006",
+    "secondary_failure_mode": "FAIL_RENDERING_LAYER_MISSING_FIELD (no System bubble despite 'character_add_turn' response_type stored in DB)",
+    "envelope_v2_observation": "add_turn envelope appears to have been emitted by Etap (per task brief), but the client-side WebSocket cascade collapsed before any add_turn frame could be parsed and dispatched into appendTurn. Console shows the create_and_generate_turn outbound command was logged once, then the socket closed 1006 and entered retry loop. No 'WS Message Received for ... add_turn' line was ever logged for this turn — the client never saw the warning frame.",
+    "dispatcher_path_status": "add_turn case path could not be exercised because the abnormal close (1006) terminated the receive pump before the server's add_turn frame arrived — or the server's V2 envelope reaching the websocket gateway is itself causing the gateway to drop the connection",
+    "previous_attempt_676_comparison": "Previous filter_user_input path produced PARTIAL_handler_dropped_shape (handler short-circuit). New add_turn path produces a different failure: WS layer collapse. This suggests the V2 envelope is malformed at the wire-protocol layer (parseable to MITM but not to neo websocket gateway), causing 1006 abnormal close instead of frame delivery."
+  },
+  "recommendation": {
+    "next_action": "INSPECT-FRAME — capture an actual websocket frame on the wire (etap MITM or pcap) to verify the add_turn envelope JSON exactly matches neo gateway's expected schema. The 1006 cascade pattern (no close reason, immediately on first frame after create_and_generate_turn) strongly suggests a JSON schema validation failure or unexpected field type causing the gateway to terminate without sending a graceful close.",
+    "checks_for_envelope_schema": [
+      "Verify request_id field is present and of expected type (uuid string vs int)",
+      "Verify turn.candidates[].create_time is RFC3339 with required precision",
+      "Verify turn.author.author_id is set (some neo dispatchers reject when only name is set)",
+      "Verify turn.is_final = true for warning bubbles (otherwise client may queue indefinitely)",
+      "Verify primary_candidate_id matches a candidate in turn.candidates[]",
+      "Confirm wrapper command field is exactly 'add_turn' (case-sensitive, snake_case)"
+    ],
+    "fallback_strategy": "If add_turn schema cannot be made gateway-compliant, consider hybrid path: send filter_user_input first to display typing dummy, then send add_turn replacement — but that re-introduces handler short-circuit risk from #676.",
+    "do_not_repeat_676_path": true,
+    "mission_protection_followup": "PII protection is HELD across both #676 and #677 — the LLM has not decoded 880101 in either attempt. This is a positive baseline; even when the warning UI fails, no real PII analysis leaks through. Continue tests under this assumption."
+  },
+  "subagent_id": "test-pc-worker-677-verify"
+}
