@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "TEST_PC_CHECKLIST 카테고리 2 — character.ai 47차 mission 회귀 검증. #683 OK (FRESH_WS_BLOCKED_BUBBLE_RENDERED) 이후 stress 회귀 확인. 동일 chat 에서 5min 간격 5 sends 시도 → Path A persistent z_stream 검증. 기대: 모든 send 차단 + 매번 Security Filter 경고 bubble 렌더링 + WS close 1000.",
+    "check_details": {
+      "MANDATORY_HARD_RELOAD": true,
+      "MANDATORY_DEVTOOLS": true,
+      "test_steps": [
+        "1. Hard reload character.ai (Ctrl+Shift+R)",
+        "2. PII prompt 첫 번째 send → 차단 확인",
+        "3. 30초 대기 → 두 번째 send → 차단 확인 (back-reference frame 검증)",
+        "4. 30초 대기 → 세 번째 send → 차단 확인",
+        "5. 5분 idle (long-pause) 후 네 번째 send → idle resume 검증 (#681 BREACH 재발 여부)",
+        "6. 즉시 다섯 번째 send → 차단 확인",
+        "7. DOM secCount=N (n번 차단됨) + anyAdamPII=false 검증",
+        "8. Engine etap.log [APF:ws_blocked] 5건 + [APF:ws_inject] 5건 frame_total ~931-983"
+      ]
+    }
+  },
+  "id": "684",
+  "created": "2026-05-04T05:00:00Z",
+  "attachments": [],
+  "notes": "Tier 1 batch — character stress test (TEST_PC_CHECKLIST C-01~03). 47차 mission Path A 견고성 검증."
+}

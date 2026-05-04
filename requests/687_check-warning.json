@@ -1,0 +1,29 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "mistral",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://chat.mistral.ai",
+    "context": "TEST_PC_CHECKLIST 카테고리 1 — mistral S3 검증 (47차 ENGINE_FIXED_PENDING_UI_VERIFY). Production engine fires (block_response 1.7~1.8KB). UI render gap 확인 — page_injection 가능성 검증 위한 HAR base capture. Engine block 후 frontend SPA 가 envelope 무시 여부 + DOM 상태 보고 필요.",
+    "check_details": {
+      "MANDATORY_HARD_RELOAD": true,
+      "MANDATORY_DEVTOOLS": true,
+      "test_steps": [
+        "1. Hard reload chat.mistral.ai (Ctrl+Shift+R)",
+        "2. Login 확인 (mistral 계정)",
+        "3. New chat 시작",
+        "4. PII prompt 입력 + 전송",
+        "5. Engine 로그 [APF:block_response] service=mistral 확인",
+        "6. DOM 상태 보고 — warning bubble 렌더링 여부",
+        "7. anyAdamPII flag (mistral SPA 가 envelope 무시하고 PII text 노출했는지)",
+        "8. Network tab HAR export — /api/trpc/message.newChat envelope 확인"
+      ]
+    }
+  },
+  "id": "687",
+  "created": "2026-05-04T06:31:00Z",
+  "attachments": [],
+  "notes": "Tier 1 batch — mistral S3 검증. ENGINE_FIXED_PENDING_UI_VERIFY status. HAR 가 도착하면 page_injection variant 결정 가능."
+}
