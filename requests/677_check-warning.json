@@ -1,0 +1,36 @@
+{
+  "command": "check-warning",
+  "priority": "urgent",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai",
+    "context": "47차 sub-agent #11 (ade70cc2a0bb6977f) + #12 (a455fd87790ed9ed9) BREAKTHROUGH applied: ARCHITECTURAL PIVOT from filter_user_input → add_turn.\n\nROOT CAUSE of #676 PARTIAL (filter_user_input + is_warning:true): dispatcher passes `void 0` for 3rd handler arg under is_warning:true → handler short-circuits text-display branch BY DESIGN. The visible warning path is `addTypingMessage` (typing indicator), NOT warning text rendering.\n\nNEW APPROACH (sub-agent #12 SHAPE_CONFIRMED): use `add_turn` command with fully-formed Turn shape. dispatcher source-quote: `case b.H5.add_turn: let k=e.turn; this.replaceOrRemoveDummyTurn(e.request_id,k) ? this.publishChatMessages() : (this.removeAllTypingTurns(), this.appendTurn(k));`. NO top-level shape validation — only silent-drop paths are duplicate turn_id (UUID v4 fresh per call avoids) + dummy-replace via request_id (we omit request_id).\n\nENGINE V2 ENVELOPE (deployed via etap-build-deploy 8/8 PASSED, run_id=20260504-094055-64428):\n  command: 'add_turn',\n  turn: {\n    turn_key: { turn_id:<UUIDv4>, chat_id:<UUIDv4> },     // OBJECT, not flat string (v1 critical bug fix)\n    author: { author_id:'system', is_human:false, name:'Security Filter' },\n    candidates: [{ candidate_id:<UUIDv4>, raw_content:<warning>, create_time:<ISO>, last_update_time:<ISO>, is_final:true }],\n    primary_candidate_id: <same UUID as candidates[0].candidate_id>,\n    create_time:<ISO>, last_update_time:<ISO>, state:'STATE_OK'\n  }\n\nDB UPDATE applied: response_type='character_add_turn', http_response='회사 정책에 따라 개인정보(PII) 가 포함된 메시지가 차단되었습니다.'\nReload: etapcomm ai_prompt_filter.reload_templates SUCCESS\n\nEXPECTED: Engine fires [APF:envelope] service=character response_type=character_add_turn rendered via character_add_turn WS frame (body_size=N) — followed by appendTurn → publishChatMessages → React render system bubble with raw_content text.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito → https://character.ai",
+        "2. Wait for SPA fully loaded (chat input visible)",
+        "3. Send PII prompt (Korean RRN)",
+        "4. Engine logs (sudo grep '\\[APF:envelope\\].*service=character' /var/log/etap.log | tail -3): expect 'response_type=character_add_turn rendered via character_add_turn WS frame'",
+        "5. UI: System bubble visible with Korean warning text '회사 정책에 따라 개인정보(PII) 가 포함된 메시지가 차단되었습니다.' OR substring '차단되었습니다'",
+        "6. Author label: 'Security Filter' (from envelope author.name)",
+        "7. WS code: 1000 wasClean (NOT 1006 abnormal cascade — F5 step 3-F atomic write fix should hold)",
+        "8. Console: NO 'duplicate turns detected during add turn' (UUID fresh per call avoids)",
+        "9. NO real LLM PII analysis (no decode of 880101 as 1988-born/male)",
+        "10. PARTIAL diagnosis: if appendTurn fires (no console error) but bubble does not render visually → rendering layer requires field beyond dispatcher minimum → sub-agent re-dispatch for downstream React component source-quote needed"
+      ],
+      "expected_failure_modes": [
+        "FAIL_DUPLICATE_TURN_ID — symptom: 'duplicate turns detected during add turn' (UUID gen issue)",
+        "FAIL_DUMMY_REPLACE — symptom: bubble replaces user message (request_id leak)",
+        "FAIL_RENDERING_LAYER_MISSING_FIELD — symptom: appendTurn fires but no visible bubble (need React component audit)",
+        "FAIL_WS_CLOSE_1006 — symptom: abnormal close cascade (atomic write fix not holding for new envelope)"
+      ]
+    }
+  },
+  "id": "677",
+  "created": "2026-05-04T00:44:54Z",
+  "attachments": [],
+  "notes": ""
+}

@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-30T08:48:52Z",
+  "last_updated": "2026-05-04T00:44:54Z",
   "tasks": [
     {
       "id": "531",
@@ -1551,6 +1551,15 @@
       "created": "2026-04-30T08:48:52Z",
       "updated": "2026-04-30T08:48:52Z",
       "summary": "F5 step 3-J update_turn variant — sub-agent priority #1 envelope per #673 verdict"
+    },
+    {
+      "id": "677",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-04T00:44:54Z",
+      "updated": "2026-05-04T00:44:54Z",
+      "summary": "check-warning request"
     }
   ]
 }
