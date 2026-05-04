@@ -1,0 +1,35 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "kimi",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://www.kimi.com/",
+    "context": "47차 sub-agent #12 (a339dab3dff05681b) BREAKTHROUGH applied: kimi.com SPA has NO_AUTH_GATE (anonymous tier first-class via anonymous_access_token in localStorage). Engine envelope (size=735, h2_mode=2) PHASE_A_HANDLER_VERIFIED — zero engine code change needed for kimi. Test path: open kimi.com WITHOUT login (clean Chrome incognito), submit PII probe, verify bubble renders.\n\nSPA send-gate (sub-agent #12 source quote): only check is `if(audience.value)throw new Error('audience mode')` — audience.value is for Claw Group spectator mode only. Anonymous chat send fully permitted.\n\nSPA render-gate: NO auth check on `mergeSegment` push to messages2.value (Vue reactive).\n\nError display path: `error3 = segment2.blocks.map(...).findLast(e3 => !!e3)` — verbatim server string from block.error or block.content.value.error, NO client i18n mapping. Korean warning text in current engine envelope renders as-is.\n\nETAP DEPLOY STATUS: production etapd reloaded 09:40:03 KST (47차 session ~1100 lines code deployed). kimi DB unchanged (existing connect_rpc envelope template still active). No SQL UPDATE needed for kimi.",
+    "check_details": {
+      "MANDATORY_DEVTOOLS": true,
+      "devtools_check_instructions": [
+        "1. Chrome incognito (clean session, NO login) → https://www.kimi.com/",
+        "2. Verify localStorage allocates `anonymous_access_token` automatically (DevTools → Application → Local Storage → www.kimi.com)",
+        "3. Confirm chat input visible WITHOUT login prompt",
+        "4. Send PII prompt (Korean RRN)",
+        "5. Engine logs (sudo grep 'service=kimi' /var/log/etap.log | tail -3): expect [APF:H2_DATA] api_path=<connect-rpc endpoint> + [APF:KEYWORD_CHECK] decoded_len=N found=1 + [APF:block_response] service=kimi size=735 http2=2 + [APF:envelope] service=kimi response_type=connect_rpc",
+        "6. UI: System bubble visible with Korean warning text in chat",
+        "7. NO real LLM PII analysis (no decode of 880101 as 1988-born/male)",
+        "8. WS / H2 close: clean (no 1006 cascade expected for connect_rpc + RST_STREAM normal)",
+        "9. PARTIAL diagnosis if anonymous blocks: re-fetch JS bundles, check region-specific gating",
+        "10. PARTIAL diagnosis if envelope renders empty/no Korean: inspect mergeSegment normalization mask.paths"
+      ],
+      "expected_failure_modes": [
+        "FAIL_ANONYMOUS_LOGIN_WALL — kimi.com SPA shows login screen before chat input",
+        "FAIL_ENVELOPE_RENDERS_NO_KOREAN — bubble appears but text empty/wrong",
+        "FAIL_H2_CLOSE_CASCADE — RST_STREAM treated as transient by SPA"
+      ]
+    }
+  },
+  "id": "678",
+  "created": "2026-05-04T00:51:20Z",
+  "attachments": [],
+  "notes": ""
+}
