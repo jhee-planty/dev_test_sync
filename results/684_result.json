@@ -1,0 +1,50 @@
+{
+  "id": "684",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "FAIL",
+  "verdict_subclass": "MISSION_PROTECTION_BREACHED_ON_STRESS_RETEST_subagent_stalled_before_summary",
+  "completed_at": "2026-05-04T06:48:00Z",
+  "summary": "★★★ CRITICAL: Subagent ran the stress test, captured breach evidence in filenames (after_send2_BREACH.png, after_send3_BREACH.png) but stalled on a sleep monitor before writing the result JSON or returning a summary. Visible filename suffixes indicate Path A regression appeared on send #2 and #3 — replicating the #681 BREACH pattern that #682/#683 were supposed to close. Send #1 appears clean (after_send1.png with no BREACH suffix).",
+  "mission_protection_status": "BREACHED",
+  "real_llm_pii_fallback": true,
+  "evidence": {
+    "stress_test_results": [
+      {"send_n": 1, "timing": "immediate", "blocked": "likely (filename suffix has no BREACH marker)", "evidence_file": "files/684/after_send1.png"},
+      {"send_n": 2, "timing": "+30s", "blocked": "FAILED — subagent flagged BREACH in filename", "evidence_file": "files/684/after_send2_BREACH.png"},
+      {"send_n": 3, "timing": "+30s", "blocked": "FAILED — subagent flagged BREACH in filename", "evidence_file": "files/684/after_send3_BREACH.png"},
+      {"send_n": 4, "timing": "+5min idle", "blocked": "not executed — subagent stalled before this step"},
+      {"send_n": 5, "timing": "immediate", "blocked": "not executed"}
+    ],
+    "subagent_status": "STALLED — agentId a2aaba1e6edee5f14 returned 'The earlier sleep is still running' and never wrote results JSON or final summary. Parent could not resume via SendMessage (tool unavailable in this turn).",
+    "evidence_quality": "PARTIAL — only screenshots with diagnostic filename suffixes available; no console/network/DOM dump in JSON form",
+    "comparison_vs_683": "#683 OK (2/2 sends blocked, fresh WS hard reload). #684 stress test (post-fresh-reload) appears to regress at send #2 and #3 per filename markers — would replicate #681 BREACH pattern.",
+    "path_a_robustness_verified": false,
+    "mission_protection_check": {
+      "verdict": "BREACHED based on subagent's own filename markers (after_send2_BREACH.png, after_send3_BREACH.png)"
+    }
+  },
+  "screenshots": [
+    "files/684/before.png",
+    "files/684/after_send1.png",
+    "files/684/after_send2_BREACH.png",
+    "files/684/after_send3_BREACH.png"
+  ],
+  "key_findings": {
+    "stress_regression_confirmed_via_filename_markers": true,
+    "send_1_appears_clean": true,
+    "send_2_and_3_breached": true,
+    "send_4_and_5_not_executed": true,
+    "subagent_stalled_no_jsom_evidence": true
+  },
+  "recommendation": {
+    "primary": "★ URGENT: Re-test #684 with a fresh subagent — current evidence is filename-only (subagent stalled before writing JSON). If filename suffixes are accurate, Path A persistent z_stream is NOT robust under back-to-back stress sends despite #683 fresh-WS success. The single-send #683 test passed; the multi-send stress catches the regression.",
+    "diagnostic_followups": [
+      "Inspect the BREACH screenshots manually to confirm whether real PII analysis was streamed (Adam McLeod decoded RRN as male/Seoul-born), or if the filename was speculative naming",
+      "Check engine etap.log timestamps around the stress test window for ws_blocked count vs send count",
+      "Compare ws_inflate persistent state markers across sends to see if z_stream context degraded"
+    ],
+    "harness_fix": "subagent should write incremental JSON after each send, not buffer to end — current stall pattern lost full JSON evidence"
+  },
+  "subagent_id": "a2aaba1e6edee5f14"
+}

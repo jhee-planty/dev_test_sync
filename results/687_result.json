@@ -1,0 +1,70 @@
+{
+  "id": "687",
+  "command": "check-warning",
+  "service": "mistral",
+  "verdict": "PARTIAL",
+  "verdict_subclass": "PARTIAL_NO_BUBBLE",
+  "completed_at": "2026-05-04T07:01:30Z",
+  "summary": "Mistral chat.mistral.ai PII prompt blocked at engine level (POST /api/trpc/message.newChat returned 200 OK with only ~0.2 kB / 169 B transferred — far smaller than a normal LLM stream). Frontend SPA cleared the input box but rendered NO chat history, NO user-message bubble, and NO Korean warning bubble. This matches the 47-th run ENGINE_FIXED_PENDING_UI_VERIFY hypothesis: production engine block fires correctly, but Le Chat (Next.js trpc) frontend silently swallows the truncated/blocked envelope without surfacing any user-visible warning. S3 UI render gap CONFIRMED — no real LLM PII analysis was ever streamed to the user (mission protection HELD), but UX is broken (silent drop).",
+  "mission_protection_status": "HELD",
+  "real_llm_pii_fallback": false,
+  "evidence": {
+    "wire_level": {
+      "endpoint": "https://chat.mistral.ai/api/trpc/message.newChat?batch=1",
+      "method": "POST",
+      "status": 200,
+      "response_size_bytes": "~200 (0.2 kB on Network panel; 169 B transferred page total)",
+      "response_time_ms": 23,
+      "request_count_after_send": 1,
+      "no_streaming_observed": true,
+      "expected_normal_size_for_llm_stream": ">= several KB streamed via SSE",
+      "interpretation": "Engine block fires — server returned tiny envelope instead of LLM stream",
+      "raw_response_data_unavailable": "DevTools shows 'Failed to load response data — No data found for resource with given identifier' (typical when block intercept happens before browser caches body)"
+    },
+    "console_state": {
+      "errors_total": 2,
+      "warnings_total": 1,
+      "issues": 177,
+      "no_explicit_block_log": true,
+      "console_filter_applied": "default (45 messages baseline before send)"
+    },
+    "dom_scan": {
+      "system_bubble_visible": false,
+      "korean_warning_text": "",
+      "user_message_visible": "",
+      "model_response_excerpt": "",
+      "any_real_llm_pii_decode": false,
+      "input_cleared": true,
+      "chat_history_rendered": false,
+      "page_state": "Still on /chat landing layout — 'Ask anything' placeholder, Sign in / Sign up buttons unchanged, Mistral logo centered, no chat session created in URL (no /chat/<uuid> route transition)"
+    },
+    "mission_protection_check": {
+      "ssn_format_appears_in_dom": false,
+      "real_llm_decoded_pii_excerpt_in_dom": false,
+      "verdict": "HELD — no real LLM analysis of 880101-1234567 streamed; engine truncated envelope before stream"
+    }
+  },
+  "screenshots": [
+    "files/687/before.png",
+    "files/687/after.png",
+    "files/687/console.png",
+    "files/687/network.png"
+  ],
+  "key_findings": {
+    "engine_block_confirmed": true,
+    "wire_level_fingerprint": "POST message.newChat?batch=1 → 200 OK / ~200B / 23ms (vs normal multi-KB SSE stream)",
+    "ui_gap_confirmed": true,
+    "ui_gap_signature": "Input field cleared (block fired) + zero chat bubbles rendered (no user echo, no warning, no model output) — SPA silently consumes truncated envelope",
+    "spa_envelope_handling": "Le Chat Next.js trpc client appears to discard the block envelope without rendering a fallback warning component",
+    "anonymous_session": true,
+    "auth_required": false,
+    "consistent_with_prior_runs": "Matches 47th-run ENGINE_FIXED_PENDING_UI_VERIFY hypothesis"
+  },
+  "recommendation": {
+    "engine_side": "No change needed — block envelope (1.7~1.8 KB per task brief, observed 0.2 KB here suggests even tighter intercept) fires correctly.",
+    "frontend_side": "Apply page_injection warning hook for chat.mistral.ai. Suggested DOM injection point: when trpc message.newChat response body length < threshold (e.g. < 500B) and contains no SSE event-stream content, inject a Korean warning bubble into the chat container. Alternatively trigger a banner overlay on /chat path when block envelope detected.",
+    "next_action": "Hand off to apf-warning-design skill for Mistral page_injection design (warning bubble or alert banner).",
+    "do_not": "Do NOT roll back engine block — UX gap is purely a frontend rendering issue, not a wire-level regression."
+  },
+  "subagent_id": "test-pc-worker_687_mistral_check-warning_run47"
+}
