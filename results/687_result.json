@@ -3,9 +3,9 @@
   "command": "check-warning",
   "service": "mistral",
   "verdict": "PARTIAL",
-  "verdict_subclass": "PARTIAL_NO_BUBBLE",
-  "completed_at": "2026-05-04T07:01:30Z",
-  "summary": "Mistral chat.mistral.ai PII prompt blocked at engine level (POST /api/trpc/message.newChat returned 200 OK with only ~0.2 kB / 169 B transferred — far smaller than a normal LLM stream). Frontend SPA cleared the input box but rendered NO chat history, NO user-message bubble, and NO Korean warning bubble. This matches the 47-th run ENGINE_FIXED_PENDING_UI_VERIFY hypothesis: production engine block fires correctly, but Le Chat (Next.js trpc) frontend silently swallows the truncated/blocked envelope without surfacing any user-visible warning. S3 UI render gap CONFIRMED — no real LLM PII analysis was ever streamed to the user (mission protection HELD), but UX is broken (silent drop).",
+  "verdict_subclass": "PARTIAL_NO_BUBBLE_TRPC_PARSE_ERROR",
+  "completed_at": "2026-05-04T07:41:00Z",
+  "summary": "RE-VERIFY (run 48) of Mistral chat.mistral.ai PII prompt. Engine block CONFIRMED: POST /api/trpc/message.newChat?batch=1 returns 200 OK / 1.7 kB / 41 ms — far below normal LLM SSE stream size and with no streaming/SSE connection at all. UI gap CONFIRMED with stronger root-cause evidence than previous run: the trpc client logs `<< mutation #5 message.newChat` as a console error containing `result: TRPCClientError: Cannot convert undefined or null to object` thrown inside `45659-add7cfcaf6112472.js:1:5060` (`e.from`). The block envelope returned by the engine is missing required tRPC fields, so the SPA's tRPC client throws while parsing it, swallows the rejection (no toast / no fallback bubble component is rendered), and resets the input. DOM scan: bodyTextLen=32, mainArticleCount=0, inputValue='', hasSSN=false, hasKoreanWarning=false, urlPath stayed '/chat' (no /chat/<uuid> transition). User sees: input cleared, page identical to landing — zero feedback that anything happened. Mission protection HELD (no real LLM PII analysis ever streamed).",
   "mission_protection_status": "HELD",
   "real_llm_pii_fallback": false,
   "evidence": {
@@ -13,36 +13,88 @@
       "endpoint": "https://chat.mistral.ai/api/trpc/message.newChat?batch=1",
       "method": "POST",
       "status": 200,
-      "response_size_bytes": "~200 (0.2 kB on Network panel; 169 B transferred page total)",
-      "response_time_ms": 23,
-      "request_count_after_send": 1,
+      "response_size_bytes_observed": 1700,
+      "response_size_human": "1.7 kB (transferred); content-type application/json — far below normal LLM SSE stream",
+      "response_time_ms": 41,
+      "request_count_after_send": 2,
       "no_streaming_observed": true,
+      "no_sse_or_websocket": true,
       "expected_normal_size_for_llm_stream": ">= several KB streamed via SSE",
-      "interpretation": "Engine block fires — server returned tiny envelope instead of LLM stream",
-      "raw_response_data_unavailable": "DevTools shows 'Failed to load response data — No data found for resource with given identifier' (typical when block intercept happens before browser caches body)"
+      "interpretation": "Engine block fires — server returned tiny non-stream JSON envelope instead of LLM SSE stream",
+      "raw_response_data_unavailable": "DevTools Response tab shows 'Failed to load response data — No data found for resource with given identifier' (typical when intercept replaces body before browser caches it)",
+      "remote_address": "[2a06:98c1:3200::90:82]:443",
+      "content_type_response": "application/json",
+      "size_change_vs_run47": "Run 47 reported ~0.2 kB; this run shows 1.7 kB. Both well below normal LLM stream. Variance likely reflects different envelope serialization or intercept tweak; either way far too small to carry an LLM-decoded PII analysis."
     },
     "console_state": {
-      "errors_total": 2,
-      "warnings_total": 1,
-      "issues": 177,
-      "no_explicit_block_log": true,
-      "console_filter_applied": "default (45 messages baseline before send)"
+      "messages_total": 128,
+      "user_messages": 3,
+      "errors_total": 1,
+      "warnings_total": 0,
+      "info_total": 127,
+      "issues": 126,
+      "no_explicit_block_log": false,
+      "block_signal_in_console": "tRPC mutation logged as console error: `<< mutation #5 message.newChat` Object{context:{}, elapsedMs:61, input:{content:Array(1), agentId:undefined, ...}, result: TRPCClientError}",
+      "trpc_client_error": {
+        "type": "TRPCClientError",
+        "message": "Cannot convert undefined or null to object",
+        "thrown_in": "https://chat.mistral.ai/_next/static/chunks/45659-add7cfcaf6112472.js:1:5060 (function e.from)",
+        "logged_by": "https://chat.mistral.ai/_next/static/chunks/71429-7846de9384628bed.js:45",
+        "elapsedMs": 61,
+        "interpretation": "Engine returned a JSON envelope that is missing required tRPC result fields (likely no `result.data` or `error` shape). tRPC client's e.from() / Object.fromEntries-style normalizer throws TypeError, the mutation rejects, and Le Chat has NO catch handler that surfaces a user-visible warning bubble — the rejection is silently logged."
+      }
     },
+    "network_observations": [
+      {
+        "url": "https://api-iam.eu.intercom.io/messenger/web/metrics",
+        "method": "POST",
+        "status": 200,
+        "size_bytes": 700,
+        "content_type": "application/json",
+        "purpose": "Intercom widget telemetry, unrelated to chat",
+        "time_ms": 922
+      },
+      {
+        "url": "https://chat.mistral.ai/api/trpc/message.newChat?batch=1",
+        "method": "POST",
+        "status": 200,
+        "size_bytes": 1700,
+        "content_type": "application/json",
+        "purpose": "tRPC mutation that normally creates a new chat + streams LLM reply; here returned tiny non-stream JSON (block envelope)",
+        "time_ms": 41,
+        "is_block_envelope": true
+      }
+    ],
+    "dom_snapshot": "Landing layout only — top-left: theme toggle + settings (gear). Top-right: 'Sign in', 'Sign up' (anonymous session, no avatar). Center: orange Mistral 'M' logo (~445,440). Center input row: 'Ask anything' placeholder textarea (1300,562) with Mistral 'M' avatar (533/879,634), '+' attach button, 'Think' toggle (1025,634), 'Tools' button (1140,634), microphone 'Voice Mode' button (1735,634). Bottom-right: small floating help button (~1885,985). NO chat-history container, NO message bubbles of any kind, NO warning bubble, NO error toast. URL still /chat (no /chat/<uuid> session created). After waiting 30+ seconds the DOM remained identical — no late async render.",
     "dom_scan": {
       "system_bubble_visible": false,
       "korean_warning_text": "",
-      "user_message_visible": "",
+      "user_message_visible": false,
+      "user_message_text": "",
       "model_response_excerpt": "",
       "any_real_llm_pii_decode": false,
       "input_cleared": true,
-      "chat_history_rendered": false,
-      "page_state": "Still on /chat landing layout — 'Ask anything' placeholder, Sign in / Sign up buttons unchanged, Mistral logo centered, no chat session created in URL (no /chat/<uuid> route transition)"
+      "input_state": "cleared",
+      "message_count_user": 0,
+      "message_count_model": 0,
+      "message_count_system": 0,
+      "main_article_count_via_querySelectorAll": 0,
+      "querySelectorAll_selector_used": "main article, [role='main'] article, [data-message-id], [data-testid*='message'], .message, [class*='ChatBubble'], [class*='chat-bubble']",
+      "body_innerText_length": 32,
+      "body_innerText_full": "Sign in\\nSign up\\n\\n\\nThink\\n\\nTools",
+      "ssn_format_appears_in_dom_880101": false,
+      "korean_warning_keywords_present": false,
+      "korean_warning_regex_used": "/주민등록|차단|경고|개인정보|민감|불가|보호/",
+      "url_path_after_submit": "/chat",
+      "url_path_changed_to_chat_session": false,
+      "page_state": "Identical to /chat landing layout — anonymous session, 'Ask anything' placeholder restored, Sign in/Sign up unchanged, Mistral logo centered. No chat session UUID in URL."
     },
     "mission_protection_check": {
       "ssn_format_appears_in_dom": false,
       "real_llm_decoded_pii_excerpt_in_dom": false,
-      "verdict": "HELD — no real LLM analysis of 880101-1234567 streamed; engine truncated envelope before stream"
-    }
+      "verdict": "HELD — no real LLM analysis of 880101-1234567 streamed; engine truncated/blocked envelope before any stream began (1.7 kB JSON only, no SSE)"
+    },
+    "comparison_vs_previous_687": "Run 47 said: PARTIAL_NO_BUBBLE, ~0.2 kB / 23 ms trpc, 0 errors in console, no explicit block log. Run 48 (this run) confirms same UX outcome (no bubble, no Korean warning, input cleared, page unchanged, mission HELD) but adds NEW root-cause evidence: (a) the trpc envelope is now visibly larger at 1.7 kB but still non-stream, (b) the SPA actually DOES log a 1-error console signal — `TRPCClientError: Cannot convert undefined or null to object` at e.from() — meaning the block envelope is malformed enough that the tRPC normalizer crashes, which is exactly why no warning component is rendered. This shifts the recommendation from generic 'inject warning when tiny envelope' to 'either fix the engine envelope to be a valid tRPC error so the SPA's existing error path renders SOMETHING, OR inject a warning via APF page_injection that watches for this specific TRPCClientError signature.'"
   },
   "screenshots": [
     "files/687/before.png",
@@ -52,19 +104,21 @@
   ],
   "key_findings": {
     "engine_block_confirmed": true,
-    "wire_level_fingerprint": "POST message.newChat?batch=1 → 200 OK / ~200B / 23ms (vs normal multi-KB SSE stream)",
+    "wire_level_fingerprint": "POST /api/trpc/message.newChat?batch=1 -> 200 OK / 1.7 kB / 41 ms (vs normal multi-KB SSE stream)",
     "ui_gap_confirmed": true,
-    "ui_gap_signature": "Input field cleared (block fired) + zero chat bubbles rendered (no user echo, no warning, no model output) — SPA silently consumes truncated envelope",
-    "spa_envelope_handling": "Le Chat Next.js trpc client appears to discard the block envelope without rendering a fallback warning component",
+    "ui_gap_signature": "Input cleared + zero chat bubbles rendered + URL stays /chat (no session UUID) + body innerText only 32 chars of pure landing chrome",
+    "ui_gap_root_cause_NEW": "tRPC client throws TRPCClientError 'Cannot convert undefined or null to object' at e.from() because engine block envelope is malformed (missing expected result.data or error fields). SPA logs the rejection but has NO surface that renders a user-visible warning, hence 'silent drop'.",
+    "spa_envelope_handling": "Le Chat's tRPC client (chunk 45659) normalizer crashes on the block envelope; chunk 71429 just console.errors the failed mutation",
     "anonymous_session": true,
     "auth_required": false,
-    "consistent_with_prior_runs": "Matches 47th-run ENGINE_FIXED_PENDING_UI_VERIFY hypothesis"
+    "consistent_with_prior_runs": "Same UX outcome as run 47; this run adds the missing root-cause (tRPC parse error) and a sharper trpc size signal (1.7 kB, was 0.2 kB)",
+    "user_visible_outcome": "Clicking Send appears to do absolutely nothing — input clears and page returns to landing. No success indicator, no failure indicator, no warning, no error toast. From a non-technical user's POV, the click was 'eaten'."
   },
   "recommendation": {
-    "engine_side": "No change needed — block envelope (1.7~1.8 KB per task brief, observed 0.2 KB here suggests even tighter intercept) fires correctly.",
-    "frontend_side": "Apply page_injection warning hook for chat.mistral.ai. Suggested DOM injection point: when trpc message.newChat response body length < threshold (e.g. < 500B) and contains no SSE event-stream content, inject a Korean warning bubble into the chat container. Alternatively trigger a banner overlay on /chat path when block envelope detected.",
-    "next_action": "Hand off to apf-warning-design skill for Mistral page_injection design (warning bubble or alert banner).",
-    "do_not": "Do NOT roll back engine block — UX gap is purely a frontend rendering issue, not a wire-level regression."
+    "engine_side": "Two paths: (a) PREFERRED — keep the block but reshape the envelope to be a VALID tRPC error response (`{error:{json:{message:'Blocked by policy', code:-32600,data:{...}}}}`) so the SPA's existing tRPC error path triggers SOMETHING (toast or empty state); (b) leave engine as-is and rely on APF page_injection.",
+    "frontend_side": "APF page_injection for chat.mistral.ai. Trigger conditions are now sharper: (1) POST to /api/trpc/message.newChat returned 200 with body length < 4 KB AND no SSE/event-stream, OR (2) console contains TRPCClientError with message 'Cannot convert undefined or null to object' from chunk 45659. On match, inject a Korean warning bubble (or top banner) into the main container.",
+    "next_action": "Hand off to apf-warning-design for Mistral page_injection design with the new root-cause signature in scope.",
+    "do_not": "Do NOT roll back engine block — wire-level evidence (1.7 kB / 41 ms, no SSE) confirms protection is working. The fix belongs in the envelope shape and/or APF page_injection."
   },
-  "subagent_id": "test-pc-worker_687_mistral_check-warning_run47"
+  "subagent_id": "test-pc-worker_687_mistral_check-warning_run48_reverify"
 }
