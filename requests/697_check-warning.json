@@ -1,0 +1,34 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai",
+        "verify_timeout_s": 30,
+        "context": "48차 perplexity V7-A envelope verification (deployed 2026-05-06 18:59:30 KST). HP-Perplexity-O1 test: added 'ownership':'owner' + 'visibility':'private' fields to all 5 SSE message data blocks. Spec: proposals/perplexity-ownership-permission-envelope-spec-2026-05-06.md. Pipeline_state diagnosis: 'private-thread modal blocking bubble render without ownership/permission field'. Test: does Perplexity SPA now skip private-thread modal AND render warning bubble? Engine size grew 4262→4495 template / 4472 deployed bytes (5 occurrences of new fields).",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload www.perplexity.ai (Cmd+Shift+R) — fresh SPA",
+                "2. Submit PII prompt — observe POST /rest/sse/perplexity_ask response (~4472 bytes V7-A SSE)",
+                "3. Watch for private-thread modal — V7-A SUCCESS = modal absent OR auto-dismissed",
+                "4. Verify warning bubble: Korean '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다' visible as assistant message",
+                "5. Mission protection: real_llm_pii_text_present_in_dom = false"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + no private-thread modal + mission HELD",
+                "PARTIAL_modal_only_dismissed": "modal absent but bubble silent — escalate to V7-B (read_write_token) or V7-C (private_thread_metadata block)",
+                "PARTIAL_modal_persists": "ownership field insufficient — escalate V7-D (combined all-in)",
+                "FAIL": "no engine response — revert to original perplexity_sse template (preserved in spec doc)"
+            },
+            "expected_engine_log": "[APF:block_response] service=perplexity size=~4472 http2=1"
+        }
+    },
+    "id": "697",
+    "created": "2026-05-06T11:05:00Z",
+    "attachments": [],
+    "notes": "48차 perplexity V7-A ownership/permission test. Parallels mistral V5-A + notion V6-A pattern. Variants V7-B/C/D queued in spec as fallbacks."
+}
