@@ -1,0 +1,63 @@
+{
+  "request_id": 706,
+  "verdict": "FAIL",
+  "engine_version": "V7-D",
+  "run_id": "20260506-214104-56642",
+  "timestamp_kst": "2026-05-06T21:48:00+09:00",
+  "service": "perplexity",
+  "scenario": "PII block + thread doc intercept",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "evidence": {
+    "network_observations": {
+      "thread_uuid": "7d1f2f75-4c67-4f52-80cf-7dbb82e28a84",
+      "thread_fetch_url": "https://www.perplexity.ai/rest/thread/7d1f2f75-4c67-4f52-80cf-7dbb82e28a84?with_parent_info=true&with_schematized_response=true&version=2.18&source=default&limit=10&offset=0&from_first=true&supported_block_use_cases=...",
+      "thread_fetch_attempts": [
+        {
+          "attempt": 1,
+          "status": "(failed) net::ERR_HTTP2_PROTOCOL_ERROR",
+          "size": "0.0 kB",
+          "time_ms": 38,
+          "interpretation": "engine likely attempted intervention but produced malformed HTTP/2 frame; SPA aborted/canceled this attempt"
+        },
+        {
+          "attempt": 2,
+          "status": "403 Forbidden",
+          "size": "0.3 kB",
+          "time_ms": 262,
+          "source": "BACKEND (NOT engine-synthesized)",
+          "response_body_snippet": "{\"detail\": {\"error_code\": \"VIEW_THREAD_NOT_ALLOW...\", \"message\": \"You do not have permissi...\"}}"
+        }
+      ],
+      "other_http2_errors": [
+        "POST /rest/event/analytics -> ERR_HTTP2_PROTOCOL_ERROR",
+        "GET /rest/homepage-widgets/upsell -> ERR_HTTP2_PROTOCOL_ERROR"
+      ],
+      "engine_intercept_fired": false,
+      "synthetic_thread_doc_returned": false
+    },
+    "dom_scan": {
+      "warning_bubble_visible": false,
+      "korean_warning_text_present": false,
+      "modal_present": true,
+      "modal_text": "이 스레드는 비공개입니다 / 이 스레드의 소유자이거나 액세스를 요청하려면 로그인하세요",
+      "modal_buttons": ["Google로 계속하기", "Apple으로 계속하기", "이메일 입력", "싱글 사인온(SSO)", "닫기"],
+      "url_after_block": "perplexity.ai/?",
+      "search_navigated_to_thread_uuid_path": false,
+      "interpretation": "SPA hit /rest/thread backend 403 -> rendered private/login overlay; no APF warning bubble injected"
+    },
+    "comparison_vs_703": {
+      "703_v7c": "visibility=public sent in SSE block payload but failed to bypass backend ACL on thread fetch -> private modal shown",
+      "706_v7d": "engine designed to intercept /rest/thread/<UUID> follow-up GET on same connection within 5min of PII block; did NOT trigger -- backend served 403 just like 703",
+      "regression": false,
+      "new_symptom": "ERR_HTTP2_PROTOCOL_ERROR appeared on thread + analytics + homepage-widgets requests -- suggests engine code path is partially active but emitting invalid HTTP/2 framing rather than a clean synthesized 200 response. SPA retries, gets 403 from backend on retry."
+    }
+  },
+  "screenshots": [
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\706\\before.png",
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\706\\after.png",
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\706\\console.png",
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\706\\network.png"
+  ],
+  "recommendation": "V7-D intercept code path is active (evidence: ERR_HTTP2_PROTOCOL_ERROR on first attempt) but NOT producing a valid HTTP/2 response. Likely root causes: (1) HEADERS frame missing or malformed for synthesized response, (2) DATA frame size/length mismatch, (3) END_STREAM flag not set, (4) connection-level frame ordering. Browser cancels malformed stream and SPA retries -> backend ACL returns 403. Next: capture engine-side packet dump or HTTP/2 frame log for the 7d1f2f75 thread fetch and verify HEADERS+DATA+END_STREAM are emitted in spec-compliant order.",
+  "next_action": "engine code review of on_http2_request synthesis path; ensure response shape uses Content-Type: application/json and END_STREAM flag set on final DATA frame"
+}
