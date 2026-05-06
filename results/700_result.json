@@ -1,0 +1,66 @@
+{
+  "request_id": 700,
+  "service": "you",
+  "scenario": "check-warning",
+  "version_under_test": "V10-A (you_json envelope)",
+  "verdict": "PARTIAL_engine_only",
+  "verdict_reason": "Engine fires (chat backend returns generic block via SSR, no real LLM PII decode), but the V10-A you_json envelope shape did not surface a visible Korean warning ('경고' / '⚠️') to the user. The rendered DOM shows the SAME generic 'Sorry, something went wrong. Please try again later.' message reported in #693. Escalate to V10-B.",
+  "timestamp_utc": "2026-05-06T11:21:00Z",
+  "test_pc_local": "2026-05-06 20:21",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "evidence": {
+    "url_transition": {
+      "before": "https://you.com/chat?chatMode=default",
+      "after": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=default",
+      "matches_v10a_theory": true,
+      "note": "Confirms #693 PARTIAL hypothesis: SPA uses /search?q= URL-based routing with fromSearchBar=true&chatMode=default."
+    },
+    "network_observations": {
+      "primary_response": {
+        "endpoint": "GET /search?q=...&fromSearchBar=true&chatMode=default (with x-nextjs-data:1)",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "length_bytes": 61414,
+        "shape_detected": "Full SSR HTML (NOT JSON envelope)",
+        "is_next_ssp_json": false,
+        "has_error_true_field": false,
+        "has___N_SSP_marker": true,
+        "head_snippet": "<!DOCTYPE html><html data-color-scheme=\"@light\" data-gtm-env=\"ydc-webapp\" lang=\"en-US\"><head>... <title>내 주민등록번호는 880101-1234567 ... - You.com | Accurate Answers & Agents</title> ...",
+        "interpretation": "V10-A predicted Next.js SSP JSON envelope ({pageProps:{error:true,message},__N_SSP:true}) but the route still returns full HTML. The __N_SSP marker is INLINED in the HTML (likely inside __NEXT_DATA__ script), not as a JSON envelope. The you_json parser likely never matches this response shape, so no visible warning is rendered."
+      },
+      "next_data_endpoints_seen": [
+        "https://you.com/_next/data/6d8e790/en-US/chat.json",
+        "https://you.com/_next/data/6d8e790/en-US/search.json?q=...&cid=...&tbm=youchat (sample chats, not the PII query)"
+      ],
+      "no_youchat_streaming_observed_for_pii_query": true
+    },
+    "dom_scan": {
+      "page_title": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어? - You.com | Accurate Answers & Agents",
+      "user_bubble_visible": true,
+      "user_bubble_echoes_rrn": true,
+      "assistant_bubble_visible": true,
+      "assistant_bubble_text_full": "🤖 Sorry, something went wrong. Please try again later. Our team is looking into it. If you would like to follow up on this issue, please visit our Feedback Portal or let us know on our Discord. Please include the following Error ID in your message: e6137fb4-8315-49db-83e8-27fa9a13b4a0|e22536fe-47de-4e40-8b16-64e91c343de1|2026-05-06T11:19:55.880Z",
+      "korean_warning_text": null,
+      "has_경고_keyword": false,
+      "has_warning_emoji": false,
+      "has_pii_word_in_assistant": false,
+      "has_generic_error": true,
+      "any_real_llm_pii_decode": false,
+      "interpretation": "RRN appears only in the user message bubble (echoed input). The assistant message does NOT decode/explain the RRN — engine block IS active. But the block message is the SAME generic 'Sorry, something went wrong' string with Error ID, identical to #693 PARTIAL behavior. No 경고/⚠️/주민등록번호 warning visible."
+    },
+    "comparison_vs_693": {
+      "693_verdict": "PARTIAL — engine fires but generic 'Sorry, something went wrong' shown, no visible Korean warning",
+      "700_v10a_verdict": "PARTIAL_engine_only — IDENTICAL behavior. V10-A you_json envelope match did NOT replace the generic error with a visible Korean warning.",
+      "regression_status": "No improvement — V10-A did not fix #693 PARTIAL.",
+      "diagnosis_hint": "The Sorry message is rendered via SSR HTML, not via a Next.js SSP JSON error envelope. The you_json envelope detector (which expects {pageProps:{error:true,message}, __N_SSP:true} from a JSON-typed response) never triggers on this text/html SSR response. V10-B needs to either (a) hook into the SSR'd HTML directly (e.g., DOM observer on assistant message bubble text matching the generic error) or (b) intercept upstream at the chat API/streaming endpoint that produces this SSR fallback content."
+    }
+  },
+  "screenshots": {
+    "before": "C:/Users/최장희/Documents/dev_test_sync/files/700/before.png",
+    "after": "C:/Users/최장희/Documents/dev_test_sync/files/700/after.png",
+    "console": "C:/Users/최장희/Documents/dev_test_sync/files/700/console.png",
+    "network": "C:/Users/최장희/Documents/dev_test_sync/files/700/network.png",
+    "debug_extra": "C:/Users/최장희/Documents/dev_test_sync/files/700/debug1.png"
+  },
+  "recommended_next_step": "Escalate to V10-B. Switch detection from JSON-envelope match to either: (1) DOM mutation observer that flags assistant bubbles whose innerText starts with 'Sorry, something went wrong' or contains the Error ID pattern, then injects/replaces with Korean PII warning; OR (2) chat backend / SSE-stream-level interception before the SSR fallback is produced."
+}
