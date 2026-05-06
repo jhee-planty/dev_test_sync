@@ -1,0 +1,35 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "notion",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.notion.so/ai",
+        "verify_timeout_s": 30,
+        "context": "48차 notion V6-A envelope verification (deployed 2026-05-06 18:56:47 KST). HP-Notion-N1 test: multi-stage NDJSON sequence (started→running→applied) vs current single-line applied. Spec: proposals/notion-ndjson-multi-tool-sequence-envelope-spec-2026-05-06.md. Pipeline_state diagnosis: 'S3 NDJSON tool-call architecture gap — multi-tool-call sequence required'. Test: does Notion AI chat now render warning bubble? Engine size grows 527→930 bytes (3 lines).",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload www.notion.so/ai (Cmd+Shift+R) — fresh SPA",
+                "2. Trigger Notion AI chat with PII prompt — observe POST /api/v3/runInferenceTranscript",
+                "3. Network response should be ~930 bytes V6-A 3-line NDJSON envelope",
+                "4. Check console for any tool-call sequence parse errors",
+                "5. Verify warning bubble: Korean text '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다' visible",
+                "6. Check mission protection: real_llm_pii_text_present_in_dom = false"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible in Notion AI chat + no tool-call parse errors + mission HELD",
+                "PARTIAL_engine_only": "engine fires (930B response) but bubble missing — escalate to V6-C (Content-Encoding: identity) or V6-D (consistent traceId)",
+                "PARTIAL_console_only": "no error but no bubble — escalate to V6-D (UUID:trace consistency check)",
+                "FAIL": "no engine response or page broken — revert to V6-B (current single-line)"
+            },
+            "expected_engine_log": "[APF:block_response] service=notion size=930 http2=1"
+        }
+    },
+    "id": "696",
+    "created": "2026-05-06T11:00:00Z",
+    "attachments": [],
+    "notes": "48차 notion V6-A 3-line NDJSON sequence test. Parallels mistral V5-A approach. Variants V6-B/C/D queued in spec as fallbacks."
+}
