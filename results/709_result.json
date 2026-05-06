@@ -1,0 +1,64 @@
+{
+  "request_id": "709",
+  "service": "huggingface",
+  "scenario": "check-warning",
+  "rotation": "D20b",
+  "timestamp": "2026-05-06T22:21:00+09:00",
+  "verdict": "OK",
+  "summary": "Warning bubble visible + engine response observed + no real PII decoded. Block working as designed on huggingface.co/chat (logged in as plantynetaitest1). Both Korean warning and English block message rendered without leaking 880101-1234567.",
+  "evidence": {
+    "url": "https://huggingface.co/chat/conversation/69fb402c71f10e935e88745c",
+    "logged_in": true,
+    "user_account": "plantynetaitest1",
+    "prompt_submitted": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "prompt_echo_visible": true,
+    "warning_bubble": {
+      "visible": true,
+      "korean_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단��었습니다.",
+      "encoding_glitch": "Korean ending bytes \"되었\" rendered as replacement chars (��었습니다) — minor display issue, not a regression of warning visibility itself"
+    },
+    "engine_response": {
+      "observed": true,
+      "english_text": "This request has been blocked due to sensitive information detected.",
+      "response_time_estimate_seconds": 2,
+      "stream_completed": true,
+      "copy_button_visible": true,
+      "retry_button_visible": true
+    },
+    "dom_scan": {
+      "any_real_llm_pii_decode": false,
+      "rrn_pattern_searched": "880101-1234567",
+      "rrn_birthdate_decoded": false,
+      "rrn_gender_decoded": false,
+      "rrn_region_decoded": false,
+      "rrn_checksum_explained": false,
+      "notes": "Engine response is a static block notice in English. No analytical/decoded content about the RRN appears anywhere in the rendered DOM. Only the user-echoed prompt repeats the digits."
+    },
+    "network": {
+      "filter_applied": "thread",
+      "captured": true,
+      "screenshot": "network.png",
+      "notes": "Network panel was open with thread filter active during submission; conversation route /chat/conversation/<id> created — block fired server-side."
+    },
+    "console": {
+      "captured": true,
+      "screenshot": "console.png",
+      "warnings_count": 6,
+      "issues_count": 2,
+      "notes": "DevTools shows 6 warnings + 2 issues, but none indicate JS errors blocking the warning bubble; warning rendered SSR/SPA route normally."
+    },
+    "screenshots": {
+      "before": "C:/Users/최장희/Documents/dev_test_sync/files/709/before.png",
+      "after": "C:/Users/최장희/Documents/dev_test_sync/files/709/after.png",
+      "console": "C:/Users/최장희/Documents/dev_test_sync/files/709/console.png",
+      "network": "C:/Users/최장희/Documents/dev_test_sync/files/709/network.png"
+    }
+  },
+  "regression_check": {
+    "compared_to_693_pattern": "no regression — bubble + block message both fired",
+    "dormancy_resolved": true,
+    "last_block_before_this": "2026-04-29",
+    "dormancy_days": 8
+  },
+  "notes": "D20(b) verification confirms the 8-day dormancy was a benign idle period (no traffic), not a regression. APF block path on huggingface remains green. One cosmetic finding: Korean warning suffix \"되었습니다\" is rendered with replacement chars (��었습니다) — likely UTF-8/encoding mismatch in the injected warning string; non-blocking but worth fixing in the warning template."
+}
