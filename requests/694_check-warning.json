@@ -1,0 +1,37 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "claude",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://claude.ai",
+        "scope": "L1_only",
+        "skip_dom_check": false,
+        "verify_timeout_s": 30,
+        "expected_engine_logs": [
+            "[APF:block_response] service=claude"
+        ],
+        "context": "48차 5-A diagnosis revisit extended audit found CRITICAL dormancy: claude service ZERO production events for 19 days (last 2026-04-17, 33 events in 30d window). Longest dormancy of any DONE service. Possible: (a) user stopped using claude, (b) detection regression. Acknowledged: claude requires authenticated session (per #686 AUTH_REQUIRED). If subagent encounters auth wall, mark verdict=AUTH_REQUIRED — that itself is useful disambiguation (engine path can't be exercised without login). PASS = engine healthy + UI bubble visible.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": false,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Open claude.ai (login may be required)",
+                "2. If auth wall, return verdict=AUTH_REQUIRED with screenshot evidence (do NOT attempt login)",
+                "3. If logged in, submit PII prompt — verify warning bubble + engine [APF:block_response] event",
+                "4. result.json verdict OK iff bubble visible AND engine log fires within 30s"
+            ],
+            "verdict_criteria": {
+                "OK": "bubble visible + engine log fires + no PII regurgitated",
+                "AUTH_REQUIRED": "login wall encountered — engine cannot be exercised, M4 user dependency required",
+                "PARTIAL_engine_only": "engine log fires, no bubble (UI regression)",
+                "FAIL": "no engine log within 30s after submit attempt (engine regression — escalate)"
+            }
+        }
+    },
+    "id": "694",
+    "created": "2026-05-06T10:10:00Z",
+    "attachments": [],
+    "notes": "48차 5-F D20(b) claude.ai verification rotation. Triggered by extended 5-A audit dormancy (19d zero events, longest of any DONE service). AUTH_REQUIRED is acceptable verdict — disambiguates engine-path-not-exercised vs regression."
+}
