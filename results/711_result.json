@@ -1,0 +1,52 @@
+{
+  "request_id": "711",
+  "test": "perplexity V7-F-A schematized_response wrapper",
+  "run_id": "20260506-223744-80392",
+  "verdict": "PARTIAL_h2_clean_but_no_bubble",
+  "timestamp_utc": "2026-05-06T13:43:00Z",
+  "thread_uuid": "a9820acf-019c-4c4a-b1d5-24376a9db001",
+  "summary": "V7-F-A H2 framing maintained (zero ERR_HTTP2_PROTOCOL_ERROR). SPA fetched /rest/thread/<UUID> with explicit query parameter with_schematized_response=true, server returned 1450 bytes (~1.4KB, on target with V7-F-A spec ~1.1KB). However the answer panel did NOT hydrate — empty mainText, no warning bubble, no Korean warning text in DOM. This is the escalation case for V7-F-B (blocks[] wrapper).",
+  "evidence": {
+    "network_observations": {
+      "thread_fetch_url": "/rest/thread/a9820acf-019c-4c4a-b1d5-24376a9db001?with_parent_info=true&with_schematized_response=true&version=2.18&source=default&limit=10&offset=0&from_first=true&supported_block_use_cases=answer_modes&supported_block_use_cases=media_items&supported_block_use_cases=knowledge_cards&...",
+      "thread_fetch_status": "OK (no ERR_FAILED, no H2 error)",
+      "thread_fetch_size_bytes": 1450,
+      "thread_fetch_duration_ms": 10,
+      "thread_size_match_v7fa_spec": "yes (~1.1KB target, observed 1.4KB)",
+      "spa_explicitly_requested_schematized": true,
+      "sse_perplexity_ask": {"size_bytes": 5287, "duration_ms": 537, "status": "OK"},
+      "event_analytics": {"size_bytes": 5287, "duration_ms": 40, "status": "OK"},
+      "homepage_widgets_upsell": {"size_bytes": 0, "duration_ms": 10010, "status": "timeout (collateral, unrelated to APF)"},
+      "h2_protocol_errors": 0,
+      "all_failed_resources": [],
+      "console_errors_unrelated": [
+        "FedCM disabled (sign-in)",
+        "CORS blocked on cloudflareaccess.com (unrelated)",
+        "vite-PxFcPKCR.js ERR_FAILED 200 (cloudflareaccess CDN)",
+        "GSI_LOGGER FedCM rejects (sign-in)"
+      ]
+    },
+    "dom_scan": {
+      "answer_panel_content": "답변\n\nComet 다운로드",
+      "answer_panel_empty": true,
+      "bubble_visible": false,
+      "korean_warning_text_in_dom": [],
+      "warning_text_match": "none (no '보안 정책', '차단', '정책에' found in DOM)",
+      "prose_inner_text": null
+    },
+    "comparison_vs_710": {
+      "710_v7e": "H2 framing OK but minimal entries[].text not consumed by SPA, empty answer panel",
+      "711_v7fa": "H2 framing still OK, schematized_response wrapper sent (1450B), SPA still does not hydrate answer panel",
+      "delta": "shape upgraded from minimal entries[].text to schematized_response.answer_modes[0].answer.markdown + parent_info:null + root-level answer + assistant.status=completed; SPA continues to ignore",
+      "h2_regression": "NO regression — both 710 and 711 have zero H2 errors",
+      "hydration_regression": "NO improvement — answer panel still empty"
+    }
+  },
+  "screenshots": {
+    "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\711\\before.png",
+    "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\711\\after.png",
+    "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\711\\console.png",
+    "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\711\\network.png"
+  },
+  "recommendation": "Escalate to V7-F-B blocks[] wrapper. Current SPA build appears to require entries[i].blocks[] array structure (likely answer_modes block + markdown_block) rather than the schematized_response wrapper. Inspect the V7-C SSE response (5287B sse/perplexity_ask) for the actual successful shape used by the streaming path — its block structure should be replicated in the thread fetch intercept."
+}
