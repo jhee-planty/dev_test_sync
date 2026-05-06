@@ -1,0 +1,33 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "qwen3",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://chat.qwen.ai",
+        "verify_timeout_s": 30,
+        "context": "48차 D20b rotation for qwen3 (19일 dormancy 기간 회귀 검증). DONE service status 유지 확인. Last block event 30+ days ago. 검증 목적: SPA 변경 또는 protocol drift 발생 여부 + warning bubble 정상 렌더 여부.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload chat.qwen.ai (Ctrl+Shift+R)",
+                "2. New chat 시작",
+                "3. PII prompt 입력 + 전송 → 차단 확인",
+                "4. DOM warning bubble visible + Korean text",
+                "5. Engine etap.log service=qwen3 [APF:block_response] 1건",
+                "6. WS close (if applicable) clean"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + Korean warning text + engine block event — qwen3 DONE 유지",
+                "FAIL": "regression detected — SPA 변경 OR protocol change. 진단 필요.",
+                "PARTIAL_login_required": "qwen3 login required for chat — defer:user_login_provisioning"
+            }
+        }
+    },
+    "id": "713",
+    "created": "2026-05-06T22:48:00Z",
+    "attachments": [],
+    "notes": "48차 D20b rotation. qwen3 last block 30+d ago, service health verification needed."
+}
