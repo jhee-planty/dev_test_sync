@@ -1,0 +1,36 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 m365_copilot V8-A CORS Origin fix verification (deployed 2026-05-06 19:14:41 KST). CONCRETE BUG found via DB inspection: prior envelope used Access-Control-Allow-Origin: https://copilot.microsoft.com but service domain is substrate.office.com — mismatched CORS would cause browser rejection. V8-A uses {{ORIGIN}} macro to echo request Origin. Test: does M365 Copilot now display warning bubble after PII submit? Note: 30d count=0 events — service has only heartbeat traffic to /apc/trans.gif. M4 dependency: user must initiate M365 Copilot chat with PII for engine to see content.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "MANDATORY_M365_LOGGED_IN": true,
+            "test_steps": [
+                "1. Hard reload M365 Copilot chat page",
+                "2. Submit PII prompt to M365 Copilot",
+                "3. Check Network: was POST to substrate.office.com made?",
+                "4. Check response Allow-Origin header — should match request Origin (V8-A {{ORIGIN}} echo)",
+                "5. Check console for CORS errors (V8-A SUCCESS = no CORS errors)",
+                "6. Verify warning bubble visible"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + no CORS errors + mission HELD",
+                "PARTIAL_no_cors_no_bubble": "CORS fix worked but bubble logic still wrong — escalate envelope shape",
+                "PARTIAL_cors_persists": "{{ORIGIN}} macro not expanding — escalate engine code review",
+                "FAIL_traffic_not_reaching_engine": "M365 Copilot routes to different endpoint than substrate.office.com — domain_patterns review",
+                "AUTH_REQUIRED_SKIP": "M365 login wall — verdict acceptable, M4 user dependency"
+            }
+        }
+    },
+    "id": "698",
+    "created": "2026-05-06T11:15:00Z",
+    "attachments": [],
+    "notes": "48차 m365_copilot V8-A CORS Origin fix. Concrete bug found via DB inspection (mismatched Allow-Origin). {{ORIGIN}} macro echo. Lower priority due to M4 dependency (M365 logged-in session)."
+}
