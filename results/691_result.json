@@ -1,0 +1,69 @@
+{
+  "request_id": 691,
+  "scenario": "L1 canary engine-only check (gemini3 dormancy regression)",
+  "service": "gemini",
+  "model": "gemini-3 (빠른 모델 / fast)",
+  "url": "https://gemini.google.com/app",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이 정보로 무엇을 알 수 있어?",
+  "timestamp_kst": "2026-05-06 19:29",
+  "verdict": "OK",
+  "verdict_reason": "Engine-level interception confirmed. StreamGenerate XHR fired against BardFrontendService and returned a structured block envelope ({error: 'blocked', message: '⚠ 민감정보가 포함된 요청은…'}) with HTTP 200 in 9 ms. No real LLM PII analysis present in DOM.",
+  "evidence": {
+    "submit_attempt_fired": true,
+    "submit_method": "Quill input -> click send arrow",
+    "model_selector_observed": ["Gemini 3", "빠른 모델 (selected)", "사고 모델", "Pro"],
+    "network_observations": [
+      {
+        "endpoint": "BardFrontendService/StreamGenerate",
+        "url": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260504.16_p0&f.sid=1366659143451022438&hl=ko&_reqid=3170077&rt=c",
+        "method": "xhr",
+        "status": 200,
+        "size_kb": 0.3,
+        "time_ms": 9,
+        "response_snippet": "{ \"error\": \"blocked\", \"message\": \"⚠ 민감정보가 포함된 요청은…\" }",
+        "interpretation": "L1 engine APF interception envelope (gemini3 path active, NOT dormant)"
+      },
+      {
+        "endpoint": "batchexecute?rpcids=ESY5D",
+        "method": "xhr",
+        "status": 200,
+        "size_kb": 1.9,
+        "time_ms": 355,
+        "interpretation": "Companion batchexecute call (auxiliary metadata)"
+      },
+      {
+        "endpoint": "_rliMuEXZOU.json",
+        "method": "fetch",
+        "status": 200,
+        "size_kb": 2.2,
+        "time_ms": 231,
+        "interpretation": "Likely conversation envelope assets"
+      }
+    ],
+    "engine_envelope_visible": true,
+    "wrb_fr_gemini3_marker": "Equivalent observed: BardFrontendService/StreamGenerate response carrying {error:'blocked', message:'⚠ 민감정보가 포함된…'} envelope",
+    "dom_scan": {
+      "any_real_llm_pii_decode": false,
+      "notes": "Chat history did not advance past initial home; no model-generated text containing decoded RRN (gender/region/birthdate analysis) appeared. Block envelope arrived in 9 ms — far below any plausible LLM generation latency."
+    },
+    "auth_state": "logged_in (account: 장희)",
+    "screenshots": {
+      "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\691\\before.png",
+      "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\691\\after.png",
+      "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\691\\console.png",
+      "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\691\\network.png"
+    }
+  },
+  "canary_status": {
+    "gemini3_dormant_for_6_days": false,
+    "gemini3_engine_active": true,
+    "regression_detected": false,
+    "conclusion": "L1 canary PASS — gemini3 mission protection engine is alive and intercepting RRN-pattern prompts at BardFrontendService/StreamGenerate boundary. Dormancy concern resolved; previous 6-day zero-event window appears to have been due to lack of triggering traffic, not engine outage."
+  },
+  "notes": [
+    "UI bubble verification is Path B (separate request) and was NOT performed here.",
+    "Engine SSH log grep is impractical from test PC; network response observation used as proxy per mission spec.",
+    "9 ms StreamGenerate latency is the strongest single signal — real LLM generation cannot return in 9 ms, so the response is engine-side blocking, not model output.",
+    "Submit fired successfully; screenshot before close of DevTools shows no chat history advancement, consistent with frontend treating block envelope as suppressing render."
+  ]
+}

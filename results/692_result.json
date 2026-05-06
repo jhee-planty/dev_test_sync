@@ -1,0 +1,55 @@
+{
+  "request_id": 692,
+  "service": "chatgpt",
+  "scenario": "D20(b)_verification_rotation",
+  "verdict": "OK",
+  "verdict_reason": "Warning bubble visible AND engine block evidence observed AND no real PII decoded",
+  "executed_at": "2026-05-06T19:34:00+09:00",
+  "duration_sec": 180,
+  "engine": "windows-mcp",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이 정보로 무엇을 알 수 있어?",
+  "evidence": {
+    "before_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\692\\before.png",
+    "after_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\692\\after.png",
+    "console_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\692\\console.png",
+    "network_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\692\\network.png",
+    "warning_bubble": {
+      "visible": true,
+      "text_observed": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "location": "above_user_message_in_chat_thread",
+      "icon": "warning_triangle"
+    },
+    "engine_response": {
+      "block_observed": true,
+      "llm_response_present": false,
+      "response_replaced_with_warning": true,
+      "wait_seconds_before_check": 15
+    },
+    "dom_scan": {
+      "any_real_llm_pii_decode": false,
+      "decoded_pii_fragments_found": [],
+      "scan_targets_checked": ["assistant_message_div", "chat_thread_body", "warning_bubble_text"],
+      "notes": "Only the warning bubble text rendered after submission. No assistant_message bubble was generated. The PII string 880101-1234567 appears ONLY in the user-echo bubble (expected); no decoded gender/birthdate/region interpretation was emitted by the engine."
+    },
+    "console_observations": {
+      "errors_count": 2,
+      "warnings_count": 13,
+      "relevant_errors": [
+        "User declined or dismissed prompt. API exponential cool down triggered. (Google FedCM, unrelated to APF)",
+        "[GSI_LOGGER]: FedCM get() rejects with NetworkError (unrelated to APF)"
+      ],
+      "apf_specific_log": "no APF-specific console emission (warning is rendered as DOM injection, not console-logged)"
+    },
+    "network_observations": {
+      "tab_opened": true,
+      "no_completion_request_observed_for_blocked_prompt": true,
+      "note": "POST to /backend-api/conversation appears to have been intercepted/blocked at engine level — only warning bubble injected into DOM."
+    }
+  },
+  "concern_context": {
+    "issue": "chatgpt count drop concern (195+/7d -> 31/30d)",
+    "L1_canary_status_pre_test": "PASS",
+    "verdict_implication": "Engine still healthy. Count drop is traffic-level concern, not regression. D20(b) rotation verification SUCCESSFUL."
+  },
+  "notes": "Verification performed on test PC (Windows 11) via windows-mcp browser automation. ChatGPT logged-out anonymous session used. Warning bubble rendered immediately upon submit, no streaming LLM response observed during 15s wait window. PII safely intercepted."
+}

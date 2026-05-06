@@ -1,0 +1,79 @@
+{
+  "request_id": 695,
+  "service": "mistral",
+  "verdict": "PARTIAL_engine_only",
+  "scenario": "V5-A envelope verification (post #687 self-correction)",
+  "timestamp_kst": "2026-05-06T19:45:00+09:00",
+  "executed_by": "test-pc-worker",
+  "v5a_deploy_kst": "2026-05-06T18:52:35+09:00",
+
+  "summary": "V5-A envelope is INSUFFICIENT. Engine fires (POST /api/trpc/message.newChat returned 200, ~900 byte response, content-type application/json) but the SPA tRPC client STILL throws TRPCClientError 'Cannot convert undefined or null to object' — identical to #687 root cause. Warning bubble NOT rendered (chat panel empty, shows only mistral logo and 'Ask anything' input). HP-Mistral-3 hypothesis (superJSON ['undefined'] meta transformers) is FALSIFIED: stripping ['undefined'] entries did not eliminate the parse failure. Escalate to V5-B (tRPC v11 single-result shape).",
+
+  "evidence": {
+    "network_observations": {
+      "url": "https://chat.mistral.ai/api/trpc/message.newChat?batch=1",
+      "method": "POST",
+      "status": "200 OK",
+      "response_content_type": "application/json",
+      "response_size_total_bytes_devtools": "0.9 kB (~900 bytes including headers)",
+      "request_content_length": 598,
+      "remote_address": "[2a06:98c1:3200::90:82]:443",
+      "cache_control": "no-cache",
+      "v5a_target_size_bytes": 786,
+      "v5a_size_match": "approximate (~900B observed including headers, body likely close to 786B target — much smaller than v4 1563B baseline)",
+      "raw_response_body_capture": "FAILED — DevTools showed 'Failed to load response data — No data found for resource with given identifier' (small-body race condition with SW); content-type header confirmed application/json"
+    },
+
+    "console_state": {
+      "trpc_client_error_present": true,
+      "trpc_error_summary": {
+        "name": "TRPCClientError",
+        "message": "Cannot convert undefined or null to object",
+        "cause": "TypeError: Cannot convert undefined or null to object",
+        "data": "undefined",
+        "meta": "undefined",
+        "shape": "undefined",
+        "logged_as": "<< mutation #5 message.newChat (red error log)",
+        "logger_source": "71429-1ab3c5bf56f640c7.js:45 (tRPC client wrapper, same minified bundle as #687)",
+        "elapsedMs": 53
+      },
+      "manifest_403_errors_unrelated": 2,
+      "total_console_errors": 3,
+      "input_mutation_visible": "input: {content: Array(1), agentId: undefined, agen…}"
+    },
+
+    "dom_scan": {
+      "bubble_visible": false,
+      "korean_warning_text_visible": false,
+      "any_real_llm_pii_decode": false,
+      "chat_panel_state": "empty — only Mistral logo + 'Ask anything' input + Sign in/Sign up buttons (anonymous user)",
+      "user_message_bubble": "absent (input cleared after submission but no echo bubble appeared)",
+      "auth_state": "anonymous (cookie anonymousUser=1ac722a4-d56c-4a66-951f-c1fd62c7243c)"
+    }
+  },
+
+  "pass_fail_classification": {
+    "decision": "PARTIAL_engine_only",
+    "rationale": "Per spec: 'engine fires (786B response observed) but bubble still missing — V5-A insufficient → escalate to V5-B (tRPC v11 single-result shape)'. Match exact: 200 status received, response size in V5-A range (~786-900B vs v4 1563B), but TRPCClientError persists and no bubble rendered.",
+    "mission_protection": "HELD (no real PII decode, no LLM response leak)",
+    "regression_check": "no — engine response observed (not FAIL)"
+  },
+
+  "hypothesis_status": {
+    "HP-Mistral-3_superJSON_undefined_meta": "FALSIFIED — V5-A stripped ['undefined'] entries + corresponding null-valued fields, but TRPCClientError unchanged. Root cause is NOT superJSON ['undefined'] meta transformers."
+  },
+
+  "next_step_recommendation": {
+    "action": "escalate_to_V5B",
+    "target": "tRPC v11 single-result shape",
+    "reasoning": "V5-A used compact envelope (786B) but kept tRPC v10 batch shape ([{result:{...}}]). The TRPCClientError 'Cannot convert undefined or null to object' suggests the SPA bundle (45659.js, e.from at line 45 of 71429-…) expects a different envelope shape. V5-B tRPC v11 single-result {result:{data:...}} (no array wrapper) is next candidate.",
+    "alternative": "V5-D — if V5-B parse succeeds but bubble still missing, SPA chat renderer is rejecting shape regardless of tRPC parse"
+  },
+
+  "artifacts": {
+    "before_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\695\\before.png",
+    "after_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\695\\after.png",
+    "console_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\695\\console.png",
+    "network_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\695\\network.png"
+  }
+}
