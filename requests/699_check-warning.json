@@ -1,0 +1,32 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "mistral",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://chat.mistral.ai",
+        "verify_timeout_s": 30,
+        "context": "48차 mistral V5-B escalation per #695 verdict (V5-A INSUFFICIENT, TRPCClientError persists). HP-Mistral-2: tRPC v11 single-result shape. V5-B replaces [{result:...}] with {result:...} (no array wrapper). Spec: proposals/mistral-trpc-envelope-shape-refinement-spec-2026-05-06.md.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload chat.mistral.ai",
+                "2. Submit PII prompt — observe POST /api/trpc/message.newChat?batch=1 response",
+                "3. Check response BODY (not just headers): is it {...} object or [{...}] array?",
+                "4. Console: TRPCClientError gone? OR new error type?",
+                "5. Warning bubble: visible?"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + no TRPCClientError",
+                "PARTIAL_engine_only": "engine fires but bubble silent — escalate V5-C/D",
+                "FAIL": "no engine response OR new fatal error"
+            }
+        }
+    },
+    "id": "699",
+    "created": "2026-05-06T10:50:00Z",
+    "attachments": [],
+    "notes": "48차 mistral V5-B test — HP-Mistral-2 tRPC v11 single-result shape escalation per #695 PARTIAL verdict."
+}
