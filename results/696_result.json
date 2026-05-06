@@ -1,0 +1,73 @@
+{
+  "request_id": "696",
+  "scenario": "notion-V6-A-3line-NDJSON-verification",
+  "timestamp_kst": "2026-05-06T19:57:00+09:00",
+  "verdict": "PARTIAL_engine_only",
+  "verdict_reason": "V6-A engine envelope confirmed delivered (POST /api/v3/runInferenceTranscript returned 200 OK with Content-Type: application/x-ndjson and size in the expected ~930B-1.3kB range), but the Korean warning bubble was NOT rendered in the DOM. Notion's chat area shows only the 'Ask AI' header with an empty conversation area; the side-panel chat list shows 'No chats yet'. The user prompt was effectively dropped on the client side. Recommend escalation to V6-C/V6-D to address the client-side rendering of the multi-stage NDJSON sequence.",
+  "evidence": {
+    "network_observations": {
+      "endpoint": "https://www.notion.so/api/v3/runInferenceTranscript",
+      "method": "POST",
+      "status_code": 200,
+      "status_text": "OK",
+      "content_type": "application/x-ndjson",
+      "size_devtools_display_kb": 1.3,
+      "size_estimate_body_bytes_range": "approximately 930 (consistent with V6-A 3-line NDJSON started/running/applied envelope; DevTools 1.3 kB includes response headers)",
+      "duration_ms": 144,
+      "response_body_capture": "DevTools Preview/Response shows 'Failed to load response data — No data found for resource with given identifier' which is typical for streamed x-ndjson responses where the body is consumed by the client and not retained by DevTools",
+      "filter_applied": "runInferenceTranscript",
+      "remote_address": "[2602:f79a::2]:443",
+      "cache_control": "no-cache, no-store",
+      "preserve_log": true,
+      "disable_cache": true,
+      "additional_failure": "POST https://www.notion.so/api/v3/etClient -> net::ERR_HTTP2_PROTOCOL_ERROR (telemetry endpoint, not the inference endpoint, but worth noting as it occurred during the same interaction)"
+    },
+    "console_state": {
+      "tool_call_parse_error_present": false,
+      "runInference_filter_results": "0 visible messages when filter='runInference' (30 hidden) - no parse errors related to runInferenceTranscript stream",
+      "total_errors_after_prompt": 6,
+      "total_warnings_after_prompt": 6,
+      "errors_breakdown": [
+        "GET https://www.googletagmanager.com/gtag/js?id=AW-10930095205... net::ERR_CONNECTION_CLOSED 200 (preexisting, unrelated)",
+        "GET https://www.googletagmanager.com/gtag/js?id=AW-695511889... net::ERR_CONNECTION_CLOSED 200 (preexisting, unrelated)",
+        "GET https://cdn.metadata.io/pixel/config/1127.json 403 Forbidden (preexisting, unrelated)",
+        "HttpRequestError: Request aborted at p (ClientFramework-f022...a41a876b.js:7:36469) (handleHttpFailure)",
+        "POST https://www.notion.so/api/v3/etClient net::ERR_HTTP2_PROTOCOL_ERROR (occurred during prompt submission - potentially related to V6-A stream interaction with HTTP/2)",
+        "Amplitude Logger [Error]: Failed to fetch (www.notion.so) (telemetry, likely cascade from etClient failure)"
+      ],
+      "no_explicit_ndjson_or_tool_call_sequence_parse_errors": true
+    },
+    "dom_scan": {
+      "warning_bubble_visible": false,
+      "korean_warning_text_present": false,
+      "korean_warning_text_searched": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+      "any_real_llm_pii_decode": false,
+      "chat_area_state": "Right-pane chat container shows only the 'Ask AI' page header. No user message bubble, no AI response bubble, no warning bubble, no streaming indicator. Composer input ('Do anything with AI...') reset to empty state.",
+      "side_panel_chat_list": "'No chats yet' message displayed under Notion AI agent — implies the inference transcript was not persisted as a chat thread on the client.",
+      "url_after_submit": "https://www.notion.so/chat?t=3589aa2d8bdd80499cec00a9125a4460 (a new chat session id was minted, but no DOM nodes for the conversation rendered)"
+    },
+    "browser_state": {
+      "url_initial": "https://www.notion.so/ai",
+      "hard_reload_performed": "Ctrl+Shift+R (verified - Korean UI strings reverted to English defaults, fresh SPA load)",
+      "devtools_open": true,
+      "tabs_used": ["Console", "Network"],
+      "prompt_text_sent": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+    }
+  },
+  "evidence_files": {
+    "before_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\696\\before.png",
+    "after_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\696\\after.png",
+    "console_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\696\\console.png",
+    "network_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\696\\network.png"
+  },
+  "v6a_verification": {
+    "engine_envelope_delivered": true,
+    "size_consistent_with_3line_ndjson": true,
+    "content_type_ndjson_confirmed": true,
+    "client_ui_consumed_envelope_into_visible_bubble": false,
+    "tool_call_sequence_parser_quiet": true,
+    "next_action_recommended": "Escalate to V6-C (verify client tool-call sequence handler can interpret started/running/applied stages as a synthetic warning message) or V6-D (inject warning DOM directly via UI hook rather than relying on the existing message renderer to react to the engine response). Also investigate whether the etClient HTTP/2 protocol error is correlated with the V6-A multi-line response framing."
+  },
+  "mission_held": false,
+  "notes": "Engine side appears to be holding the V6-A 3-line NDJSON contract (200 OK, application/x-ndjson, ~930B-class size). The breakdown is purely client-side rendering: Notion's chat UI did not produce any visible bubble for either the user prompt or any synthesized warning. There were no NDJSON parse errors in the console, suggesting the client either silently swallowed the unrecognized multi-stage payload or the parser does not have a hook to render warning frames. Per pass/fail rubric this matches PARTIAL_engine_only."
+}
