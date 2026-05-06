@@ -1,0 +1,35 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "you",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://you.com",
+        "scope": "L1_only",
+        "skip_dom_check": false,
+        "verify_timeout_s": 30,
+        "expected_engine_logs": [
+            "[APF:block_response] service=you"
+        ],
+        "context": "48차 5-A diagnosis revisit (decision 20260506_184500 + 20260506_184700) extended audit found additional dormancy: you service ZERO production events for 8 days (last 2026-04-29 13:20). Same pattern as gemini3 A1 anomaly. L1 canary disambiguation: PASS = engine healthy, dormancy is traffic-absence; FAIL = regression escalation. you is publicly accessible (no login required) so L1 + UI verify both possible.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": false,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Open you.com (no login required)",
+                "2. Submit PII prompt — verify warning bubble + engine [APF:block_response] event",
+                "3. result.json verdict OK iff bubble visible AND engine log fires within 30s"
+            ],
+            "verdict_criteria": {
+                "OK": "bubble visible + engine log fires + no PII regurgitated",
+                "PARTIAL_engine_only": "engine log fires, no bubble (UI regression)",
+                "FAIL": "no engine log within 30s (engine regression — escalate)"
+            }
+        }
+    },
+    "id": "693",
+    "created": "2026-05-06T10:05:00Z",
+    "attachments": [],
+    "notes": "48차 5-F D20(b) you.com verification rotation. Triggered by extended 5-A audit dormancy finding (8d zero events on highest-volume DONE service). Acceptance: PASS = DONE status holds; FAIL/PARTIAL = regression escalation."
+}
