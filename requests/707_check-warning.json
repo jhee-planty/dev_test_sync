@@ -1,0 +1,39 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "notion",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.notion.so/ai",
+        "verify_timeout_s": 30,
+        "context": "48차 V6-D notion test flow update — page injection infrastructure ALREADY DEPLOYED in engine (page_inject_h1 + page_inject_h2 since 2026-04-30 47차). To trigger: after PII submit, HARD RELOAD same-tab. Engine intercepts page-load text/html GET when last_pii_block_at_ms within 5 min window → returns synthetic warning HTML page.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "MANDATORY_RELOAD_AFTER_SUBMIT": true,
+            "test_steps": [
+                "1. Hard reload www.notion.so/ai (initial fresh state)",
+                "2. Submit PII prompt — engine fires V6-B SSE block on /api/v3/runInferenceTranscript",
+                "3. Wait 3 sec for block to register (last_pii_block_at_ms set)",
+                "4. ★ HARD RELOAD same tab (Cmd+Shift+R / Ctrl+Shift+R) — fires page-load GET",
+                "5. Engine on_http2_response should see is_page_load + recent block → page_inject_h2 → returns synthetic warning HTML page",
+                "6. Browser displays warning page (NOT normal Notion UI)",
+                "7. Verify production etap.log: [APF:page_inject_h2] service=notion event"
+            ],
+            "verdict_criteria": {
+                "OK": "warning HTML page rendered after reload + production log shows page_inject_h2",
+                "PARTIAL_block_ok_but_reload_doesnt_inject": "PII block fires (V6-B) but reload doesn't trigger page injection — investigate is_page_load flag for notion",
+                "FAIL": "neither block nor injection works"
+            },
+            "expected_engine_logs": [
+                "[APF:block_response] service=notion (initial PII submit)",
+                "[APF:page_inject_h2] service=notion stream=N path=/ (after reload)"
+            ]
+        }
+    },
+    "id": "707",
+    "created": "2026-05-06T12:51:00Z",
+    "attachments": [],
+    "notes": "48차 V6-D test flow — engine page_injection already deployed, just need reload step to trigger. Audit decision: state/decisions/20260506_215000_5A_V6D_infrastructure_already_deployed_test_flow_update_needed.json."
+}
