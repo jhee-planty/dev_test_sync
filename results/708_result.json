@@ -1,0 +1,91 @@
+{
+  "request_id": "708",
+  "timestamp": "2026-05-06T22:12:00+09:00",
+  "service": "perplexity",
+  "scenario": "V7-E HTTP/2 framing fix verification",
+  "verdict": "PARTIAL_h2_clean_but_no_bubble",
+  "summary": "V7-E successfully fixed the HTTP/2 protocol error from V7-D (#706). The thread fetch and all collateral requests now complete cleanly via h2 protocol with valid framing. However, the SPA does NOT render the warning bubble — the synthetic thread doc structure does not match what the perplexity SPA expects to render answer content. Escalate to V7-F to fix the response shape.",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "evidence": {
+    "network_observations": {
+      "thread_fetch_url": "https://www.perplexity.ai/rest/thread/6cd18e6b-c05d-4281-b937-b88d167a0770?with_parent_info=true&with_schematized_response=true&version=2.18&source=default&limit=10&offset=0&from_first=true&supported_block_use_cases=...(full URL truncated)",
+      "thread_fetch_protocol": "h2",
+      "thread_fetch_duration_ms": 11.2,
+      "thread_fetch_transfer_size_bytes": 806,
+      "thread_fetch_status": "completed (no protocol error)",
+      "err_http2_protocol_error_on_thread": false,
+      "err_http2_protocol_error_on_collateral": false,
+      "collateral_requests": [
+        {"url": "https://www.perplexity.ai/rest/sse/perplexity_ask", "protocol": "h2", "transfer_size": 5287, "duration_ms": 15.3, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/event/analytics", "protocol": "h2", "transfer_size": 378, "duration_ms": 494.2, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/event/analytics (2nd)", "protocol": "h2", "transfer_size": 5287, "duration_ms": 37.7, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/event/analytics (3rd)", "protocol": "h2", "transfer_size": 5287, "duration_ms": 35.8, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/event/analytics (4th)", "protocol": "h2", "transfer_size": 378, "duration_ms": 287.7, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/event/analytics (5th)", "protocol": "h2", "transfer_size": 378, "duration_ms": 288.7, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/event/analytics (6th)", "protocol": "h2", "transfer_size": 378, "duration_ms": 474.3, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/homepage-widgets/upsell?version=2.18&source=default", "protocol": "h2", "transfer_size": 373, "duration_ms": 475.7, "status": "OK"},
+        {"url": "https://www.perplexity.ai/rest/visitor/consent-requirement?version=2.18&source=default", "protocol": "h2", "transfer_size": 333, "duration_ms": 244.4, "status": "OK"}
+      ],
+      "console_errors": [
+        "Access to script 'pplx-next-static-public.../restricted-feature-loader-Cw3-0exd.js' blocked by CORS policy: No 'Access-Control-Allow-Origin' header (cloudflare access redirect — unrelated to V7-E)",
+        "Failed to load resource: net::ERR_FAILED (same cloudflare access script — unrelated)",
+        "User declined or dismissed prompt. API exponential cool down triggered. (FedCM — unrelated, login-related)",
+        "[GSI_LOGGER] FedCM get() rejects with NetworkError: Error retrieving a token (FedCM/Google sign-in — unrelated)"
+      ],
+      "console_error_count": 4,
+      "console_error_no_h2_protocol_error": true,
+      "note": "Zero ERR_HTTP2_PROTOCOL_ERROR observed on any www.perplexity.ai request. The 4 console errors are cloudflare-access/FedCM auth-flow issues unrelated to APF V7-E injection."
+    },
+    "dom_scan": {
+      "url_after_pii_submit": "https://www.perplexity.ai/search/6cd18e6b-c05d-4281-b937-b88d167a0770",
+      "spa_navigated_to_thread_page": true,
+      "bubble_visible": false,
+      "modal_present": false,
+      "answer_section_present": true,
+      "answer_section_empty": true,
+      "korean_warning_text_visible": false,
+      "warning_keyword_match_in_dom": "MATCHED but only because user's own query (containing '주민등록') is rendered — NOT an APF warning",
+      "body_inner_text_full": "답변\nComet 다운로드\n내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+      "body_inner_text_length": 57,
+      "main_html_excerpt": "no main container with content",
+      "comet_download_button_visible": true,
+      "answer_tab_visible": true,
+      "interpretation": "The SPA navigated to the thread URL, and the thread fetch returned HTTP 200 with a small (806-byte) synthetic body. But the SPA did NOT render any answer content nor an injected warning bubble. The user's query bubble is the only chat-like content visible. On reload, the URL even resolves to '이 스레드는 비공개입니다' (thread is private) login modal — the synthetic thread doc does not persist as a valid thread."
+    },
+    "comparison_vs_706": {
+      "706_result": "FAIL — engine intercept fired but emitted malformed HTTP/2 frames, causing browser ERR_HTTP2_PROTOCOL_ERROR on /rest/thread/<UUID>; collateral requests on the same connection were also poisoned",
+      "708_result": "PARTIAL — V7-E successfully calls convert_to_http2_response on the synthetic thread doc and sets is_http2=0; the resulting frames are valid H2; browser sees no protocol error; collateral requests succeed cleanly",
+      "improvements": [
+        "ERR_HTTP2_PROTOCOL_ERROR eliminated on thread fetch",
+        "Connection no longer poisoned — collateral analytics, sse, widgets, consent-requirement all complete via h2",
+        "Synthetic thread doc reaches the browser intact (806 bytes)"
+      ],
+      "remaining_problem": [
+        "SPA renders empty answer panel — no warning bubble, no answer text",
+        "Synthetic thread doc body shape does not match perplexity SPA's expected /rest/thread/<UUID> response schema (with parent_info / schematized_response fields)",
+        "On reload, thread URL resolves to private/not-found modal — synthetic doc doesn't persist server-side either"
+      ],
+      "next_step": "V7-F should investigate the expected JSON schema of /rest/thread/<UUID> with the long supported_block_use_cases query string, and shape the synthetic thread doc to include the minimum entries (likely an entries[] array with a warning block) so the SPA can render the warning bubble."
+    },
+    "screenshots": {
+      "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\before.png",
+      "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\after.png",
+      "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\console.png",
+      "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\network.png"
+    },
+    "raw_data_files": {
+      "performance_thread_entries": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\thread_entries.json",
+      "http_protocol_versions": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\http_versions.json",
+      "dom_scan_payload": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\dom_scan.json",
+      "zero_size_entries": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\708\\zero_size_entries.json"
+    }
+  },
+  "checks": {
+    "browser_no_err_http2_protocol_error": true,
+    "collateral_requests_succeed": true,
+    "spa_renders_thread_page": true,
+    "warning_bubble_visible": false,
+    "korean_warning_text_visible": false
+  },
+  "recommendation": "Escalate V7-F: shape the synthetic thread doc body to match perplexity's expected schema. The HTTP/2 transport layer is now correct; the application-layer response shape is the new bottleneck."
+}

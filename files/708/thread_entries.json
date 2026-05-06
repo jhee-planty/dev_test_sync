@@ -1,0 +1,52 @@
+﻿[
+    {
+        "name": "https://www.perplexity.ai/rest/sse/perplexity_ask",
+        "duration": 15.299999952316284,
+        "transferSize": 5287
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/event/analytics",
+        "duration": 494.19999980926514,
+        "transferSize": 378
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/homepage-widgets/upsell?version=2.18&source=default",
+        "duration": 475.7000000476837,
+        "transferSize": 373
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/event/analytics",
+        "duration": 37.700000047683716,
+        "transferSize": 5287
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/event/analytics",
+        "duration": 35.799999952316284,
+        "transferSize": 5287
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/event/analytics",
+        "duration": 287.69999980926514,
+        "transferSize": 378
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/thread/6cd18e6b-c05d-4281-b937-b88d167a0770?with_parent_info=true&with_schematized_response=true&version=2.18&source=default&limit=10&offset=0&from_first=true&supported_block_use_cases=answer_modes&supported_block_use_cases=media_items&supported_block_use_cases=knowledge_cards&supported_block_use_cases=inline_entity_cards&supported_block_use_cases=place_widgets&supported_block_use_cases=finance_widgets&supported_block_use_cases=prediction_market_widgets&supported_block_use_cases=sports_widgets&supported_block_use_cases=flight_status_widgets&supported_block_use_cases=news_widgets&supported_block_use_cases=shopping_widgets&supported_block_use_cases=jobs_widgets&supported_block_use_cases=search_result_widgets&supported_block_use_cases=inline_images&supported_block_use_cases=inline_assets&supported_block_use_cases=placeholder_cards&supported_block_use_cases=diff_blocks&supported_block_use_cases=inline_knowledge_cards&supported_block_use_cases=entity_group_v2&supported_block_use_cases=refinement_filters&supported_block_use_cases=canvas_mode&supported_block_use_cases=maps_preview&supported_block_use_cases=answer_tabs&supported_block_use_cases=price_comparison_widgets&supported_block_use_cases=preserve_latex&supported_block_use_cases=generic_onboarding_widgets&supported_block_use_cases=in_context_suggestions&supported_block_use_cases=pending_followups&supported_block_use_cases=inline_claims&supported_block_use_cases=unified_assets&supported_block_use_cases=workflow_steps&supported_block_use_cases=background_agents",
+        "duration": 11.200000047683716,
+        "transferSize": 806
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/event/analytics",
+        "duration": 288.7000000476837,
+        "transferSize": 378
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/event/analytics",
+        "duration": 474.2999999523163,
+        "transferSize": 378
+    },
+    {
+        "name": "https://www.perplexity.ai/rest/visitor/consent-requirement?version=2.18&source=default",
+        "duration": 244.40000009536743,
+        "transferSize": 333
+    }
+]
