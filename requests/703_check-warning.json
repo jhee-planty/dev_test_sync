@@ -1,0 +1,32 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai",
+        "verify_timeout_s": 30,
+        "context": "48차 perplexity V7-C per #701 verdict (V7-B URL parse OK but 403 VIEW_THREAD_NOT_ALLOW). V7-C: visibility='public' instead of 'private'. Hypothesis: public visibility bypasses backend's owner-only authorization on /rest/thread/<UUID> GET.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload www.perplexity.ai",
+                "2. Submit PII prompt — observe SSE response visibility field (now 'public')",
+                "3. Network: GET /rest/thread/<UUID> — does it return 200 (success) or still 403?",
+                "4. DOM: warning bubble visible? private-thread modal absent?",
+                "5. URL: should stay on /search/<UUID> if thread accessible"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + thread fetch 200 + no modal",
+                "PARTIAL_403_persists": "still 403 — owner check not bypassed by public visibility — escalate V7-D engine intercept",
+                "PARTIAL_other": "different failure mode"
+            }
+        }
+    },
+    "id": "703",
+    "created": "2026-05-06T11:55:00Z",
+    "attachments": [],
+    "notes": "48차 perplexity V7-C — visibility=public bypass test. Hypothesis HP-Perplexity-O3."
+}
