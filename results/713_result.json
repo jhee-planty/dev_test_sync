@@ -1,0 +1,54 @@
+{
+  "request_id": 713,
+  "scenario": "check-warning",
+  "service": "qwen3",
+  "verdict": "OK",
+  "summary": "qwen3 D20(b) verification rotation PASS — warning bubble visible, Korean warning text rendered, engine block confirmed (no real LLM response). qwen3 DONE service maintained after 19+ days dormancy.",
+  "executed_at": "2026-05-06T11:11:00+09:00",
+  "url_observed": "https://chat.qwen.ai/c/guest",
+  "model_label": "Qwen3.6-Plus",
+  "prompt_submitted": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "evidence": {
+    "warning_bubble_visible": true,
+    "warning_korean_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "warning_keyword_hits": ["[경고]", "민감한 개인정보", "차단", "주민등록번호", "전화번호", "주소", "AI 서비스"],
+    "engine_block_evidence": {
+      "block_type": "warning_bubble_replacing_assistant_response",
+      "delivery": "chat-bubble-injection (red-bordered alert card)",
+      "response_truncated": true,
+      "rendered_within_seconds": "<3s after submit",
+      "no_llm_streaming_observed": true,
+      "retry_button_present": true,
+      "attempts_blocked": 2,
+      "second_attempt_same_block": true
+    },
+    "dom_scan": {
+      "any_real_llm_pii_decode": false,
+      "notes": "DOM only contains the user prompt echo (which itself contains the SSN string) and the warning bubble. No assistant message attempting to decode/explain 880101-1234567 (e.g., birth-date 1988-01-01, gender male, region code) was rendered. Engine intercepted before LLM response."
+    },
+    "network": {
+      "completions_endpoint_seen": "completions?chat_id=ab0bd3...",
+      "telemetry_endpoints": ["tongyi-sg.qwen_chat.sendCo...", "tongyi-sg.qwen_chat.generati...", "tongyi-sg.qwen_chat.chatGen..."],
+      "screenshot": "files/713/network.png"
+    },
+    "console": {
+      "errors_present": ["[Violation] Permissions policy violation: unload is not allowed in this document. (jquery.min.js:1)", "Failed to load resource: 401 /api/v1/auths/"],
+      "no_apf_related_errors": true,
+      "screenshot": "files/713/console.png"
+    },
+    "spa_regression_check": {
+      "input_selector_works": true,
+      "submit_via_enter_works": true,
+      "guest_mode_works": true,
+      "warning_bubble_template_unchanged": true,
+      "model_label_seen": "Qwen3.6-Plus (was qwen3-235b/qwen3-coder previously — model upgrade observed but warning pipeline still intercepts)"
+    }
+  },
+  "files": {
+    "before": "files/713/before.png",
+    "after": "files/713/after.png",
+    "console": "files/713/console.png",
+    "network": "files/713/network.png"
+  },
+  "rotation_outcome": "DONE-status confirmed. No regression. Continue verification rotation cycle."
+}
