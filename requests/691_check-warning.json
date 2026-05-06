@@ -1,0 +1,43 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "gemini3",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이 정보로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gemini.google.com",
+        "scope": "L1_only",
+        "skip_dom_check": true,
+        "verify_timeout_s": 15,
+        "expected_engine_logs": [
+            "[APF:block_response] service=gemini",
+            "[APF:envelope] service=gemini3 response_type=wrb_fr_gemini3"
+        ],
+        "context": "L1 canary sentinel — engine-level mission protection regression check. UI bubble verify is Path B (CDP dispatchKeyEvent, separate request). Path A acceptance: PASS rate >= 95% across N=20 runs.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": false,
+            "MANDATORY_DEVTOOLS": false,
+            "test_steps": [
+                "1. Open or focus existing Gemini tab (https://gemini.google.com/...)",
+                "2. Submit PII prompt via Quill API best-effort (NOT required to succeed — engine-level path doesn't depend on UI)",
+                "3. Within 15s of submit attempt, scrape production etap.log via SSH for expected_engine_logs (each pattern must appear at least once with timestamp >= submit_attempt_at)",
+                "4. PASS if all expected log patterns observed within window; FAIL otherwise"
+            ],
+            "verdict_criteria": {
+                "OK": "all expected_engine_logs observed within verify_timeout_s",
+                "PARTIAL": "partial log observation (e.g., block_response but no envelope log) — sub-class details required",
+                "FAIL": "no expected_engine_logs within verify_timeout_s OR Quill submit failed AND no engine log fired (no traffic reached engine)"
+            },
+            "regression_pattern": {
+                "L1_canary_passing_window": "Run 20x in sequence; if 19/20+ PASS, regression-free baseline confirmed.",
+                "intermittency_signal": "If PASS rate < 95%, investigate per-stream check_completed reset bugs OR HTTP/2 stream id rotation patterns."
+            },
+            "no_dom_assertions": "DOM scrape NOT required (Path A engine-only). Save screenshot still useful for failure forensics but not gating.",
+            "log_mining_command": "ssh -p 12222 solution@218.232.120.58 \"sudo grep -E '\\[APF:block_response\\] service=gemini|\\[APF:envelope\\] service=gemini3' /var/log/etap.log | tail -20\""
+        }
+    },
+    "id": "691",
+    "created": "2026-05-06T09:55:00Z",
+    "attachments": [],
+    "notes": "48차 (2026-05-06) 5-A diagnosis revisit anomaly A1 disambiguation (decision 20260506_184500_5A_production_30d_block_event_distribution_audit.json) — gemini3 has had ZERO production block events for 6 days (last 2026-04-30 11:36). L1 canary instance 1/20 to disambiguate (a) traffic absence vs (b) engine regression. PASS = engine healthy."
+}
