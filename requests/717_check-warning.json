@@ -1,0 +1,33 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "baidu",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://chat.baidu.com",
+        "verify_timeout_s": 30,
+        "context": "48차 D20b rotation for baidu (12d dormancy). DONE service stability verification independent of perplexity defer:user_har and notion V6-E test in flight.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload chat.baidu.com",
+                "2. New chat",
+                "3. PII prompt input + send → block confirmed",
+                "4. DOM warning bubble visible + Korean text",
+                "5. Engine etap.log service=baidu [APF:block_response] 1건"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + engine block event — baidu DONE 유지",
+                "FAIL": "regression — diagnose SPA changes",
+                "PARTIAL_login_required": "login wall — defer:user_login_provisioning",
+                "PARTIAL_geo_block": "China-only access blocked from Korea IP — defer:vpn_or_region_change"
+            }
+        }
+    },
+    "id": "717",
+    "created": "2026-05-06T23:29:00Z",
+    "attachments": [],
+    "notes": "48차 D20b rotation for baidu (12d dormancy). Independent of V6-E notion test #716 in flight."
+}
