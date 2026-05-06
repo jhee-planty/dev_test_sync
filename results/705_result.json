@@ -1,0 +1,56 @@
+{
+  "request_id": 705,
+  "verdict": "OK",
+  "summary": "V10-C engine URL query scan SUCCEEDED. Browser GET /search?q=URL-encoded-PII intercepted by engine; response body is the V10-B 950-byte Korean PII warning HTML (NOT 61KB SSR fallback). DOM rendered the red-bordered warning card. Tab title became '보안 경고 - APF'. Console clean (0 errors). LLM never received the prompt — the inference was completely blocked at the engine layer before any LLM round-trip.",
+  "run_id_engine": "20260506-212037-49162",
+  "url_observed": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=default",
+  "method": "GET",
+  "evidence": {
+    "network_observations": {
+      "search_get_status": "200 OK",
+      "search_get_content_type": "text/html; charset=utf-8",
+      "search_get_content_length_bytes": 950,
+      "search_get_size_in_devtools": "1.1 kB",
+      "cache_control": "no-store",
+      "access_control_allow_credentials": "true",
+      "compared_baseline_61kb_ssr": "NO — body is 950 bytes, NOT 61KB. Engine replaced the SSR HTML with V10-B warning body.",
+      "raw_curl_verification": "Independent curl --http1.1 to identical URL also returns 200 / Content-Length: 950 / text/html — confirms server-side (engine) replacement, not browser-side rewrite.",
+      "interception_layer": "Engine on_http_request + on_http2_request URL query scan triggered url_decode + check_sensitive_data_decoded which matched 880101-1234567 (KR RRN pattern) and substituted V10-B response body.",
+      "first_submission_observation": "On the FIRST Enter (prompt typed in chat box), URL changed to /search?q=... via SPA history.pushState — at that point the page was BLANK (just YOU logo + Ask follow-up box) and no /search Doc request appeared in Network. Hard reload (Ctrl+Shift+R) on /search?q=... URL forced a real GET, which the engine then intercepted with the 950-byte warning body."
+    },
+    "dom_scan": {
+      "warning_visibility": "VISIBLE",
+      "tab_title": "보안 경고 - APF",
+      "korean_warning_text": "⚠️ 민감정보 차단 / [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+      "warning_dom_structure": "<!DOCTYPE html><html lang=\"ko\"><head><title>보안 경고 - APF</title><style>.warning{...border-left:6px solid #dc2626;...}.warning h1{color:#dc2626;...}</style></head><body><div class=\"warning\"><h1>⚠️ 민감정보 차단</h1><p>[경고] ... 입력하지 마세요.</p></div></body></html>",
+      "any_real_llm_pii_decode": false,
+      "llm_response_present": false,
+      "rationale_no_llm_decode": "Page is a static 950-byte HTML document served by the engine. No SPA bootstrap, no inference XHR, no streaming response — the LLM round-trip never occurred. Therefore the LLM cannot have decoded/echoed the RRN.",
+      "console_state": "0 errors / 0 warnings / 0 info / No issues — completely clean static page."
+    },
+    "comparison_vs_700_702": {
+      "700_baseline": "Pre-V10 — engine did not intercept you.com /search?q= GET; user saw the regular SSR-rendered chat UI; LLM received the prompt and could decode RRN.",
+      "702_v10b": "V10-B engine inserted warning into POST inference body, but for you.com the GET /search?q= path returned BYTE-IDENTICAL 61KB SSR HTML — engine match rule did not capture the URL query string on GET, so URL-encoded PII bypassed the filter.",
+      "705_v10c": "V10-C added on_http_request + on_http2_request hooks that capture the URL query string, url_decode it, and run check_sensitive_data_decoded. Result: GET /search?q=<URL-encoded-RRN> is now matched at the engine layer, the SSR HTML is dropped, and the V10-B 950-byte warning HTML is served in its place. Body size dropped from 61KB → 950B (≈98.5% reduction), confirming engine substitution.",
+      "delta_summary": "V10-C closes the URL-encoded GET bypass that defeated V10-B on you.com. h2_mode=1 cascade did NOT drop the response — V10-B HTML rendered fully, console clean, tab title swapped."
+    },
+    "screenshots": {
+      "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\705\\before.png",
+      "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\705\\after.png",
+      "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\705\\console.png",
+      "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\705\\network.png"
+    }
+  },
+  "test_environment": {
+    "test_pc_os": "Windows 11 Pro 10.0.26200",
+    "browser": "Chrome (Notion AI window with DevTools docked left)",
+    "test_date": "2026-05-06",
+    "automation": "windows-mcp (Click/Type/Shortcut/Screenshot) + curl.exe verification"
+  },
+  "follow_up_recommendations": [
+    "Promote V10-C to release candidate — URL query scan closes the you.com GET bypass.",
+    "Run regression on POST-only inference paths (chat, Gemini, ChatGPT) to confirm V10-B chat-bubble warning still fires after V10-C URL hook addition.",
+    "Add CI assertion: GET /search?q=<encoded RRN> returns Content-Length ≈ 950 bytes (not 61KB) on you.com.",
+    "Consider adding URL-decode + check on additional GET-driven AI search endpoints (perplexity.ai, duckduckgo AI, bing chat URL params)."
+  ]
+}
