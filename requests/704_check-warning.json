@@ -1,0 +1,32 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "notion",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.notion.so/ai",
+        "verify_timeout_s": 30,
+        "context": "48차 notion V6-B per #696 PARTIAL (engine delivers but SPA renderer no hook). V6-B adds Content-Encoding: identity header. Hypothesis: etClient HTTP/2 protocol error correlation from #696 was due to missing explicit encoding header.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload www.notion.so/ai",
+                "2. Submit PII prompt — observe POST /api/v3/runInferenceTranscript",
+                "3. Check response headers for Content-Encoding: identity",
+                "4. Check etClient endpoint for HTTP/2 protocol error (V6-A had this)",
+                "5. DOM: warning bubble visible?"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + no etClient HTTP/2 error",
+                "PARTIAL_no_etClient_error_no_bubble": "Content-Encoding fix worked but bubble still missing — escalate V6-D DOM injection",
+                "FAIL": "engine doesn't fire OR new error"
+            }
+        }
+    },
+    "id": "704",
+    "created": "2026-05-06T11:55:00Z",
+    "attachments": [],
+    "notes": "48차 notion V6-B Content-Encoding: identity addition test."
+}
