@@ -1,0 +1,35 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai",
+        "verify_timeout_s": 30,
+        "context": "48차 perplexity V7-E engine intercept fix per #706 V7-D FAIL (HTTP/2 framing protocol error). V7-E explicitly calls convert_to_http2_response on synthetic thread doc, then sets is_http2=0 to signal 'already converted'. Should produce valid H2 frames without poisoning connection.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload www.perplexity.ai",
+                "2. Submit PII prompt → engine fires V7-C SSE block",
+                "3. SPA fetches /rest/thread/<UUID> → engine intercepts (V7-E)",
+                "4. Synthetic thread doc returned via PROPER HTTP/2 frames",
+                "5. Browser doesn't see ERR_HTTP2_PROTOCOL_ERROR",
+                "6. Other perplexity requests (analytics, widgets) on same connection succeed normally",
+                "7. SPA renders thread page with warning visible"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + no HTTP/2 protocol errors + collateral requests OK",
+                "PARTIAL_h2_clean_but_no_bubble": "H2 errors gone but SPA doesn't render warning — synthetic thread doc shape mismatch, escalate V7-F (HAR-based shape refinement)",
+                "FAIL": "still HTTP/2 errors — V7-E conversion logic wrong"
+            },
+            "expected_engine_log": "[APF:perplexity_thread_intercept_v7e] thread_uuid=<UUID> body_len=N h2_len=N age_ms=N"
+        }
+    },
+    "id": "708",
+    "created": "2026-05-06T13:00:00Z",
+    "attachments": [],
+    "notes": "48차 V7-E engine fix per #706 verdict. Explicit convert_to_http2_response prevents H2 framing corruption."
+}
