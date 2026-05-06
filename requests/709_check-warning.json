@@ -1,0 +1,32 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "huggingface",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://huggingface.co/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 5-F D20(b) verification rotation — huggingface DONE service with 8d dormancy (last block 2026-04-29 16:54). Same dormancy pattern as you regression detected via #693. Verify: engine still fires + UI bubble visible. Per L-024 lesson: D20b rotation is mandatory for catching SPA-side regressions in DONE services.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": false,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Open huggingface.co/chat (assuming public access, no login required)",
+                "2. Submit PII prompt — observe network response for engine block",
+                "3. Check DOM for warning bubble visibility",
+                "4. Check engine block_response_log: [APF:block_response] service=huggingface event"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + engine log fires + no PII regurgitated",
+                "AUTH_REQUIRED": "login wall — verdict acceptable, M4 user dependency",
+                "PARTIAL_engine_only": "engine fires but bubble missing — regression similar to you.com (#693), envelope refinement needed",
+                "FAIL": "no engine response within 30s (engine regression — escalate)"
+            }
+        }
+    },
+    "id": "709",
+    "created": "2026-05-06T13:24:00Z",
+    "attachments": [],
+    "notes": "48차 5-F huggingface D20(b) rotation. Per L-024 lesson, DONE services need periodic verification."
+}
