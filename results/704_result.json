@@ -1,0 +1,81 @@
+{
+  "request_id": 704,
+  "test_name": "notion V6-B (Content-Encoding: identity addition)",
+  "timestamp": "2026-05-06T21:20+09:00",
+  "verdict": "PARTIAL_no_etClient_error_no_bubble",
+  "hypothesis_v6b": "Adding Content-Encoding: identity header would fix V6-A's etClient HTTP/2 protocol error and let the SPA render the warning bubble",
+  "hypothesis_outcome": "Half confirmed — Content-Encoding header is now present and etClient HTTP/2 error is gone, but the warning bubble still does not render",
+  "evidence": {
+    "url_tested": "https://www.notion.so/ai (redirected to /chat?t=3589aa2d8bdd8017bbb100a96d703ff5)",
+    "prompt_submitted": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "network_observations": {
+      "endpoint": "POST https://www.notion.so/api/v3/runInferenceTranscript",
+      "status_code": "200 OK",
+      "remote_address": "[2602:f79a::1]:443",
+      "response_headers": {
+        "Content-Encoding": "identity",
+        "Content-Type": "application/x-ndjson",
+        "Cache-Control": "no-cache, no-store",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://www.notion.so"
+      },
+      "response_size_kb": 1.3,
+      "duration_ms": 130,
+      "request_count": 1,
+      "v6b_header_present": true,
+      "comment": "Content-Encoding: identity header is explicitly set as the V6-B engine change intended. NDJSON response delivered cleanly with no protocol error."
+    },
+    "console_state": {
+      "etClient_http2_error_present": false,
+      "etClient_filter_matches": 0,
+      "total_errors": 2,
+      "total_warnings": 2,
+      "errors_observed": [
+        {
+          "source": "site-insights.js:153 (cdn.metadata.io tracker)",
+          "type": "GET 403 Forbidden",
+          "url": "https://cdn.metadata.io/pixel/config/1127.json",
+          "related_to_warning_pipeline": false
+        },
+        {
+          "source": "handleHttpFailure-6325341a1e2e15d4.js:1",
+          "type": "HttpRequestError: Request aborted",
+          "stack_top": "ClientFramework.../app-1b9e011c99d37725.js i.fetch / i._maybeFetch / i.refresh",
+          "related_to_warning_pipeline": "ambiguous — generic fetch abort, not HTTP/2 protocol error",
+          "note": "Unlike V6-A which showed net::ERR_HTTP2_PROTOCOL_ERROR specifically tied to etClient, this is a higher-level fetch abort. No HTTP/2 protocol error appears in this run."
+        }
+      ],
+      "comment": "etClient HTTP/2 protocol error from V6-A is GONE. The V6-B Content-Encoding fix resolved that specific connection-layer regression."
+    },
+    "dom_scan": {
+      "warning_bubble_visible": false,
+      "chat_panel_text": "아직 채팅 없음 (No chat yet)",
+      "user_message_visible": false,
+      "ai_response_visible": false,
+      "thread_url_created": "/chat?t=3589aa2d8bdd8017bbb100a96d703ff5",
+      "comment": "Even though POST /api/v3/runInferenceTranscript returned 200 OK with proper application/x-ndjson + Content-Encoding: identity AND a thread URL was minted, the SPA failed to render any chat bubble (neither user prompt nor AI/warning response). Chat panel remained at empty state."
+    },
+    "comparison_vs_696": {
+      "v6a_696_findings": {
+        "engine_response_size": "930B NDJSON delivered",
+        "etClient_http2_error": "PRESENT — net::ERR_HTTP2_PROTOCOL_ERROR correlated with submission",
+        "spa_renderer_hook": "missing — no bubble"
+      },
+      "v6b_704_findings": {
+        "engine_response_size": "1.3 kB (300+ bytes larger)",
+        "Content-Encoding_header": "identity (explicitly set, was missing in V6-A)",
+        "etClient_http2_error": "ABSENT — protocol error gone",
+        "spa_renderer_hook": "STILL missing — no bubble"
+      },
+      "delta": "V6-B successfully eliminated the HTTP/2 protocol-level regression. However the underlying SPA renderer never wires the NDJSON stream to the visible chat bubble component, regardless of encoding.",
+      "implication": "Root cause is NOT at the HTTP/encoding layer. It is in the SPA's response handler — Notion's React/MobX layer never subscribes to or renders the runInferenceTranscript stream output for warning content."
+    }
+  },
+  "recommendation": "Escalate to V6-D: investigate SPA renderer subscription to NDJSON stream. The encoding/transport pipeline is healthy; the failure is in client-side response consumption (chat bubble component never mounts the warning). Suggested probes: (1) DOM diff on chat-content container during submission, (2) ClientFramework.refresh() callback chain, (3) intercept the fetch via DevTools to confirm bytes actually arrive at SPA and where they are dropped.",
+  "files_captured": [
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\704\\before.png",
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\704\\after.png",
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\704\\console.png",
+    "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\704\\network.png"
+  ]
+}

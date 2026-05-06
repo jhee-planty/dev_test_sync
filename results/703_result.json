@@ -1,0 +1,80 @@
+{
+  "request_id": "703",
+  "scenario": "perplexity_V7-C_visibility_public_bypass",
+  "verdict": "PARTIAL_403_persists",
+  "summary": "V7-C hypothesis FAILED. visibility='public' did NOT bypass owner-only authorization. Thread fetch GET /rest/thread/<UUID> still returns 403 Forbidden, identical to V7-B behavior. Private-thread modal '이 스레드는 비공개입니다' rendered, page redirected to perplexity.ai/?. Escalate to V7-D.",
+  "timestamp": "2026-05-06T21:12:00+09:00",
+  "test_session": {
+    "url_initial": "https://www.perplexity.ai/",
+    "url_after_submit": "https://www.perplexity.ai/search/22315c7e-1c2d-4748-bef3-ff8c9032bf59",
+    "url_final": "https://www.perplexity.ai/?",
+    "thread_uuid": "22315c7e-1c2d-4748-bef3-ff8c9032bf59",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "auth_state": "anonymous (not logged in)"
+  },
+  "evidence": {
+    "network_observations": {
+      "perplexity_ask": {
+        "status": 200,
+        "size": "5.1 kB",
+        "duration_ms": 845,
+        "type": "fetch (SSE EventStream)",
+        "messages": "5 SSE messages with backend_uuid=ff5c94f5-86ee-4258-b12e-b... (visibility filter matched all)"
+      },
+      "thread_fetch": {
+        "url": "https://www.perplexity.ai/rest/thread/22315c7e-1c2d-4748-bef3-ff8c9032bf59?with_parent_info=true&with_schematized_response=true&version=2.18&source=default&limit=10&offset=0&from_first=true&supported_block_use_cases=answer_modes&supported_block_use_cases=media_items&supported_block_use_cases=knowledge_cards&...",
+        "method": "GET",
+        "status": 403,
+        "status_text": "Forbidden",
+        "duration_ms": 9400,
+        "console_error": "GET https://www.perplexity.ai/rest/thread/22315c7e-1c2d-47... 403 (Forbidden)",
+        "response_body": "Failed to load (no data found for resource — typical 403/aborted response)"
+      },
+      "visibility_field": {
+        "found_in_sse": true,
+        "value_observed": "unable to extract exact JSON value from EventStream UI; visibility filter returned 5 matching message rows so field IS present in stream",
+        "note": "V7-C client-side visibility='public' setting did not change backend authorization decision"
+      },
+      "other_failed_requests": [
+        "upsell?version=2.18 (cancelled, 10.02 s)",
+        "consent-requirement?version=2.18 (cancelled, 10.00 s)",
+        "22315c7e-... pending request (cancelled by modal navigation)"
+      ]
+    },
+    "dom_scan": {
+      "warning_bubble_visible": false,
+      "private_thread_modal_present": true,
+      "modal_text": "이 스레드는 비공개입니다 / 이 스레드의 소유자이거나 액세스를 요청하려면 로그인하세요",
+      "modal_buttons": ["Google로 계속하기", "Apple로 계속하기", "이메일 입력 / 이메일로 계속하기", "싱글 사인온(SSO)", "닫기"],
+      "page_url_after_redirect": "perplexity.ai/?",
+      "stayed_on_search_uuid_route": false,
+      "url_was_search_uuid_briefly": true
+    },
+    "comparison_vs_701": {
+      "url_parse_status": "OK in both V7-B and V7-C — slug /search/<UUID> accepted",
+      "thread_fetch_status": "V7-B: 403 / V7-C: 403 (UNCHANGED)",
+      "modal_status": "V7-B: shown / V7-C: shown (UNCHANGED)",
+      "url_redirect_status": "V7-B: redirect to /? / V7-C: redirect to /? (UNCHANGED)",
+      "perplexity_ask_sse_status": "V7-B: 200 / V7-C: 200 (UNCHANGED — never the gating endpoint)",
+      "delta": "visibility='public' change had ZERO observable effect on backend VIEW_THREAD_NOT_ALLOW gating. Backend enforces owner_user_id == requester_user_id regardless of thread visibility setting for anonymous viewers."
+    },
+    "console_screenshot_signals": [
+      "5 errors, 3 warnings, 2 info on Console panel",
+      "Access to script blocked by CORS (perplexity-ai.cloudflareaccess.com) — pre-existing, unrelated",
+      "GSI_LOGGER FedCM rejects with NetworkError — pre-existing, unrelated",
+      "GET /rest/thread/22315c7e-... 403 (Forbidden) — THE V7-C EVIDENCE"
+    ]
+  },
+  "evidence_files": {
+    "before_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\703\\before.png",
+    "after_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\703\\after.png",
+    "console_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\703\\console.png",
+    "network_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\703\\network.png"
+  },
+  "next_step_recommendation": {
+    "verdict_label": "PARTIAL_403_persists",
+    "escalation": "V7-D",
+    "rationale": "Thread visibility flag is purely a sharing-policy attribute on the backend — it does not grant anonymous read access. To deliver warning bubble UI without auth, V7-D must explore: (a) submit prompt while logged-in (owner_user_id matches), or (b) hook /rest/thread response client-side via service worker/extension to inject synthetic 200 + thread payload, or (c) render warning at /search/<UUID> route BEFORE thread-fetch fires (e.g., DOM injection on URL-change), or (d) abandon /search/<UUID> path entirely and inject warning into perplexity_ask SSE stream interception layer.",
+    "blocking": "Anonymous browsing of UUID-only thread is fundamentally blocked by Perplexity backend ACL — not bypassable via client request shape."
+  }
+}
