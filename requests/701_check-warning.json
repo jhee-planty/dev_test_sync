@@ -1,0 +1,32 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai",
+        "verify_timeout_s": 30,
+        "context": "48차 perplexity V7-B per #697 verdict (V7-A modal DISMISSED but new failure: GET /rest/thread/blocked-{UUID} 400 Bad Request). V7-B drops 'blocked-' prefix → plain UUID thread_url_slug. Hypothesis: backend validation accepts UUID-only format, allowing thread doc fetch + bubble render.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Hard reload www.perplexity.ai",
+                "2. Submit PII prompt — observe SSE response thread_url_slug (should now be UUID-only, no 'blocked-' prefix)",
+                "3. Network: GET /rest/thread/<UUID> — does it return 200 (success) or 400 (still rejected)?",
+                "4. DOM: warning bubble visible?",
+                "5. Modal still absent?"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + thread fetch 200 + no modal",
+                "PARTIAL_thread_404": "thread fetch returns 404 (UUID not in DB) — escalate V7-C engine intercepts thread GET",
+                "PARTIAL_other_failure": "different failure mode — diagnose"
+            }
+        }
+    },
+    "id": "701",
+    "created": "2026-05-06T11:01:00Z",
+    "attachments": [],
+    "notes": "48차 perplexity V7-B — drop blocked- prefix from thread_url_slug. Per #697 PARTIAL_modal_dismissed verdict."
+}
