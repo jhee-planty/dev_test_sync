@@ -1,0 +1,69 @@
+{
+  "request_id": 702,
+  "scenario": "you-com V10-B HTML SSR envelope verification",
+  "verdict": "PARTIAL_browser_renders_but_SPA_overrides",
+  "timestamp": "2026-05-06T20:59:00+09:00",
+  "service": "you.com",
+  "version_under_test": "V10-B",
+  "url_observed": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20880101-1234567%20%EC%9D%B8%EB%8D%B0%20%EC%9D%B4%EA%B1%B8%EB%A1%9C%20%EB%AC%B4%EC%97%87%EC%9D%84%20%EC%95%8C%20%EC%88%98%20%EC%9E%88%EC%96%B4%3F&fromSearchBar=true&chatMode=default",
+  "evidence": {
+    "network_observations": {
+      "request_method": "GET",
+      "status_code": 200,
+      "content_type": "text/html; charset=utf-8",
+      "response_size_bytes": 61476,
+      "response_size_human": "~61KB (identical to V10-A)",
+      "raw_html_first_500": "<!DOCTYPE html><html data-color-scheme=\"@light\" data-gtm-env=\"ydc-webapp\" lang=\"en-US\"><head>... <title data-next-head=\"\">내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어? - You.com | Accurate Answers &amp; Agents</title>...",
+      "html_contains_next_data_hydration": true,
+      "html_contains_app_root": true,
+      "html_contains_warning_text": false,
+      "html_contains_warning_emoji": false,
+      "html_contains_rrn_in_query": true,
+      "thread_api_xhr_status": "(canceled) and 403 Forbidden",
+      "thread_api_url_pattern": "/rest/thread/<uuid>?with_parent_info=true&..."
+    },
+    "dom_scan": {
+      "korean_warning_visible": false,
+      "korean_warning_text": null,
+      "warning_heading_present": false,
+      "spa_error_fallback_visible": true,
+      "spa_error_message_en": "Sorry, something went wrong. Please try again later.",
+      "spa_error_id": "604c2921-31e9-4464-bd6f-7e0b417403d7|0e24c64c-6484-4b07-a046-a53cd37363a5|2026-05-06T11:57:40.074Z",
+      "page_title_text": "내 주민등록번호는 880101-1234567 인데 이걸로...",
+      "any_real_llm_pii_decode": false,
+      "feedback_links_shown": ["Feedback Portal", "Discord"],
+      "regenerate_button_present": true
+    },
+    "comparison_vs_700": {
+      "url_route": "/search?q=... (SAME — both V10-A and V10-B)",
+      "content_type": "text/html; charset=utf-8 (SAME)",
+      "response_size": "61476 bytes ≈ identical to #700 (61KB)",
+      "html_envelope": "Plain Next.js SPA shell with __NEXT_DATA__ — identical to V10-A",
+      "korean_warning_in_html_source": "ABSENT in both V10-A and V10-B — engine did NOT inject the warning into the HTML",
+      "rendered_outcome": "Both versions render the SPA shell + Next.js then mounts and the failed XHR triggers the SPA's generic 'Sorry, something went wrong' error UI",
+      "regression_or_progression": "NO measurable change between V10-A and V10-B at the wire level — server is still returning the unmodified upstream Next.js HTML"
+    },
+    "console_observations": {
+      "errors_count": 19,
+      "warnings_count": 91,
+      "notable_errors": [
+        "Coralogix Browser SDK - Error parsing URL TypeError: Failed to construct 'URL': Invalid URL (repeated)",
+        "Failed XHR to /rest/thread/<uuid>... 403 Forbidden (auth-related, not engine-related)"
+      ],
+      "no_console_log_indicating_engine_block": true
+    },
+    "screenshots": {
+      "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\702\\before.png",
+      "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\702\\after.png",
+      "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\702\\console.png",
+      "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\702\\network.png"
+    }
+  },
+  "interpretation": {
+    "engine_fired": false,
+    "html_envelope_strategy_landed": false,
+    "root_cause_hypothesis": "V10-B engine code did not match/intercept the /search?q= GET request. The upstream you.com Next.js HTML is being served unchanged (same 61476-byte envelope as V10-A). The visible 'Sorry, something went wrong' is the you.com SPA's own error UI, triggered when the SPA's internal /rest/thread/<uuid> XHR is canceled/403 — NOT an APF block page.",
+    "spa_hijack_concern": "Even IF V10-C injects the warning HTML into the body, the Next.js hydration step will replace it with the SPA-rendered React tree unless the warning is also injected into __NEXT_DATA__ or the entire <html> response is replaced (no hydration script)."
+  },
+  "next_action_recommendation": "Escalate to V10-C: replace the entire HTML response with a standalone warning page (no Next.js scripts, no __NEXT_DATA__) so SPA cannot hijack render. Verify engine match rule actually fires on /search?q= by adding a server-side log marker that we can grep from response headers."
+}
