@@ -1,0 +1,41 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "notion",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.notion.so/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 V6-E retest #2 with ROOT CAUSE FIX applied. SQL UPDATE 23:39 KST: notion path_patterns extended from '/api/v3/runInferenceTranscript' to '/api/v3/runInferenceTranscript,/chat'. Reason: hard reload SSR document GET '/chat?t=...&wfv=chat' was NOT matching path_patterns → is_ai_service=false → on_http2_response early-return → V6-E query path never reached. Now /chat is registered → on_http2_response will fire with diagnostic log + V6-E query path triggered + page_inject_h2 expected to render warning HTML. NO engine redeploy needed (SQL-only change, reload_services applied).",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Open https://www.notion.so/chat (login if needed)",
+                "2. Submit PII prompt → V6-A NDJSON block fires (path_patterns matches /api/v3/runInferenceTranscript)",
+                "3. Hard reload (Ctrl+Shift+R) → new H2 connection",
+                "4. SPA fetches /chat?t=...&wfv=chat → NOW matches path_patterns ✓",
+                "5. Engine on_http2_response fires with [APF:H2_RESP] log (path=/chat, is_page_load=1, last_pii_at_ms=0, domain=www.notion.so)",
+                "6. V6-E query_domain_block returns recent block ts → [APF:domain_block_query_h2] log fires",
+                "7. page_inject_h2 trigger evaluates true → synthetic warning HTML emitted",
+                "8. DOM: warning bubble + Korean warning + 보안 경고 tab title"
+            ],
+            "verdict_criteria": {
+                "OK": "warning HTML rendered + Korean warning + [APF:domain_block_query_h2] log present + [APF:page_inject_h2] log present (V6-E confirmed → notion DONE → mission ratio 14→15/31=0.484)",
+                "PARTIAL_block_ok_but_reload_doesnt_inject": "still PARTIAL — investigate diagnostic log: is_page_load=0 OR domain=empty OR query missed",
+                "PARTIAL_login_required": "defer:user_login_provisioning",
+                "FAIL": "regression"
+            },
+            "expected_diagnostic_log_sequence": [
+                "[APF:H2_RESP] service=notion path=/chat status=200 ct=text/html is_page_load=1 last_pii_at_ms=0 domain=www.notion.so",
+                "[APF:domain_block_query_h2] service=notion domain=www.notion.so age_ms=N",
+                "[APF:page_inject_h2] service=notion stream=N path=/chat effective_age_ms=N"
+            ]
+        }
+    },
+    "id": "719",
+    "created": "2026-05-06T23:40:00Z",
+    "attachments": [],
+    "notes": "48차 V6-E retest #2 with path_patterns SQL fix. Decision JSON 20260506_233900. Mission ratio 15/31 potential."
+}
