@@ -1,0 +1,15 @@
+{
+    "command": "har-capture",
+    "priority": "high",
+    "params": {
+        "service": "zeta",
+        "url": "https://zeta-ai.io/",
+        "scenario": "★ zeta SSE-aware capture per L-049 Method (c). Per #761 verdict: engine fires zeta_sse_v2 envelope but client MessagePort handler throws 'TypeError: Cannot read properties of undefined (reading 0)' at 113b2gcua4vkz.js:50 — schema mismatch where SPA expects array-indexed field [0] but envelope provides string. Goal: capture FULL real /v1/rooms/* SSE response from a normal (non-PII) zeta romance chat to byte-byte diff against zeta_sse_v2 envelope_template (526 bytes). Submit innocuous prompt in zeta room (e.g., '안녕하세요'). Use DevTools Console fetch + ReadableStream replay for SSE chunks (per L-049 Method c — Chrome HAR doesn't capture text/event-stream bodies). Output: JSON with sse_chunks_total + first_chunks[event_type, data_excerpt, key_fields] + canonical_text_render_path. Authentication: existing logged-in session (no PII test required).",
+        "verify_timeout_s": 120,
+        "context": "★★ zeta envelope schema diagnosis. Same L-046 pattern as perplexity #750 (engine intercepts but envelope silently dropped/breaks SPA). Need real zeta SSE chunk shape to identify which field SPA's MessagePort handler expects array-indexed. Compare 526-byte zeta_sse_v2 envelope (data:{event:IN_PROGRESS,chunkMessage:{id,text,role}} + data:{event:CHAT_COMPLETE,replyMessage:...}) to actual baseline. Test PC subagent: pick L-049 Method (c) DevTools Console fetch+ReadableStream replay (proven on #750 perplexity capture)."
+    },
+    "id": "765",
+    "created": "2026-05-07T09:10:00Z",
+    "attachments": [],
+    "notes": "zeta SSE baseline capture for envelope schema diff. L-049 Method (c) replay (canonical SSE-aware capture method)."
+}
