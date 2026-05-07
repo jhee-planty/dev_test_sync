@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat/",
+        "verify_timeout_s": 30,
+        "context": "★★★ FIX-F m365_copilot cross-connection WS silencer verify. Per #754 architectural gap: PII detected on HTTP/2 stream (telemetry/page-load) registered domain_block but separate WSS chathub connection bypassed query → LLM answer leaked. FIX-F at run_id 20260507-173456-88655 adds query_domain_block at on_upgraded_data WS entry. If domain_ts<60s recent for substrate.office.com, sets _ai_prompt_blocked=1 to suppress s2c LLM frame forwarding. Expected: RRN structural decode ABSENT (silencer engages on WS chathub). Korean warning may not visible if HTTP/2 block was on non-LLM path (silencer is suppress-only, not inject) — that's still an improvement over #754 (RRN leak prevented). [APF:ws_domain_block_silencer] log entry expected per WS frame arrival post-block."
+    },
+    "id": "757",
+    "created": "2026-05-07T08:36:00Z",
+    "attachments": [],
+    "notes": "FIX-F m365_copilot cross-connection WS silencer — closes #754 architectural gap. Empirical M0 test: RRN leak suppressed via domain-keyed block propagation."
+}
