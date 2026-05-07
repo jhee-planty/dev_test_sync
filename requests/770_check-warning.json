@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma per-path response_type extension verify (P4 implementation per #768 diagnosis). Engine code change: ai_prompt_filter.cpp generate_block_response now dynamically overrides lookup_key when service=gamma + api_path matches /ai/v2/render-generation → uses gamma_render_generation_json_v1 envelope (JSON response with warning text). Previously engine used SAME gamma_sse_v7 envelope for both /ai/v2/generation AND /ai/v2/render-generation, but render-generation expects JSON (gamma server returned 400 because of state mismatch). New flow: (a) /ai/v2/generation → SSE warning (gamma_sse_v7, end_stream=1), (b) /ai/v2/render-generation → JSON warning ({result:'warning_text'}). Build run_id 20260508-085109-72131. DB path_patterns CSV: '/ai/v2/generation,/ai/v2/render-generation'. Expected: outline panel renders Korean warning AND render-generation gets engine JSON forged-success (no more 400 from gamma server). Mission criterion #2 may finally satisfy."
+    },
+    "id": "770",
+    "created": "2026-05-08T08:54:00Z",
+    "attachments": [],
+    "notes": "gamma multi-endpoint forged-success per L-050 cross-connection rule. Engine code dispatches different envelopes per path. Browser cache may need bypass — fresh tab/incognito recommended."
+}
