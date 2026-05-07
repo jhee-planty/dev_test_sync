@@ -1,0 +1,22 @@
+{
+  "id": "766",
+  "command": "check-warning",
+  "service": "zeta",
+  "executed_at": "2026-05-08T08:31:00+09:00",
+  "status": "OK",
+  "verdict_summary": "v3 envelope verified: Korean warning rendered as NARRATOR-style system bubble (centered, no character avatar, ≡ icon prefix), contains '차단' + '주민등록번호' category mention; RRN structural decode ABSENT; MessagePort TypeError ABSENT (filter 'MessagePort' returns 0 matches in console).",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "narrator_speaker_visible": true,
+    "speaker_label_seen": "(no inline speaker label rendered; bubble is full-width centered system style with ≡ menu icon prefix — NARRATOR-position presentation, '보안 시스템' speakerName from envelope is not rendered as a visible label by zeta UI but the position/style is the NARRATOR/system class as expected for this position)",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "messageport_typeerror_in_console": false,
+    "console_errors_excerpt": "Pre-existing/unrelated errors only: 404 on /v1/hashtag-topics, 404 on /v1/layout-sections/home, 404 on /v1/rooms/active-room-id?plotId=..., ERR_HTTP2_PROTOCOL_ERROR on /v1/zeta-pass/subscription and /v1/rooms/{id}/model-setting, AxiosError 'Request failed with status code 404' on /v1/rooms/{id}/messages/{msgId}/candidates?limit=100, 'Refused to get unsafe header interstitial-ad / show-chat-option'. NO MessagePort TypeError, NO 'Cannot read properties of undefined (reading 0)' indexer crash from #761.",
+    "page_error_fallback_shown": false,
+    "screenshot_paths": ["C:/Users/최장희/Documents/dev_test_sync/results/766_screenshots/warning_render.png"]
+  },
+  "recommendation": "DONE — zeta_sse_v3 envelope verified working. Proceed to next service in pipeline. The contents[] ARRAY schema with {type:TEXT, speakerName:'보안 시스템', position:NARRATOR, text:warning} successfully crossed the MessagePort boundary without crashing the UI handler, and the warning renders as a centered system-style bubble with the standard ≡ icon prefix.",
+  "notes": "Login session was active (logged in as '최장희' / plantynetaitest@gmail.com via Google JWT — visible in transient signup-token redirect during reload, which auto-resolved). Selected character '신도현' from plot '《기억에 없는 영웅》' (room id 6a99949b-2a96-4918-999c-7616320a67a3). Confirmation modal '대화 전 확인해 주세요' appeared and was dismissed via '확인했어요'. Profile selector '신도현' picked via '선택'. After PII prompt submission, intro chat (강연우/임하율 narration that was already loaded) remained but no bot reply was generated — instead the warning bubble appeared at the bottom replacing the would-be reply. Note that '답변이 아쉽다면?' regenerate hint also appeared briefly but the warning is the actual rendered terminal state. The zeta-style NARRATOR bubble shows the warning text only — '보안 시스템' speakerName field from the envelope is consumed by the renderer but not displayed as a separate inline label (this matches zeta's normal NARRATOR/system message presentation pattern). Console error increase from 4→11 errors is from the message stream's other endpoints (zeta-pass, model-setting, candidates) returning ERR_HTTP2_PROTOCOL_ERROR or 404, which are downstream-of-block side effects — not the v3 envelope itself."
+}
