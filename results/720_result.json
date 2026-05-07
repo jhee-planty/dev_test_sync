@@ -1,0 +1,53 @@
+{
+  "request_id": 720,
+  "scenario": "check-warning notion (V6-E retest #3 with /chat* wildcard fix)",
+  "status": "PARTIAL_block_ok_but_reload_doesnt_inject",
+  "verdict": "Consistent with #719 — V6-A NDJSON block engages on submit, but V6-E HTML substitution on /chat reload still does NOT render warning body. APF tears the Doc stream, ServiceWorker fallback serves the page, and no Korean warning appears.",
+  "tested_at": "2026-05-07T00:33:00Z",
+  "url_under_test": "https://www.notion.so/chat",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "evidence": {
+    "v6a_block_fired": true,
+    "v6a_evidence": {
+      "console_error": "HttpRequestError: Unable to parse HTTP response: Unexpected non-whitespace character after JSON at position 256 (line 2 column 1)",
+      "user_visible_toast": "요청을 처리하는 도중 오류가 발생했습니다. 다시 시도하세요.",
+      "fetch_log": [
+        {"url": "/api/v3/runInferenceTranscript", "status": 200, "ok": true, "elapsed_ms": 507},
+        {"url": "/api/v3/saveTransactionsMain", "status": 200, "ok": true, "elapsed_ms": 696}
+      ],
+      "interpretation": "APF injected NDJSON warning frame after the JSON response body, breaking client-side JSON.parse. Network shows 200 OK because injection happens after status line."
+    },
+    "network_observations": {
+      "post_submit": "runInferenceTranscript + saveTransactionsMain returned 200 (APF inject at body, not connection-level reset)",
+      "post_reload": "Doc requests for /chat?t=...&wfv=chat appear with status 'Document request failed' (APF stream-reset on Doc), then fallback chat?t=... entries served by ServiceWorker (aif-production.html SW asset present) renders the page successfully",
+      "pattern": "Failed Doc + SW fallback success — IDENTICAL to #719"
+    },
+    "dom_scan": {
+      "tab_title": "작업 트래커 만들기 | Notion",
+      "korean_warning_visible": false,
+      "checked_keywords": ["보안", "차단", "경고"],
+      "h1_elements_found": [],
+      "warning_class_elements_count": 3,
+      "warning_class_elements_note": "Generic Notion 'block' CSS classes — NOT APF-injected warning markup",
+      "body_text_length": 233,
+      "body_snippet": "콘텐츠로 건너뛰기...최장희's Space 홈/채팅/회의/수신함...작업 트래커 만들기...작업 트래커 데이터베이스를 새 페이지로 만들어뒀어요"
+    },
+    "comparison_vs_719": {
+      "consistent": true,
+      "divergences": [],
+      "summary": "Same APF behavior reproduced exactly: V6-A block fires (NDJSON injection breaks JSON.parse, generic error toast shown), V6-E HTML substitution on /chat reload does NOT execute (APF tears Doc stream, SW serves cached chat HTML, normal Notion UI loads, no Korean warning rendered). /chat* wildcard fix DID engage APF (Doc requests show as failed) but warning body injection step is still broken."
+    },
+    "screenshots": {
+      "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\720\\before.png",
+      "after_submit": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\720\\after_submit.png",
+      "after_reload": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\720\\after_reload.png",
+      "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\720\\console.png",
+      "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\720\\network.png"
+    }
+  },
+  "next_actions": [
+    "Investigate why APF stream-reset on /chat Doc fires INSTEAD of substituting warning HTML body — the wildcard-matched URL is being torn down rather than receiving a 200 + warning body",
+    "Verify APF warning_html injection logic for SPA Doc reload path — possibly the response body filter is short-circuiting before write completes",
+    "Consider whether ServiceWorker fallback in Notion needs to be circumvented (e.g., kill SW, or inject warning at a layer the SW cannot override)"
+  ]
+}
