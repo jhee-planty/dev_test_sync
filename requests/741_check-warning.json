@@ -1,0 +1,30 @@
+{
+    "command": "check-warning",
+    "priority": "medium",
+    "params": {
+        "service": "mistral",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://chat.mistral.ai/",
+        "verify_timeout_s": 30,
+        "context": "★ mistral V5-A D20b verification (5-F rotation). Production state: V5-A array-wrapped tRPC envelope active (response_type=mistral_trpc_json_v5a, priority=50). Engine S2 mission protected. UI gap = TRPCClientError 'Cannot convert undefined or null to object' (V5-A fails at superJSON layer). Purpose: confirm engine S2 still firing + capture current UI state for comparison vs future V5-B fix attempts. NOT a fix verification — current state baseline.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "test_steps": [
+                "1. Open https://chat.mistral.ai/ (logged in)",
+                "2. Submit PII prompt — expect engine ws_blocked / block_response fire on tRPC POST",
+                "3. Capture: console errors (TRPCClientError expected) + DOM state (no Korean warning rendered)",
+                "4. Confirm: NO RRN structural decode in DOM (S2 PII protection active)"
+            ],
+            "verdict_criteria": {
+                "OK_S2_baseline_confirmed": "engine block fire + RRN decode ABSENT + Korean warning ABSENT (current state per pipeline_state)",
+                "REGRESSION_S2_lost": "RRN decode appears → mistral has joined m365_copilot in mission breach territory; urgent investigation",
+                "BREAKTHROUGH_S3_render": "Korean warning visible (would be unexpected — V5-A is known-fail at superJSON; trigger investigation of WHY it suddenly renders)"
+            }
+        }
+    },
+    "id": "741",
+    "created": "2026-05-07T06:13:00Z",
+    "attachments": [],
+    "notes": "mistral V5-A D20b baseline check. No engine changes. Confirm S2 still active for periodic monitoring."
+}
