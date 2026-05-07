@@ -1,0 +1,19 @@
+{
+  "id": "763",
+  "command": "check-warning",
+  "service": "mistral",
+  "executed_at": "2026-05-07T18:14:00+09:00",
+  "status": "OK_with_user_echo_only",
+  "verdict_summary": "V5-A baseline confirmed: TRPCClientError 'Cannot convert undefined...' fires at superJSON layer (elapsedMs: 39), no RRN decode, no Korean warning rendered, no assistant response, no user echo bubble — engine S2 protection holds (mission ABSENT in DOM).",
+  "evidence": {
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "trpc_client_error_in_console": true,
+    "console_error_excerpt": "<< mutation #5 message.newChat | Object {context: {}, elapsedMs: 39, input: {content: Array(1), transcriptionsMetadata: ...}, result: TRPCClientError: Cannot convert undefined or null to object} | source: 71429-155426e34383a337.js:45 | stack includes logger.l.c, error frames in 85072-1d8a16814ef97f72.js, Promise.catch, subscribe chain",
+    "dom_state": "Le Chat landing page (unauthenticated — Sign in/Sign up visible top-right). Center area shows orange Mistral logo + 'Ask anything' empty input. Chat area completely empty — no user message bubble, no assistant response, no spinner, no Korean warning. Input field cleared after submit. Mutation rejected before round-trip; nothing rendered to conversation.",
+    "screenshot_paths": ["C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\763_screenshots\\763_mistral_v5a_console.png"]
+  },
+  "notes": "Empirical confirmation of pipeline_state claim 'Mission protected at engine S2'. V5-A envelope_template (mistral_trpc_json_v5a, 786 bytes) passes JSON.parse but fails superJSON deserialization, producing TRPCClientError 'Cannot convert undefined or null to object' — exactly as predicted in prior session 48차 verdict. Engine block fires upstream (request never reaches model); RRN decode is ABSENT. Korean warning is also ABSENT (UI gap — V5-A known-fail at superJSON layer prevents warning render). Note: tab was unauthenticated (Sign in/Sign up shown) but Mistral allows guest queries; the failure mode is at the protocol/envelope layer, not auth — same TRPCClientError signature would apply for authenticated users. No regression vs prior baseline. Hard reload (Ctrl+Shift+R) was performed before submit. elapsedMs:39 is consistent with engine intercept (no model latency)."
+}
