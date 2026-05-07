@@ -1,0 +1,61 @@
+﻿{
+    "verdict":  "FAIL_persistent_no_effect",
+    "service":  "m365_copilot",
+    "fix":  "FIX-D-2",
+    "request_id":  734,
+    "evidence":  {
+                     "screenshots":  {
+                                         "console":  "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\734\\console.png",
+                                         "before":  "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\734\\before.png",
+                                         "network":  "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\734\\network.png",
+                                         "after":  "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\734\\after.png"
+                                     },
+                     "pass_fail_analysis":  {
+                                                "criterion_2_korean_text":  "FAIL — no Korean APF warning text visible",
+                                                "criterion_1_warning_bubble":  "FAIL — only generic English Microsoft error shown",
+                                                "overall":  "FAIL_persistent_no_effect on warning-render dimension; partial PASS on decode suppression dimension",
+                                                "criterion_4_apf_persistent_rearm_log":  "FAIL — log absent in browser console (note: server-side log expected at engine, browser console only sees WS close events)",
+                                                "criterion_3_rrn_decode_absent":  "PASS — RRN structural decode NOT rendered"
+                                            },
+                     "network_state":  {
+                                           "websocket_endpoint":  "wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25...",
+                                           "ws_failure_pattern":  "failed: Data frame received after close (x5)"
+                                       },
+                     "console_state":  {
+                                           "ws_close_events_count":  5,
+                                           "apf_filter_match_count":  0,
+                                           "http2_protocol_error_post":  "https://substrate.office.com/pacman/api/clientevents (ERR_HTTP2_PROTOCOL_ERROR)",
+                                           "stream_subscriber_error":  "[StreamSubscriberError] Message is incomplete",
+                                           "apf_ws_persistent_block_rearm_present":  false,
+                                           "console_warnings":  3,
+                                           "console_errors":  7,
+                                           "console_messages":  10,
+                                           "data_frame_after_close_pattern":  true,
+                                           "ws_blocked_log_present":  false
+                                       },
+                     "comparison_vs_733":  {
+                                               "734_outcome":  "RRN structural decode ABSENT, BUT Korean warning bubble ALSO ABSENT — replaced by Microsoft generic English error \u0027Something went wrong. Please try again later.\u0027 with Microsoft \u0027다시 시도\u0027/\u0027피드백 보내기\u0027 buttons (native Copilot stream-failure UI, not APF warning)",
+                                               "733_outcome":  "FAIL_intercept_no_render — RRN structural decode rendered (YYMMDD-XXXXXXX, 앞 6자리 생년월일, 뒤 첫 자리 성별 1/3 남자 2/4 여자, 1900년대/2000년대 출생, 신분 도용/금융 사기 risks)",
+                                               "regression_or_progression":  "MIXED: RRN decode suppression succeeded (FIX-D-2 forward gate effective at preventing token forwarding), but APF warning text NOT rendered. Frontend appears to interpret persistently re-set close+block state as a stream failure rather than an APF block — Copilot React layer falls back to generic error UI. block_response Korean text never reaches the chat bubble renderer.",
+                                               "734_korean_warning_present":  false,
+                                               "733_rrn_decode_present":  true,
+                                               "733_korean_warning_present":  "partial (mixed with decode)",
+                                               "734_rrn_decode_present":  false
+                                           },
+                     "summary":  "FIX-D-2 successfully prevents RRN structural decode from being forwarded (combined with FIX-A close + FIX-B-1 first-frame intercept blocks all token frames including the assistant warning text). However the persistent re-arm + close-after-data sequence triggers Copilot\u0027s native stream-failure path (StreamSubscriberError + Data frame received after close x5 + ERR_HTTP2_PROTOCOL_ERROR on clientevents POST), causing React to render the Microsoft generic \u0027Something went wrong\u0027 UI instead of the APF block_response Korean warning. Korean warning text is NOT rendered. Verdict: FAIL_persistent_no_effect on warning visibility — though decode suppression is now reliably effective, the user no longer sees the APF Korean warning at all. Need FIX-D-3: emit warning text BEFORE close frame on first allowed forward, OR inject warning via a path that survives StreamSubscriberError handling (e.g., pre-stream HTTP injection or DOM mutation).",
+                     "dom_scan":  {
+                                      "bubble_visible":  false,
+                                      "generic_error_text":  "Something went wrong. Please try again later.",
+                                      "any_real_llm_pii_decode":  false,
+                                      "retry_button_present":  true,
+                                      "rrn_derivation_present":  false,
+                                      "rendered_assistant_text":  "Something went wrong. Please try again later.",
+                                      "korean_warning_text":  false,
+                                      "rrn_keywords_found":  [
+
+                                                             ]
+                                  }
+                 },
+    "scenario":  "check-warning",
+    "run_id":  "20260507-131500-test"
+}
