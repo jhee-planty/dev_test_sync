@@ -1,0 +1,88 @@
+{
+  "capture_method": "(c)_DevTools_Console_fetch_ReadableStream_replay",
+  "method_notes": "Method (d) chrome://flags HAR-with-content not attempted (Method c succeeded first). Method (a) DevTools 'Response' tab still showed 'Nothing to preview - This request has no response data available' for the original SSE request — confirming #743 verdict that Chrome does NOT keep SSE response bodies for either Response tab OR HAR export. EventStream tab DID show parsed events (12 rows visible: 11 'message' + 1 'end_of_stream'), but extracting full data via UI clicks is impractical. Best path: replay /rest/sse/perplexity_ask via Console fetch + ReadableStream reader — captures complete raw SSE bytes within the same browser context (cookies + auth flow intact for unauth'd guest mode).",
+  "raw_capture_path_LOCAL": "C:/Users/최장희/Documents/dev_test_sync/files/750/perplexity_sse_chunks_raw.txt",
+  "raw_capture_size_bytes": 40262,
+  "sse_chunks_total": 12,
+  "sse_event_format": "event: <type>\\r\\ndata: <json>\\r\\n\\r\\n  (CRLF line endings, double-CRLF terminator)",
+  "first_chunks": [
+    {
+      "chunk_index": 0,
+      "event_type": "message",
+      "data_excerpt": "{\"backend_uuid\":\"...\",\"context_uuid\":\"...\",\"uuid\":\"...\",\"frontend_context_uuid\":\"...\",\"display_model\":\"turbo\",\"mode\":\"CONCISE\",\"search_focus\":\"writing\",\"thread_url_slug\":\"...\",\"blocks\":[{\"intended_usage\":\"pro_search_steps\",\"plan_block\":{\"progress\":\"IN_PROGRESS\",\"steps\":[{\"step_type\":\"INITIAL_QUERY\",\"initial_query_content\":{\"query\":\"What is 2+2?\"}}]}}],\"message_mode\":\"STREAMING\",\"status\":\"PENDING\",\"final_sse_message\":false}",
+      "notes": "Initial chunk — INITIAL_QUERY plan, status=PENDING, final_sse_message=false"
+    },
+    {
+      "chunk_index": 1,
+      "event_type": "message",
+      "data_excerpt": "{...\"classifier_results\":{\"skip_search\":true,\"calculator_widget\":true,...},\"mhe_predictions_full\":{...,\"calculator_widget\":{\"is_true\":true,\"probability\":0.828125},\"domain_subdomain\":{\"label\":\"SCIENCE/MATHEMATICS\"}},...,\"status\":\"PENDING\",\"final_sse_message\":false}",
+      "notes": "Classifier results — calculator_widget detection true"
+    },
+    {
+      "chunk_index": 2,
+      "event_type": "message",
+      "data_excerpt": "{...\"expect_search_results\":\"true\",...}",
+      "notes": "expect_search_results flips true"
+    },
+    {
+      "chunk_index": 3,
+      "event_type": "message",
+      "data_excerpt": "{...\"read_write_token\":\"...\",\"blocks\":[{\"intended_usage\":\"plan\",\"plan_block\":{\"progress\":\"DONE\",\"final\":true}}],\"telemetry_data\":{\"first_widget_type\":\"CalculatorWidget\",\"region\":\"us-east-1\",...},...}",
+      "notes": "Plan block DONE, telemetry data appears, read_write_token issued"
+    },
+    {
+      "chunk_index": 4,
+      "event_type": "message",
+      "data_excerpt": "{...streaming progress...}",
+      "notes": "Status PENDING — incremental cursor advance"
+    }
+  ],
+  "key_chunks_text_streaming": [
+    {
+      "chunk_index": 9,
+      "event_type": "message",
+      "key_excerpt": "\"blocks\":[{\"intended_usage\":\"ask_text_0_markdown\",\"markdown_block\":{\"progress\":\"IN_PROGRESS\",\"chunks\":[\"2 + 2 \"],\"chunk_starting_offset\":0}},{\"intended_usage\":\"ask_text\",\"markdown_block\":{\"progress\":\"IN_PROGRESS\",\"chunks\":[\"2 + 2 \"],\"chunk_starting_offset\":0}}]",
+      "notes": "First answer text chunk: '2 + 2 '"
+    },
+    {
+      "chunk_index": 10,
+      "event_type": "message",
+      "key_excerpt": "\"blocks\":[{\"intended_usage\":\"ask_text_0_markdown\",\"markdown_block\":{\"progress\":\"IN_PROGRESS\",\"chunks\":[\"= 4.\"],\"chunk_starting_offset\":1}}],\"text_completed\":true,\"final\":true,\"final_sse_message\":false",
+      "notes": "Second answer text chunk: '= 4.' — text_completed=true, final=true (block-level), but final_sse_message=false"
+    },
+    {
+      "chunk_index": 11,
+      "event_type": "message",
+      "key_excerpt": "\"text\":\"[{\\\"step_type\\\":\\\"INITIAL_QUERY\\\",...},{\\\"step_type\\\":\\\"FINAL\\\",\\\"content\\\":{\\\"answer\\\":\\\"{\\\\\\\"answer\\\\\\\":\\\\\\\"2 + 2 = 4.\\\\\\\",...}\\\"}}]\",\"thread_title\":\"What is 2+2?\",\"step_type\":\"FINAL\",\"thread_url_slug\":\"...\",\"plan\":{...,\"final\":true},\"text_completed\":true,\"blocks\":[...,{\"intended_usage\":\"ask_text_0_markdown\",\"markdown_block\":{\"progress\":\"DONE\",\"answer\":\"2 + 2 = 4.\"}}],\"message_mode\":\"FULL\",\"status\":\"COMPLETED\",\"final\":true,\"final_sse_message\":true",
+      "notes": "FINAL summary message — message_mode=FULL, status=COMPLETED, final_sse_message=true. Contains complete answer + entire plan/steps + thread metadata."
+    }
+  ],
+  "event_types_observed": ["message", "end_of_stream"],
+  "terminator_pattern": "event: end_of_stream\\r\\ndata: {}\\r\\n\\r\\n",
+  "terminator_detection_strategy": "Two reliable signals: (1) event line equals 'event: end_of_stream' (most explicit), (2) prior 'message' event has 'final_sse_message: true' AND 'status: COMPLETED' AND 'message_mode: FULL'. APF should treat the 'final_sse_message: true' message as the canonical 'last meaningful chunk' and the subsequent 'event: end_of_stream' as the protocol-level close.",
+  "data_field_shape": {
+    "common_keys_per_message": [
+      "backend_uuid", "context_uuid", "uuid", "frontend_context_uuid",
+      "display_model", "mode", "search_focus", "source",
+      "thread_url_slug", "knowledge_cards", "gpt4", "text_completed",
+      "message_mode", "answer_modes", "reconnectable", "cursor",
+      "search_mode", "status", "final_sse_message"
+    ],
+    "progressive_keys": ["read_write_token (issued mid-stream)", "classifier_results", "mhe_predictions_full", "telemetry_data", "blocks", "structured_answer_block_usages", "search_implementation_mode"],
+    "final_message_extra_keys": ["text (stringified JSON of plan steps + final answer)", "thread_title", "user_selected_model", "personalized", "query_str", "updated_datetime", "step_type", "bookmark_state", "s3_social_preview_url", "thread_access", "widget_data", "plan", "privacy_state", "entry_created_datetime", "entry_updated_datetime", "access_level", "query_language", "_extras"],
+    "answer_text_block_shape": "blocks[].markdown_block.{progress: IN_PROGRESS|DONE, chunks: [string], chunk_starting_offset: int, answer?: string}",
+    "status_progression": "PENDING (1..11) -> COMPLETED (12)",
+    "message_mode_progression": "STREAMING (1..11) -> FULL (12)"
+  },
+  "answer_text_reconstruction": {
+    "method": "concat blocks[].markdown_block.chunks where intended_usage=='ask_text_0_markdown' across STREAMING messages",
+    "chunks_observed": ["2 + 2 ", "= 4."],
+    "final_answer": "2 + 2 = 4."
+  },
+  "sanitization_check": {
+    "auth_tokens_scanned": "no Bearer/eyJ blobs found in response body",
+    "uuids_present": "backend_uuid, context_uuid, uuid, frontend_context_uuid, frontend_uuid, thread_url_slug, read_write_token — all session-scoped, not auth secrets",
+    "pii_check": "prompt was 'What is 2+2?' (NON-PII), response is calculator widget answer — no user PII"
+  },
+  "notes": "SSE schema is uniform per chunk (single 'message' event type until terminator). Streaming uses cursor (UUIDv7-like) for ordering. The 'final_sse_message: true' field on penultimate chunk is the most reliable APF block-time terminator signal — APF can stop processing here without waiting for 'event: end_of_stream'. For block injection, target the 'blocks[].markdown_block.chunks' field within messages where intended_usage='ask_text_0_markdown' and progress='IN_PROGRESS'."
+}
