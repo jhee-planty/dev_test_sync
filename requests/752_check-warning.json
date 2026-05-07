@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma envelope rev2 retest. Per #748 verdict: SSE delivered correctly but gamma SPA rejected plain-text data chunks (expects markdown outline structure with --- N card separators per #745 baseline analysis). gamma_sse_v7 envelope_template updated 16:34 KST (387 bytes new) — wraps warning in: ```md / --- 1 / # ⚠️ 보안 경고 / {{MESSAGE_RAW}} / ``` markdown card structure. Engine reload_templates SUCCESS. Expected: outline card #1 rendered with title '⚠️ 보안 경고' + warning text body. RRN decode absent (preserved). Engine run_id 20260507-163240-62224 (FIX-E2 active for m365_copilot, gamma uses standard envelope path)."
+    },
+    "id": "752",
+    "created": "2026-05-07T07:35:00Z",
+    "attachments": [],
+    "notes": "gamma envelope rev2 — markdown outline card structure per #745 SSE schema baseline. If still FAIL: investigate /ai/v2/render-generation HTTP/2 protocol error per #748 evidence."
+}
