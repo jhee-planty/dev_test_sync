@@ -189,10 +189,6 @@ HOOKJSON
     exit 0
 fi
 
-# 52차 C amendment REVERTED (사용자 directive 2026-05-07): backoff logic 제거.
-# Mission-goal persistence (HR7) 의 immediate BLOCK 동작 복원.
-# 51차 G2 artifact-bounded license 는 유지.
-
 # 41차: COUNT 변수는 backward-compat용 (주의 messaging 에서 사용); 실제 stop license 는 GOAL_RATIO 기반
 COUNT="${REACHABLE_COUNT:-0}"
 TASKS="$PENDING_LIST"
