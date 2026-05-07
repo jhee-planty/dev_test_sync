@@ -1,0 +1,24 @@
+{
+  "id": "743",
+  "command": "check-warning",
+  "service": "perplexity",
+  "executed_at": "2026-05-07T15:55:42+09:00",
+  "status": "OK_extracted_partial",
+  "verdict_summary": "All 3 sanitized JSONs written token-free; SSE response body absent because Chrome HAR exporter does not capture text/event-stream bodies (response.content.size=43075 but text='').",
+  "evidence": {
+    "perplexity_ask_sse_size_bytes": 3394,
+    "perplexity_ask_entries_count": 1,
+    "rest_thread_size_bytes": 4874,
+    "rest_thread_entries_count": 3,
+    "endpoint_list_size_bytes": 317013,
+    "endpoint_count": 1258,
+    "token_scan_result": "clean",
+    "extraction_method": "python (py -3, json.load + regex sanitizer adapted from sanitize_har_742.py)"
+  },
+  "files_written": [
+    "files/743/perplexity_ask_sse_extract.json",
+    "files/743/rest_thread_extract.json",
+    "files/743/endpoint_list.json"
+  ],
+  "notes": "Key findings for V7-F engineering pivot: (1) Single perplexity_ask call observed: POST https://www.perplexity.ai/rest/sse/perplexity_ask, content-type=text/event-stream. Request body is JSON with params.dsl_query='What is 2+2?' and query_str='What is 2+2?' as the prompt fields, plus extensive feature flags (search_focus=internet, mode=copilot, model_preference=turbo, frontend_uuid, frontend_context_uuid). (2) HAR captures the request/headers but Chrome does NOT export the SSE response body (size=43075 reported but text empty). To capture chunks, use chrome.devtools.network or save-as-HAR-with-content from a stream-aware capture, or intercept via response stream directly. (3) /rest/thread/ traffic is metadata-only: list_pinned_ask_threads (POST, returns []) and mark_viewed/{thread_uuid} (POST, returns {\"status\":\"success\"}). No actual thread content streams through /rest/thread/ in the captured normal flow — confirming the V7-F pivot rationale. (4) Endpoint diversity: 1258 unique method+url stable keys (heavy CDN/asset traffic, plus /rest/* APIs)."
+}

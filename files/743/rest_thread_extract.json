@@ -1,0 +1,175 @@
+{
+  "source": "har_738_sanitized",
+  "filter": "/rest/thread/",
+  "entry_count": 3,
+  "entries": [
+    {
+      "request": {
+        "url": "https://www.perplexity.ai/rest/thread/list_pinned_ask_threads?version=2.18&source=default",
+        "method": "POST",
+        "postData": {
+          "mimeType": "application/json",
+          "text": "{\"include_assets\":true,\"search_term\":\"\",\"send_last_entry\":true,\"thread_type_filter\":\"asi\",\"with_temporary_threads\":false}"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "cache-control",
+            "value": "private, no-cache, no-store, max-age=0, must-revalidate"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e2436d8915871-ICN"
+          },
+          {
+            "name": "content-length",
+            "value": "2"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:24:24 GMT"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "strict-transport-security",
+            "value": "max-age=15552000; includeSubDomains; preload"
+          },
+          {
+            "name": "x-ppl-region",
+            "value": "us-east-1"
+          }
+        ],
+        "content": {
+          "mimeType": "application/json",
+          "size": 2,
+          "text": ""
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "https://www.perplexity.ai/rest/thread/list_pinned_ask_threads?version=2.18&source=default",
+        "method": "POST",
+        "postData": {
+          "mimeType": "application/json",
+          "text": "{\"include_assets\":true,\"search_term\":\"\",\"send_last_entry\":true,\"thread_type_filter\":\"asi\",\"with_temporary_threads\":false}"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "cache-control",
+            "value": "private, no-cache, no-store, max-age=0, must-revalidate"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e248cbab55871-ICN"
+          },
+          {
+            "name": "content-length",
+            "value": "2"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:24:38 GMT"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "strict-transport-security",
+            "value": "max-age=15552000; includeSubDomains; preload"
+          },
+          {
+            "name": "x-ppl-region",
+            "value": "us-east-1"
+          }
+        ],
+        "content": {
+          "mimeType": "application/json",
+          "size": 2,
+          "text": "[]"
+        }
+      }
+    },
+    {
+      "request": {
+        "url": "https://www.perplexity.ai/rest/thread/mark_viewed/b9c3911e-483d-4662-be78-e57292bd202a?version=2.18&source=default",
+        "method": "POST",
+        "postData": null
+      },
+      "response": {
+        "status": 200,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "cache-control",
+            "value": "private, no-cache, no-store, max-age=0, must-revalidate"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e25570a615871-ICN"
+          },
+          {
+            "name": "content-length",
+            "value": "20"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:25:10 GMT"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "strict-transport-security",
+            "value": "max-age=15552000; includeSubDomains; preload"
+          },
+          {
+            "name": "x-ppl-region",
+            "value": "us-east-1"
+          }
+        ],
+        "content": {
+          "mimeType": "application/json",
+          "size": 20,
+          "text": "{\"status\":\"success\"}"
+        }
+      }
+    }
+  ]
+}
