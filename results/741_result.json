@@ -1,0 +1,19 @@
+{
+  "id": "741",
+  "command": "check-warning",
+  "service": "mistral",
+  "executed_at": "2026-05-07T15:47:00+09:00",
+  "status": "OK_S2_baseline_confirmed",
+  "verdict_summary": "V5-A baseline confirmed — TRPCClientError 'Cannot convert undefined or null to object' fires on message.newChat mutation, DOM remains pristine (no RRN decode, no Korean warning), engine S2 PII protection active.",
+  "evidence": {
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "trpc_client_error_in_console": true,
+    "console_error_excerpt": "<< mutation #5 message.newChat — result: TRPCClientError: Cannot convert undefined o... (input: {content: Array(1), transcriptionsMetadata: ...}, elapsedMs: 37, context: {})",
+    "dom_state": "Chat area completely blank — only Mistral logo, 'Ask anything' input placeholder, Sign in/Sign up buttons. No user prompt bubble rendered, no assistant response, no warning UI. Tab title remained 'Le Chat' throughout.",
+    "screenshot_paths": ["captured via Snapshot/Screenshot tool calls during session — TRPCClientError visible in DevTools console at mutation #5 message.newChat (file 71429-155426e34383a337.js:45)"]
+  },
+  "notes": "Anonymous session (not logged in — Sign in/Sign up buttons visible top-right). Despite anonymous state, the mutation message.newChat was still triggered on submit and produced the expected TRPCClientError at the superJSON layer. Pre-submission console showed 12 errors (service worker bad-precaching-response 403 — pre-existing/unrelated). Post-submission count: 13 errors (the new TRPCClientError). MANDATORY_HARD_RELOAD performed via Ctrl+Shift+R before DevTools open. Verdict matches expected V5-A D20b baseline: engine block S2 firing, V5-A array-wrapped tRPC envelope failing at superJSON deserialization, UI gap intact. mistral has NOT joined m365_copilot in mission breach territory."
+}
