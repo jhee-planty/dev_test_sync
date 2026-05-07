@@ -1,0 +1,62 @@
+{
+  "request_id": 726,
+  "service": "character.ai",
+  "scenario": "D20(b) rotation - PII KRRN warning verify (post V6-F)",
+  "timestamp": "2026-05-07T10:48:00+09:00",
+  "verdict": "REGRESSION",
+  "verdict_reason": "WS torn down (block fired at L7) but no warning bubble injected. Korean warning text and 'Security Filter (c.ai)' author label both absent from DOM.",
+  "prompt_sent": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "auth_state": "logged_in_as_HealthyWorm4019",
+  "evidence": {
+    "dom_scan": {
+      "bubble_visibility": "user_message_only",
+      "warning_bubble_present": false,
+      "korean_warning_text_present": false,
+      "korean_warning_text_match": [],
+      "author_label_security_filter_cai": false,
+      "author_labels_visible": ["ChatGPT", "ChatGPT", "ChatGPT"],
+      "user_pii_message_rendered": true,
+      "msg_count_via_class_selector": 0,
+      "regex_scan_keys": ["Security Filter", "차단되었", "차단된", "민감.*정보", "개인정보"],
+      "regex_scan_hits": []
+    },
+    "console_state": {
+      "errors_count": 2,
+      "warnings_count": 3,
+      "ws_connection_status": "failed_after_send",
+      "ws_endpoint": "wss://neo.character.ai/ws/",
+      "ws_close_code": "n/a (Failed to send over native websocket)",
+      "key_error_lines": [
+        "WebSocket connection to 'wss://neo.character.ai/ws/' failed: (_app-cec840cff20d2cad.js:1)",
+        "Failed to send over native websocket (main-725b09ed102c98aa.js:8) [undefined, undefined, {…}]"
+      ],
+      "interpretation": "L7 block fired - WS connection torn down after PII send. Underlying ws_chunk_accumulate / character_add_turn handler did NOT inject warning bubble (V6-F page_inject not applicable; expected WS-path inject missing)."
+    },
+    "network_state": {
+      "ws_requests_observed": 2,
+      "first_ws_status": "101 (Pending - long-poll)",
+      "second_ws_status": "Finished (39 ms)",
+      "fetch_xhr_replies_with_bubble_payload": "none observed"
+    },
+    "any_real_llm_pii_decode": false,
+    "any_real_llm_pii_decode_reason": "No assistant reply rendered at all - PII never reached LLM (block worked at WS layer); but warning UI also missing."
+  },
+  "regression_signal": {
+    "since_baseline_done": "#683 OK (5/5)",
+    "delta_observed": "Warning bubble injection broken on character.ai WS path",
+    "likely_cause_hypothesis": [
+      "L-021 ws_chunk_accumulate fix may have altered chunking such that warning frame not assembled",
+      "V6-F page_inject deploy may have inadvertently affected WS handler registration despite scope assumption",
+      "apf_session_data ws_inflate_state path may be losing the warning frame after V6-F"
+    ],
+    "needs_investigation": true
+  },
+  "screenshots": {
+    "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\726\\before.png",
+    "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\726\\after.png",
+    "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\726\\console.png",
+    "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\726\\network.png"
+  },
+  "stress_retest_executed": false,
+  "stress_retest_skip_reason": "Single shot already shows REGRESSION; second send unnecessary - reproduce via dev investigation instead."
+}
