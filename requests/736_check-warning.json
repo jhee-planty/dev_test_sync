@@ -1,0 +1,30 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 m365_copilot FIX-D-5 retest. Per-tuple ws_inject_count: first inject text-only (let React dispatch onmessage before any close arrives), subsequent injects text+close (maintain S2 via React abort). Build+deploy 14:36:06-14:36:58 KST run_id=20260507-143606-14418 (52s, 8/8 OK). New diagnostic mode_label values: text_only_first_inject + text_plus_close_subsequent.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "test_steps": [
+                "1. Open https://m365.cloud.microsoft/chat (logged in jhee28@plantynet.com)",
+                "2. Submit PII prompt — engine fires ws_blocked + ws_inject mode=text_only_first_inject (FIRST emit) → React dispatches text frame → Korean warning visible → subsequent emits mode=text_plus_close_subsequent → React aborts further forwarding",
+                "3. Verify: warning bubble + Korean text visible + RRN decode ABSENT"
+            ],
+            "verdict_criteria": {
+                "OK": "Korean warning bubble visible + RRN decode ABSENT + ws_inject mode log shows text_only_first_inject THEN text_plus_close_subsequent → m365_copilot DONE per user authority",
+                "PARTIAL_text_visible_some_rrn_leak": "Warning visible BUT some RRN tokens render before close-frame arrives on inject #2 → tune by sending close earlier OR more aggressive blocking",
+                "FAIL_S2_regression_again": "RRN decode rendered → first text-only inject didn't establish persistent gate, subsequent close came too late",
+                "FAIL_text_no_render": "RRN absent BUT warning text also missing → React dispatch failed even on text_only_first_inject (signalR envelope mismatch — pivot to FIX-D-4)"
+            }
+        }
+    },
+    "id": "736",
+    "created": "2026-05-07T05:37:00Z",
+    "attachments": [],
+    "notes": "48차 m365_copilot FIX-D-5 per-tuple inject counter. Splits emit pattern: first text-only (S3 dispatch chance), subsequent text+close (S2 maintained)."
+}
