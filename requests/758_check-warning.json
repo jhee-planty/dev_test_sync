@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat/",
+        "verify_timeout_s": 30,
+        "context": "★★ FIX-G m365_copilot Phase 2 enhancement verify — combine FIX-F suppress with signalR envelope inject. Per #757 OK_S2_silencer_engaged: FIX-F worked but English fallback only (no Korean warning). FIX-G at run_id 20260507-174759-93691 adds signalR envelope inject (build_m365_copilot_signalr_envelope) at WS path BEFORE suppress sets in. Strategy: on first WS frame post-domain-block-detection (ws_inject_count==0), build signalR envelope with Korean warning + clientCorrelationId echo from c2s buffer + write to _ai_prompt_block_response + set _ai_prompt_blocked=1. Subsequent WS frames keep FIX-F suppress-only behavior. Expected: Korean warning visible via adaptiveCards.body[0].text + RRN structural decode absent (FIX-F path preserved). Engine emits [APF:ws_domain_block_inject] log (vs [APF:ws_domain_block_silencer] for subsequent frames)."
+    },
+    "id": "758",
+    "created": "2026-05-07T08:48:00Z",
+    "attachments": [],
+    "notes": "FIX-G m365_copilot Phase 2 — suppress + Korean warning inject on cross-connection block. Empirical M0 test: warning visible AND RRN absent → mission criterion #1 + #2 both achieved."
+}
