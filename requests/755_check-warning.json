@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★ perplexity L-046 silent partial-readiness verify. Per #750 SSE-aware capture: existing perplexity_sse_v7c_public envelope_template (4427 bytes) ALREADY matches captured schema exactly: event: message + intended_usage:ask_text_0_markdown + chunks + final_sse_message:true + event: end_of_stream terminator. path_patterns=/rest/sse/perplexity_ask correctly targets the answer-stream endpoint per #738 finding. V7-G design from proposals/perplexity-V7-G-rest-sse-perplexity-ask-target-design-2026-05-07.md may have been redundant — existing V7-C template was already correct, just never E2E verified. Run_id 20260507-170810-76928 (FIX-D-5 restored). Expected: Korean warning rendered in answer area + RRN decode absent."
+    },
+    "id": "755",
+    "created": "2026-05-07T08:13:00Z",
+    "attachments": [],
+    "notes": "perplexity verify after #750 schema confirmation — existing V7-C template should work. If FAIL: capture HAR with /rest/sse/perplexity_ask SSE bytes for byte-byte engine vs baseline diff."
+}
