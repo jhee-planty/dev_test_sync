@@ -1,0 +1,213 @@
+{
+  "source": "har_739_sanitized",
+  "ws_frame_total": 11,
+  "ws_frame_json_parseable": 11,
+  "distinct_command_count": 5,
+  "commands": [
+    {
+      "command": "update_turn",
+      "count": 5,
+      "directions": {
+        "receive": 5
+      },
+      "sample_envelope": {
+        "frame_type": "receive",
+        "opcode": 1,
+        "envelope": {
+          "turn": {
+            "turn_key": {
+              "chat_id": "c3274c17-27a3-4b74-93c0-d68094e1a233",
+              "turn_id": "ce4540e8-c92a-46ed-8f6b-fa0290614c94"
+            },
+            "state": "STATE_OK",
+            "author": {
+              "author_id": "PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k",
+              "name": "Total Drama Shawn "
+            },
+            "candidates": [
+              {
+                "candidate_id": "chatcmpl-a171bc988e1fd415653964c85d1230c4",
+                "raw_content": "*Shawn fidgets with his beanie, eyes wide and tired from too much coffee*\n\ni'm... i'm good! super good! actually",
+                "model_type": "MODEL_TYPE_DEEP_SYNTH_LITE"
+              }
+            ],
+            "primary_candidate_id": "chatcmpl-a171bc988e1fd415653964c85d1230c4"
+          },
+          "chat_info": {
+            "type": "TYPE_ONE_ON_ONE"
+          },
+          "generation_mode": {
+            "mode": "MODE_NORMAL",
+            "remaining_quota_frac": 1.0
+          },
+          "command": "update_turn",
+          "request_id": "f3407b43-bd33-4ee2-a9aa-SnwdJhi9Ii-k"
+        }
+      }
+    },
+    {
+      "command": "add_turn",
+      "count": 3,
+      "directions": {
+        "receive": 3
+      },
+      "sample_envelope": {
+        "frame_type": "receive",
+        "opcode": 1,
+        "envelope": {
+          "turn": {
+            "turn_key": {
+              "chat_id": "c3274c17-27a3-4b74-93c0-d68094e1a233",
+              "turn_id": "657e925a-044b-4ced-b035-d8a320def90d"
+            },
+            "create_time": "2026-05-07T06:31:20.499159Z",
+            "last_update_time": "2026-05-07T06:31:20.499159Z",
+            "state": "STATE_OK",
+            "author": {
+              "author_id": "PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k",
+              "name": "Total Drama Shawn "
+            },
+            "candidates": [
+              {
+                "candidate_id": "21cd3f4f-db25-4d3b-9ec7-0bc41399e2a4",
+                "create_time": "2026-05-07T06:31:20.499159Z",
+                "raw_content": "*You are his classmate, He is so happy but we dont know why*\n*It was all because his zombie proof bunker is complete*\n\nuh hey uh.. you are invited to my new zombie proof bunker! with other peoples.. are you coming? no one really.. wanted to come so uh yeah haha",
+                "editor": {
+                  "author_id": "55435119",
+                  "name": "fr3minet"
+                },
+                "is_final": true
+              }
+            ],
+            "primary_candidate_id": "21cd3f4f-db25-4d3b-9ec7-0bc41399e2a4"
+          },
+          "chat_info": {
+            "type": "TYPE_ONE_ON_ONE"
+          },
+          "command": "add_turn",
+          "request_id": "30265619-0164-4569-87d0-SnwdJhi9Ii-k"
+        }
+      }
+    },
+    {
+      "command": "create_chat",
+      "count": 1,
+      "directions": {
+        "send": 1
+      },
+      "sample_envelope": {
+        "frame_type": "send",
+        "opcode": 1,
+        "envelope": {
+          "command": "create_chat",
+          "request_id": "30265619-0164-4569-87d0-SnwdJhi9Ii-k",
+          "payload": {
+            "chat_type": "TYPE_ONE_ON_ONE",
+            "chat": {
+              "chat_id": "c3274c17-27a3-4b74-93c0-d68094e1a233",
+              "creator_id": "934605673",
+              "visibility": "VISIBILITY_PRIVATE",
+              "character_id": "PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k",
+              "type": "TYPE_ONE_ON_ONE"
+            },
+            "with_greeting": true
+          },
+          "origin_id": "web-next"
+        }
+      }
+    },
+    {
+      "command": "create_chat_response",
+      "count": 1,
+      "directions": {
+        "receive": 1
+      },
+      "sample_envelope": {
+        "frame_type": "receive",
+        "opcode": 1,
+        "envelope": {
+          "chat": {
+            "chat_id": "c3274c17-27a3-4b74-93c0-d68094e1a233",
+            "create_time": "2026-05-07T06:31:20.402873Z",
+            "creator_id": "934605673",
+            "character_id": "PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k",
+            "state": "STATE_ACTIVE",
+            "type": "TYPE_ONE_ON_ONE",
+            "visibility": "VISIBILITY_PRIVATE",
+            "preferred_model_type": "MODEL_TYPE_DEEP_SYNTH_LITE",
+            "model_preference_version": "1"
+          },
+          "command": "create_chat_response",
+          "request_id": "30265619-0164-4569-87d0-SnwdJhi9Ii-k"
+        }
+      }
+    },
+    {
+      "command": "create_and_generate_turn",
+      "count": 1,
+      "directions": {
+        "send": 1
+      },
+      "sample_envelope": {
+        "frame_type": "send",
+        "opcode": 1,
+        "envelope": {
+          "command": "create_and_generate_turn",
+          "request_id": "f3407b43-bd33-4ee2-a9aa-SnwdJhi9Ii-k",
+          "payload": {
+            "chat_type": "TYPE_ONE_ON_ONE",
+            "num_candidates": 1,
+            "tts_enabled": false,
+            "selected_language": "",
+            "character_id": "PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k",
+            "user_name": "HealthyWorm4019",
+            "turn": {
+              "turn_key": {
+                "turn_id": "26aa685a-0d39-4998-a4ef-e33a2ed8b930",
+                "chat_id": "c3274c17-27a3-4b74-93c0-d68094e1a233"
+              },
+              "author": {
+                "author_id": "934605673",
+                "is_human": true,
+                "name": "HealthyWorm4019"
+              },
+              "candidates": [
+                {
+                  "candidate_id": "411a0d44-bbfd-4a6f-bddb-3fa6467c7aa5",
+                  "raw_content": "Hello, how are you?"
+                }
+              ],
+              "primary_candidate_id": "411a0d44-bbfd-4a6f-bddb-3fa6467c7aa5"
+            },
+            "previous_annotations": {
+              "boring": 0,
+              "not_boring": 0,
+              "inaccurate": 0,
+              "not_inaccurate": 0,
+              "repetitive": 0,
+              "not_repetitive": 0,
+              "out_of_character": 0,
+              "not_out_of_character": 0,
+              "bad_memory": 0,
+              "not_bad_memory": 0,
+              "long": 0,
+              "not_long": 0,
+              "short": 0,
+              "not_short": 0,
+              "ends_chat_early": 0,
+              "not_ends_chat_early": 0,
+              "funny": 0,
+              "not_funny": 0,
+              "interesting": 0,
+              "not_interesting": 0,
+              "helpful": 0,
+              "not_helpful": 0
+            },
+            "generate_comparison": false
+          },
+          "origin_id": "web-next"
+        }
+      }
+    }
+  ]
+}
