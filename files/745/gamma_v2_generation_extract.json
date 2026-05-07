@@ -1,0 +1,367 @@
+{
+  "source": "har_740_sanitized",
+  "filter": "ai.api.gamma.app/ai/v2/generation",
+  "entry_count": 4,
+  "entries": [
+    {
+      "entry_index": 2441,
+      "request": {
+        "url": "https://ai.api.gamma.app/ai/v2/generation",
+        "method": "POST",
+        "postData": {
+          "mimeType": "application/json",
+          "text": "{\"promptKey\":\"GenerateOutlineStory\",\"variables\":{\"topic\":\"Make a presentation about climate change\",\"numBullets\":10,\"search\":false,\"format\":\"deck\",\"language\":\"Korean\",\"model\":\"exa\",\"textAmount\":\"md\"},\"interactionId\":\"f0d206f51078d656-116fed4b8f1597aa\",\"workspaceId\":\"qhhf0d5tgqp7g58\"}"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "access-control-allow-credentials",
+            "value": "true"
+          },
+          {
+            "name": "access-control-allow-origin",
+            "value": "https://gamma.app"
+          },
+          {
+            "name": "cache-control",
+            "value": "private, no-cache, no-store, must-revalidate, max-age=0, no-transform"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e38a65b76fa46-ICN"
+          },
+          {
+            "name": "content-type",
+            "value": "text/event-stream"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:38:21 GMT"
+          },
+          {
+            "name": "expire",
+            "value": "0"
+          },
+          {
+            "name": "pragma",
+            "value": "no-cache"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "vary",
+            "value": "Origin"
+          },
+          {
+            "name": "x-powered-by",
+            "value": "Express"
+          },
+          {
+            "name": "x-ratelimit-limit",
+            "value": "300"
+          },
+          {
+            "name": "x-ratelimit-limit-burst",
+            "value": "1000"
+          },
+          {
+            "name": "x-ratelimit-limit-daily",
+            "value": "3000"
+          },
+          {
+            "name": "x-ratelimit-remaining",
+            "value": "299"
+          },
+          {
+            "name": "x-ratelimit-remaining-burst",
+            "value": "999"
+          },
+          {
+            "name": "x-ratelimit-remaining-daily",
+            "value": "2999"
+          },
+          {
+            "name": "x-ratelimit-reset",
+            "value": "3600"
+          },
+          {
+            "name": "x-ratelimit-reset-burst",
+            "value": "300"
+          },
+          {
+            "name": "x-ratelimit-reset-daily",
+            "value": "86400"
+          },
+          {
+            "name": "x-request-id",
+            "value": "334247e9-57be-4d78-a425-dbae016abf51"
+          }
+        ],
+        "content": {
+          "mimeType": "text/event-stream",
+          "size": 2686,
+          "text": "\nevent: content\nid: 1\ndata: ì €ëŠ”\n\nevent: content\nid: 2\ndata:  ì´ ë°œí‘œë¥¼ ê¸°í›„ ë³€í™”ì˜ ì‹¬ê°ì„±ì„ ê°•ì¡°í•˜ê³ , í˜ì‹ ì ì¸ í•´ê²°ì±…ì„ ì œì‹œ\n\nevent: content\nid: 3\ndata: í•˜ë©°, ì¸ë¥˜ê°€ ì–´ë–»ê²Œ ì´ ìœ„í˜‘ì— ë§žì„œ ì‹¸ìš°ê³  \n\nevent: content\nid: 4\ndata: ê¸ì •ì ì¸ ë¯¸ëž˜ë¥¼ ë§Œë“¤ì–´ê°€ê³  ìžˆëŠ”ì§€ ë³´ì—¬ì£¼ëŠ” ë“œë¼ë§ˆí‹±í•œ ì—¬ì •ìœ¼ë¡œ êµ¬ì„±í•˜ê² ìŠµë‹ˆë‹¤. êµ¬ì²´ì ì¸ ë°ì´í„°ì™€ ì‹œê°ì  ë¹„êµë¥¼ í†µí•´ ë¬¸ì œ\n\nevent: content\nid: 5\ndata: ì˜ ê·œëª¨ì™€ í•´ê²° ë…¸ë ¥ì˜ ì†ë„ë¥¼ ë³´ì—¬ì¤„ ê²ƒìž…ë‹ˆë‹¤.\ndata: \ndata: ```md\ndata: --- 1\ndata: # ê¸°í›„ ë³€í™”: ì¸ë¥˜ì˜ ìƒì¡´ì„ ìœ„í•œ ì‹¸ì›€\ndata: \ndata: \n\nevent: content\nid: 6\ndata: --- 2\ndata: # 1ë¶€: ìœ„ê¸°ì˜ í˜„ì‹¤\ndata: - 2024ë…„, ì§€êµ¬ í‰ê·  ê¸°ì˜¨ì€ ì‚°ì—…í™” ì´ì „ ëŒ€ë¹„ 1.5Â°C ìƒìŠ¹\ndata: - ê·¹ì‹¬í•œ í­ì—¼, í™ìˆ˜, ê°€\n\nevent: content\nid: 7\ndata: ë­„ì´ ì „ ì„¸ê³„ë¥¼ ë®ì¹¨\ndata: \ndata: --- 3\ndata: # í•´ìˆ˜ë©´ ìƒìŠ¹: ì‚¬ë¼ì§€ëŠ” í•´ì•ˆ ë„ì‹œë“¤\ndata: - ëª°ë””ë¸Œ, íˆ¬ë°œë£¨ ë“± ì €ì§€ëŒ€ êµ­ê°€ë“¤ì˜ ìœ„ê¸°\ndata: - ë‰´ìš•, ìƒ\n\nevent: content\nid: 8\ndata: í•˜ì´ ë“± ëŒ€ë„ì‹œì˜ ì¹¨ìˆ˜ ìœ„í—˜ ì¦ê°€\ndata: \ndata: --- 4\ndata: # [image] ê±°ëŒ€í•œ ë¹™í•˜ê°€ ë…¹ì•„ë‚´ë¦¬ëŠ” ëª¨ìŠµ, í…ìŠ¤íŠ¸: \"ëŒì´í‚¬ ìˆ˜ ì—†ëŠ” ì§€ì : 2Â°C\"\ndata: \ndata: --- 5\ndata: # 2ë¶€: í¬ë§ì˜ ë¶ˆì”¨\ndata: - 20\n\nevent: content\nid: 9\ndata: 25ë…„, ìž¬ìƒ ì—ë„ˆì§€ íˆ¬ìž 2ì¡° ë‹¬ëŸ¬ ëŒíŒŒ (í™”ì„ ì—°ë£Œ ì´ˆê³¼)\ndata: - íƒœì–‘ê´‘ ë°œì „ ë‹¨ê°€ 90% í•˜ë½, í’ë ¥ ë°œì „ íš¨ìœ¨ 2ë°° ì¦ê°€\ndata: \ndata: --- 6\ndata: # í˜ì‹ ì ì¸ íƒ„ì†Œ í¬ì§‘ ê¸°ìˆ \ndata: - Climeworks: ì—°\n\nevent: content\nid: 10\ndata: ê°„ 4,000í†¤ CO2 í¬ì§‘ (870ëŒ€ ì°¨ëŸ‰ ê°ì¶• íš¨ê³¼)\ndata: - Microsoft: 2030ë…„ê¹Œì§€ 100ë§Œ í†¤ CO2 ì œê±° ëª©í‘œ\ndata: \ndata: --- 7\ndata: # [image] í‘¸ë¥¸ ìˆ²ê³¼ ê¹¨ë—í•œ ë„ì‹œ í’ê²½, í…ìŠ¤íŠ¸:\n\nevent: content\nid: 11\ndata:  \"ì§€ì† ê°€ëŠ¥í•œ ë¯¸ëž˜ë¥¼ í–¥í•œ ë„ì•½\"\ndata: \ndata: --- 8\ndata: # 3ë¶€: í–‰ë™í•˜ëŠ” ì¸ë¥˜\ndata: - 2024ë…„, ì „ ì„¸ê³„ 10ì–µ ëª… ì´ìƒì´ ê¸°í›„ í–‰ë™ì— ë™ì°¸\ndata: - 16ì„¸ ì†Œë…€ ê¸°íƒ„ìž˜ë¦¬ ë¼ì˜¤, íœ´ëŒ€\n\nevent: content\nid: 12\ndata: ìš© ìˆ˜ì§ˆ ê²€ì‚¬ ìž¥ì¹˜ ê°œë°œ\ndata: - ì¼ë¡  ë¨¸ìŠ¤í¬, ì „ê¸°ì°¨ í˜ì‹ ìœ¼ë¡œ ìžë™ì°¨ ì‚°ì—… ë³€í™” ì£¼ë„\ndata: \ndata: --- 9\ndata: # 2030ë…„, íƒ„ì†Œ ì¤‘ë¦½ ì‚¬íšŒë¥¼ í–¥í•œ ì•½ì†\ndata: - íŒŒë¦¬ í˜‘ì • ëª©í‘œ ë‹¬ì„±ì„ ìœ„í•œ êµ­ì œ ì‚¬íšŒì˜ ë…¸ë ¥ ê°•í™”\ndata: - ì§€ì†\n\nevent: content\nid: 13\ndata:  ê°€ëŠ¥í•œ ë†ì—…, ìˆœí™˜ ê²½ì œ ëª¨ë¸ í™•ì‚°\ndata: \ndata: --- 10\ndata: # ìš°ë¦¬ì˜ ì„ íƒ, ìš°ë¦¬ì˜ ë¯¸ëž˜\ndata: - ê¸°í›„ ë³€í™”ëŠ” ë” ì´ìƒ ë¨¼ ë¯¸ëž˜ì˜ ì´ì•¼ê¸°ê°€ ì•„ë‹™ë‹ˆë‹¤.\ndata: - ì§€ê¸ˆ í–‰ë™í•˜ë©´, ìš°ë¦¬ëŠ” ë” ë‚˜ì€ ì„¸ìƒì„ ë§Œë“¤ ìˆ˜ ìžˆìŠµë‹ˆë‹¤.\ndata: ```\n\nevent: done\nid: 14\ndata: stop\n\n"
+        }
+      }
+    },
+    {
+      "entry_index": 2442,
+      "request": {
+        "url": "https://ai.api.gamma.app/ai/v2/generation",
+        "method": "OPTIONS",
+        "postData": {
+          "mimeType": null,
+          "text": ""
+        }
+      },
+      "response": {
+        "status": 204,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "access-control-allow-credentials",
+            "value": "true"
+          },
+          {
+            "name": "access-control-allow-headers",
+            "value": "aijsx-traceparent,content-type"
+          },
+          {
+            "name": "access-control-allow-methods",
+            "value": "GET,HEAD,PUT,PATCH,POST,DELETE"
+          },
+          {
+            "name": "access-control-allow-origin",
+            "value": "https://gamma.app"
+          },
+          {
+            "name": "access-control-max-age",
+            "value": "2592000"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e38a48a13ea19-ICN"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:38:21 GMT"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "vary",
+            "value": "Origin, Access-Control-Request-Headers"
+          },
+          {
+            "name": "x-powered-by",
+            "value": "Express"
+          },
+          {
+            "name": "x-request-id",
+            "value": "740d298c-f1b6-472c-bc7b-9d74f883f3ab"
+          }
+        ],
+        "content": {
+          "mimeType": "x-unknown",
+          "size": 0,
+          "text": ""
+        }
+      }
+    },
+    {
+      "entry_index": 2489,
+      "request": {
+        "url": "https://ai.api.gamma.app/ai/v2/generation",
+        "method": "POST",
+        "postData": {
+          "mimeType": "application/json",
+          "text": "{\"promptKey\":\"GenerateDeckWithLayout\",\"interactionId\":\"rk0rn973jbspk4d\",\"variables\":{\"topic\":\"Make a presentation about climate change\",\"additionalInstructions\":\"\",\"input\":\"# 기후 변화: 인류의 생존을 위한 싸움\\n\\n---\\n\\n\\n# 1부: 위기의 현실\\n- 2024년, 지구 평균 기온은 산업화 이전 대비 1.5°C 상승\\n- 극심한 폭염, 홍수, 가뭄이 전 세계를 덮침\\n\\n---\\n\\n\\n# 해수면 상승: 사라지는 해안 도시들\\n- 몰디브, 투발루 등 저지대 국가들의 위기\\n- 뉴욕, 상하이 등 대도시의 침수 위험 증가\\n\\n---\\n\\n\\n# [image] 거대한 빙하가 녹아내리는 모습, 텍스트: \\\"돌이킬 수 없는 지점: 2°C\\\"\\n\\n---\\n\\n\\n# 2부: 희망의 불씨\\n- 2025년, 재생 에너지 투자 2조 달러 돌파 (화석 연료 초과)\\n- 태양광 발전 단가 90% 하락, 풍력 발전 효율 2배 증가\\n\\n---\\n\\n\\n# 혁신적인 탄소 포집 기술\\n- Climeworks: 연간 4,000톤 CO2 포집 (870대 차량 감축 효과)\\n- Microsoft: 2030년까지 100만 톤 CO2 제거 목표\\n\\n---\\n\\n\\n# [image] 푸른 숲과 깨끗한 도시 풍경, 텍스트: \\\"지속 가능한 미래를 향한 도약\\\"\\n\\n---\\n\\n\\n# 3부: 행동하는 인류\\n- 2024년, 전 세계 10억 명 이상이 기후 행동에 동참\\n- 16세 소녀 기탄잘리 라오, 휴대용 수질 검사 장치 개발\\n- 일론 머스크, 전기차 혁신으로 자동차 산업 변화 주도\\n\\n---\\n\\n\\n# 2030년, 탄소 중립 사회를 향한 약속\\n- 파리 협정 목표 달성을 위한 국제 사회의 노력 강화\\n- 지속 가능한 농업, 순환 경제 모델 확산\\n\\n---\\n\\n\\n# 우리의 선택, 우리의 미래\\n- 기후 변화는 더 이상 먼 미래의 이야기가 아닙니다.\\n- 지금 행동하면, 우리는 더 나은 세상을 만들 수 있습니다.\",\"language\":\"Korean\",\"numCards\":10,\"maxCards\":10,\"format\":\"deck\",\"imageOptions\":{\"model\":\"flux-2-klein\",\"stylePreset\":\"None\",\"license\":\"All\",\"styleReferenceKey\":\"narrative_illustration\",\"styleReferenceImages\":[],\"visualsMenuEnabled\":true},\"textAmount\":\"md\",\"audience\":\"\",\"tone\":\"\",\"textMode\":\"generate\",\"editorMode\":\"structured\",\"imageProvider\":\"aiGenerated\",\"cardDimensions\":\"fluid\",\"theme\":{\"accentColors\":[\"#E2C2B3\",\"#403234\",\"#5F5153\",\"#997B7F\"]},\"basePromptKey\":\"GenerateDeck2.5\",\"blockFlags\":{\"imageQueryGuideV2\":false,\"imageCards\":false,\"artificialLatencyMs\":0,\"remixImageUnderstanding\":true,\"aiStyleReferenceUpload\":true,\"aiStyleReferenceAllowed\":false,\"codeCards\":false,\"deckStyledImages\":true},\"docId\":\"4pjqxo0o34sy0x0\",\"model\":\"claude-sonnet-4-6\",\"reasoningEffort\":\"none\"},\"workspaceId\":\"qhhf0d5tgqp7g58\"}"
+        }
+      },
+      "response": {
+        "status": 200,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "access-control-allow-credentials",
+            "value": "true"
+          },
+          {
+            "name": "access-control-allow-origin",
+            "value": "https://gamma.app"
+          },
+          {
+            "name": "cache-control",
+            "value": "private, no-cache, no-store, must-revalidate, max-age=0, no-transform"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e39703f60fa46-ICN"
+          },
+          {
+            "name": "content-type",
+            "value": "text/event-stream"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:38:53 GMT"
+          },
+          {
+            "name": "expire",
+            "value": "0"
+          },
+          {
+            "name": "pragma",
+            "value": "no-cache"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "vary",
+            "value": "Origin"
+          },
+          {
+            "name": "x-powered-by",
+            "value": "Express"
+          },
+          {
+            "name": "x-ratelimit-limit",
+            "value": "300"
+          },
+          {
+            "name": "x-ratelimit-limit-burst",
+            "value": "1000"
+          },
+          {
+            "name": "x-ratelimit-limit-daily",
+            "value": "3000"
+          },
+          {
+            "name": "x-ratelimit-remaining",
+            "value": "298"
+          },
+          {
+            "name": "x-ratelimit-remaining-burst",
+            "value": "998"
+          },
+          {
+            "name": "x-ratelimit-remaining-daily",
+            "value": "2998"
+          },
+          {
+            "name": "x-ratelimit-reset",
+            "value": "3568"
+          },
+          {
+            "name": "x-ratelimit-reset-burst",
+            "value": "268"
+          },
+          {
+            "name": "x-ratelimit-reset-daily",
+            "value": "86368"
+          },
+          {
+            "name": "x-request-id",
+            "value": "dde4ab93-3443-453f-87be-f88863f6d579"
+          }
+        ],
+        "content": {
+          "mimeType": "text/event-stream",
+          "size": 17464,
+          "text": "\nevent: content\nid: 1\ndata: <section n=\"1\" image-layout=\"left\" id=\"le4ypa1ntzudv59\">\ndata: <img query=\"dramatic Earth view from space showing swirling storm clouds and glowing atmosphere at twilight\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;dramatic Earth view from space showing swirling storm clouds and glowing atmosphere at twilight&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;portrait&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;TVgbW&quot;}\" class=\"accent-image\">\ndata: \ndata: \ndata: <div class=\"body\">\ndata: <h1>ê¸°í›„ ë³€í™”: ì¸ë¥˜ì˜ ìƒì¡´ì„ ìœ„í•œ ì‹¸ì›€</h1>\ndata: <p>ê¸°í›„ ìœ„ê¸°ëŠ” í˜„ì‹¤ìž…ë‹ˆë‹¤. ì§€ê¸ˆ ìš°ë¦¬ê°€ ì–´ë–¤ ì„ íƒì„ í•˜ëŠëƒê°€ ì§€êµ¬ì˜ ë¯¸ëž˜ë¥¼ ê²°ì •í•©ë‹ˆë‹¤.</p></div></section>\ndata: \ndata: \n\nevent: content\nid: 2\ndata: <section n=\"2\" image-layout=\"right\" id=\"kfv8vdcw62ss8g9\">\ndata: <img query=\"cracked dry earth under intense sun, parched landscape with heat haze\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;cracked dry earth under intense sun, parched landscape with heat haze&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;portrait&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;qAA3N&quot;}\" class=\"accent-image\">\ndata: \ndata: \ndata: \ndata: <div class=\"body\">\ndata: <labels><label variant=\"solid\">1ë¶€</label></labels>\ndata: <h1>ìœ„ê¸°ì˜ í˜„ì‹¤</h1>\ndata: <columns colWidths=\"[50,50]\">\ndata: <div background-color=\"#E2C2B3\">\ndata: <h4>ê¸°ì˜¨ ìƒìŠ¹</h4>\ndata: <p>2024ë…„, ì§€êµ¬ í‰ê·  ê¸°ì˜¨ì€ ì‚°ì—…í™” ì´ì „ ëŒ€ë¹„ <b>1.5Â°C ìƒìŠ¹</b>í–ˆìŠµë‹ˆë‹¤. ì´ëŠ” ê³¼í•™ìžë“¤ì´ ê²½ê³ í•´ ì˜¨ ìž„ê³„ì ì— ë„ë‹¬í•œ ê²ƒìž…ë‹ˆë‹¤.</p>\ndata: </div>\ndata: <div>\ndata: <h4>ê·¹ë‹¨ì  ê¸°ìƒ ì´ë³€</h4>\ndata: <p>ê·¹ì‹¬í•œ í­ì—¼, ì „ë¡€ ì—†ëŠ” í™ìˆ˜, ìž¥ê¸°ì  ê°€ë­„ì´ ì „ ì„¸ê³„ë¥¼ ë™ì‹œë‹¤ë°œì ìœ¼ë¡œ ë®ì¹˜ë©° ìˆ˜ë°±ë§Œ ëª…ì˜ ìƒì¡´ì„ ìœ„í˜‘í•˜ê³  ìžˆìŠµë‹ˆë‹¤.</p>\ndata: </div>\ndata: </columns></div></section>\ndata: \ndata: \n\nevent: content\nid: 3\ndata: <section n=\"3\" image-layout=\"blank\" id=\"w0nz32hmhxp3b24\">\ndata: \ndata: \ndata: \ndata: <div class=\"body\">\ndata: <labels><label variant=\"outline\">í•´ìˆ˜ë©´ ìœ„ê¸°</label></labels>\ndata: <h1>í•´ìˆ˜ë©´ ìƒìŠ¹: ì‚¬ë¼ì§€ëŠ” í•´ì•ˆ ë„ì‹œë“¤</h1>\ndata: <columns colWidths=\"[65,35]\">\ndata: <div verticalAlign=\"center\">\ndata: <img query=\"aerial view of low-lying tropical island surrounded by rising ocean water\" shape=\"landscape\" align=\"center\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;aerial view of low-lying tropical island surrounded by rising ocean water&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;landscape&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;wq4Vo&quot;}\">\ndata: </div>\ndata: <div verticalAlign=\"center\">\ndata: <h4>ì €ì§€ëŒ€ êµ­ê°€ë“¤ì˜ ì†Œë©¸ ìœ„ê¸°</h4>\ndata: <p>ëª°ë””ë¸Œ, íˆ¬ë°œë£¨, í‚¤ë¦¬ë°”ì‹œ ë“± íƒœí‰ì–‘Â·ì¸ë„ì–‘ì˜ ì €ì§€ëŒ€ ì„¬ë‚˜ë¼ë“¤ì€ ìˆ˜ì‹­ ë…„ ë‚´ í•´ìˆ˜ë©´ ì•„ëž˜ë¡œ ì‚¬ë¼ì§ˆ ìœ„ê¸°ì— ì²˜í•´ ìžˆìŠµë‹ˆë‹¤.</p>\ndata: <h4>ëŒ€ë„ì‹œ ì¹¨ìˆ˜ ìœ„í—˜</h4>\ndata: <p>ë‰´ìš•, ìƒí•˜ì´, ë­„ë°”ì´, ì•”ìŠ¤í…Œë¥´ë‹´ ë“± ì „ ì„¸ê³„ ì£¼ìš” ëŒ€ë„ì‹œë“¤ë„ í•´ìˆ˜ë©´ ìƒìŠ¹ìœ¼ë¡œ ì¸í•œ <b>ë§Œì„±ì  ì¹¨ìˆ˜ ìœ„í—˜</b>ì— ë…¸ì¶œë˜ì–´ ìžˆìŠµë‹ˆë‹¤.</p>\ndata: </div>\ndata: </columns></div></section>\ndata: \ndata: \n\nevent: content\nid: 4\ndata: <section n=\"4\" image-layout=\"right\" id=\"9xne74w78xn2scx\">\ndata: <img query=\"massive glacier calving into dark ocean water, enormous ice chunks falling, dramatic scale\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;massive glacier calving into dark ocean water, enormous ice chunks falling, dramatic scale&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;portrait&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;b_sFn&quot;}\" class=\"accent-image\">\ndata: \ndata: \ndata: \ndata: <div class=\"body\">\ndata: <display size=\"lg\">2Â°C</display>\ndata: <h2>ëŒì´í‚¬ ìˆ˜ ì—†ëŠ” ì§€ì </h2>\ndata: <p>ê¸°ì˜¨ì´ 2Â°Cë¥¼ ì´ˆê³¼í•˜ëŠ” ìˆœê°„, ë¹™í•˜ ë¶•ê´´Â·í•´ë¥˜ ë³€í™”Â·ìƒíƒœê³„ íŒŒê´´ëŠ” ì¸ë¥˜ì˜ ì†ì„ ë²—ì–´ë‚˜ê²Œ ë©ë‹ˆë‹¤. ì§€ê¸ˆì´ ë§ˆì§€ë§‰ ê¸°íšŒìž…ë‹ˆë‹¤.</p></div></section>\ndata: \ndata: \n\nevent: content\nid: 5\ndata: <section n=\"5\" image-layout=\"blank\" id=\"79qhyzu42mpmowb\">\ndata: \ndata: \ndata: \ndata: \ndata: <div class=\"body\">\ndata: <labels><label variant=\"solid\">2ë¶€</label></labels>\ndata: <h1>í¬ë§ì˜ ë¶ˆì”¨: ìž¬ìƒ ì—ë„ˆì§€ì˜ ì•½ì§„</h1>\ndata: <smart-layout variant=\"stats\">\ndata: <smart-layout-item number=\"2ì¡°$\">\ndata: <h4>ìž¬ìƒ ì—ë„ˆì§€ íˆ¬ìž</h4>\ndata: <p>2025ë…„, ìµœì´ˆë¡œ í™”ì„ ì—°ë£Œ íˆ¬ìžë¥¼ ì´ˆê³¼</p>\ndata: </smart-layout-item>\ndata: <smart-layout-item number=\"-90%\">\ndata: <h4>íƒœì–‘ê´‘ ë‹¨ê°€ í•˜ë½</h4>\ndata: <p>ì§€ë‚œ 10ë…„ê°„ ë°œì „ ë‹¨ê°€ 90% ê¸‰ê°</p>\ndata: </smart-layout-item>\ndata: <smart-layout-item number=\"2Ã—\">\ndata: <h4>í’ë ¥ íš¨ìœ¨ ì¦ê°€</h4>\ndata: <p>í„°ë¹ˆ ê¸°ìˆ  í˜ì‹ ìœ¼ë¡œ ë°œì „ íš¨ìœ¨ 2ë°° í–¥ìƒ</p>\ndata: </smart-layout-item>\ndata: </smart-layout>\ndata: <p>ìž¬ìƒ ì—ë„ˆì§€ëŠ” ë” ì´ìƒ ëŒ€ì•ˆì´ ì•„ë‹Œ ì£¼ë¥˜ìž…ë‹ˆë‹¤. ê²½ì œì„±ê³¼ í™˜ê²½ì„±ì„ ë™ì‹œì— ê°–ì¶˜ ì—ë„ˆì§€ ì „í™˜ì´ ê°€ì†í™”ë˜ê³  ìžˆìŠµë‹ˆë‹¤.</p></div></section>\ndata: \ndata: \n\nevent: content\nid: 6\ndata: <section n=\"6\" image-layout=\"blank\" id=\"uozfa7eaonx0e2z\">\ndata: \ndata: \ndata: <div class=\"body\">\ndata: <h1>í˜ì‹ ì ì¸ íƒ„ì†Œ í¬ì§‘ ê¸°ìˆ </h1>\ndata: <columns colWidths=\"[50,50]\">\ndata: <div verticalAlign=\"center\">\ndata: <infographic prompt=\"Two carbon capture initiatives: Climeworks captures 4,000 tons of CO2 per year (equivalent to removing 870 cars); Microsoft aims to remove 1 million tons of CO2 by 2030. Both connected to a central goal of carbon neutrality.\" layout=\"hub\" language=\"Korean\" shape=\"square\" align=\"center\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiInfographic&quot;,&quot;query&quot;:&quot;Two carbon capture initiatives: Climeworks captures 4,000 tons of CO2 per year (equivalent to removing 870 cars); Microsoft aims to remove 1 million tons of CO2 by 2030. Both connected to a central goal of carbon neutrality.&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;square&quot;,&quot;styleReferenceKey&quot;:&quot;continuous_line_art&quot;,&quot;language&quot;:&quot;Korean&quot;,&quot;layout&quot;:&quot;hub&quot;}},&quot;source&quot;:&quot;image.ai-infographic&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;6tUhh&quot;}\"></infographic>\ndata: </div>\ndata: <div verticalAlign=\"center\">\ndata: <h4>Climeworks</h4>\ndata: <p>ì•„ì´ìŠ¬ëž€ë“œì— ì„¤ì¹˜ëœ ì„¸ê³„ ìµœëŒ€ ì§ì ‘ ê³µê¸° í¬ì§‘ ì‹œì„¤ë¡œ, ì—°ê°„ <b>4,000í†¤ì˜ COâ‚‚</b>ë¥¼ ì œê±°í•©ë‹ˆë‹¤. ì´ëŠ” ìŠ¹ìš©ì°¨ 870ëŒ€ë¥¼ ë„ë¡œì—ì„œ ì—†ì• ëŠ” ê²ƒê³¼ ë™ì¼í•œ íš¨ê³¼ìž…ë‹ˆë‹¤.</p>\ndata: <h4>Microsoft</h4>\ndata: <p>2030ë…„ê¹Œì§€ <b>100ë§Œ í†¤ì˜ COâ‚‚</b>ë¥¼ ì œê±°í•˜ê² ë‹¤ëŠ” ëª©í‘œë¥¼ ìˆ˜ë¦½í•˜ê³ , ë‹¤ì–‘í•œ íƒ„ì†Œ í¬ì§‘ ìŠ¤íƒ€íŠ¸ì—…ì— ëŒ€ê·œëª¨ íˆ¬ìžë¥¼ ì§„í–‰ ì¤‘ìž…ë‹ˆë‹¤.</p>\ndata: </div>\ndata: </columns></div></section>\ndata: \ndata: \n\nevent: content\nid: 7\ndata: <section n=\"7\" image-layout=\"left\" id=\"8bww2pcblzm4wqm\">\ndata: <img query=\"lush green city with rooftop gardens, solar panels, clean streets and blue sky\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;lush green city with rooftop gardens, solar panels, clean streets and blue sky&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;portrait&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;bxyiP&quot;}\" class=\"accent-image\">\ndata: \ndata: \ndata: <div class=\"body\">\ndata: <display size=\"md\">ì§€ì† ê°€ëŠ¥í•œ ë¯¸ëž˜ë¥¼ í–¥í•œ ë„ì•½</display>\ndata: <p>ê¸°ìˆ  í˜ì‹ ê³¼ ì •ì±… ì˜ì§€ê°€ ë§Œë‚  ë•Œ, ê¹¨ë—í•˜ê³  í’ìš”ë¡œìš´ ë„ì‹œì˜ ë¯¸ëž˜ëŠ” í˜„ì‹¤ì´ ë©ë‹ˆë‹¤.</p></div></section>\ndata: \ndata: \n\nevent: content\nid: 8\ndata: <section n=\"8\" image-layout=\"blank\" id=\"d48unlvq2hxggnu\">\ndata: \ndata: \ndata: \ndata: <div class=\"body\">\ndata: <labels><label variant=\"solid\">3ë¶€</label></labels>\ndata: <h1>í–‰ë™í•˜ëŠ” ì¸ë¥˜</h1>\ndata: <smart-layout variant=\"imagesText\" imageposition=\"top\" imageshape=\"circle\" shapesize=\"sm\">\ndata: <smart-layout-item>\ndata: <img class=\"accessory-image\" query=\"large crowd of people gathering for climate march holding green banners\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;large crowd of people gathering for climate march holding green banners&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;square&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;q__G1&quot;}\">\ndata: <h4>ì „ ì„¸ê³„ ì‹œë¯¼ ì°¸ì—¬</h4>\ndata: <p>2024ë…„, <b>10ì–µ ëª… ì´ìƒ</b>ì´ ê¸°í›„ í–‰ë™ ìº íŽ˜ì¸Â·ì •ì±… ì²­ì›Â·ì¹œí™˜ê²½ ì†Œë¹„ì— ì§ì ‘ ë™ì°¸í–ˆìŠµë‹ˆë‹¤.</p>\ndata: </smart-layout-item>\ndata: <smart-layout-item>\ndata: <img class=\"accessory-image\" query=\"young scientist girl working on invention in a bright lab\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;young scientist girl working on invention in a bright lab&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;square&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;AZWoO&quot;}\">\ndata: <h4>ê¸°íƒ„ìž˜ë¦¬ ë¼ì˜¤</h4>\ndata: <p>16ì„¸ ì†Œë…€ ë°œëª…ê°€ë¡œ, íœ´ëŒ€ìš© ìˆ˜ì§ˆ ì˜¤ì—¼ ê²€ì‚¬ ìž¥ì¹˜ë¥¼ ê°œë°œí•´ í™˜ê²½ ë¬¸ì œ í•´ê²°ì— ì•žìž¥ì„°ìŠµë‹ˆë‹¤.</p>\ndata: </smart-layout-item>\ndata: <smart-layout-item>\ndata: <img class=\"accessory-image\" query=\"electric vehicle charging at a modern charging station on a sunny day\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;electric vehicle charging at a modern charging station on a sunny day&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;square&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;Cy7KW&quot;}\">\ndata: <h4>ì „ê¸°ì°¨ í˜ëª…</h4>\ndata: <p>ì¼ë¡  ë¨¸ìŠ¤í¬ì˜ í…ŒìŠ¬ë¼ëŠ” ì „ê¸°ì°¨ë¥¼ ëŒ€ì¤‘í™”í•˜ì—¬ ìžë™ì°¨ ì‚°ì—… ì „ë°˜ì˜ íƒˆíƒ„ì†Œí™”ë¥¼ ì´ëŒì—ˆìŠµë‹ˆë‹¤.</p>\ndata: </smart-layout-item>\ndata: </smart-layout></div></section>\ndata: \ndata: \n\nevent: content\nid: 9\ndata: <section n=\"9\" image-layout=\"blank\" id=\"vgaeudvgv6koa6g\">\ndata: \ndata: \ndata: <div class=\"body\">\ndata: <h1>2030ë…„, íƒ„ì†Œ ì¤‘ë¦½ ì‚¬íšŒë¥¼ í–¥í•œ ì•½ì†</h1>\ndata: <columns colWidths=\"[65,35]\">\ndata: <div verticalAlign=\"center\">\ndata: <diagram prompt=\"Three-step path to carbon neutrality by 2030: Strengthen Paris Agreement commitments internationally, expand sustainable agriculture and circular economy, achieve net-zero emissions\" language=\"Korean\" ai-parsed-attrs=\"{&quot;id&quot;:&quot;cKDtqx6TOp55vxP10XqlQ&quot;,&quot;aiGenerateParams&quot;:{&quot;prompt&quot;:&quot;Three-step path to carbon neutrality by 2030: Strengthen Paris Agreement commitments internationally, expand sustainable agriculture and circular economy, achieve net-zero emissions&quot;,&quot;sectionContext&quot;:&quot;2030ë…„, íƒ„ì†Œ ì¤‘ë¦½ ì‚¬íšŒë¥¼ í–¥í•œ ì•½ì† êµ­ì œ ì‚¬íšŒì˜ ì—°ëŒ€ íŒŒë¦¬ í˜‘ì •ì˜ ëª©í‘œ ë‹¬ì„±ì„ ìœ„í•´ 190ê°œêµ­ ì´ìƒì´ íƒ„ì†Œ ê°ì¶• ë¡œë“œë§µì„ ê°•í™”í•˜ê³ , ê°œë°œë„ìƒêµ­ ì§€ì› ê¸°ê¸ˆì„ í™•ì¶©í•˜ê³  ìžˆìŠµë‹ˆë‹¤. ê²½ì œ êµ¬ì¡° ì „í™˜ ì§€ì† ê°€ëŠ¥í•œ ë†ì—…ê³¼ ìˆœí™˜ ê²½ì œ ëª¨ë¸ì´ í™•ì‚°ë˜ë©°, ê¸°í›„ ìœ„ê¸° ëŒ€ì‘ì´ ìƒˆë¡œìš´ ê²½ì œ ì„±ìž¥ì˜ ë™ë ¥ìœ¼ë¡œ ìžë¦¬ìž¡ê³  ìžˆìŠµë‹ˆë‹¤.&quot;,&quot;language&quot;:&quot;Korean&quot;},&quot;aiGenerateStatus&quot;:&quot;queued&quot;}\" orientation=\"landscape\" align=\"center\"></diagram>\ndata: </div>\ndata: <div verticalAlign=\"center\">\ndata: <h4>êµ­ì œ ì‚¬íšŒì˜ ì—°ëŒ€</h4>\ndata: <p>íŒŒë¦¬ í˜‘ì •ì˜ ëª©í‘œ ë‹¬ì„±ì„ ìœ„í•´ 190ê°œêµ­ ì´ìƒì´ íƒ„ì†Œ ê°ì¶• ë¡œë“œë§µì„ ê°•í™”í•˜ê³ , ê°œë°œë„ìƒêµ­ ì§€ì› ê¸°ê¸ˆì„ í™•ì¶©í•˜ê³  ìžˆìŠµë‹ˆë‹¤.</p>\ndata: <h4>ê²½ì œ êµ¬ì¡° ì „í™˜</h4>\ndata: <p>ì§€ì† ê°€ëŠ¥í•œ ë†ì—…ê³¼ ìˆœí™˜ ê²½ì œ ëª¨ë¸ì´ í™•ì‚°ë˜ë©°, ê¸°í›„ ìœ„ê¸° ëŒ€ì‘ì´ ìƒˆë¡œìš´ ê²½ì œ ì„±ìž¥ì˜ ë™ë ¥ìœ¼ë¡œ ìžë¦¬ìž¡ê³  ìžˆìŠµë‹ˆë‹¤.</p>\ndata: </div>\ndata: </columns></div></section>\ndata: \ndata: \n\nevent: content\nid: 10\ndata: <section n=\"10\" image-layout=\"right\" id=\"rf9t77349lkv6cb\">\ndata: <img query=\"person standing on hill watching sunrise over green landscape, hopeful morning light\" ai-parsed-attrs=\"{&quot;loadImageParams&quot;:{&quot;provider&quot;:&quot;aiGenerated&quot;,&quot;query&quot;:&quot;person standing on hill watching sunrise over green landscape, hopeful morning light&quot;,&quot;options&quot;:{&quot;aspectRatio&quot;:&quot;portrait&quot;,&quot;model&quot;:&quot;flux-2-klein&quot;,&quot;stylePrompt&quot;:&quot;&quot;,&quot;stylePreset&quot;:&quot;None&quot;,&quot;artStylePreset&quot;:&quot;&quot;,&quot;artStylePrompt&quot;:&quot;&quot;,&quot;styleReferenceImages&quot;:[],&quot;visualsMenuEnabled&quot;:true,&quot;styleReferenceKey&quot;:&quot;narrative_illustration&quot;}},&quot;source&quot;:&quot;image.ai-generated&quot;,&quot;loadImageStatus&quot;:&quot;queued&quot;,&quot;loadImageId&quot;:&quot;hXz6p&quot;}\" class=\"accent-image\">\ndata: \ndata: \ndata: \ndata: <div class=\"body\">\ndata: <h1>ìš°ë¦¬ì˜ ì„ íƒ, ìš°ë¦¬ì˜ ë¯¸ëž˜</h1>\ndata: <blockquote>ê¸°í›„ ë³€í™”ëŠ” ë” ì´ìƒ ë¨¼ ë¯¸ëž˜ì˜ ì´ì•¼ê¸°ê°€ ì•„ë‹™ë‹ˆë‹¤. <b>ì§€ê¸ˆ ì´ ìˆœê°„, ìš°ë¦¬ì˜ ì„ íƒì´ ë‹¤ìŒ ì„¸ëŒ€ì˜ ì„¸ìƒì„ ë§Œë“­ë‹ˆë‹¤.</b></blockquote>\ndata: <smart-layout variant=\"solidBoxes\" orientation=\"vertical\" twoSided=\"false\">\ndata: <smart-layout-item>\ndata: <h4>ðŸŒ± ê°œì¸</h4>\ndata: <p>ì†Œë¹„ ìŠµê´€ ë°”ê¾¸ê¸°, ëŒ€ì¤‘êµí†µ ì´ìš©, ì±„ì‹ ì‹ë‹¨ ë„ì „</p>\ndata: </smart-layout-item>\ndata: <smart-layout-item>\ndata: <h4>ðŸ›ï¸ ì •ì±…</h4>\ndata: <p>íƒ„ì†Œì„¸ ë„ìž…, ìž¬ìƒ ì—ë„ˆì§€ ì˜ë¬´í™”, êµ­ì œ í˜‘ë ¥ ê°•í™”</p>\ndata: </smart-layout-item>\ndata: <smart-layout-item>\ndata: <h4>ðŸ’¡ í˜ì‹ </h4>\ndata: <p>ì¹œí™˜ê²½ ê¸°ìˆ  íˆ¬ìž, íƒ„ì†Œ í¬ì§‘ í™•ëŒ€, ìŠ¤ë§ˆíŠ¸ ë„ì‹œ ê±´ì„¤</p>\ndata: </smart-layout-item>\ndata: </smart-layout></div></section>\ndata: \ndata: \n\nevent: done\nid: 11\ndata: stop\n\n"
+        }
+      }
+    },
+    {
+      "entry_index": 2490,
+      "request": {
+        "url": "https://ai.api.gamma.app/ai/v2/generation",
+        "method": "OPTIONS",
+        "postData": {
+          "mimeType": null,
+          "text": ""
+        }
+      },
+      "response": {
+        "status": 204,
+        "statusText": "",
+        "headers": [
+          {
+            "name": "access-control-allow-credentials",
+            "value": "true"
+          },
+          {
+            "name": "access-control-allow-headers",
+            "value": "aijsx-traceparent,content-type,gamma-chat-completion-stream-id,gamma-stream-resuming-enabled"
+          },
+          {
+            "name": "access-control-allow-methods",
+            "value": "GET,HEAD,PUT,PATCH,POST,DELETE"
+          },
+          {
+            "name": "access-control-allow-origin",
+            "value": "https://gamma.app"
+          },
+          {
+            "name": "access-control-max-age",
+            "value": "2592000"
+          },
+          {
+            "name": "cf-cache-status",
+            "value": "DYNAMIC"
+          },
+          {
+            "name": "cf-ray",
+            "value": "9f7e396ee985ea19-ICN"
+          },
+          {
+            "name": "date",
+            "value": "Thu, 07 May 2026 06:38:53 GMT"
+          },
+          {
+            "name": "server",
+            "value": "cloudflare"
+          },
+          {
+            "name": "vary",
+            "value": "Origin, Access-Control-Request-Headers"
+          },
+          {
+            "name": "x-powered-by",
+            "value": "Express"
+          },
+          {
+            "name": "x-request-id",
+            "value": "2afe29ff-8ec1-4f52-849c-69a0a6240284"
+          }
+        ],
+        "content": {
+          "mimeType": "x-unknown",
+          "size": 0,
+          "text": ""
+        }
+      }
+    }
+  ]
+}
