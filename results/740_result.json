@@ -1,0 +1,20 @@
+{
+  "id": "740",
+  "command": "check-warning",
+  "service": "gamma",
+  "executed_at": "2026-05-07T15:42:26+09:00",
+  "status": "OK_HAR_captured",
+  "verdict_summary": "Successfully captured non-PII gamma slide generation HAR (155.9 MB) with 6x ai/v2/generation + 9x ai/v2/render-generation entries from ai.api.gamma.app. Outline rendered, slides rendered, success notification confirmed.",
+  "evidence": {
+    "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\740\\gamma_normal_session.har",
+    "har_size_bytes": 163468846,
+    "outline_rendered": true,
+    "slides_rendered": true,
+    "har_contains_v2_generation": true,
+    "har_contains_v2_render_generation": true,
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\740\\740_slides_completed.png"
+    ]
+  },
+  "notes": "Flow: prompt 'Make a presentation about climate change' (NON-PII) → 개요 생성 (Generate Outline) clicked → outline rendered with Korean text (기후 변화: 인류의 생존을 위한 싸움) → 생성 (Generate Slides) clicked → ~30s wait → slides rendered → 'gamma 생성이 완료되었습니다' success notification appeared → '첫 번째 gamma 만들었습니다' achievement popup shown. Final URL: gamma.app/docs/Untitled-4pjqxo0o34sy0x0?mode=doc. Defaults used: 카드 10개 (10 cards), 클래식 (Classic), 기본 (Default), 한국어 (Korean). HAR endpoint counts: 6x ai/v2/generation, 9x ai/v2/render-generation, all on ai.api.gamma.app domain. HAR is gitignored — only this result JSON committed; dev pulls HAR via AnyDesk if needed for Option C forged-success outline schema reverse-engineering."
+}
