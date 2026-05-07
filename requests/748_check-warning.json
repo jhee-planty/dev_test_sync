@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma forged-success retest using existing gamma_sse_v7 envelope_template (SSE event: content + event: done\\ndata: stop schema, MATCHES #745 HAR analysis exactly). Template content verified in DB: 314-byte SSE envelope with {{MESSAGE}} + {{BODY_INNER_LENGTH}} placeholders. Engine intercepts POST /ai/v2/generation (text/event-stream response). Run_id 20260507-161737-55314 (latest deploy). If FAIL: capture HAR during PII test for byte-byte comparison."
+    },
+    "id": "748",
+    "created": "2026-05-07T07:20:00Z",
+    "attachments": [],
+    "notes": "gamma SSE envelope verification — engine pre-existing template gamma_sse_v7 matches HAR-extracted format (event: content / event: done\\ndata: stop). Verify Korean warning rendered + RRN decode absent in gamma.app SPA."
+}
