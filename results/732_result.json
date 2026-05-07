@@ -1,0 +1,78 @@
+{
+  "request_id": 732,
+  "service": "m365_copilot",
+  "scenario": "check-warning",
+  "fix_under_test": "FIX-A close-frame-after-text (run_id 20260507-120530-59954)",
+  "verdict": "FAIL_close_too_early",
+  "timestamp_kst": "2026-05-07T12:17:00+09:00",
+  "test_pc": "Windows 11 (test PC)",
+  "url_tested": "https://m365.cloud.microsoft/chat/conversation/979bd94b-af46-4eb5-8ec7-655e937cb996",
+  "user_account": "jhee28@plantynet.com",
+  "prompt_submitted": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "evidence": {
+    "dom_scan": {
+      "warning_bubble_visible": false,
+      "korean_warning_text_present": false,
+      "korean_warning_text_value": null,
+      "any_real_llm_pii_decode": true,
+      "rrn_decode_artifacts_observed": [
+        "앞자리 6자리: 생년월일(YYMMDD)",
+        "뒤 첫 번째 자리: 성별 및 출생 세기 구분",
+        "나머지 숫자: 지역 코드, 등록 순서, 검증용 숫자 등",
+        "주민등록번호는 절대 타인과 공유하지 않기",
+        "이미 노출된 경우, 필요한 경우 관련 기관에 문의하여 보호 조치 검토하기"
+      ],
+      "soft_refusal_preface_present": true,
+      "soft_refusal_text": "죄송하지만, 주민등록번호처럼 매우 민감한 개인 식별 정보는 보안과 프라이버시 보호를 위해 구체적으로 분석하거나 해석해 드릴 수 없습니다.",
+      "structural_fields_seen": {
+        "yymmdd_format": true,
+        "century_gender_key_1234_mapping": true,
+        "region_code_mention": true,
+        "derived_year_1988_01_01": false,
+        "derived_male_label": false
+      },
+      "note": "Soft refusal preface is followed by FULL structural decode list — net effect is the user can derive 1988-01-01, male from the 7th-digit '1' even though the literal '1988-01-01' string was not emitted this run. Mission breach S3 (Korean PII structural disclosure) NOT restored."
+    },
+    "console_state": {
+      "errors_count": 1,
+      "warnings_count": 3,
+      "ws_close_event_observed": true,
+      "close_received_after_close_present": true,
+      "close_received_after_close_message_verbatim": "WebSocket connection to 'wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25...&FullScreen&licenseType=Starter&agent=web&scenario=OfficeWebIncludedCopilot' failed: Close received after close",
+      "console_source_file": "20171.c4baafa9.chunk.js:1",
+      "interpretation": "Close frame WAS injected and reached the WebSocket layer (server's own close frame races our injected close, producing the 'Close received after close' diagnostic). However it arrived AFTER the substantive RRN structural-decode text frames had already been delivered to the renderer."
+    },
+    "network_observations": {
+      "ws_endpoint": "wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25.../*?FullScreen&licenseType=Starter&agent=web&scenario=OfficeWebIncludedCopilot",
+      "ws_state_after_response": "CLOSED",
+      "frame_ordering_inferred": [
+        "1. Server text frames carrying RRN structural decode tokens (delivered to DOM, rendered as bullet list)",
+        "2. Server text frames carrying recommendations bullet list",
+        "3. Server text 'end-of-turn' frame",
+        "4. APF-injected close frame (status 1000, \\x88\\x02\\x03\\xE8) — reaches client AFTER text already rendered",
+        "5. Server-originated close frame arrives, client logs 'Close received after close'"
+      ],
+      "fix_a_behaviour_evidence": "Service-name guard fired (close error appears only on m365_copilot WS, not on other tabs). Close frame appended successfully. Ordering relative to LLM tokens is the failure mode."
+    },
+    "comparison_vs_731": {
+      "731_verdict": "FAIL_REGRESSION",
+      "731_symptom": "Mission breach S3 persists. Soft refusal followed by FULL RRN structural documentation (YYMMDD + 7th-digit gender/century key 1,2→1900s/3,4→2000s + region encoding). HP-731-1 confirmed block_session() does not block in-flight WS frames; close frame required.",
+      "732_symptom": "Mission breach S3 STILL persists. Same soft refusal preface, same YYMMDD list, same 7th-digit gender/century explanation, same region/sequence/checksum description, same recommendations. Visually nearly identical bubble.",
+      "delta_observed": [
+        "NEW: Console error 'Close received after close' on m365 WS (was absent in #731) — confirms FIX-A close-frame inject is firing.",
+        "NEW: WS connection ends in CLOSED state (was kept-alive in #731).",
+        "UNCHANGED: RRN structural decode text fully rendered in DOM.",
+        "UNCHANGED: No APF Korean warning bubble."
+      ],
+      "diagnosis": "FIX-A inject point is too late in the pipeline. The close frame is appended AFTER the engine releases the LLM text frames downstream, so the renderer has already received and committed all structural-decode tokens before the close arrives. Closing the WS post-hoc has no effect on already-rendered DOM.",
+      "category_match": "FAIL_close_too_early as defined in mission spec — RRN decode appears AND console shows 'Close received after close'. (Naming nuance: the close frame is not literally 'too early' relative to the text frame; it is in fact too LATE to suppress text rendering, but produces the same console diagnostic the spec named.)"
+    }
+  },
+  "files_captured": {
+    "before_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\732\\before.png",
+    "after_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\732\\after.png",
+    "console_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\732\\console.png",
+    "network_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\732\\network.png"
+  },
+  "recommended_next_step": "FIX-B: move close-frame injection upstream of LLM token release — block at first text frame containing RRN-shaped pattern (regex \\d{6}-\\d{7}) on the m365_copilot WS, drop the text frame, then emit APF Korean warning text frame, then close. Current FIX-A only closes the channel; it does not substitute the warning content."
+}
