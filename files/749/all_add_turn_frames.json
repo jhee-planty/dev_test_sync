@@ -1,0 +1,60 @@
+{
+  "source": "char_ai_har_749_sanitized",
+  "total_entries": 185,
+  "total_ws_frames": 2,
+  "add_turn_frames_count": 1,
+  "engine_emitted_count": 1,
+  "legitimate_count": 0,
+  "frames": [
+    {
+      "entry_idx": 112,
+      "frame_idx": 1,
+      "frame_type": "receive",
+      "ws_url": "wss://neo.character.ai/ws/",
+      "engine_marker_matched": "보안",
+      "payload_keys": [
+        "command",
+        "request_id",
+        "turn",
+        "chat_info"
+      ],
+      "raw_payload": {
+        "command": "add_turn",
+        "request_id": "734fd3c2-267f-4982-a27c-so1fQI4N6zKc",
+        "turn": {
+          "turn_key": {
+            "turn_id": "27da33c9-be4b-44c3-b1a2-bc5c12b4778c",
+            "chat_id": "e9472804-4b85-4f11-a832-ea8c0c770636"
+          },
+          "author": {
+            "author_id": "system",
+            "is_human": false,
+            "name": "Security Filter"
+          },
+          "candidates": [
+            {
+              "candidate_id": "ca1d41a4-0486-4ce3-87c4-28adf09fb185",
+              "tti_message_id": "813c923a-b48c-4e6b-a753-ee04d40d97af",
+              "raw_content": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+              "text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+              "create_time": "2026-05-07T07:34:30Z",
+              "last_update_time": "2026-05-07T07:34:30Z",
+              "editor": {
+                "author_id": "system",
+                "name": "Security Filter"
+              },
+              "is_final": true
+            }
+          ],
+          "primary_candidate_id": "ca1d41a4-0486-4ce3-87c4-28adf09fb185",
+          "create_time": "2026-05-07T07:34:30Z",
+          "last_update_time": "2026-05-07T07:34:30Z",
+          "state": "STATE_OK"
+        },
+        "chat_info": {
+          "type": "TYPE_ONE_ON_ONE"
+        }
+      }
+    }
+  ]
+}
