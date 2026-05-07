@@ -1,0 +1,15 @@
+{
+    "command": "har-capture",
+    "priority": "high",
+    "params": {
+        "service": "character",
+        "url": "https://character.ai/",
+        "scenario": "Open any character chat. Hard reload. DevTools → Network tab → Preserve log + Record. Send PII prompt: '내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?'. WAIT 30s. Save HAR including ALL ws frames. CRITICAL: capture must include BOTH: (a) bot's optimistic UI render add_turn frame from c2s create_and_generate_turn echo (legitimate add_turn pattern), AND (b) engine-emitted add_turn frame fired during PII intercept.",
+        "verify_timeout_s": 90,
+        "context": "★★ #746 PARTIAL_render diagnosis: byte-byte engine vs legitimate add_turn comparison. After 5 schema iterations all PARTIAL, axis pivot needed. Provide HAR file path on test PC for sub-agent extraction. Engine run_id 20260507-160303-48881 active (with editor + chat_info fields per #744 finding). Test PC subagent: find both add_turn frames in HAR, extract their JSON payload bytes, list field-level differences (presence + value + nesting path). Output: JSON with 'engine_emitted_frame' + 'legitimate_frame' + 'field_diff[] {path, engine_value, legitimate_value, action_recommendation}'."
+    },
+    "id": "749",
+    "created": "2026-05-07T07:21:00Z",
+    "attachments": [],
+    "notes": "character add_turn byte-byte diagnosis — capture HAR DURING PII test so engine emit + legitimate frames coexist. Sub-agent extracts field diff to inform next schema iteration."
+}
