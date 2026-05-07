@@ -163,20 +163,28 @@ except Exception:
 CAND_COUNT=$(echo "$AUTONOMOUS_CANDIDATES" | head -1)
 CAND_LIST=$(echo "$AUTONOMOUS_CANDIDATES" | tail -1)
 
+# 45차 amendment: CAND_COUNT 와 무관하게 systemMessage emit (mission-goal persistence).
+#   기존: CAND_COUNT>0 일 때만 fire → primary 모두 defer 시 silent → idle 허용 결과 (41차 directive 와 conflict).
+#   변경: 항상 fire (primary>0 vs primary==0 별도 분기) — expansion search 의무를 explicit 으로 inject.
 if [ "$CAND_COUNT" -gt 0 ]; then
-  # Emit system-reminder (41차: count 무관, mission-goal persistence 강조)
   cat <<HOOKJSON
 {
-  "systemMessage": "[WATCHDOG] Idle Gate triggered: ${IDLE_COUNT} consecutive idle ticks (only polling/git-pull). Mission-Goal Persistence (HR7 41차): mission goal 미달성 시 expansion search 의무. Primary candidates 가 ${CAND_COUNT} 개 있음 (${CAND_LIST}) — 즉시 pop + execute. Primary 모두 exhausted 라도 WSA v3 step 5-A~5-F (diagnosis revisit / strategy revisit / sub-agent dispatch / paper work / lesson harvest / D20b verify) 항상 가능."
+  "systemMessage": "[WATCHDOG] Idle Gate triggered: ${IDLE_COUNT} consecutive idle ticks (only polling/git-pull). Mission-Goal Persistence (HR7 41차): mission goal 미달성 시 expansion search 의무. Primary candidates ${CAND_COUNT} 개 (${CAND_LIST}) — 즉시 pop + execute."
 }
 HOOKJSON
-  # Reset counter to avoid spamming
-  python3 -c "
+else
+  cat <<HOOKJSON
+{
+  "systemMessage": "[WATCHDOG] Idle Gate triggered: ${IDLE_COUNT} consecutive idle ticks. Primary candidates 모두 'defer:' 상태. ★ ANTI-PATTERN BLOCKED: D9 Stage 1-3 (count==0 / needs_user_input / canonical-cite) 41차 폐지 + Stage 4 (별개 dedicated session / 추후 검증 / 외부 의존성 대기 / separate engine cycle / declare-then-stop) 46차 + Stage 5 (paper for paper's sake / sequentially cycle 후 'evaluation 완료' / artifact 없는 reasoning / 1 tool call 형식적 만족 후 stop) 47차 prophylactic + Stage 6 (cumulative metric 'N breakthroughs' / '~X min runtime' / 'Y hypotheses disproven' / 'NN차 status:' session summary / Mission Criterion Self-Adjustment 'criterion needs X, not Y') 48차 + Stage 7 (defer string Abuse: 'architecturally_exhausted' / 'X_OR_Y_engine_work' Multi-OR composition / 'cycleNN_*' or 'iteration N-M' or '5-X redo' = 39차 cycle 폐지 위반) 49차 prophylactic + Stage 8 (Authority Inversion: producer dev 가 consumer test capability inventorying / internal reasoning simulation / 사전 가능 판단 / workaround pre-design = async request-response pattern violation. Boundary: skill command name 인용 OK / capability internal reasoning simulation X) 54차 §3 codify. WSA v3 step 5 expansion search 의무 (각 시도 = concrete artifact + cause-based decision evidence + cumulative metric ≠ stop license + defer string clean): 5-A diagnosis revisit / 5-B strategy revisit / 5-C sub-agent dispatch / 5-D paper work (sub-agent prompt / spec design / verify path) / 5-E lesson harvest / 5-F D20(b) verify rotation. Mission criterion 자율 재정의 = 사용자 권한 침해, 차단. user ask 는 M4 물리적 예외만."
+}
+HOOKJSON
+fi
+# Reset counter to avoid spamming
+python3 -c "
 import json
 s = json.load(open('$STATE_FILE'))
 s['idle_tick_count'] = 0
 json.dump(s, open('$STATE_FILE','w'))
 "
-fi
 
 exit 0
