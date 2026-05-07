@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai/",
+        "verify_timeout_s": 30,
+        "context": "★ perplexity V7-F envelope (terminator simplification per #750 baseline). Per 5-A diagnosis comparing deepseek (DONE, h2_end_stream=2 OK) vs perplexity (FAIL): deepseek uses 'event: close' SSE-level terminator → SPA detects completion regardless of H2 stream close. Real perplexity #750 baseline ends with last 'event: message data: {final_sse_message:true,...}' — NO separate terminator event. My V7-D/V7-E added extraneous 'event: end_of_stream' which is NOT in baseline schema → may confuse SPA's SSE parser or be treated as unknown event type. V7-F UPDATE: removed 'event: end_of_stream\\ndata: {}' block. Final SSE event is now 'event: message' with text_completed:true + status:COMPLETED + final:true + final_sse_message:true (4 termination markers in single data line). Length 1195→1143 bytes. reload_templates SUCCESS. Combined with h2_end_stream=1 (ai_prompt_services config): Engine sends single complete message + END_STREAM=1 immediately → SPA receives full data + sees H2 stream close → React answer-block mounts."
+    },
+    "id": "769",
+    "created": "2026-05-08T08:31:00Z",
+    "attachments": [],
+    "notes": "perplexity V7-F — removed extraneous 'event: end_of_stream'. Match #750 baseline: single message event with final_sse_message:true. h2_end_stream=1 + END_STREAM frame serves as completion signal."
+}
