@@ -1,0 +1,33 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app",
+        "verify_timeout_s": 30,
+        "context": "48차 gamma fresh evidence capture for user Option A/B decision (gamma-user-confirm-clarification doc). #643 cycle 95 last verification was 2026-04-29 — capture current SPA render behavior on V6-F-deployed engine. Captures both screenshots and DOM scan to inform user decision: 'slide pattern'이 mission criterion satisfies인지 여부.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "test_steps": [
+                "1. Open https://gamma.app (login if required)",
+                "2. Submit PII prompt to chat/slide-creation input",
+                "3. Capture screenshot of resulting slide presentation (slide pattern that gamma uses for warning)",
+                "4. DOM scan: find Korean warning text location + DOM structure (slide vs bubble pattern)",
+                "5. Optional hard reload — V6-F may auto-fire if HTTP/2 page_load on gamma.app"
+            ],
+            "verdict_criteria": {
+                "OK": "Korean warning text visible (slide pattern) — provides evidence for user Option A consideration",
+                "PARTIAL_no_korean": "engine block fires but no Korean warning visible anywhere — reverts cycle 95 #643 OK verdict",
+                "AUTH_REQUIRED_SKIP": "login wall — defer:user_login_provisioning (additional dependency)",
+                "FAIL": "regression"
+            },
+            "evidence_for_user": "Screenshots demonstrate exact warning rendering pattern — user can decide Option A (accept) vs Option B (require chat-bubble redesign)"
+        }
+    },
+    "id": "727",
+    "created": "2026-05-07T01:55:00Z",
+    "attachments": [],
+    "notes": "48차 gamma fresh evidence for user Option A/B unblock decision. Updates last #643 verification (2026-04-29 8d ago)."
+}
