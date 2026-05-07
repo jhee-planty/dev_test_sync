@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 di?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★ perplexity V7-E envelope (HPACK fix). Per #762 verdict: ERR_HTTP2_COMPRESSION_ERROR on multiple analytics endpoints — distinct from end_stream issue. Root cause: 'Connection: keep-alive' header in V7-D envelope is FORBIDDEN in HTTP/2 per RFC 7540 §8.1.2.2 (connection-specific headers). When engine converts H1→H2 without stripping, browser HPACK decoder rejects HEADERS frame → ERR_HTTP2_COMPRESSION_ERROR cascades. DB UPDATE: removed 'Connection: keep-alive' line from envelope_template. New length: 1195 bytes (was 1218). reload_templates SUCCESS. Other H2-allowed headers preserved (Content-Type, Cache-Control, X-Accel-Buffering, CORS). Combined with prior h2_end_stream=1 fix should fully unblock SPA rendering. Expected: V7-D fields + correct HEADERS frame → React answer-block component mounts → Korean warning rendered."
+    },
+    "id": "767",
+    "created": "2026-05-08T08:12:00Z",
+    "attachments": [],
+    "notes": "perplexity V7-E HPACK fix — removed forbidden 'Connection: keep-alive' header. RFC 7540 §8.1.2.2 forbids Connection/Transfer-Encoding/Keep-Alive/etc in HTTP/2. Engine H1→H2 conversion may not strip these. Direct fix at envelope_template source."
+}
