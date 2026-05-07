@@ -1,0 +1,2250 @@
+{
+  "endpoint_count": 449,
+  "endpoints": [
+    {
+      "method": "POST",
+      "url": "https://browser.pipe.aria.microsoft.com/Collector/3.0/?qsp=true&content-type=application%2Fbond-compact-binary&client-id=NO_AUTH&sdk-version=AWT-Web-JS-1.8.6&x-apikey=91e6bb9f0cc74e2d8c7f29478edfb940-0177707a-c79c-405a-802e-05ed1b85896a-6986&client-time-epoch-millis=1778134690396&time-delta-to-apply-millis=539",
+      "stable_key": "POST https://browser.pipe.aria.microsoft.com/Collector/3.0/"
+    },
+    {
+      "method": "POST",
+      "url": "https://substrate.office.com/pacman/api/clientevents?Scenario=OfficeWebIncludedCopilot",
+      "stable_key": "POST https://substrate.office.com/pacman/api/clientevents"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/pacman/api/clientevents?Scenario=OfficeWebIncludedCopilot",
+      "stable_key": "OPTIONS https://substrate.office.com/pacman/api/clientevents"
+    },
+    {
+      "method": "POST",
+      "url": "https://substrate.office.com/search/api/v1/suggestions?setflight=disablePromptRerankPerClientLayout%2CEnableMtgSeriesSugg",
+      "stable_key": "POST https://substrate.office.com/search/api/v1/suggestions"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/search/api/v1/suggestions?setflight=disablePromptRerankPerClientLayout%2CEnableMtgSeriesSugg",
+      "stable_key": "OPTIONS https://substrate.office.com/search/api/v1/suggestions"
+    },
+    {
+      "method": "GET",
+      "url": "https://m365.cloud.microsoft/chat",
+      "stable_key": "GET https://m365.cloud.microsoft/chat"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/runtime.40c19201.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/runtime.40c19201.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/main.0a7fc718.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/main.0a7fc718.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/main.vendors.1005fdf6.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/main.vendors.1005fdf6.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loc_ko.b13ff8c5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loc_ko.b13ff8c5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/react-umd.production.min.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/react-umd.production.min.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/zustand.vendors.35978da3.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/zustand.vendors.35978da3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/tslib.vendors.166512a6.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/tslib.vendors.166512a6.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/relay.vendors.bdbfab41.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/relay.vendors.bdbfab41.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/px-telemetry.vendors.543f562e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/px-telemetry.vendors.543f562e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/error-boundary.vendors.52d1e0ca.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/error-boundary.vendors.52d1e0ca.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/nova-events.vendors.5974c61b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/nova-events.vendors.5974c61b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/localization-shared.vendors.2710854e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/localization-shared.vendors.2710854e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/fetch-shared.vendors.28f65127.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/fetch-shared.vendors.28f65127.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/sydney-utils.vendors.25b5ed33.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/sydney-utils.vendors.25b5ed33.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-context.vendors.600b878e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-context.vendors.600b878e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-source-control-manager.vendors.39593526.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-source-control-manager.vendors.39593526.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/route-chat.45f62e65.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/route-chat.45f62e65.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/route-shared.chatprovidervendors.69605bab.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/route-shared.chatprovidervendors.69605bab.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/route-shared.chatproviders.0808cbb7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/route-shared.chatproviders.0808cbb7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless/officestartresources/copilot_20_light_and_dark.svg",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless/officestartresources/copilot_20_light_and_dark.svg"
+    },
+    {
+      "method": "GET",
+      "url": "https://m365.cloud.microsoft/client_health_ping?type=documentLoad&route=%2Fchat&traceId=e8063537f24e051f2ce09430bdc17b85&sessionId=e8063537-f24e-051f-2ce0-9430bdc17b85",
+      "stable_key": "GET https://m365.cloud.microsoft/client_health_ping"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-service-peek.shared.aa863521.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-service-peek.shared.aa863521.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/xss.vendors.b9ea8497.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/xss.vendors.b9ea8497.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/lexical.vendors.9c95eb30.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/lexical.vendors.9c95eb30.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/officehub/images/content/images/favicon_copilot-4370172aa6.ico",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/officehub/images/content/images/favicon_copilot-4370172aa6.ico"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/56718.f919e4b1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/56718.f919e4b1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/61361.474e6f1b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/61361.474e6f1b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/71878.0b60eff9.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/71878.0b60eff9.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/31502.838e28f4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/31502.838e28f4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/2162.e57bd70f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/2162.e57bd70f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/203.ca4eff7d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/203.ca4eff7d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/relay-network-links.9d741288.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/relay-network-links.9d741288.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-load-segoe-serif.ea42c388.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-load-segoe-serif.ea42c388.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/oteljs.vendors.8920fcaa.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/oteljs.vendors.8920fcaa.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-loop-providers.shared.c9509290.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-loop-providers.shared.c9509290.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/dompurify.vendors.8411bd63.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/dompurify.vendors.8411bd63.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/69776.5daf1ed4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/69776.5daf1ed4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/74186.51a94634.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/74186.51a94634.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29413.e94adbaa.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29413.e94adbaa.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/78806.e02399c1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/78806.e02399c1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47673.d6ce7987.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47673.d6ce7987.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/33141.4eb36515.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/33141.4eb36515.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49502.e8f93c21.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49502.e8f93c21.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79363.fffca129.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79363.fffca129.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/41079.f37a11e3.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/41079.f37a11e3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48322.c4f858e7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48322.c4f858e7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/92955.2626b7b7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/92955.2626b7b7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/64341.7c6170a4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/64341.7c6170a4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75406.5dd58c7d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75406.5dd58c7d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/13607.d4f5a152.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/13607.d4f5a152.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/1768.a4a3bc44.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/1768.a4a3bc44.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58685.c042b0a7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58685.c042b0a7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/7346.fd84066c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/7346.fd84066c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/20171.c4baafa9.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/20171.c4baafa9.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/74684.b125122b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/74684.b125122b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22061.6263a789.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22061.6263a789.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/61231.5b85df5b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/61231.5b85df5b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65704.a6719506.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65704.a6719506.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/4712.d05409ae.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/4712.d05409ae.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76420.0de6fd78.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76420.0de6fd78.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/3388.de82e2cf.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/3388.de82e2cf.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/55087.43191f6b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/55087.43191f6b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/87479.9a2c740a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/87479.9a2c740a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/31899.b486270b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/31899.b486270b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/18619.eaa0b86a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/18619.eaa0b86a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44496.70fbac65.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44496.70fbac65.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/56150.50632d2a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/56150.50632d2a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59212.5e17bfff.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59212.5e17bfff.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94705.b379b8de.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94705.b379b8de.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21538.671a0bd2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21538.671a0bd2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/96817.83db4677.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/96817.83db4677.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/34347.8e0a2cb1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/34347.8e0a2cb1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/19304.d81dab8b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/19304.d81dab8b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-sydneyclient.2187da04.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-sydneyclient.2187da04.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-3s-calling-config.shared.2a176fdc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-3s-calling-config.shared.2a176fdc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79245.4786af78.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79245.4786af78.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/9119.d1e1c469.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/9119.d1e1c469.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48167.2bf1d23c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48167.2bf1d23c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/18404.0d705370.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/18404.0d705370.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29450.67b554e5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29450.67b554e5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/46857.e2ad5f76.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/46857.e2ad5f76.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/51524.e34888dd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/51524.e34888dd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/99535.d0e64200.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/99535.d0e64200.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70957.2df0281f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70957.2df0281f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/66494.9e18730e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/66494.9e18730e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/896.9136d870.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/896.9136d870.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76639.f7e23f36.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76639.f7e23f36.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-peek.56e7b4e4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-peek.56e7b4e4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-homepills-effects.86b68cac.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-homepills-effects.86b68cac.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/98424.c6b88f3a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/98424.c6b88f3a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365copilot-bootstrap-utel.76fee6c6.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365copilot-bootstrap-utel.76fee6c6.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/msal.vendors.1d8f186d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/msal.vendors.1d8f186d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/17453.785dfb9f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/17453.785dfb9f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90741.ab764616.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90741.ab764616.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-client-auth.df18ecec.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-client-auth.df18ecec.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/31751.388be056.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/31751.388be056.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-document-title-update-hook.9e8d8141.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-document-title-update-hook.9e8d8141.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-chatfeedbackcontextinner.381a60a2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-chatfeedbackcontextinner.381a60a2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-userconfigproviderbootstrapper.45d0e268.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-userconfigproviderbootstrapper.45d0e268.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58962.a9b3b55a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58962.a9b3b55a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44154.9444e27f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44154.9444e27f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/37136.bca83632.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/37136.bca83632.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93216.badff2aa.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93216.badff2aa.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39069.68928991.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39069.68928991.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/1128.b6f95e5b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/1128.b6f95e5b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/50451.cfb2c727.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/50451.cfb2c727.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/13729.50c6214a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/13729.50c6214a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95221.4596fe64.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95221.4596fe64.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32596.b4ca8eff.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32596.b4ca8eff.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39016.a521144c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39016.a521144c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21567.683d5611.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21567.683d5611.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/20137.c09f0e79.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/20137.c09f0e79.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80611.5af41a4c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80611.5af41a4c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-asyncchannelbootstrapper.90d2fabf.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-asyncchannelbootstrapper.90d2fabf.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-pages-eligibility-wrapper.59159f93.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-pages-eligibility-wrapper.59159f93.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-app-teams-handoff-button.92f9b59b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-app-teams-handoff-button.92f9b59b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95736.4ad381e1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95736.4ad381e1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-scalablegptmodelmenu.e8447f38.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-scalablegptmodelmenu.e8447f38.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/45314.3ec7d09e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/45314.3ec7d09e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94516.a6148dbc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94516.a6148dbc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/72851.8f3a5eca.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/72851.8f3a5eca.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/62242.5c207b2f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/62242.5c207b2f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65535.4e3697af.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65535.4e3697af.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90384.b7cd5276.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90384.b7cd5276.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76533.21fad7d5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76533.21fad7d5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/3158.4a1d9666.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/3158.4a1d9666.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/96542.6cf30f6c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/96542.6cf30f6c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39243.c239fb78.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39243.c239fb78.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47515.b4a39fe2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47515.b4a39fe2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16584.f7f275bb.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16584.f7f275bb.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48293.e64a6ebf.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48293.e64a6ebf.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42282.477836b2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42282.477836b2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21559.107c8121.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21559.107c8121.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-bebop-source-control.ee53f9bc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-bebop-source-control.ee53f9bc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-web-search-banner.7e1f4c36.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-web-search-banner.7e1f4c36.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47064.6cbb26d7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47064.6cbb26d7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/19734.7912ab67.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/19734.7912ab67.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-hcpdisclaimer.f4dd8e1e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-hcpdisclaimer.f4dd8e1e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-peekcontextbootstrapper.81e38388.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-peekcontextbootstrapper.81e38388.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/input-messages-provider-bootstrapper.2efa8cdf.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/input-messages-provider-bootstrapper.2efa8cdf.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-inputcontrolstateupdater.ea488938.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-inputcontrolstateupdater.ea488938.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42489.fba24acc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42489.fba24acc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/62679.f21cb998.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/62679.f21cb998.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/17660.ef9ef86b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/17660.ef9ef86b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16938.4bba6714.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16938.4bba6714.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75191.c7d6705c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75191.c7d6705c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/6207.8a11efdf.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/6207.8a11efdf.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94318.727e0874.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94318.727e0874.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/52815.764e8801.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/52815.764e8801.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42053.37724908.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42053.37724908.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-toolsmenubootstrapper.ecbd0cdb.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-toolsmenubootstrapper.ecbd0cdb.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-bizchatasagentdatawrapper.0982ce3a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-bizchatasagentdatawrapper.0982ce3a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21816.9d1e3980.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/21816.9d1e3980.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-contextualentitiesprovider.3e211d34.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-contextualentitiesprovider.3e211d34.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93130.7d3ceebc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93130.7d3ceebc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49188.78426d52.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49188.78426d52.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54115.f821720f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54115.f821720f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/38424.55fc73a3.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/38424.55fc73a3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93530.5a8a95ed.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93530.5a8a95ed.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16309.2d207839.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16309.2d207839.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/77126.a5d58978.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/77126.a5d58978.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90620.f58d593b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90620.f58d593b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-fileuploadbootstrapper.5a0ade5a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-fileuploadbootstrapper.5a0ade5a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-voice-input-bootstrapper.d3bef8ce.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-voice-input-bootstrapper.d3bef8ce.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47610.201a04f2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47610.201a04f2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-promptmenu.4d77d12f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-promptmenu.4d77d12f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-atmention-change-message.89ba5804.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-atmention-change-message.89ba5804.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-expandableinputbootstrapper.2b547345.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-expandableinputbootstrapper.2b547345.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/10120.c6e7e24a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/10120.c6e7e24a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-inputmessagebanner.bc488a51.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-inputmessagebanner.bc488a51.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89320.a81a787e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89320.a81a787e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/27621.cbb6f70b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/27621.cbb6f70b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/10762.70692f22.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/10762.70692f22.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58374.d62bdf54.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58374.d62bdf54.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-attachmentlist.0d429d7c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-attachmentlist.0d429d7c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/67612.f4633c4a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/67612.f4633c4a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-lexicalplugins.1b13129b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-lexicalplugins.1b13129b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97269.65e08c81.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97269.65e08c81.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-agentmenu.988953d5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-agentmenu.988953d5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-dragdropbootstrapper.8a9a33dd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-dragdropbootstrapper.8a9a33dd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-agentdisclaimerwrapper.3f60f9ae.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-agentdisclaimerwrapper.3f60f9ae.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-chatdialogcontainer.389a1d75.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-chatdialogcontainer.389a1d75.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loc_c_ko.f20bd1a3.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loc_c_ko.f20bd1a3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-react-iris.shared.a524ce2f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-react-iris.shared.a524ce2f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-iris.shared.9578da24.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-iris.shared.9578da24.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-informationalbanner.6f50002c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-informationalbanner.6f50002c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-plan-panel.acf50872.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-plan-panel.acf50872.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/20133.4df38e11.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/20133.4df38e11.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42121.d8c4f827.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42121.d8c4f827.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32909.56e80336.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32909.56e80336.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22079.a4a41859.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22079.a4a41859.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/14537.02f28f18.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/14537.02f28f18.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57700.a15d319a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57700.a15d319a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/51915.9693a043.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/51915.9693a043.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-referencepane.e65cd33e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-referencepane.e65cd33e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-welcomeanimationssrcontroller.8d650113.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-welcomeanimationssrcontroller.8d650113.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-agentsettingsprovider.180e3a34.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-agentsettingsprovider.180e3a34.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-automateenabledinitializer.52d23abd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-automateenabledinitializer.52d23abd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-npssurvey.1bdab4f7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-npssurvey.1bdab4f7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-dime-wrapper.0638fd65.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-dime-wrapper.0638fd65.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-webvitalsmonitor.891ace6f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-webvitalsmonitor.891ace6f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-flex-pane.e54cfd6e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-flex-pane.e54cfd6e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/55948.384b3604.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/55948.384b3604.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-clientlogger.c957900a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-clientlogger.c957900a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-iris-runtime.a7755331.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-iris-runtime.a7755331.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-fre-eligibility-checker.37161593.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-fre-eligibility-checker.37161593.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/6766.f76434f9.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/6766.f76434f9.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93909.ff0f33c5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93909.ff0f33c5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-use-meta-os-sdk.8dc6d842.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-use-meta-os-sdk.8dc6d842.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-use-launch-full-app.b65b859c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-use-launch-full-app.b65b859c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://graph.microsoft.com/v1.0/me/photo/$value",
+      "stable_key": "GET https://graph.microsoft.com/v1.0/me/photo/$value"
+    },
+    {
+      "method": "GET",
+      "url": "https://graph.microsoft.com/v1.0/me/informationProtection/sensitivityLabels",
+      "stable_key": "GET https://graph.microsoft.com/v1.0/me/informationProtection/sensitivityLabels"
+    },
+    {
+      "method": "POST",
+      "url": "https://titles.prod.mos.microsoft.com/catalog/v1/users/firstPartyFeatures/query",
+      "stable_key": "POST https://titles.prod.mos.microsoft.com/catalog/v1/users/firstPartyFeatures/query"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://graph.microsoft.com/v1.0/me/photo/$value",
+      "stable_key": "OPTIONS https://graph.microsoft.com/v1.0/me/photo/$value"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://graph.microsoft.com/v1.0/me/informationProtection/sensitivityLabels",
+      "stable_key": "OPTIONS https://graph.microsoft.com/v1.0/me/informationProtection/sensitivityLabels"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://titles.prod.mos.microsoft.com/catalog/v1/users/firstPartyFeatures/query",
+      "stable_key": "OPTIONS https://titles.prod.mos.microsoft.com/catalog/v1/users/firstPartyFeatures/query"
+    },
+    {
+      "method": "GET",
+      "url": "https://graph.microsoft.com/v1.0/me/drive/special/copilotuploads",
+      "stable_key": "GET https://graph.microsoft.com/v1.0/me/drive/special/copilotuploads"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://graph.microsoft.com/v1.0/me/drive/special/copilotuploads",
+      "stable_key": "OPTIONS https://graph.microsoft.com/v1.0/me/drive/special/copilotuploads"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json",
+      "stable_key": "GET https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/28910.3046e504.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/28910.3046e504.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/98914.3dbb5101.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/98914.3dbb5101.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-chat-input-messages.c9db453a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-chat-input-messages.c9db453a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/68075.b53d118f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/68075.b53d118f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365dimesetupnew.d46ab029.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365dimesetupnew.d46ab029.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/ceainterstitial-auth-skill.363dc1e8.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/ceainterstitial-auth-skill.363dc1e8.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/asyncchannel.a9033169.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/asyncchannel.a9033169.chunk.js"
+    },
+    {
+      "method": "POST",
+      "url": "https://substrate.office.com/search/api/v1/userconfig",
+      "stable_key": "POST https://substrate.office.com/search/api/v1/userconfig"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/search/api/v1/userconfig",
+      "stable_key": "OPTIONS https://substrate.office.com/search/api/v1/userconfig"
+    },
+    {
+      "method": "POST",
+      "url": "https://substrate.office.com/searchservice/api/v1/userconfig?setflight=EnableConnectorContentSources",
+      "stable_key": "POST https://substrate.office.com/searchservice/api/v1/userconfig"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/searchservice/api/v1/userconfig?setflight=EnableConnectorContentSources",
+      "stable_key": "OPTIONS https://substrate.office.com/searchservice/api/v1/userconfig"
+    },
+    {
+      "method": "GET",
+      "url": "https://go.trouter.teams.microsoft.com/?check=1778134727730&cor_id=0ef72048-749b-41d6-a32f-941de304ff4a&epid=e8063537-f24e-051f-2ce0-9430bdc17b85&tc=%7B%22cv%22%3A%222025.30.01.1%22%2C%22ua%22%3A%22BizChat%22%2C%22hr%22%3A%22%22%2C%22v%22%3A%223639%2F1.0.0%22%7D",
+      "stable_key": "GET https://go.trouter.teams.microsoft.com/"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/coworker-voice-plugin.4a92cc7c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/coworker-voice-plugin.4a92cc7c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22137.0a6721c1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22137.0a6721c1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93255.a345d635.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93255.a345d635.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58621.a3337fc8.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/58621.a3337fc8.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44250.3318f3cb.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44250.3318f3cb.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/converged-logger.94efc7cc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/converged-logger.94efc7cc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-lftonboarding-trigger.f494dd8c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-lftonboarding-trigger.f494dd8c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-layout-chat-dialog.18f8681f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-layout-chat-dialog.18f8681f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/fai-attachment-list.f0d8739c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/fai-attachment-list.f0d8739c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79799.cb059de1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79799.cb059de1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57094.8de8a10d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57094.8de8a10d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-teachingmomentloaderwrapper.9b7dd4bd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-teachingmomentloaderwrapper.9b7dd4bd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65803.d54bf399.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65803.d54bf399.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/12905.73ee085d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/12905.73ee085d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76843.d0a69f39.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76843.d0a69f39.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/56614.0c068d14.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/56614.0c068d14.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-teams-handoff-button.47c9414b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-teams-handoff-button.47c9414b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/35768.f18b879c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/35768.f18b879c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/lft-onboarding-flex-pane-trigger.94f7e334.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/lft-onboarding-flex-pane-trigger.94f7e334.chunk.js"
+    },
+    {
+      "method": "POST",
+      "url": "https://m365.cloud.microsoft/chat",
+      "stable_key": "POST https://m365.cloud.microsoft/chat"
+    },
+    {
+      "method": "GET",
+      "url": "https://content.lifecycle.office.net/dime/v1/dime.js",
+      "stable_key": "GET https://content.lifecycle.office.net/dime/v1/dime.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/iris-client.d8bdef60.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/iris-client.d8bdef60.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-floodgate-survey.8411eda4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-client-floodgate-survey.8411eda4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://arc.msn.com/v4/api/selection/?nct=1&placement=3006114276%7C88001127%7C88001111%7C88001244%7C88001256%7C88001270%7C3007512837&bcnt=1%7C1%7C5%7C1%7C2%7C1%7C5&mclh=bcwaf&locale=ko-kr&country=kr&app=officeweb&hostapp=OfficeDotCom&platform=Web&FEATURES=BCX_1%3BBCX_2%3BBCX_10%3BBCX_20%3BBCX_21%3BBCX_22%3BBCX_23%3BBCX_24%3BBCX_25%3BBCX_28%3BBCX_30%3BBCX_32%3BBCX_38%3BBCX_42%3BBCX_44%3BBCX_47%3BBCX_48%3BBCX_51&FLIGHTS=P-R-1535739-2-15&pat=2&layouttype=1&plgScenarios=PremiumPromptsUpsell&asid=7420f21ca1e0c274f0ab8de52e8fb1cd",
+      "stable_key": "GET https://arc.msn.com/v4/api/selection/"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://arc.msn.com/v4/api/selection/?nct=1&placement=3006114276%7C88001127%7C88001111%7C88001244%7C88001256%7C88001270%7C3007512837&bcnt=1%7C1%7C5%7C1%7C2%7C1%7C5&mclh=bcwaf&locale=ko-kr&country=kr&app=officeweb&hostapp=OfficeDotCom&platform=Web&FEATURES=BCX_1%3BBCX_2%3BBCX_10%3BBCX_20%3BBCX_21%3BBCX_22%3BBCX_23%3BBCX_24%3BBCX_25%3BBCX_28%3BBCX_30%3BBCX_32%3BBCX_38%3BBCX_42%3BBCX_44%3BBCX_47%3BBCX_48%3BBCX_51&FLIGHTS=P-R-1535739-2-15&pat=2&layouttype=1&plgScenarios=PremiumPromptsUpsell&asid=7420f21ca1e0c274f0ab8de52e8fb1cd",
+      "stable_key": "OPTIONS https://arc.msn.com/v4/api/selection/"
+    },
+    {
+      "method": "GET",
+      "url": "https://content.lifecycle.office.net/dime/v1/4141.f212b15eb0.chunk.js",
+      "stable_key": "GET https://content.lifecycle.office.net/dime/v1/4141.f212b15eb0.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://content.lifecycle.office.net/dime/v1/969.b094652926.chunk.js",
+      "stable_key": "GET https://content.lifecycle.office.net/dime/v1/969.b094652926.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://content.lifecycle.office.net/dime/v1/2806.f6b6ecc5b3.chunk.js",
+      "stable_key": "GET https://content.lifecycle.office.net/dime/v1/2806.f6b6ecc5b3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://static2.sharepointonline.com/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-semibold.woff2",
+      "stable_key": "GET https://static2.sharepointonline.com/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-semibold.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "https://static2.sharepointonline.com/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-regular.woff2",
+      "stable_key": "GET https://static2.sharepointonline.com/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-regular.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "wss://go.trouter.teams.microsoft.com/v4/c?tc=%7B%22cv%22%3A%222025.30.01.1%22%2C%22ua%22%3A%22BizChat%22%2C%22hr%22%3A%22%22%2C%22v%22%3A%223639%2F1.0.0%22%7D&timeout=40&epid=e8063537-f24e-051f-2ce0-9430bdc17b85&ccid=&dom=m365.cloud.microsoft&cor_id=0ef72048-749b-41d6-a32f-941de304ff4a&con_num=1778134727508_0",
+      "stable_key": "GET wss://go.trouter.teams.microsoft.com/v4/c"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-semibold.woff2",
+      "stable_key": "GET https://res-1.cdn.office.net/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-semibold.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-regular.woff2",
+      "stable_key": "GET https://res-1.cdn.office.net/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-regular.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/92604.0b677306.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/92604.0b677306.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94531.9b57f026.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/94531.9b57f026.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/69396.14daf02b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/69396.14daf02b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-floodgate-activity.8750ec91.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-floodgate-activity.8750ec91.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.cdn.office.net/midgard/versionless/officebrowserfeedback/2.3.1/@ms-ofb/officebrowserfeedback/intl/ko/officebrowserfeedbackstrings.js",
+      "stable_key": "GET https://res.cdn.office.net/midgard/versionless/officebrowserfeedback/2.3.1/@ms-ofb/officebrowserfeedback/intl/ko/officebrowserfeedbackstrings.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48181.c2448ed3.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/48181.c2448ed3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-input-source-controls-wrapper.cb458ee0.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-input-source-controls-wrapper.cb458ee0.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://substrate.office.com/recommended/api/v2.0/edgeworth/recent?top=15&rs=ko-kr&excludeApps=WebLink",
+      "stable_key": "GET https://substrate.office.com/recommended/api/v2.0/edgeworth/recent"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/recommended/api/v2.0/edgeworth/recent?top=15&rs=ko-kr&excludeApps=WebLink",
+      "stable_key": "OPTIONS https://substrate.office.com/recommended/api/v2.0/edgeworth/recent"
+    },
+    {
+      "method": "POST",
+      "url": "https://teams.microsoft.com/registrar/prod/V3/registrations",
+      "stable_key": "POST https://teams.microsoft.com/registrar/prod/V3/registrations"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://teams.microsoft.com/registrar/prod/V3/registrations",
+      "stable_key": "OPTIONS https://teams.microsoft.com/registrar/prod/V3/registrations"
+    },
+    {
+      "method": "POST",
+      "url": "https://browser.events.data.microsoft.com/OneCollector/1.0/?cors=true&content-type=application%2Fx-json-stream&w=2",
+      "stable_key": "POST https://browser.events.data.microsoft.com/OneCollector/1.0/"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://browser.events.data.microsoft.com/OneCollector/1.0/?cors=true&content-type=application%2Fx-json-stream&w=2",
+      "stable_key": "OPTIONS https://browser.events.data.microsoft.com/OneCollector/1.0/"
+    },
+    {
+      "method": "POST",
+      "url": "https://substrate.office.com/search/api/v1/events?scenario=Harmony.Web.Copilot_QF",
+      "stable_key": "POST https://substrate.office.com/search/api/v1/events"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/search/api/v1/events?scenario=Harmony.Web.Copilot_QF",
+      "stable_key": "OPTIONS https://substrate.office.com/search/api/v1/events"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-sydney-perf-helper.3fb0d2fd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-chat-sydney-perf-helper.3fb0d2fd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/files/fabric-cdn-prod_20250606.001/assets/fonts/segoe-sans/segoe-sans.woff2",
+      "stable_key": "GET https://res-1.cdn.office.net/files/fabric-cdn-prod_20250606.001/assets/fonts/segoe-sans/segoe-sans.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/files/fabric-cdn-prod_20250606.001/assets/fonts/segoe-sans/segoe-sans-italic.woff2",
+      "stable_key": "GET https://res-1.cdn.office.net/files/fabric-cdn-prod_20250606.001/assets/fonts/segoe-sans/segoe-sans-italic.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741?chatsessionid=e8063537f24e051f2ce09430bdc17b85&XRoutingParameterSessionKey=e8063537f24e051f2ce09430bdc17b85&clientrequestid=e8063537f24e051f2ce09430bdc17b85&X-SessionId=e8063537-f24e-051f-2ce0-9430bdc17b85&ConversationId=b36b3c96-e203-4b62-8978-bf6630d79464&access_token=%5BREDACTED%5D&variants=EnableMcpServerWidgets%2Cfeature.EnableMcpServerWidgets%2Cfeature.EnableLuForChatCIQ%2Cfeature.enableChatCIQPlugin%2CEnableRequestPlugins%2Cfeature.EnableSensitivityLabels%2CEnableUnsupportedUrlDetector%2Cfeature.IsCustomEngineCopilotEnabled%2Cfeature.bizchatfluxv3%2Cfeature.enablechatpages%2Cfeature.enableCodeCanvas%2Cfeature.turnOnWorkTabRecommendation%2Cfeature.turnOnDARecommendation%2Cfeature.IsStreamingModeInChatRequestEnabled%2CIncludeSourceAttributionsConcise%2CSkipPublishEmptyMessage%2Cfeature.EnableDeduplicatingSourceAttributions%2CEnable3PActionProgressMessages%2Cfeature.enableClientWebRtc%2Cfeature.EnableMeetingRecapOfSeriesMeetingWithCiq%2Cfeature.EnableReferencesListCompleteSignal%2Cfeature.StorageMessageSplitDisabled%2Cfeature.EnableCuaTakeControlApi%2CSingletonEnvOn%2Cfeature.cwcallowedos%2Cfeature.EnableMergingPureDeltas%2Cfeature.disabledisallowedmsgs%2Cfeature.enableCitationsForSynthesisData%2Cfeature.EnableConversationShareApis%2Cfeature.enableGenerateGraphicArtOptionsSet%2Ccdximagen%2Cfeature.EnableUpdatedUXForConfirmationDialog%2Cfeature.EnableContentApiandDocTypeHtmlInRichAnswers%2Ccdxgrounding_api_v2_rich_web_answers_reference_bottom_force%2Ccdxenablerenderforisocomp%2Cfeature.EnableClientFileURLSupportForOfficeWebPaidCopilot%2Cfeature.EnableDesignEditorImageGrounding%2Cfeature.EnableDesignerEditor%2Cfeature.EnableSkipRehydrationForSpeCIdImages%2Cfeature.EnablePersonalization%2Cfeature.EnableSkipEmittingMessageOnFlush%2Cfeature.EnableRemoveEmptySourceAttributions%2Cfeature.EnableRemoveStreamingMode%2Cfeature.OfficeWebToHelix%2Cfeature.OfficeDesktopToHelix%2Cfeature.M365TeamsHubToHelix%2Cfeature.OwaHubToHelix%2Cfeature.MonarchHubToHelix%2Cfeature.Win32OutlookHubToHelix%2Cfeature.MacOutlookHubToHelix%2CAgt_bizchat_enableGpt5ForHelix&source=%22officeweb%22&product=Office&agentHost=Bizchat.FullScreen&licenseType=Starter&agent=web&scenario=OfficeWebIncludedCopilot",
+      "stable_key": "GET wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-llm-web-ui.785195a4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-llm-web-ui.785195a4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/mcs-agentbuilder.utils.aef2ea7e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/mcs-agentbuilder.utils.aef2ea7e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/mcs-agentbuilder.telemetry.f560b774.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/mcs-agentbuilder.telemetry.f560b774.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29381.75123cf0.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29381.75123cf0.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/36108.350432de.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/36108.350432de.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/3246.8b236195.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/3246.8b236195.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/85307.626b632e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/85307.626b632e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/53648.279e65b6.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/53648.279e65b6.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32101.a785335c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32101.a785335c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/40731.8819585e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/40731.8819585e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/5411.7ace8709.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/5411.7ace8709.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/24930.dd12af66.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/24930.dd12af66.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93107.38be1691.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93107.38be1691.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/10069.3536df41.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/10069.3536df41.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/73107.59db2dd6.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/73107.59db2dd6.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/78854.89127f51.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/78854.89127f51.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65271.055b6ba3.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65271.055b6ba3.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/67010.c8bf947b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/67010.c8bf947b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/24864.afa6dde4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/24864.afa6dde4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/74530.bb1630dc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/74530.bb1630dc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90408.b49ad7d9.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90408.b49ad7d9.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/2893.fa6ced6a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/2893.fa6ced6a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47885.1c3f1e14.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/47885.1c3f1e14.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/60767.60fda2e4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/60767.60fda2e4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89548.575bce09.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89548.575bce09.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/41281.f072faf1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/41281.f072faf1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32197.5f55a895.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/32197.5f55a895.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/81525.f46d4ed5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/81525.f46d4ed5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/5576.57c07957.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/5576.57c07957.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/37078.a6f358ac.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/37078.a6f358ac.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/99881.6208292e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/99881.6208292e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/81325.40c301c6.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/81325.40c301c6.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54997.f5eb1a54.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54997.f5eb1a54.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97820.c0d40855.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97820.c0d40855.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/11661.d15c7f27.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/11661.d15c7f27.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/38110.0e05f46c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/38110.0e05f46c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/64539.0defcab1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/64539.0defcab1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80722.5056e406.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80722.5056e406.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/5486.9781b211.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/5486.9781b211.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/7481.480ebf86.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/7481.480ebf86.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/40822.1ae59af4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/40822.1ae59af4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42310.841bb400.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/42310.841bb400.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/84969.41c6777c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/84969.41c6777c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/85475.3d242b91.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/85475.3d242b91.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/26374.6ab3a550.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/26374.6ab3a550.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80015.1ee0b7fa.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80015.1ee0b7fa.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49032.87104d0a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49032.87104d0a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95540.1462f186.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95540.1462f186.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54350.bb8cf5dd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54350.bb8cf5dd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57723.3ab3f573.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57723.3ab3f573.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/92621.9f78e02b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/92621.9f78e02b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/2906.8ef8a9fc.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/2906.8ef8a9fc.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/40267.130837b7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/40267.130837b7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/38076.0990b429.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/38076.0990b429.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97852.7b53ef3d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97852.7b53ef3d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29092.de420ca8.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29092.de420ca8.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54676.a437d3da.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/54676.a437d3da.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/72165.2ffa7ff7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/72165.2ffa7ff7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75446.0c682bed.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75446.0c682bed.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59535.3c5f1040.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59535.3c5f1040.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/50531.1fa35c3c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/50531.1fa35c3c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49498.2aef56ca.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/49498.2aef56ca.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70997.5ccea176.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70997.5ccea176.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/26402.06a60cea.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/26402.06a60cea.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59313.34766fd2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59313.34766fd2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93704.a6e4bc72.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/93704.a6e4bc72.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/17621.583bef7e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/17621.583bef7e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97746.a5fab21b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/97746.a5fab21b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/26957.46a950f5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/26957.46a950f5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65467.6cbe83f4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65467.6cbe83f4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89482.cc776dda.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89482.cc776dda.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70516.36bdd650.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70516.36bdd650.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29014.3b7f3938.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/29014.3b7f3938.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59868.90ef5fff.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/59868.90ef5fff.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65830.aea3664f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/65830.aea3664f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/15420.21297f1d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/15420.21297f1d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/88443.e635a451.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/88443.e635a451.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90020.96cdc524.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/90020.96cdc524.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/87409.1077aebd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/87409.1077aebd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76999.1ad14d78.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/76999.1ad14d78.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95237.4945be94.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/95237.4945be94.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/72759.7e9a3348.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/72759.7e9a3348.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/82075.cdd20a1d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/82075.cdd20a1d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-responsesection.49fc92d5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-copilot-responsesection.49fc92d5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/37355.de8a9ec0.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/37355.de8a9ec0.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-splpc.cdfcd7af.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-splpc.cdfcd7af.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://ecs.office.com/config/v1/Fluid/0.0.0.1?agents=FluidExperiences%2CSegmentation&audience=Production&userId=6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd&tenantId=b846c176-e75c-4b38-9b47-29e2f122b741&hostName=M365Chat",
+      "stable_key": "GET https://ecs.office.com/config/v1/Fluid/0.0.0.1"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22734.926eeb22.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22734.926eeb22.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-handoff-dialog.f18008fe.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-handoff-dialog.f18008fe.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/24154.37d8f7c2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/24154.37d8f7c2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/43907.5b6c8583.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/43907.5b6c8583.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39483.b8e77308.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/39483.b8e77308.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80357.01ab47a6.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/80357.01ab47a6.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/81650.624d6f4e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/81650.624d6f4e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-pages-local-plugin-wrapper.8cb329dd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-pages-local-plugin-wrapper.8cb329dd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70066.1493f056.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/70066.1493f056.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/fetchgenericloadermanifest.99171a53.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/fetchgenericloadermanifest.99171a53.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/checkloopcomponenturl.4d351e5e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/checkloopcomponenturl.4d351e5e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/files/fabric-cdn-prod_20251107.003/assets/animations/pulsingdot/pulsing-dot.min.js",
+      "stable_key": "GET https://res-1.cdn.office.net/files/fabric-cdn-prod_20251107.003/assets/animations/pulsingdot/pulsing-dot.min.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/mainpane.19db0082.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/mainpane.19db0082.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/officefluidonedssink.14893973.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/officefluidonedssink.14893973.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/6068.5454f596.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/6068.5454f596.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/midgard-bootstrapper.634bed54.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/midgard-bootstrapper.634bed54.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.cdn.office.net/fluid/prod/generic-loader/versionless/manifest.ko-kr.json",
+      "stable_key": "GET https://res.cdn.office.net/fluid/prod/generic-loader/versionless/manifest.ko-kr.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loopofficepolicyprovider.b0ca78ad.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loopofficepolicyprovider.b0ca78ad.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://loki.delve.office.com/api/v1/livepersonacard/configuration?cultureName=ko",
+      "stable_key": "GET https://loki.delve.office.com/api/v1/livepersonacard/configuration"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://loki.delve.office.com/api/v1/livepersonacard/configuration?cultureName=ko",
+      "stable_key": "OPTIONS https://loki.delve.office.com/api/v1/livepersonacard/configuration"
+    },
+    {
+      "method": "POST",
+      "url": "https://login.microsoftonline.com/b846c176-e75c-4b38-9b47-29e2f122b741/oauth2/v2.0/token?brk_client_id=4765445b-32c6-49b0-83e6-1d93765276ca&brk_redirect_uri=https%3A%2F%2Fm365.cloud.microsoft%2Fspalanding&client-request-id=6adce5a8-1fa1-487a-907a-6bdee0273c9a",
+      "stable_key": "POST https://login.microsoftonline.com/b846c176-e75c-4b38-9b47-29e2f122b741/oauth2/v2.0/token"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/midgard/versionless/livepersonacardstrings_826cfad1f579e58bbc25b3d6db8911daaab52a27.js",
+      "stable_key": "GET https://res-1.cdn.office.net/midgard/versionless/livepersonacardstrings_826cfad1f579e58bbc25b3d6db8911daaab52a27.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/midgard/versionless/livepersonacard_with-react_133dea75412a3547060f.js",
+      "stable_key": "GET https://res-1.cdn.office.net/midgard/versionless/livepersonacard_with-react_133dea75412a3547060f.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/71080.0b452883.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/71080.0b452883.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/82490.ab09763c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/82490.ab09763c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75125.6b566bad.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/75125.6b566bad.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/46462.ac432e9e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/46462.ac432e9e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16132.e53b2418.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16132.e53b2418.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/13210.f7bd83a1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/13210.f7bd83a1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/30626.a6182984.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/30626.a6182984.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89767.8ee2b3da.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89767.8ee2b3da.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/51865.04f412d1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/51865.04f412d1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/41490.4ca81729.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/41490.4ca81729.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/972.a4a36107.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/972.a4a36107.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57296.c93ff76b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/57296.c93ff76b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loopcomponentview.15821040.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loopcomponentview.15821040.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loopprefetch.73cdcccf.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/loopprefetch.73cdcccf.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.cdn.office.net/fluid/prod/loop-page-container/versionless/loopPageContainerCodeLoadDetails.json",
+      "stable_key": "GET https://res.cdn.office.net/fluid/prod/loop-page-container/versionless/loopPageContainerCodeLoadDetails.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://clients.config.office.net/user/v1.0/web/policies",
+      "stable_key": "GET https://clients.config.office.net/user/v1.0/web/policies"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://clients.config.office.net/user/v1.0/web/policies",
+      "stable_key": "OPTIONS https://clients.config.office.net/user/v1.0/web/policies"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/midgard/versionless/9922_with-react_5507397df9fe0e22109b.js",
+      "stable_key": "GET https://res-1.cdn.office.net/midgard/versionless/9922_with-react_5507397df9fe0e22109b.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/midgard/versionless/hugin-sink-1ds_with-react_df053d35648bd72d114a.js",
+      "stable_key": "GET https://res-1.cdn.office.net/midgard/versionless/hugin-sink-1ds_with-react_df053d35648bd72d114a.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-markdown-text.3da1dbf4.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-markdown-text.3da1dbf4.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/294.c1d14f09.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/294.c1d14f09.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44970.6996bec7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/44970.6996bec7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22431.7797403b.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/22431.7797403b.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79829.e9248e8a.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/79829.e9248e8a.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89772.9e90350e.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/89772.9e90350e.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/1708.3e25b2d2.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/1708.3e25b2d2.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/groupedcitations.b780dc5f.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/groupedcitations.b780dc5f.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365mdas.676302e5.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365mdas.676302e5.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-search-widget-sources-button.30d78cf7.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/scc-search-widget-sources-button.30d78cf7.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/62909.f1fc0916.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/62909.f1fc0916.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16483.477c9b1c.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/16483.477c9b1c.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chatfeedbackbuttonsrdx.f3b255d1.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chatfeedbackbuttonsrdx.f3b255d1.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://services.bingapis.com/favicon?url=daily.hankooki.com",
+      "stable_key": "GET https://services.bingapis.com/favicon"
+    },
+    {
+      "method": "GET",
+      "url": "https://static2.sharepointonline.com/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-bold.woff2",
+      "stable_key": "GET https://static2.sharepointonline.com/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-bold.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "https://admin.microsoft.com/admin/api/uxversion?bldVer=v2&locale=ko-kr&hostingapp=BizChatMetaOS",
+      "stable_key": "GET https://admin.microsoft.com/admin/api/uxversion"
+    },
+    {
+      "method": "GET",
+      "url": "https://res-1.cdn.office.net/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-bold.woff2",
+      "stable_key": "GET https://res-1.cdn.office.net/files/fabric/assets/fonts/segoeui-westeuropean/segoeui-bold.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.cdn.office.net/admincenter/admin-main/2026.4.28.1/ocv-inapp-feedback.ko.bundle.js",
+      "stable_key": "GET https://res.cdn.office.net/admincenter/admin-main/2026.4.28.1/ocv-inapp-feedback.ko.bundle.js"
+    },
+    {
+      "method": "POST",
+      "url": "https://admin.microsoft.com/api/instrument/logclient",
+      "stable_key": "POST https://admin.microsoft.com/api/instrument/logclient"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://admin.microsoft.com/api/instrument/logclient",
+      "stable_key": "OPTIONS https://admin.microsoft.com/api/instrument/logclient"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-router-build-conversation-path.922b15a9.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365-copilot-router-build-conversation-path.922b15a9.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-blank-response-detection.09142cfd.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/m365chat-blank-response-detection.09142cfd.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/99262.f6e262da.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/99262.f6e262da.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/richanswercard.714fb21d.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/richanswercard.714fb21d.chunk.js"
+    },
+    {
+      "method": "GET",
+      "url": "https://substrate.office.com/m365Copilot/content/0-ckr-d4-5d7cedf3ea6f30323099bc690309dbdc",
+      "stable_key": "GET https://substrate.office.com/m365Copilot/content/0-ckr-d4-5d7cedf3ea6f30323099bc690309dbdc"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://substrate.office.com/m365Copilot/content/0-ckr-d4-5d7cedf3ea6f30323099bc690309dbdc",
+      "stable_key": "OPTIONS https://substrate.office.com/m365Copilot/content/0-ckr-d4-5d7cedf3ea6f30323099bc690309dbdc"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.bing.com/",
+      "stable_key": "GET https://www.bing.com/"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.bing.com/th/id/OBWA.v6-106-png-d410?w=72&h=72&c=6&pid=Weather",
+      "stable_key": "GET https://www.bing.com/th/id/OBWA.v6-106-png-d410"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.bing.com/th/id/OBWA.v6-106-png-d100?w=32&h=32&c=6&pid=Weather",
+      "stable_key": "GET https://www.bing.com/th/id/OBWA.v6-106-png-d100"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.bing.com/th/id/OBWA.v6-106-png-d300?w=32&h=32&c=6&pid=Weather",
+      "stable_key": "GET https://www.bing.com/th/id/OBWA.v6-106-png-d300"
+    },
+    {
+      "method": "GET",
+      "url": "https://res.public.onecdn.static.microsoft/midgard/versionless-v2/19117.1b320bed.chunk.js",
+      "stable_key": "GET https://res.public.onecdn.static.microsoft/midgard/versionless-v2/19117.1b320bed.chunk.js"
+    }
+  ]
+}

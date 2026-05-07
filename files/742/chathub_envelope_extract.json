@@ -1,0 +1,839 @@
+{
+  "source": "har_737_sanitized",
+  "entry_count": 2,
+  "ws_frame_total": 108,
+  "entries": [
+    {
+      "request": {
+        "url": "wss://go.trouter.teams.microsoft.com/v4/c?tc=%7B%22cv%22%3A%222025.30.01.1%22%2C%22ua%22%3A%22BizChat%22%2C%22hr%22%3A%22%22%2C%22v%22%3A%223639%2F1.0.0%22%7D&timeout=40&epid=e8063537-f24e-051f-2ce0-9430bdc17b85&ccid=&dom=m365.cloud.microsoft&cor_id=0ef72048-749b-41d6-a32f-941de304ff4a&con_num=1778134727508_0",
+        "method": "GET"
+      },
+      "response": {
+        "status": 101,
+        "headers": [
+          {
+            "name": "Upgrade",
+            "value": "websocket"
+          },
+          {
+            "name": "Strict-Transport-Security",
+            "value": "max-age=31536000; includeSubDomains"
+          },
+          {
+            "name": "Connection",
+            "value": "Upgrade"
+          },
+          {
+            "name": "Access-Control-Allow-Credentials",
+            "value": "true"
+          },
+          {
+            "name": "X-Content-Type-Options",
+            "value": "Nosniff"
+          },
+          {
+            "name": "Access-Control-Allow-Origin",
+            "value": "https://m365.cloud.microsoft"
+          },
+          {
+            "name": "Date",
+            "value": "Thu, 07 May 2026 06:18:48 GMT"
+          },
+          {
+            "name": "X-XSS-Protection",
+            "value": "1; mode=block"
+          },
+          {
+            "name": "Vary",
+            "value": "Origin"
+          },
+          {
+            "name": "Sec-WebSocket-Accept",
+            "value": "6wDnAGJtjBUmj03cf4p4uQHu+c8="
+          },
+          {
+            "name": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          }
+        ],
+        "content": {
+          "mimeType": "x-unknown",
+          "size": 0,
+          "text": ""
+        }
+      },
+      "_webSocketMessages": [
+        {
+          "type": "receive",
+          "time": 1778134728.711729,
+          "opcode": 1,
+          "data": "1::"
+        },
+        {
+          "type": "send",
+          "time": 1778134728.7139611,
+          "opcode": 1,
+          "data": "5:::{\"name\":\"user.authenticate\",\"args\":[{\"headers\":{\"Authorization\":\"Bearer [REDACTED]\",\"X-MS-Migration\":\"True\"}}]}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134728.8315182,
+          "opcode": 1,
+          "data": "5:1::{\"name\":\"trouter.connected\",\"args\":[{\"id\":\"UmMSjccXsUCHV-3poL2Wgw\",\"ccid\":\"HV-3poL2Wgw\",\"url\":\"https://pub-ent-ince-10-f.trouter.teams.microsoft.com:8443/v4/f/UmMSjccXsUCHV-3poL2Wgw/\",\"surl\":\"https://pub-ent-ince-10-f.trouter.teams.microsoft.com:3443/v4/f/UmMSjccXsUCHV-3poL2Wgw/\",\"curlb\":\"https://pub-ent-ince-10-t.trouter.teams.microsoft.com:443\",\"healthUrl\":\"https://go.trouter.teams.microsoft.com:443/v4/h\",\"reconnectUrl\":\"wss://pub-ent-ince-10-t.trouter.teams.microsoft.com:443/v4/c\",\"registrarUrl\":\"https://communications.svc.cloud.microsoft/registrar/apac/v3/registrations\",\"socketio\":\"https://pub-ent-ince-10-t.trouter.teams.microsoft.com:443/\",\"ttl\":\"580240\",\"dur\":\"3\",\"connectparams\":{\"issuer\":\"\",\"scae\":\"1\",\"sig\":\"\",\"sr\":\"UmMSjccXsUCHV-3poL2Wgw\",\"sp\":\"pub-ent-ince-10\",\"se\":\"1778714968773\",\"st\":\"1778134428773\"}}]}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134728.8711472,
+          "opcode": 1,
+          "data": "5:2::{\"name\":\"trouter.message_loss\",\"args\":[{\"droppedIndicators\":[{\"tag\":\"\",\"etag\":\"2026-05-07T06:18:48.7795480Z\"},{\"tag\":\"messaging\",\"etag\":\"2026-05-07T06:18:48.7796071Z\"},{\"tag\":\"messagingsync\",\"etag\":\"2026-05-07T06:18:48.7796198Z\"},{\"tag\":\"pinnedchannel\",\"etag\":\"2026-05-07T06:18:48.7796270Z\"},{\"tag\":\"tps\",\"etag\":\"2026-05-07T06:18:48.7796390Z\"}]}]}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134728.8717132,
+          "opcode": 1,
+          "data": "5:3::{\"name\":\"trouter.message_loss\",\"args\":[{\"droppedIndicators\":[{\"tag\":\"\",\"etag\":\"2026-05-07T06:18:48.7795480Z\"},{\"tag\":\"messaging\",\"etag\":\"2026-05-07T06:18:48.7796071Z\"},{\"tag\":\"messagingsync\",\"etag\":\"2026-05-07T06:18:48.7796198Z\"},{\"tag\":\"pinnedchannel\",\"etag\":\"2026-05-07T06:18:48.7796270Z\"},{\"tag\":\"tps\",\"etag\":\"2026-05-07T06:18:48.7796390Z\"}]}]}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134729.850728,
+          "opcode": 1,
+          "data": "5:4::{\"name\":\"trouter.message_loss\",\"args\":[{\"droppedIndicators\":[{\"tag\":\"\",\"etag\":\"2026-05-07T06:18:48.7795480Z\"},{\"tag\":\"messaging\",\"etag\":\"2026-05-07T06:18:48.7796071Z\"},{\"tag\":\"messagingsync\",\"etag\":\"2026-05-07T06:18:48.7796198Z\"},{\"tag\":\"pinnedchannel\",\"etag\":\"2026-05-07T06:18:48.7796270Z\"},{\"tag\":\"tps\",\"etag\":\"2026-05-07T06:18:48.7796390Z\"}]}]}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134734.8956432,
+          "opcode": 1,
+          "data": "5:5::{\"name\":\"trouter.message_loss\",\"args\":[{\"droppedIndicators\":[{\"tag\":\"\",\"etag\":\"2026-05-07T06:18:48.7795480Z\"},{\"tag\":\"messaging\",\"etag\":\"2026-05-07T06:18:48.7796071Z\"},{\"tag\":\"messagingsync\",\"etag\":\"2026-05-07T06:18:48.7796198Z\"},{\"tag\":\"pinnedchannel\",\"etag\":\"2026-05-07T06:18:48.7796270Z\"},{\"tag\":\"tps\",\"etag\":\"2026-05-07T06:18:48.7796390Z\"}]}]}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134744.946197,
+          "opcode": 1,
+          "data": "5:6::{\"name\":\"trouter.message_loss\",\"args\":[{\"droppedIndicators\":[{\"tag\":\"\",\"etag\":\"2026-05-07T06:18:48.7795480Z\"},{\"tag\":\"messaging\",\"etag\":\"2026-05-07T06:18:48.7796071Z\"},{\"tag\":\"messagingsync\",\"etag\":\"2026-05-07T06:18:48.7796198Z\"},{\"tag\":\"pinnedchannel\",\"etag\":\"2026-05-07T06:18:48.7796270Z\"},{\"tag\":\"tps\",\"etag\":\"2026-05-07T06:18:48.7796390Z\"}]}]}"
+        },
+        {
+          "type": "send",
+          "time": 1778134768.8548331,
+          "opcode": 1,
+          "data": "5:1+::{\"name\":\"ping\"}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.969016,
+          "opcode": 1,
+          "data": "6:::1+[\"pong\"]"
+        },
+        {
+          "type": "send",
+          "time": 1778134808.8495672,
+          "opcode": 1,
+          "data": "5:2+::{\"name\":\"ping\"}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134808.963148,
+          "opcode": 1,
+          "data": "6:::2+[\"pong\"]"
+        },
+        {
+          "type": "send",
+          "time": 1778134848.844146,
+          "opcode": 1,
+          "data": "5:3+::{\"name\":\"ping\"}"
+        },
+        {
+          "type": "receive",
+          "time": 1778134848.9654472,
+          "opcode": 1,
+          "data": "6:::3+[\"pong\"]"
+        }
+      ]
+    },
+    {
+      "request": {
+        "url": "wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741?chatsessionid=e8063537f24e051f2ce09430bdc17b85&XRoutingParameterSessionKey=e8063537f24e051f2ce09430bdc17b85&clientrequestid=e8063537f24e051f2ce09430bdc17b85&X-SessionId=e8063537-f24e-051f-2ce0-9430bdc17b85&ConversationId=b36b3c96-e203-4b62-8978-bf6630d79464&access_token=%5BREDACTED%5D&variants=EnableMcpServerWidgets%2Cfeature.EnableMcpServerWidgets%2Cfeature.EnableLuForChatCIQ%2Cfeature.enableChatCIQPlugin%2CEnableRequestPlugins%2Cfeature.EnableSensitivityLabels%2CEnableUnsupportedUrlDetector%2Cfeature.IsCustomEngineCopilotEnabled%2Cfeature.bizchatfluxv3%2Cfeature.enablechatpages%2Cfeature.enableCodeCanvas%2Cfeature.turnOnWorkTabRecommendation%2Cfeature.turnOnDARecommendation%2Cfeature.IsStreamingModeInChatRequestEnabled%2CIncludeSourceAttributionsConcise%2CSkipPublishEmptyMessage%2Cfeature.EnableDeduplicatingSourceAttributions%2CEnable3PActionProgressMessages%2Cfeature.enableClientWebRtc%2Cfeature.EnableMeetingRecapOfSeriesMeetingWithCiq%2Cfeature.EnableReferencesListCompleteSignal%2Cfeature.StorageMessageSplitDisabled%2Cfeature.EnableCuaTakeControlApi%2CSingletonEnvOn%2Cfeature.cwcallowedos%2Cfeature.EnableMergingPureDeltas%2Cfeature.disabledisallowedmsgs%2Cfeature.enableCitationsForSynthesisData%2Cfeature.EnableConversationShareApis%2Cfeature.enableGenerateGraphicArtOptionsSet%2Ccdximagen%2Cfeature.EnableUpdatedUXForConfirmationDialog%2Cfeature.EnableContentApiandDocTypeHtmlInRichAnswers%2Ccdxgrounding_api_v2_rich_web_answers_reference_bottom_force%2Ccdxenablerenderforisocomp%2Cfeature.EnableClientFileURLSupportForOfficeWebPaidCopilot%2Cfeature.EnableDesignEditorImageGrounding%2Cfeature.EnableDesignerEditor%2Cfeature.EnableSkipRehydrationForSpeCIdImages%2Cfeature.EnablePersonalization%2Cfeature.EnableSkipEmittingMessageOnFlush%2Cfeature.EnableRemoveEmptySourceAttributions%2Cfeature.EnableRemoveStreamingMode%2Cfeature.OfficeWebToHelix%2Cfeature.OfficeDesktopToHelix%2Cfeature.M365TeamsHubToHelix%2Cfeature.OwaHubToHelix%2Cfeature.MonarchHubToHelix%2Cfeature.Win32OutlookHubToHelix%2Cfeature.MacOutlookHubToHelix%2CAgt_bizchat_enableGpt5ForHelix&source=%22officeweb%22&product=Office&agentHost=Bizchat.FullScreen&licenseType=Starter&agent=web&scenario=OfficeWebIncludedCopilot",
+        "method": "GET"
+      },
+      "response": {
+        "status": 101,
+        "headers": [
+          {
+            "name": "X-FEServer",
+            "value": "SE2P216CA0163"
+          },
+          {
+            "name": "X-FirstHopCafeEFZ",
+            "value": "ICN"
+          },
+          {
+            "name": "access-control-expose-headers",
+            "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+          },
+          {
+            "name": "x-envoy-upstream",
+            "value": "10.128.58.129:44344"
+          },
+          {
+            "name": "X-NanoProxy",
+            "value": "1"
+          },
+          {
+            "name": "MS-CV",
+            "value": "x2v22ZoU/EflABr8d9h1lQ.1"
+          },
+          {
+            "name": "x-content-type-options",
+            "value": "nosniff"
+          },
+          {
+            "name": "Request-Id",
+            "value": "d9f66bc7-149a-47fc-e500-1afc77d87595"
+          },
+          {
+            "name": "server-timing",
+            "value": "reqlatency;dur=47"
+          },
+          {
+            "name": "Date",
+            "value": "Thu, 07 May 2026 06:19:06 GMT"
+          },
+          {
+            "name": "Vary",
+            "value": "Origin"
+          },
+          {
+            "name": "X-Proxy-RoutingCorrectness",
+            "value": "1"
+          },
+          {
+            "name": "x-envoy-loadbalancerpolicy",
+            "value": "RequestHash-Query"
+          },
+          {
+            "name": "Upgrade",
+            "value": "websocket"
+          },
+          {
+            "name": "Strict-Transport-Security",
+            "value": "max-age=31536000; includeSubDomains"
+          },
+          {
+            "name": "Access-Control-Allow-Headers",
+            "value": "Request-Id,X-BEPartition,X-FEServer"
+          },
+          {
+            "name": "content-security-policy",
+            "value": "default-src 'none'; base-uri 'none'; sandbox"
+          },
+          {
+            "name": "timing-allow-origin",
+            "value": "*"
+          },
+          {
+            "name": "Connection",
+            "value": "Upgrade"
+          },
+          {
+            "name": "access-control-allow-origin",
+            "value": "https://m365.cloud.microsoft"
+          },
+          {
+            "name": "X-BackEndHttpStatus",
+            "value": "101,101"
+          },
+          {
+            "name": "X-Proxy-BackendServerStatus",
+            "value": "101"
+          },
+          {
+            "name": "X-CalculatedBETarget",
+            "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+          },
+          {
+            "name": "Sec-WebSocket-Accept",
+            "value": "kNYpV4+7vdT2FMi3Zh8D7p9qTB4="
+          },
+          {
+            "name": "Server",
+            "value": "Microsoft-HTTPAPI/2.0"
+          },
+          {
+            "name": "X-BEPartition",
+            "value": "ICN\\WW"
+          }
+        ],
+        "content": {
+          "mimeType": "x-unknown",
+          "size": 0,
+          "text": ""
+        }
+      },
+      "_webSocketMessages": [
+        {
+          "type": "send",
+          "time": 1778134746.5016732,
+          "opcode": 1,
+          "data": "{\"protocol\":\"json\",\"version\":1}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134746.528484,
+          "opcode": 1,
+          "data": "{}\u001e"
+        },
+        {
+          "type": "send",
+          "time": 1778134746.52972,
+          "opcode": 1,
+          "data": "{\"type\":6}\u001e"
+        },
+        {
+          "type": "send",
+          "time": 1778134756.9164991,
+          "opcode": 1,
+          "data": "{\"arguments\":[{\"source\":\"officeweb\",\"clientCorrelationId\":\"e8063537f24e051f2ce09430bdc17b85\",\"sessionId\":\"e8063537-f24e-051f-2ce0-9430bdc17b85\",\"optionsSets\":[\"search_result_progress_messages_with_search_queries\",\"cwc_flux_image\",\"cwc_code_interpreter\",\"cwc_code_interpreter_amsfix\",\"cwcfluxgptv\",\"flux_v3_gptv_enable_upload_multi_image_in_turn_wo_ch\",\"gptvnorm2048\",\"cwc_code_interpreter_citation_fix\",\"code_interpreter_interactive_charts\",\"cwc_code_interpreter_interactive_charts_inline_image\",\"code_interpreter_matplotlib_patching\",\"cwc_fileupload_odb\",\"update_memory_plugin\",\"add_custom_instructions\",\"cwc_flux_v3\",\"flux_v3_progress_messages\",\"enable_batch_token_processing\",\"enable_gg_gpt\",\"cwc_table_context\",\"flux_v3_image_gen_enable_story\"],\"streamingMode\":\"ConciseWithPadding\",\"spokenTextMode\":\"None\",\"options\":{},\"extraExtensionParameters\":{},\"allowedMessageTypes\":[\"Chat\",\"Suggestion\",\"InternalSearchQuery\",\"Disengaged\",\"InternalLoaderMessage\",\"Progress\",\"GeneratedCode\",\"RenderCardRequest\",\"AdsQuery\",\"SemanticSerp\",\"GenerateContentQuery\",\"GenerateGraphicArt\",\"SearchQuery\",\"ConfirmationCard\",\"AuthError\",\"DeveloperLogs\",\"TriggerPlugin\",\"HintInvocation\",\"MemoryUpdate\",\"EndOfRequest\",\"TriggerConfirmation\",\"ResumeInvokeAction\",\"ResumeUserInputRequest\",\"TriggerUserInputRequest\",\"EscapeHatch\",\"TriggerPluginAuth\",\"ResumePluginAuth\",\"SideBySide\",\"ReferencesListComplete\",\"SwitchRespondingEndpoint\"],\"sliceIds\":[],\"threadLevelGptId\":{},\"traceId\":\"e8063537f24e051f2ce09430bdc17b85\",\"isStartOfSession\":false,\"clientInfo\":{\"clientPlatform\":\"mcmcopilot-web\",\"clientAppName\":\"Office\",\"clientEntrypoint\":\"mcmcopilot-officeweb\",\"clientSessionId\":\"e8063537-f24e-051f-2ce0-9430bdc17b85\",\"ProductCategory\":\"Chat\",\"clientAppType\":\"Web\",\"productEntryPoint\":\"ChatPanel\",\"deviceOS\":\"Windows\",\"deviceType\":\"Desktop\"},\"message\":{\"author\":\"user\",\"inputMethod\":\"Keyboard\",\"text\":\"오늘 날씨 어때?\",\"entityAnnotationTypes\":[\"People\",\"File\",\"Event\",\"Email\",\"TeamsMessage\"],\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"locationInfo\":{\"timeZoneOffset\":9,\"timeZone\":\"Asia/Seoul\"},\"locale\":\"ko-kr\",\"messageType\":\"Chat\",\"experienceType\":\"Default\",\"adaptiveCards\":[],\"clientPreferences\":{}},\"plugins\":[{\"Id\":\"BingWebSearch\",\"Source\":\"BuiltIn\"}],\"isSbsSupported\":true,\"tone\":\"Magic\",\"renderReferencesBehindEOS\":true,\"disconnectBehavior\":\"continue\"}],\"invocationId\":\"0\",\"target\":\"chat\",\"type\":4}\u001e{\"arguments\":[{\"Timestamps\":{\"ConnectionStart\":\"2026-05-07T06:19:06.394Z\",\"UserInputStart\":\"2026-05-07T06:19:06.485Z\",\"ConnectionEstablished\":\"2026-05-07T06:19:06.533Z\",\"UserInputSubmit\":\"2026-05-07T06:19:16.819Z\"}}],\"target\":\"Metrics\",\"type\":1}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134757.189448,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"nonce\":\"XE6ckifrAd/0DJZlNOptng==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"throttling\":{\"maxNumUserMessagesInConversation\":600,\"numUserMessagesInConversation\":1,\"numLongDocSummaryUserMessagesInConversation\":0}}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134760.188249,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"messages\":[{\"text\":\"알겠습니다. '오늘 날씨 한국'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"오늘 날씨 한국\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1978461+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1978461+00:00\",\"messageId\":\"1637220b-949b-4d8b-9af3-aa837ce6a8ee\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1}],\"nonce\":\"9Gei4UnX7Iy6YtwXy7z8BA==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134760.2216601,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"messages\":[{\"text\":\"알겠습니다. '서울 오늘 날씨 2026년 5월 7일'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"서울 오늘 날씨 2026년 5월 7일\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1982522+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1982522+00:00\",\"messageId\":\"050d22cd-f2f9-4f31-bebd-61bc3083ab84\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1}],\"nonce\":\"Q826j+DphtFA3AdAnFaRMQ==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134760.2362442,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"messages\":[{\"text\":\"알겠습니다. 'weather today Seoul May 7 2026'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"weather today Seoul May 7 2026\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1985496+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1985496+00:00\",\"messageId\":\"04dc6f61-62ab-4984-8639-66dd147722da\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1}],\"nonce\":\"fl8V4dlIxUqq8gkAnGBR5Q==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134760.264394,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"messages\":[{\"text\":\"알겠습니다. '한국 전국 날씨 5월 7일 기온'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"한국 전국 날씨 5월 7일 기온\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1988241+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1988241+00:00\",\"messageId\":\"886a2c5b-9a88-4ddc-b876-8c1159d137b4\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1}],\"nonce\":\"cENHAUI07yqj6pfaLCqUXg==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134762.396821,
+          "opcode": 1,
+          "data": "{\"type\":6}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.126394,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"cursor\":{\"j\":\"$['a988f23f-0a1a-4407-b954-e3b04bdf5464'].adaptiveCards[0].body[0].text\",\"p\":-1},\"messages\":[{\"text\":\"오늘\",\"author\":\"bot\",\"responseIdentifier\":\"Default\",\"createdAt\":\"2026-05-07T06:19:23.1361766+00:00\",\"timestamp\":\"2026-05-07T06:19:23.1361766+00:00\",\"messageId\":\"a988f23f-0a1a-4407-b954-e3b04bdf5464\",\"offense\":\"Unknown\",\"adaptiveCards\":[{\"type\":\"AdaptiveCard\",\"version\":\"1.0\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"오늘\",\"wrap\":true}]}],\"sourceAttributions\":[],\"contentOrigin\":\"DeepLeo\"}],\"nonce\":\"U1R7WfNa+0wzZaMNMLsotg==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.254759,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"(\",\"nonce\":\"Jea4FYqf/i2iehZIxxwm+Q==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.3289921,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"5월 7\",\"nonce\":\"8Ciz6lRDoMRKMgx4SnHvmg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.43617,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"일) 기준\",\"nonce\":\"uELal+g8P6RHjzzQfP+eew==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.5373702,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"으로 말해\",\"nonce\":\"jgjeEHVyTibDAEHKnu4KpA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.6611881,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"드리면\\uD83D\\uDC47\",\"nonce\":\"KBzMLEmfKFkVn4WfB3PKNQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.7962432,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"  \\n\\n## \\uD83C\\uDF25\",\"nonce\":\"PlidtR+bAkXvp/rjGHKjWw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134763.898451,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"️ 오늘 날\",\"nonce\":\"joWT+0qw6212+1/apjBE+w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.034984,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"씨 요약\\n\",\"nonce\":\"XErV7j6nvttvy8j5qkGX8w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.1659482,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"- **전국\",\"nonce\":\"lRo9Z2v2Jbl/T2nlQc+ooQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.341525,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\":** 대\",\"nonce\":\"nHgNUR74RHxrk0Gs1lw39w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.446717,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"체로 흐\",\"nonce\":\"zxYz6PgL8hkhUmYkwK8HeA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.5489411,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"림 + 곳\",\"nonce\":\"17QZrUxInlq0spGEb0Jq3w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.6917892,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"곳에 비\",\"nonce\":\"FZIb4fE2Cx/ujxi9vOdAuw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.812546,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"  \\n- **서울\",\"nonce\":\"a+mrgV3IGwfMrOxsiCJmhw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134764.9393451,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 기준:**  \\n \",\"nonce\":\"+2jKjyOhNULskxYEaZAKTg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.0397491,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" - 낮 최고 약\",\"nonce\":\"NqCEwPxVpataGMu5TyykKA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.1833022,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" **20~\",\"nonce\":\"5h55eG9HO+807CRmoA8M5w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.3097312,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"21℃ / 아\",\"nonce\":\"s/aBrCQcXepLw8/TqEj2hA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.414117,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"침·저녁\",\"nonce\":\"cbh5Bzj+GaVEbB/lOHqBcg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.537754,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 10~\",\"nonce\":\"4o9vvLJLYTpXz2yYvRAKPQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.669538,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"13℃**  \\n\",\"nonce\":\"ViuII9mRYzaNRbjolGGXYg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.794819,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"  - 오후~\",\"nonce\":\"Kkrutn/4gtZfmsJsFZvruw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134765.901144,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"저녁 사이\",\"nonce\":\"Z6VeosLBWy/+56DUp6NqTg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134766.001837,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" **약한 비\",\"nonce\":\"IKiDjiFCFEZJjo0eczfVvQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134766.170273,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 가능**\",\"nonce\":\"OI9WpvXf9MM71edacGfIIQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134766.293277,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" \\uD83C\\uDF27️\",\"nonce\":\"pCXN7ymEUsNiZriyejAINA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134766.8820002,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" \",\"nonce\":\"jPZdzHjTyT4CXbPR/Cb2qA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134766.9155262,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"messages\":[{\"text\":\"오늘(5월 7일) 기준으로 말해드리면\\uD83D\\uDC47  \\n\\n## \\uD83C\\uDF25️ 오늘 날씨 요약\\n- **전국:** 대체로 흐림 + 곳곳에 비  \\n- **서울 기준:**  \\n  - 낮 최고 약 **20~21℃ / 아침·저녁 10~13℃**  \\n  - 오후~저녁 사이 **약한 비 가능** \\uD83C\\uDF27️ \\uE200cite\\uE202turn1search4\\uE202turn1search25\\uE201  \\n\\n\",\"author\":\"bot\",\"responseIdentifier\":\"Default\",\"createdAt\":\"2026-05-07T06:19:23.1361766+00:00\",\"timestamp\":\"2026-05-07T06:19:23.1361766+00:00\",\"messageId\":\"a988f23f-0a1a-4407-b954-e3b04bdf5464\",\"offense\":\"Unknown\",\"adaptiveCards\":[{\"type\":\"AdaptiveCard\",\"version\":\"1.0\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"오늘(5월 7일) 기준으로 말해드리면\\uD83D\\uDC47  \\n\\n## \\uD83C\\uDF25️ 오늘 날씨 요약\\n- **전국:** 대체로 흐림 + 곳곳에 비  \\n- **서울 기준:**  \\n  - 낮 최고 약 **20~21℃ / 아침·저녁 10~13℃**  \\n  - 오후~저녁 사이 **약한 비 가능** \\uD83C\\uDF27️ [1](https://daily.hankooki.com/news/articleView.html?idxno=1364499)[2](https://testweather.kma.go.kr/weather/main.jsp)  \\n\\n\",\"wrap\":true}]}],\"sourceAttributions\":[{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"[오늘 (7일)의 날씨] 전국 흐리고 곳곳 비…'우산 챙기세요' < 사회일반 < 정치·사회·글로벌 < 기사본문 - 데일리한국\",\"seeMoreUrl\":\"https://daily.hankooki.com/news/articleView.html?idxno=1364499\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search4\\\"}\",\"isCitedInResponse\":\"True\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"기상청 날씨누리\",\"seeMoreUrl\":\"https://testweather.kma.go.kr/weather/main.jsp\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search25\\\"}\",\"isCitedInResponse\":\"True\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"}],\"references\":{},\"contentOrigin\":\"DeepLeo\",\"metadata\":{\"HasReferencesAdded\":true}}],\"nonce\":\"xJRcIJ0pyfqyELsQdP85Yw==\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.095755,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"## ☔ 포인트\",\"sourceAttributions\":[{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"[오늘 (7일)의 날씨] 전국 흐리고 곳곳 비…'우산 챙기세요' < 사회일반 < 정치·사회·글로벌 < 기사본문 - 데일리한국\",\"seeMoreUrl\":\"https://daily.hankooki.com/news/articleView.html?idxno=1364499\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search4\\\"}\",\"isCitedInResponse\":\"True\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"기상청 날씨누리\",\"seeMoreUrl\":\"https://testweather.kma.go.kr/weather/main.jsp\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search25\\\"}\",\"isCitedInResponse\":\"True\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"}],\"nonce\":\"JfbzlxzFIGlLQmF8x1/ENw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.1964552,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"\\n- **\",\"nonce\":\"YXYHtk0akIOdedUbAgPz6w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.289299,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"오후부터\",\"nonce\":\"cHQnGUlY+DIibzmvvFxlCg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.392853,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 수도권·\",\"nonce\":\"SpJoUad9Zp3paJhrJK3FFQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.525293,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"중부 중심\",\"nonce\":\"LxZVmOu5Gu0KB7ETOvdj8Q==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.653274,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"으로 비** 내\",\"nonce\":\"NaBufL6G1J4yet+KDWR2SQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.763571,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"림  \\n- 비\",\"nonce\":\"Q7OUFerXOzMyp2wNBDmWLA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134767.8699222,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 양은 많\",\"nonce\":\"1uP0M21iUBn8JH7rqbineg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.00481,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"지 않지만\",\"nonce\":\"HEuFG+/E4/hiTiHnDCrl2Q==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.110006,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" (대체로\",\"nonce\":\"30QpPQuYD8gdsuBxM61Aag==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.210323,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 5mm\",\"nonce\":\"S1em1Mqe2RSwGFRWzga2FQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.341104,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 내외)\",\"nonce\":\"1MmyjXxr91Nsb4sfL0kXkA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.4486232,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"  \\n- 퇴\",\"nonce\":\"EjorQnEVjkZqpHgNgi02Bg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.5503662,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"근 시간대\",\"nonce\":\"qFE5qyBRXbRtj9HkTA0exA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.6834512,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"에 걸릴\",\"nonce\":\"fwtZxESD8srqJPRl09ontQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.8093462,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 수 있어서 **우\",\"nonce\":\"VuatYuqj2nMQY9oAC4l4Sg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134768.9238782,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"산 챙기는\",\"nonce\":\"GgX9a4iojQtv68+CbP59YA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.0163152,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 게 좋음\",\"nonce\":\"ASfpuYNNly8HfMkNcQTj4Q==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.1513612,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"**\",\"nonce\":\"6ATLllWhiCDpbmNOHIWtJA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.5180032,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" \",\"nonce\":\"WGkKZQQuKkFQNyKYUMtXNg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.5420532,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"[1](https://daily.hankooki.com/news/articleView.html?idxno=1364499)\",\"nonce\":\"gKU8UEqknUk96igzfh1CRQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.6520011,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"  \\n\\n##\",\"nonce\":\"3XRtT5geGeWG9gOMUx/4IA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.813647,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" \\uD83C\\uDF21️ 체감\",\"nonce\":\"93TbCWdtgHXK/dY89UvZEg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134769.9228501,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"\\n- 낮엔\",\"nonce\":\"zsAJ7sTbUJkxiHwtilDJhQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.033497,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 선선한\",\"nonce\":\"eOJpEKY8opg9hKNcg1E4ew==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.278774,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 봄 날씨\",\"nonce\":\"s8JBiLjownROGoxBJ1S3ew==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.431642,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"지만\",\"nonce\":\"L9Wib6hvZt/leBnJXg4mMQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.531105,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"  \\n- **아침·밤은 쌀\",\"nonce\":\"j8Ln59InZLK79FnfJgFs7g==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.6234062,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"쌀 → 일\",\"nonce\":\"aqPsdrkbgGbzmBoQYnT+uw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.758536,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"교차\",\"nonce\":\"jptkwD2WTgHfeHK61VoHmw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.86609,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 큼**  \\n-\",\"nonce\":\"NJp5aA+OttSkoJ+4ElFIOQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134770.9840941,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 가볍\",\"nonce\":\"s7nmV3A5YWnI6qCf1LZn7Q==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.0716062,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"게 **\",\"nonce\":\"W1RFa9ln2hMDtki+lU+O4Q==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.1777482,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"겉옷\",\"nonce\":\"x5uRVDsiIrR2klyPlR3ldg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.3224952,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 하나 챙\",\"nonce\":\"GcvAY0c/LledDJugEJazhQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.5406501,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"기는 걸 추천** \\uD83D\\uDC4D  \\n\\n---\\n\\n\",\"nonce\":\"4OReibh5qSpVOQgNw8/WEg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.662224,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"\\uD83D\\uDC49 한 줄\",\"nonce\":\"RhlbiCqt2VipbVb0jd9vvg==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.7928202,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 정리  \\n**\",\"nonce\":\"O8uDUDJ8xEI+tjbqEtvM+w==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134771.916196,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"“흐리고\",\"nonce\":\"v6gBnHZTJ4vbGPurD9BkUQ==\"}]}\u001e"
+        },
+        {
+          "type": "send",
+          "time": 1778134771.9477792,
+          "opcode": 1,
+          "data": "{\"type\":6}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.102961,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 오후에 비 조금, 선\",\"nonce\":\"JxX9qkNu3Siuxh0Yuwd94g==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.2039511,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"선하지만 일\",\"nonce\":\"zS7fgzLkb9P/AOyWmvqDrA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.336225,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"교차\",\"nonce\":\"qeMEM3NOfzYWwcMC40wxlw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.4455762,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 큼 → 우산\",\"nonce\":\"kPSDwzt0GWHf5oDpnpiHEQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.548428,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 필수”\",\"nonce\":\"bvooPVbNbYlrXVAf1u6okw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.649811,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"**  \\n\\n지역(\",\"nonce\":\"Z8MI7nYCNjGCtKuAk76Kvw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.7680082,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"예: 서울\",\"nonce\":\"pB4u0SXuC8UgAkuITWq4OQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134772.9052172,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"/부산\",\"nonce\":\"XW84OIbq4L7EBttrCj0ROQ==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134773.038793,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 등) 알려주\",\"nonce\":\"JbSr/4/goof3uqD4lG3mtw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134773.2581341,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\"면 더\",\"nonce\":\"34iQPJULUprNM4vpPLdK7g==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134773.367005,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 정확하게 딱 맞춰서\",\"nonce\":\"22sXJYDba98sHc7wHaGHtA==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134773.781269,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"writeAtCursor\":\" 얘기해줄게\",\"nonce\":\"gyPYsbhxc57eS5KiiCwsbw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134773.817883,
+          "opcode": 1,
+          "data": "{\"type\":1,\"target\":\"update\",\"arguments\":[{\"messages\":[{\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:33.7904974+00:00\",\"timestamp\":\"2026-05-07T06:19:33.7904974+00:00\",\"messageId\":\"bc0a9dfd-24e8-411e-840c-d35647e01953\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"ReferencesListComplete\",\"offense\":\"None\",\"turnCount\":1}],\"nonce\":\"83Y+FuhQ0XBh/RGP/hLZqw==\"}]}\u001e"
+        },
+        {
+          "type": "receive",
+          "time": 1778134776.346276,
+          "opcode": 1,
+          "data": "{\"type\":2,\"invocationId\":\"0\",\"item\":{\"messages\":[{\"text\":\"오늘 날씨 어때?\",\"author\":\"user\",\"from\":{\"id\":\"6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd\",\"name\":null,\"displayName\":null,\"partnerId\":null},\"createdAt\":\"2026-05-07T06:19:16.9352535+00:00\",\"timestamp\":\"2026-05-07T15:19:16.9342461+09:00\",\"locale\":\"ko-kr\",\"market\":\"en-us\",\"locationInfo\":{\"country\":\"KR\",\"state\":\"\",\"timeZone\":\"Asia/Seoul\",\"timeZoneOffset\":9,\"latitude\":37.39881,\"longitude\":127.11178,\"sourceType\":1,\"isImplicitLocationIntent\":false},\"messageId\":\"e8063537f24e051f2ce09430bdc17b85\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"offense\":\"None\",\"adaptiveCards\":[],\"contentOrigin\":\"officeweb\",\"inputMethod\":\"Keyboard\",\"turnCount\":1,\"storageMessageId\":\"1778134774124\",\"entityAnnotationTypes\":[\"People\",\"File\",\"Event\",\"Email\",\"TeamsMessage\"],\"clientPreferences\":{}},{\"text\":\"알겠습니다. '오늘 날씨 한국'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"오늘 날씨 한국\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1978461+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1978461+00:00\",\"messageId\":\"1637220b-949b-4d8b-9af3-aa837ce6a8ee\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1},{\"text\":\"알겠습니다. '서울 오늘 날씨 2026년 5월 7일'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"서울 오늘 날씨 2026년 5월 7일\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1982522+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1982522+00:00\",\"messageId\":\"050d22cd-f2f9-4f31-bebd-61bc3083ab84\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1},{\"text\":\"알겠습니다. 'weather today Seoul May 7 2026'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"weather today Seoul May 7 2026\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1985496+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1985496+00:00\",\"messageId\":\"04dc6f61-62ab-4984-8639-66dd147722da\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1},{\"text\":\"알겠습니다. '한국 전국 날씨 5월 7일 기온'을(를) 검색하겠습니다...\",\"isExpanded\":false,\"isPersisted\":false,\"addToChainOfThought\":false,\"contentType\":\"SearchResults\",\"searchQueries\":[\"한국 전국 날씨 5월 7일 기온\"],\"author\":\"bot\",\"createdAt\":\"2026-05-07T06:19:20.1988241+00:00\",\"timestamp\":\"2026-05-07T06:19:20.1988241+00:00\",\"messageId\":\"886a2c5b-9a88-4ddc-b876-8c1159d137b4\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"messageType\":\"Progress\",\"offense\":\"None\",\"turnCount\":1},{\"text\":\"오늘(5월 7일) 기준으로 말해드리면\\uD83D\\uDC47  \\n\\n## \\uD83C\\uDF25️ 오늘 날씨 요약\\n- **전국:** 대체로 흐림 + 곳곳에 비  \\n- **서울 기준:**  \\n  - 낮 최고 약 **20~21℃ / 아침·저녁 10~13℃**  \\n  - 오후~저녁 사이 **약한 비 가능** \\uD83C\\uDF27️ \\uE200cite\\uE202turn1search4\\uE202turn1search25\\uE201  \\n\\n## ☔ 포인트\\n- **오후부터 수도권·중부 중심으로 비** 내림  \\n- 비 양은 많지 않지만 (대체로 5mm 내외)  \\n- 퇴근 시간대에 걸릴 수 있어서 **우산 챙기는 게 좋음** \\uE200cite\\uE202turn1search4\\uE201  \\n\\n## \\uD83C\\uDF21️ 체감\\n- 낮엔 선선한 봄 날씨지만  \\n- **아침·밤은 쌀쌀 → 일교차 큼**  \\n- 가볍게 **겉옷 하나 챙기는 걸 추천** \\uD83D\\uDC4D  \\n\\n---\\n\\n\\uD83D\\uDC49 한 줄 정리  \\n**“흐리고 오후에 비 조금, 선선하지만 일교차 큼 → 우산 필수”**  \\n\\n지역(예: 서울/부산 등) 알려주면 더 정확하게 딱 맞춰서 얘기해줄게!\",\"turnState\":\"Completed\",\"author\":\"bot\",\"responseIdentifier\":\"Default\",\"createdAt\":\"2026-05-07T06:19:23.1361766+00:00\",\"timestamp\":\"2026-05-07T06:19:23.1361766+00:00\",\"messageId\":\"a988f23f-0a1a-4407-b954-e3b04bdf5464\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"offense\":\"Unknown\",\"adaptiveCards\":[{\"type\":\"AdaptiveCard\",\"version\":\"1.0\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"오늘(5월 7일) 기준으로 말해드리면\\uD83D\\uDC47  \\n\\n## \\uD83C\\uDF25️ 오늘 날씨 요약\\n- **전국:** 대체로 흐림 + 곳곳에 비  \\n- **서울 기준:**  \\n  - 낮 최고 약 **20~21℃ / 아침·저녁 10~13℃**  \\n  - 오후~저녁 사이 **약한 비 가능** \\uD83C\\uDF27️ [1](https://daily.hankooki.com/news/articleView.html?idxno=1364499)[2](https://testweather.kma.go.kr/weather/main.jsp)  \\n\\n## ☔ 포인트\\n- **오후부터 수도권·중부 중심으로 비** 내림  \\n- 비 양은 많지 않지만 (대체로 5mm 내외)  \\n- 퇴근 시간대에 걸릴 수 있어서 **우산 챙기는 게 좋음** [1](https://daily.hankooki.com/news/articleView.html?idxno=1364499)  \\n\\n## \\uD83C\\uDF21️ 체감\\n- 낮엔 선선한 봄 날씨지만  \\n- **아침·밤은 쌀쌀 → 일교차 큼**  \\n- 가볍게 **겉옷 하나 챙기는 걸 추천** \\uD83D\\uDC4D  \\n\\n---\\n\\n\\uD83D\\uDC49 한 줄 정리  \\n**“흐리고 오후에 비 조금, 선선하지만 일교차 큼 → 우산 필수”**  \\n\\n지역(예: 서울/부산 등) 알려주면 더 정확하게 딱 맞춰서 얘기해줄게【richwebanswer-ed2d01】!\",\"wrap\":true}]}],\"sourceAttributions\":[{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"[오늘 (7일)의 날씨] 전국 흐리고 곳곳 비…'우산 챙기세요' < 사회일반 < 정치·사회·글로벌 < 기사본문 - 데일리한국\",\"seeMoreUrl\":\"https://daily.hankooki.com/news/articleView.html?idxno=1364499\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search4\\\"}\",\"isCitedInResponse\":\"True\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"기상청 날씨누리\",\"seeMoreUrl\":\"https://testweather.kma.go.kr/weather/main.jsp\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search25\\\"}\",\"isCitedInResponse\":\"True\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"MSN Weather\",\"seeMoreUrl\":\"https://a.msn.com/54/EN-US/ct38.317,127.233?pageocid=ansmsnweather\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search1\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"홈 - 기상청 날씨누리\",\"seeMoreUrl\":\"https://www.weather.go.kr/weather/main.jsp\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search2\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"다음날씨 | 전국 - Daum\",\"seeMoreUrl\":\"https://weather.daum.net/nation\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search3\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"오늘의 날씨 : 네이트 날씨\",\"seeMoreUrl\":\"https://news.nate.com/weather\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search5\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"전국 현재 날씨/기온 - 기상청\",\"seeMoreUrl\":\"https://www.kma.go.kr/weather/main-now-weather.jsp?gubun=1\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search6\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"전국 현재 날씨 | AccuWeather\",\"seeMoreUrl\":\"https://www.accuweather.com/ko/kr/south-korea-weather\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search7\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"오늘 날씨 한국\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"오늘 날씨 5월 7일 – 일교차 7.8도 감기 비상! 옷차림은? : 라이프 : 재경일보\",\"seeMoreUrl\":\"https://news.jkn.co.kr/post/904577\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search8\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"서울 오늘 날씨 2026년 5월 7일\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"과거관측 - 일별자료 - 기상청 날씨누리\",\"seeMoreUrl\":\"https://www.weather.go.kr/w/observation/land/past-obs/obs-by-day.do\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search9\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"서울 오늘 날씨 2026년 5월 7일\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"[날씨] 오후부터 중부·호남 서부 비 조금…강한 바람 / KBS 2026.05.07. | Watch\",\"seeMoreUrl\":\"https://www.msn.com/ko-kr/news/other/%EB%82%A0%EC%94%A8-%EC%98%A4%ED%9B%84%EB%B6%80%ED%84%B0-%EC%A4%91%EB%B6%80-%ED%98%B8%EB%82%A8-%EC%84%9C%EB%B6%80-%EB%B9%84-%EC%A1%B0%EA%B8%88-%EA%B0%95%ED%95%9C-%EB%B0%94%EB%9E%8C-kbs-2026-05-07/vi-AA22yHDT\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search10\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"서울 오늘 날씨 2026년 5월 7일\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"서울 - 오늘날씨 - 이투데이\",\"seeMoreUrl\":\"https://www.etoday.co.kr/weather/today-weather?LV0=0&LV1=%EC%84%9C%EC%9A%B8\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search11\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"서울 오늘 날씨 2026년 5월 7일\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"기상자료개방포털 [데이터:기상관측:지상:종관기상관측 (ASOS):캘린더]\",\"seeMoreUrl\":\"https://data.kma.go.kr/data/grnd/selectAsosRltmList.do?pgmNo=36&tabNo=4\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search12\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"서울 오늘 날씨 2026년 5월 7일\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"서울특별시 오늘 날씨 | 실시간 기온·강수 예보 확인\",\"seeMoreUrl\":\"https://www.korea247.kr/south-korea/seoul/weather-seoul/\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search13\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"서울 오늘 날씨 2026년 5월 7일\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"MSN Weather\",\"seeMoreUrl\":\"https://a.msn.com/54/EN-US/ct37.5683,126.9978?pageocid=ansmsnweather\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search14\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"Seoul, Seoul, South Korea Monthly Weather | AccuWeather\",\"seeMoreUrl\":\"https://www.accuweather.com/en/kr/seoul/226081/may-weather/226081\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search15\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"Seoul weather in May 2026 | Seoul 14 day weather\",\"seeMoreUrl\":\"https://www.weather25.com/asia/south-korea/seoul?page=month&month=May\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search16\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"Seoul 2026 Past Weather (South Korea) - Weather Spark\",\"seeMoreUrl\":\"https://weatherspark.com/h/y/142033/2026/Historical-Weather-during-2026-in-Seoul-South-Korea\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search17\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"Home - Korea Meteorological Administration\",\"seeMoreUrl\":\"https://www.weather.go.kr/neng/index.do\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search18\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"Weather in Seoul in May 2026 (Seoul) - Detailed Weather Forecast for a ...\",\"seeMoreUrl\":\"https://world-weather.info/forecast/south_korea/seoul/may-2026/\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search19\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"Weather in Seoul in May 2026 - Detailed Forecast\",\"seeMoreUrl\":\"https://www.easeweather.com/asia/south-korea/seoul/may\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search20\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"weather today Seoul May 7 2026\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"[5월 7일 날씨] 목요일 전국 날씨 흐리고 비... 꽃가루와 강풍 주의하세요 (권하경 기상캐스터) / 오늘의 날씨\",\"seeMoreUrl\":\"https://www.msn.com/ko-kr/news/other/5%EC%9B%94-7%EC%9D%BC-%EB%82%A0%EC%94%A8-%EB%AA%A9%EC%9A%94%EC%9D%BC-%EC%A0%84%EA%B5%AD-%EB%82%A0%EC%94%A8-%ED%9D%90%EB%A6%AC%EA%B3%A0-%EB%B9%84-%EA%BD%83%EA%B0%80%EB%A3%A8%EC%99%80-%EA%B0%95%ED%92%8D-%EC%A3%BC%EC%9D%98%ED%95%98%EC%84%B8%EC%9A%94-%EA%B6%8C%ED%95%98%EA%B2%BD-%EA%B8%B0%EC%83%81%EC%BA%90%EC%8A%A4%ED%84%B0-%EC%98%A4%EB%8A%98%EC%9D%98-%EB%82%A0%EC%94%A8/vi-AA22w2TY\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search21\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"어버이날 맞은 주말 날씨는?ㅣ5월 7일(목) 오전 11시 기상청 정례 예보 브리핑\",\"seeMoreUrl\":\"https://www.youtube.com/watch?v=uPr0xtWCqaA\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search22\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"☁️ 5월 7일(목) 상세 날씨 정보\",\"seeMoreUrl\":\"https://www.youtube.com/watch?v=Ed5zfRuT7I0\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search23\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"홈 - 기상청 날씨누리\",\"seeMoreUrl\":\"https://www.weather.go.kr/\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search24\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"2025년 5월 7일부터 5월 13일까지 전국 날씨 예보 기온 비 맑음 전망 안내\",\"seeMoreUrl\":\"https://dataful.kr/651\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search26\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"5월 날씨 총정리 (+ 평균기온, 강수량, 전망)\",\"seeMoreUrl\":\"https://lovely-day.tistory.com/121\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search27\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":\"[내일 날씨] 전국 맑고 기온 올라…모레부터 수도권·충청 비\",\"seeMoreUrl\":\"https://www.inews24.com/view/1965719\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Web\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1search28\\\"}\",\"isCitedInResponse\":\"False\",\"searchQuery\":\"한국 전국 날씨 5월 7일 기온\"},{\"sourceType\":\"CITATION\",\"providerDisplayName\":null,\"seeMoreUrl\":\"https://kr-prod.asyncgw.teams.microsoft.com/v1/objects/0-ckr-d4-5d7cedf3ea6f30323099bc690309dbdc/views/original\",\"referenceMetadata\":\"{\\\"type\\\":\\\"Undefined\\\",\\\"referenceType\\\":0,\\\"hasAttachments\\\":false,\\\"sourceType\\\":\\\"RICHWEBANSWER\\\",\\\"responseRequested\\\":false,\\\"suppressCitation\\\":false,\\\"isExternal\\\":false,\\\"isExcluded\\\":false,\\\"citationRefId\\\":\\\"turn1richwebanswer29\\\",\\\"answerType\\\":\\\"Weather\\\"}\",\"isCitedInResponse\":\"False\"}],\"references\":{\"richwebanswer-ed2d01\":{\"targetLink\":\"https://kr-prod.asyncgw.teams.microsoft.com/v1/objects/0-ckr-d4-5d7cedf3ea6f30323099bc690309dbdc/views/original\",\"displayData\":{\"type\":\"text/html\",\"renderType\":\"RICHWEBANSWER\",\"content\":\"{\\\"state\\\":\\\"Full\\\",\\\"metadata\\\":{},\\\"answerType\\\":\\\"Weather\\\"}\"},\"isCitedInResponse\":true}},\"contentOrigin\":\"DeepLeo\",\"turnCount\":1,\"metadata\":{\"HasReferencesAdded\":true}}],\"firstNewMessageIndex\":1,\"defaultChatName\":\"오늘 날씨 어때?\",\"conversationTransferToken\":\"eyJ0eXBl...[REDACTED_BLOB]\",\"turnState\":\"Completed\",\"conversationId\":\"b36b3c96-e203-4b62-8978-bf6630d79464\",\"requestId\":\"e8063537f24e051f2ce09430bdc17b85\",\"conversationExpiryTime\":\"2026-06-05T06:19:33.8784335Z\",\"telemetry\":{\"startTime\":\"2026-05-07T06:19:06.453466Z\",\"userMessageRequestStartTime\":null},\"throttling\":{\"maxNumUserMessagesInConversation\":600,\"numUserMessagesInConversation\":1,\"numLongDocSummaryUserMessagesInConversation\":0,\"metering\":{\"TenantDataAccess\":{\"remainingAllowance\":0},\"ImageAnalysis\":{\"remainingAllowance\":0},\"LLMOnly\":{\"remainingAllowance\":100},\"VisualCreator\":{\"remainingAllowance\":0},\"PersonalDataAccess\":{\"remainingAllowance\":0},\"GraphicArt\":{\"remainingAllowance\":0},\"CodeInterpreter\":{\"remainingAllowance\":0},\"FileReference\":{\"remainingAllowance\":3},\"DeepResearch\":{\"remainingAllowance\":0},\"CopilotTuning\":{\"remainingAllowance\":0},\"DeepWork\":{\"remainingAllowance\":0},\"WXPAgentMode\":{\"remainingAllowance\":7},\"NotebookCowork\":{\"remainingAllowance\":0}}},\"result\":{\"value\":\"Success\",\"message\":\"오늘(5월 7일) 기준으로 말해드리면\\uD83D\\uDC47  \\n\\n## \\uD83C\\uDF25️ 오늘 날씨 요약\\n- **전국:** 대체로 흐림 + 곳곳에 비  \\n- **서울 기준:**  \\n  - 낮 최고 약 **20~21℃ / 아침·저녁 10~13℃**  \\n  - 오후~저녁 사이 **약한 비 가능** \\uD83C\\uDF27️ \\uE200cite\\uE202turn1search4\\uE202turn1search25\\uE201  \\n\\n## ☔ 포인트\\n- **오후부터 수도권·중부 중심으로 비** 내림  \\n- 비 양은 많지 않지만 (대체로 5mm 내외)  \\n- 퇴근 시간대에 걸릴 수 있어서 **우산 챙기는 게 좋음** \\uE200cite\\uE202turn1search4\\uE201  \\n\\n## \\uD83C\\uDF21️ 체감\\n- 낮엔 선선한 봄 날씨지만  \\n- **아침·밤은 쌀쌀 → 일교차 큼**  \\n- 가볍게 **겉옷 하나 챙기는 걸 추천** \\uD83D\\uDC4D  \\n\\n---\\n\\n\\uD83D\\uDC49 한 줄 정리  \\n**“흐리고 오후에 비 조금, 선선하지만 일교차 큼 → 우산 필수”**  \\n\\n지역(예: 서울/부산 등) 알려주면 더 정확하게 딱 맞춰서 얘기해줄게!\",\"serviceVersion\":\"1.0.03412.28587\"}}}\u001e{\"type\":3,\"invocationId\":\"0\"}\u001e"
+        },
+        {
+          "type": "send",
+          "time": 1778134776.503246,
+          "opcode": 1,
+          "data": "{\"arguments\":[{\"Timestamps\":{\"RequestSent\":\"2026-05-07T06:19:16.914Z\",\"FirstServiceResponseReceived\":\"2026-05-07T06:19:20.188Z\",\"FirstServiceResponseRendered\":\"2026-05-07T06:19:20.192Z\",\"FirstTokenReceived\":\"2026-05-07T06:19:23.129Z\",\"LastTokenReceived\":\"2026-05-07T06:19:33.783Z\",\"FirstTokenRendered\":\"2026-05-07T06:19:23.130Z\"}}],\"target\":\"Metrics\",\"type\":1}\u001e"
+        }
+      ]
+    }
+  ]
+}
