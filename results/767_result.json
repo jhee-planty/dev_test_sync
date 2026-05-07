@@ -1,0 +1,21 @@
+{
+  "id": "767",
+  "command": "check-warning",
+  "service": "perplexity",
+  "executed_at": "2026-05-08T08:38:04+09:00",
+  "status": "FAIL_text_no_render",
+  "verdict_summary": "HPACK fix verified working (no ERR_HTTP2_COMPRESSION_ERROR in console, SPA mounted, prompt accepted, URL navigated to /search/{id}), but answer area remains empty after 35s+ wait — no Korean warning rendered AND no normal perplexity answer AND no RRN decode. SPA shell renders but answer-block content does not stream. Likely auth/account issue (CORS block on cloudflareaccess auth script + Google FedCM token failure + visible '로그인' button = anonymous session unable to invoke answer pipeline).",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "empty (답변 tab mounted, user prompt bubble rendered with full Korean text including '880101-1234567', but answer container below is completely blank — no streaming, no warning, no error message)",
+    "hpack_error_in_console": false,
+    "console_errors_excerpt": "1) CORS: Access to script at 'https://perplexity-ai.cloudflareaccess.com/cdn-cgi/acces...' (redirected from 'https://pplx-next-static-public.perplexity.ai/_spa/asset...') from origin 'https://www.perplexity.ai' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. | 2) (index):1 'User declined or dismissed prompt. API exponential cool down triggered.' | 3) Failed to load resource: net::ERR_FAILED at perplexity-ai.cloudf...oader-DrbzplZ3.js | 4) [GSI_LOGGER]: FedCM get() rejects with NetworkError: Error retrieving a token. (vendors-J6THRWTE.js:5) — NO ERR_HTTP2_COMPRESSION_ERROR, NO HPACK errors anywhere",
+    "url_after_submit": "https://www.perplexity.ai/search/32aa482b-4c1b-4f01-a241-0d918c43050a",
+    "screenshot_paths": ["C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\767_perplexity_final.png"]
+  },
+  "recommendation": "HPACK fix is CONFIRMED OK (RFC 7540 §8.1.2.2 Connection header strip works — no compression error, SPA mounted, navigation succeeded, prompt bubble rendered). The remaining FAIL is at a different layer: anonymous session cannot stream answers (login required, '로그인' button still visible in sidebar, Google FedCM token retrieval fails, cloudflareaccess auth script CORS-blocked). NEXT: either (a) login via Google account first then re-run, or (b) accept that perplexity requires auth for streaming and re-evaluate scenario design — the warning would need to fire BEFORE answer streaming gates on auth. Note: the CORS/FedCM errors may be pre-existing perplexity behavior unrelated to APF.",
+  "notes": "Pre-test state: Google login overlay (plantynetaitest@gmail.com '장희 계정으로 계속') and right-side login panel were visible on first load — closed both, page accepted prompt as anonymous user. URL successfully transitioned from / to /search/{uuid} confirming SPA routing works (this would FAIL with HPACK error). Console error count went from 2 (pre-submit) to 4 (post-submit) — added errors are FedCM token failure + chained ERR_FAILED, both auth-related, none are HPACK/compression. Total elapsed wait after submit: ~33s (verify_timeout was 30s)."
+}
