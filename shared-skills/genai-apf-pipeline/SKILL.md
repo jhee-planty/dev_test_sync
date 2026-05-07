@@ -28,9 +28,10 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 | pipeline_state | `~/Documents/workspace/claude_work/projects/apf-operation/state/pipeline_state.json (fallback: ~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json)` (schema_version=1.0) |
 | dashboard | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md` (auto-regen) |
 | status.md | `shared-skills/genai-apf-pipeline/services/status.md` (auto-regen, **직접 수정 금지**) |
-| impl journal | `apf-operation/services/{service}/impl.md` (57차 α demote 후 — M4 actual move pending) / legacy `shared-skills/apf-warning-impl/services/{id}_impl.md` |
-| design doc | `apf-operation/services/{service}/design.md` (57차 α demote 후 — M4 actual move pending) / legacy `shared-skills/genai-apf-pipeline/services/{id}_design.md` |
-| analysis | `apf-operation/services/{service}/analysis.md` (이미 외부) |
+| frontend doc | `shared-skills/genai-apf-pipeline/services/{id}_frontend.md` (57차 Step 3 잔존 — frontend inspection raw data, framework reference 가 아닌 mission state) |
+| impl journal | `apf-operation/services/{service}_impl.md` (57차 Step 3 demote 완료) |
+| design doc | `apf-operation/services/{service}_design.md` (57차 Step 3 demote 완료) |
+| analysis | `apf-operation/services/{service}_analysis.md` (이미 외부) |
 | protocol pattern | `shared-skills/apf-warning-impl/references/protocol-patterns/{pattern}.md` (57차 β 신설) |
 | 등록 DB | etap MySQL @ `ogsvm` (see references/db-access-and-diagnosis.md) |
 
@@ -430,8 +431,8 @@ Phase 6 retry sub-loop 의 termination condition. **All triggers = event_arrival
 
 | 디렉터리 | 성격 | Test PC 영향 |
 |---------|------|---------|
-| `services/*_design.md` | per-service 설계 문서 (warning strategy, is_http2 등) | 무시됨 |
-| `services/*_frontend.md` | per-service frontend 분석 결과 | 무시됨 |
+| `apf-operation/services/{service}_design.md` (57차 Step 3 demote 완료) | per-service 설계 문서 (warning strategy, is_http2 등) | 무시됨 |
+| `services/*_frontend.md` (57차 Step 3 잔존) | per-service frontend 분석 결과 (mission state) | 무시됨 |
 | `services/status.md` | 자동 생성 (regen-status 결과) | 무시됨 |
 | `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
 
