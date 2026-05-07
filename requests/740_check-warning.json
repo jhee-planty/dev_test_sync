@@ -1,0 +1,32 @@
+{
+    "command": "check-warning",
+    "priority": "medium",
+    "params": {
+        "service": "gamma",
+        "prompt": "Make a presentation about climate change",
+        "expected_text": "(non-PII baseline — HAR capture for outline schema for FIX Option C)",
+        "url": "https://gamma.app/create/generate",
+        "verify_timeout_s": 90,
+        "context": "★ HAR CAPTURE for gamma Option C forged-success outline. Submit non-PII prompt, capture HAR for ai.api.gamma.app/ai/v2/generation + ai/v2/render-generation 200 OK responses. Per HAR-triage-master inline template + decision JSON 20260507_111500 sub-agent recommendation.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "har_capture_required": true,
+            "har_target_path": "files/740/gamma_normal_session.har",
+            "test_steps": [
+                "1. Open Chrome DevTools (F12) BEFORE navigation",
+                "2. Network tab → 'Preserve log' + 'Disable cache' checked",
+                "3. Navigate to https://gamma.app/create/generate (logged in 장희 최's Workspace)",
+                "4. Type non-PII prompt: 'Make a presentation about climate change'",
+                "5. Click 개요 생성 → wait for outline → click 생성 (Generate Slides)",
+                "6. Wait up to 60s for slide generation completion",
+                "7. Right-click Network → 'Save all as HAR with content' → save to files/740/gamma_normal_session.har",
+                "8. CRITICAL: HAR must contain ai.api.gamma.app/ai/v2/generation + ai/v2/render-generation 200 OK responses with full body",
+                "9. Push HAR file via git"
+            ]
+        }
+    },
+    "id": "740",
+    "created": "2026-05-07T06:14:00Z",
+    "attachments": [],
+    "notes": "gamma HAR for Option C forged-success outline schema reverse-engineering."
+}
