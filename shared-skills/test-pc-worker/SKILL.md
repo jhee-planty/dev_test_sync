@@ -158,6 +158,44 @@ END_VERDICT
    - failure_category (5종) — INFRASTRUCTURE / PROTOCOL_MISMATCH / NOT_RENDERED / SERVICE_CHANGED / AUTH_REQUIRED
 4. Runtime: `write-result.ps1 -reqId {id} -resultJson {literal_json}` → `results/{id}_result.json` + state.last_processed_id 갱신
 
+### Capability Judgment (53차 codify — Authority Boundary inbound responsibility)
+
+**의도된 분리** (async request-response pattern, cowork-remote SKILL §Authority Boundary 참조):
+- Dev PC outbound = request 발행 (작업 intent + parameters). Test PC capability simulation 금지.
+- **Test PC inbound = 자기 capability 로 판단 + 진행 / reject**
+
+**Inbound 의무**:
+1. **Capability check (자기 권한)**: request 의 command + params 가 test PC 의 실제 capability 로 가능한지 자기 판단
+   - 정의된 command 인가? (check-warning / check-block / check-cert / capture-screenshot / report-status)
+   - 필수 params 충족? (expected_text / service / timeout 등)
+   - 환경 가능? (Chrome 살아있음 / WMC 권한 / Snapshot 의존성)
+2. **가능 시 → 진행**: §B Execute command flow 정상 수행
+3. **불가 시 → reject**:
+   - `result.json` verdict = `BLOCKED` 또는 `error_INFRASTRUCTURE`
+   - `notes` 에 reject reason 명시 ("command X not supported", "Chrome focus failed", "auth required")
+   - **간단한 alternative 제안 OK** (예: "consider check-block instead") — 다만 reject reason 의 sub-section 으로
+   - **Alternative 의 새 strategy 결정은 dev PC 영역** — test PC 가 새 request 발행 X
+4. **dev PC 가 사전 판단해서 보낸 capability 이슈는 test PC 가 정정**:
+   - dev outbound 가 "X 가능할 것" 추측한 경우, test PC 가 실제 가능 여부 판단 후 result 에 정정 명시
+   - 예: dev request 의 notes 에 "subagent 로 HAR 가능?" 가정이 있으면, test PC 가 result.notes 에 "HAR not supported in current command set, only check-warning subagent has Chrome DevTools" 형태로 corrective evidence
+
+**Inbound 금지**:
+- Dev PC 의 새 strategy 설계 / 다른 service 로 자율 redirect
+- Mission criterion 자율 재정의 (Stage 6-sub immutability — request 의 expected_text 같은 criterion 이 dev 가 명시한 것이면 자율 변경 X)
+
+**Boundary line**:
+| Pattern | 분류 |
+|---|---|
+| Capability check + 진행 결정 (자기 권한) | OK |
+| Reject reason + 간단한 alternative suggestion | OK |
+| Corrective evidence (dev 의 capability 가정 정정) | OK |
+| 새 strategy 결정 / 새 request 자율 발행 | **Anti-pattern** (dev 영역) |
+| Mission criterion 자율 재정의 | **Anti-pattern** (Stage 6-sub immutability) |
+
+**Rationale**: producer/consumer responsibility 분리. Dev (producer) = intent 정의, test (consumer) = capability 판단 + 실행. Producer 가 consumer reasoning 추측 = leaky abstraction (cowork-remote §Authority Boundary). Consumer 가 producer 결정 영역 침해 = inverse over-reach. 양쪽 모두 차단.
+
+→ See `cowork-micro-skills/INTENTS.md §5 53차 entry` for full discussion-review consensus.
+
 ### C. Push results
 
 1. Runtime: `push-result.ps1` — git add/commit/push (3-retry)

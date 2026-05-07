@@ -50,6 +50,37 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 
 **금지**: ID 를 Claude 가 직접 할당 금지. 반드시 push-request.sh 에 위임.
 
+### Authority Boundary (53차 codify — D9 Stage 8 candidate Capability Pre-judgment Anti-pattern)
+
+**의도된 분리** (async request-response pattern):
+- **Dev PC outbound**: 작업 intent + parameters 명시 (request form). Test PC 의 가능 여부 판단 권한 인정.
+- **Test PC inbound**: 자기 capability 로 가능 여부 판단 (test-pc-worker SKILL §Capability Judgment 참조).
+
+**Outbound 의무**:
+- Request intent 명시 (왜 필요한지)
+- Skill 에 정의된 command + parameter 명시 (§Request Schema)
+- 가능 여부 판단은 test PC 권한 — request 작성 후 dispatch (사전 결정 X)
+
+**Outbound 금지** (D9 Stage 8 candidate — Authority Inversion):
+- **Test PC capability inventorying**: "test PC 의 사용 가능한 command 확인 완료. ..." 류 enumeration
+- **Internal reasoning simulation**: "subagent ... Chrome DevTools 사용 가능" / "explicit instruction 으로 시도" 등 test PC 의 runtime 추측
+- **사전 가능/불가 판단**: "X command 가 없으니 ..." → 작업 진행 여부 dev 가 결정
+- **Workaround pre-design**: test PC 의 execution path 추측 후 alternative spec
+
+**Boundary line**:
+| Pattern | 분류 |
+|---|---|
+| Skill 정의된 command name 인용 ("check-warning command 사용") | OK (public interface 인용) |
+| Request parameter 명시 | OK |
+| Test PC 가능 여부 판단 권한 인정 명시 | OK |
+| Capability inventorying / internal reasoning simulation | **Anti-pattern** |
+| 사전 가능 판단 후 작업 진행 결정 | **Anti-pattern** |
+| Workaround pre-design (execution path 추측) | **Anti-pattern** |
+
+**Rationale**: producer/consumer responsibility 분리 (DTA distributed architecture 원칙). Producer over-specifying consumer behavior = leaky abstraction. Pre-judgment 은 round-trip cost 보다 cheap 한 경우만 정당 — 대부분 over-reach.
+
+→ See `cowork-micro-skills/INTENTS.md §5 53차 entry` for full discussion-review consensus.
+
 ### B. Inbound — scan, 판정, 갱신
 
 **Trigger**: "결과 확인해줘", "새 결과 왔어?", "폴링 한번 돌려줘" 등.
