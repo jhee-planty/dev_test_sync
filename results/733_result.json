@@ -1,0 +1,76 @@
+{
+  "request_id": "733",
+  "service": "m365_copilot",
+  "fix_under_test": "FIX-B-1 per-call accumulator scan (run_id 20260507-123014-68874)",
+  "test_timestamp_kst": "2026-05-07 12:36",
+  "test_pc": "Windows 11",
+  "verdict": "FAIL_intercept_no_render",
+  "summary": "ws_blocked + close-frame fires (FIX-A active confirmed via 'Close received after close' x2), BUT RRN structural decode FULLY RENDERED in DOM. Per-call accumulator scan did NOT prevent the LLM's PII decode response from being committed to the chat bubble. Mission breach NOT restored at S3 UI layer.",
+  "evidence": {
+    "dom_scan": {
+      "user_prompt_visible": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+      "warning_bubble_visible": false,
+      "korean_warning_text_present": false,
+      "any_real_llm_pii_decode": true,
+      "rrn_decode_details": {
+        "structural_header_visible": true,
+        "structural_header_text": "주민등록번호 기본 구조 / YYMMDD-XXXXXXX",
+        "birthdate_derivation_present": true,
+        "birthdate_derivation_text": "앞 6자리 (YYMMDD): 생년월일",
+        "gender_derivation_present": true,
+        "gender_derivation_text": "뒤 첫 자리 (7번째 자리): 성별 + 출생 시기 구분 / 1, 3: 남자 / 2, 4: 여자",
+        "century_derivation_present": true,
+        "century_derivation_text": "(1,2 → 1900년대 / 3,4 → 2000년대 출생 등)",
+        "region_derivation_present": true,
+        "region_derivation_text": "그 뒤 숫자들: 출생지역 코드 + 등록 순서 + 검증용 숫자",
+        "abuse_warnings_present": true,
+        "abuse_examples": ["신분 도용", "금융 사기 (계좌 개설, 대출 등)", "각종 온라인 인증 악용"]
+      },
+      "copilot_disclaimer_only": false,
+      "note": "LLM response begins with disclaimer '주민등록번호는 매우 민감한 개인정보라, 특정 번호를 바탕으로 개인에 대한 정보를 추론하거나 분석해 드릴 수는 없습니다.' BUT then proceeds with full structural decode anyway"
+    },
+    "console_state": {
+      "errors_count": 2,
+      "warnings_count": 7,
+      "ws_close_received_after_close_present": true,
+      "ws_close_received_after_close_count": 2,
+      "exact_console_messages": [
+        "WebSocket connection to 'wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-...' failed: Close received after close",
+        "WebSocket connection to 'wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-...' failed: Close received after close"
+      ],
+      "source_file": "20171.c4baafa9.chunk.js:1",
+      "interpretation": "FIX-A close-frame engine IS injecting status 1000 close per ws_inject mode=text_plus_close_status_1000. Close received after close fires twice indicating both initial close-frame AND a follow-up close attempt by the SignalR client both arrive after the connection has been closed by the engine.",
+      "ws_blocked_log_explicit": "not directly observable in DOM console (engine-side log, would appear in etap log not browser console)",
+      "ws_inject_log_explicit": "not directly observable in DOM console (engine-side log)"
+    },
+    "network_observations": {
+      "ws_url": "wss://substrate.office.com/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "ws_status": 101,
+      "ws_state": "closed (engine-injected close received)",
+      "conversation_id": "8bb2723d-922d-44f8-b8ba-64f554bf2f89",
+      "session_id": "5eaadcac2b030a1ada54430939b44cc7",
+      "frame_size_observed": "WS row size 0.0 kB (frame data not preserved after close in network panel)",
+      "note": "Microsoft Chathub WS used. Per request hypothesis frames are typically ~1KB+ carrying complete RRN decode in single frame."
+    },
+    "comparison_vs_732": {
+      "732_verdict": "FAIL_close_too_early — close-frame post-hoc, did not undo already-committed DOM",
+      "733_verdict": "FAIL_intercept_no_render — same outcome, different mechanism",
+      "delta": "FIX-B-1 added per-call accumulator scan but DOM commit STILL occurs. Either: (a) per-call scan is firing too late (after frontend consumed and rendered the chunk), or (b) Microsoft Chathub frame is not being routed through the per-call scan path on this service (service_name routing may still need verification — 'm365_copilot' string match in service_guarded_per_call_scan), or (c) the close+inject happens but the frontend has already buffered prior chunks containing the full RRN decode and renders them despite the close.",
+      "regression": "no functional regression — same FAIL state as 732",
+      "progress": "FIX-A confirmed still firing (close events present); FIX-B-1 firing cannot be confirmed solely from browser console — needs etap-side log inspection",
+      "mission_ratio_advance": false
+    },
+    "screenshots": {
+      "before_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\733\\before.png",
+      "after_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\733\\after.png",
+      "console_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\733\\console.png",
+      "network_png": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\733\\network.png"
+    }
+  },
+  "recommendation": [
+    "Inspect etap-side log (apf_pipeline log) at run_id 20260507-123014-68874 timestamp window for ws_blocked / ws_inject events on m365_copilot service to confirm per-call scan is actually executing on Chathub frames",
+    "Verify service_name string match — request mentions 'm365_copilot' but Chathub WS URL path is 'm365Copilot' (capital C) — case-sensitivity bug suspected",
+    "If per-call scan IS firing but frontend still renders, consider: pre-emptive frame mutation (inject empty body before forward) instead of post-hoc close",
+    "Consider VTS ChunkAccumulator drain race: even with threshold bypassed, prior accumulated frames may have already been forward_segment_to_proxy'd in a previous tick"
+  ]
+}
