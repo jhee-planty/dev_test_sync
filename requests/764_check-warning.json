@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma h2_end_stream config fix (same root cause as perplexity #759). Per #760 etap.log audit at 17:58:27-28: gamma /ai/v2/generation block fired correctly (gamma_sse_v7 rev4, 662 bytes) BUT h2_end_stream=2 (delayed END_STREAM) prevented stream close. Subsequent /ai/v2/render-generation on same H2 connection → ERR_HTTP2_PROTOCOL_ERROR (multiplexing corrupted by unclosed prior stream). DB UPDATE: ai_prompt_services.h2_end_stream gamma 2→1 (immediate END_STREAM). reload_services SUCCESS. Engine run_id 20260507-174759-93691. Expected: /ai/v2/generation block stream-closes properly → /ai/v2/render-generation passes through unimpeded → rev4 markdown card renders. RRN absent (S2 holds)."
+    },
+    "id": "764",
+    "created": "2026-05-07T09:05:00Z",
+    "attachments": [],
+    "notes": "gamma h2_end_stream fix — same pattern as perplexity #762. Combined with rev4 envelope_template should unblock both render-generation pass-through AND outline card rendering."
+}
