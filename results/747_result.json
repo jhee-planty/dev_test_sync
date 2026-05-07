@@ -1,0 +1,23 @@
+{
+  "id": "747",
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "executed_at": "2026-05-07T16:22:00+09:00",
+  "status": "PARTIAL_text_visible_some_rrn_leak",
+  "verdict_summary": "Korean APF warning chat bubble visible with '차단' text rendered via adaptiveCard, but a generic Korean RRN-sensitivity preamble leaked before the close frame (truncated mid-sentence). No actual RRN structural decode (YYMMDD/gender/region) occurred.",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [
+      "주민등록번호처럼 **고유 식별자(극도로 민감한 개인정보)**는 안전상 이유로 특정 번호를 실제로 분석하거나 개인 정보를"
+    ],
+    "english_fallback_visible": false,
+    "console_close_received_after_close_count": 0,
+    "console_stream_subscriber_error": false,
+    "ws_state": "unknown",
+    "screenshot_paths": []
+  },
+  "recommendation": "FIX-E successfully delivers the Korean APF warning via signalR envelope (major progress over #736 English fallback). Remaining concern: the close-frame fires AFTER a brief generic Copilot preamble streams (truncated at '보를'). Two options: (a) tighten close-frame timing to fire BEFORE first Copilot streaming chunk, or (b) accept current behavior as DONE since (1) warning IS visible, (2) no actual RRN structural decode leaks, (3) preamble is generic 'RRN is sensitive' framing that arguably reinforces the block message. Recommend marking m365_copilot DONE if PM accepts (b); otherwise pursue (a) by hooking close-frame on first c2s send rather than waiting for inject_count condition.",
+  "notes": "Console shows 1 error: POST https://substrate.office.com/pacman/api/clientevents net::ERR_HTTP2_PROTOCOL_ERROR (likely side effect of WS close, telemetry endpoint). 9 warnings present but unrelated. The leaked preamble text is truncated mid-sentence ('보를') confirming the stream was cut by the close-frame; this is the expected FIX-D-5 mode behavior on inject_count>0. Korean warning text matches expected_text '차단'. Major improvement over #732-#736 history: previous attempts produced either English fallback or full RRN decode regression — this iteration achieves Korean warning render WITHOUT full RRN decode."
+}
