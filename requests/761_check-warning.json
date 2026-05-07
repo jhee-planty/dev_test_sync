@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "zeta",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://zeta-ai.io/",
+        "verify_timeout_s": 30,
+        "context": "★ zeta L-046 silent partial-readiness verify. Pipeline_state status=BLOCKED_diagnosed. DB registered: zeta_sse_v2 envelope_template (526 bytes, well-formed 2-event SSE: data:{event:IN_PROGRESS,chunkMessage:{id,text,role:assistant}} + data:{event:CHAT_COMPLETE,replyMessage:{id,text,role:assistant}}). path_patterns=/v1/rooms/ specific. h2_mode=2. Engine run_id 20260507-174759-93691 (FIX-G+F+E active for m365_copilot, zeta uses standard envelope path). Same L-046 pattern as perplexity #755 and copilot #756 — DB+engine ready, may have never been E2E verified. Expected: Korean warning rendered as zeta assistant message via {{ESCAPE2:MESSAGE}} substitution + RRN decode absent."
+    },
+    "id": "761",
+    "created": "2026-05-07T08:57:00Z",
+    "attachments": [],
+    "notes": "zeta L-046 verify — same pattern as perplexity/copilot. If FAIL: capture HAR with Method (c) for SSE schema baseline."
+}
