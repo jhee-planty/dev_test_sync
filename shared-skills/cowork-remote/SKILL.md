@@ -88,13 +88,27 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 **흐름**:
 1. Runtime: `bash $RT_DIR/scan-results.sh` — git pull + filesystem scan + 새 결과 ID 목록 stdout (newline separated)
 2. 새 결과 없음 (stdout empty) → `ScheduleWakeup(delaySeconds=270, prompt="<<autonomous-loop-dynamic>>")` 자동 재예약 후 turn 종료 (cache-warm 영역, Polling Policy v2 / HR3 — chain 유지). 장시간 idle (mission ratio = 1.0 maintenance mode OR test PC 명시적 unavailable) 만 1200-1800s 허용 (41차 mission-goal-based, "count==0 증명" 폐지).
-3. 새 결과 있음 → **각 ID 별로 아래 루프**:
+3. 새 결과 있음 → **batch 의 모든 ID 처리 의무 (55차 codify — Single-task Batch Slice Anti-pattern 차단)**:
    a. `cat $GIT_SYNC_REPO/results/{id}_result.json` 읽기
    b. **Claude 판단** (§Result Classification 가이드) — verdict ∈ `{done, error_PROTOCOL_MISMATCH, error_NOT_RENDERED, error_SERVICE_CHANGED, error_AUTH_REQUIRED, error_INFRASTRUCTURE}`
    c. Runtime: `bash $RT_DIR/update-queue.sh {id} {verdict} "{summary}"`
    d. Runtime: `bash $RT_DIR/archive-completed.sh {id}` (request+result → local_archive/YYYY-MM-DD/)
    e. (옵션) Runtime: `bash $RT_DIR/notify.sh "APF" "#{id} {verdict}"` — 핵심 이벤트만
-4. 사용자에게 요약 보고 : 처리된 ID 들 + verdict 들
+4. **Batch completeness 의무**: scan-results.sh stdout 의 **모든 ID 처리 완료** 후 turn 종료. 일부 ID 만 처리 후 turn 끝맺기 = Single-task Batch Slice Anti-pattern (55차 codify, D9 Stage 5/6 sub-form).
+5. 사용자에게 요약 보고 : 처리된 ID 들 + verdict 들
+
+**Batch completeness 의무 상세 (55차)**:
+
+| Pattern | 분류 |
+|---|---|
+| Batch 모든 IDs sequentially 처리 후 turn 끝 | OK |
+| 한 ID 처리 시 engine fix → build → deploy → dispatch 진행 (long sequence), 그 후 같은 turn 안에서 다음 ID 처리 | OK (engine fix sequence 가 그 ID 의 한 step) |
+| **첫 ID 처리 후 "이번 turn 완료" 결론 → 나머지 ID 무시 + turn 끝** | **Anti-pattern (D9 Stage 5/6 sub-form — single-task batch slice)** |
+| **"polling chain alive +Ns" / "ScheduleWakeup 사용함" 으로 batch slice 정당화** | **Anti-pattern (D9 Stage 6 telltale 정확 매칭)** |
+
+**Rationale**: scan-results.sh batch 의 모든 IDs 는 producer (test PC) 가 같은 batch 로 produce 한 결과. Consumer (dev PC) 가 "이번 turn 에 N 개 중 1 개만 처리" 결정 = scope-completion judgment narrowing (51차 root cause). Batch 처리 의무 = positive procedure (D27 적용) — anti-pattern 차단 wording 외 standard operating procedure form.
+
+**예외**: ID 처리 중 외부 의존성 (build infrastructure unavailable / git push 실패 / sub-agent dispatch 진행 중) 으로 step 진행 불가 시 — 해당 ID 만 defer, 나머지 IDs 는 계속 처리 의무.
 
 **중요**:
 - 응답 대기 중 자동 STALLED 에스컬레이션 **없음**. 결과 안 오면 계속 scan 반복 (호출자 루프 책임).

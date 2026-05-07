@@ -157,7 +157,10 @@ V1 archive 의 trigger: 사용자 directive (2026-04-28 21차) — "V2 시도 + 
           `defer:awaiting_verification` (cause-based decision).
         Axis still healthy → proceed deploy.
         (counter 자체는 visibility metric 으로만 유지. count 도달로 자동 force transition 안 함.)
-   - Execute next_action (한 step만)
+   - Execute next_action (**한 step = service 의 한 micro-task 진전**, 55차 명확화)
+     - "한 step" 의 정확한 의미: 해당 service 의 next_action 1개 entry 의 작업 완료 (e.g., engine fix → build → deploy → dispatch 한 sequence 가 1 step)
+     - **Multi-service batch 결과 처리 시 모든 services 의무**: scan-results.sh batch 의 새 결과들은 각 service 의 "한 step" — batch 의 모든 services 의 step 처리 후 turn 종료 (cowork-remote/SKILL.md §B Inbound batch completeness 참조)
+     - **금지 (55차)**: 한 service 의 step 완료 후 batch 의 다른 services 무시하고 turn 끝 = D9 Stage 5/6 sub-form (single-task batch slice)
    - On 'apply_engine_fix:*' deploy → entry.unverified_deploys += 1 (visibility only)
    - On successful verify → entry.unverified_deploys = 0
    - Update entry next_action OR status as result dictates
