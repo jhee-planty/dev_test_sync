@@ -1,0 +1,56 @@
+{
+  "request_id": 728,
+  "service": "m365_copilot",
+  "scenario": "check-warning",
+  "timestamp": "2026-05-07T11:11:00+09:00",
+  "executor": "test-pc-worker dispatched verifier",
+  "url_tested": "https://m365.cloud.microsoft/chat",
+  "final_url": "https://m365.cloud.microsoft/chat/conversation/41dad408-1123-438b-ba83-83c913c5a690?redirfrom=CsrToSSR",
+  "prompt_submitted": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "verdict": "FAIL",
+  "verdict_reason": "Regression — no APF block fired, no warning bubble rendered, Copilot returned full PII analysis (생년월일/성별/세기 구조 설명 + 위험 항목). V8-A CORS Origin fix path NOT triggered (substrate.office.com endpoint never hit). V6-F generic page-inject fallback also NOT triggered (no Korean warning text in DOM, no X-Apf-Page-Inject header observed).",
+  "evidence": {
+    "auth_state": "LOGGED_IN",
+    "auth_account": "jhee28@plantynet.com",
+    "auth_state_change_from_698": "AUTH_REQUIRED_SKIP -> LOGGED_IN (user logged in since 14h-ago run)",
+    "network_observations": {
+      "substrate_office_com_post": "NONE — filter 'substrate' matched 0 of 239 requests; filter 'substrate.office.com' matched 0 of 234 requests",
+      "chathub_post": "NONE — filter 'chathub' matched 0 of 236 requests",
+      "cors_errors": "NONE observed in console (0 errors, 10 warnings unrelated to APF)",
+      "x_apf_page_inject_header": "NOT observed on any captured response",
+      "actual_chat_endpoint": "Not isolated; M365 Copilot likely uses m365.cloud.microsoft host (not substrate.office.com) — APF rule may be targeting a host that is no longer the active backend",
+      "total_requests_captured": 239
+    },
+    "dom_scan": {
+      "bubble_visibility": false,
+      "warning_bubble_present": false,
+      "korean_warning_text": null,
+      "actual_response_summary": "Full PII explanation rendered as Copilot answer — bullet list of '앞 6자리: 생년월일 (YYMMDD 형식)', '뒤 첫 자리: 성별 및 세기 구분', '예: 1, 2 → 1900년대 출생 / 3, 4 → 2000년대 출생', '그 외 숫자: 지역 코드, 순번, 검증번호 등', then risk list '명의 도용', '금융 사기', '개인정보 침해'",
+      "block_or_warning_indicator": "none — message-input is enabled, no error overlay, no chat-bubble warning, no toast"
+    },
+    "console_observations": {
+      "errors": 0,
+      "warnings": 10,
+      "info": 0,
+      "verbose": 2,
+      "apf_keyword_matches": 0,
+      "cors_keyword_matches": 0
+    },
+    "screenshots": {
+      "before": "C:/Users/최장희/Documents/dev_test_sync/files/728/before.png",
+      "after": "C:/Users/최장희/Documents/dev_test_sync/files/728/after.png",
+      "console": "C:/Users/최장희/Documents/dev_test_sync/files/728/console.png",
+      "network": "C:/Users/최장희/Documents/dev_test_sync/files/728/network.png"
+    }
+  },
+  "comparison_to_698": {
+    "698_status": "AUTH_REQUIRED_SKIP",
+    "now_status": "FAIL_no_block_no_warning",
+    "delta": "Auth wall removed; PII prompt now reaches model and is answered fully. Neither V8-A CORS Origin fix nor V6-F generic page-inject fallback engaged. APF appears to NOT be intercepting M365 Copilot traffic at all — likely the rule is pinned to substrate.office.com but the live endpoint is on a different host."
+  },
+  "recommended_followups": [
+    "Capture fresh HAR on m365.cloud.microsoft/chat with PII prompt to identify the actual chat POST endpoint and host (likely m365.cloud.microsoft, copilot.microsoft.com, or webshell.suite.office.com).",
+    "Update APF rule registration for m365_copilot to target the live host instead of substrate.office.com.",
+    "Re-run check-warning after rule update."
+  ]
+}
