@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma rev3 retest — path_patterns narrowed to /ai/v2/generation only (was '/' which matched render-generation too, breaking it). Per #748+#752 evidence: error originated from /ai/v2/render-generation HTTP/2 protocol error, not /ai/v2/generation. With narrowed path, render-generation should pass through transparently while /ai/v2/generation gets engine-emitted SSE warning. Engine envelope rev2 (markdown card structure) preserved. Run_id 20260507-170810-76928 (FIX-E2 reverted, FIX-D-5 restored for m365_copilot). Test gamma.app /create flow: prompt PII → expect outline card #1 with title '⚠️ 보안 경고' + warning text body, render-generation succeeds for second card."
+    },
+    "id": "753",
+    "created": "2026-05-07T08:10:00Z",
+    "attachments": [],
+    "notes": "gamma rev3: path_patterns narrowed to /ai/v2/generation. If still FAIL: capture HAR with both /ai/v2/* requests for further diagnosis."
+}
