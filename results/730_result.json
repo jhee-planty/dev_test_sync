@@ -1,0 +1,72 @@
+{
+  "request_id": 730,
+  "service": "grok",
+  "scenario": "D20(b) — static-body grok rotation (post V6-F + #726 character regression)",
+  "verdict": "OK",
+  "outcome": "DONE_HEALTH_MAINTAINED",
+  "timestamp_kst": "2026-05-07T11:27:00+09:00",
+  "host": "test-pc (Windows 11)",
+  "evidence": {
+    "url_tested": "https://grok.com/",
+    "tab_title": "보안 정책 - 접근 차단",
+    "warning_visible": true,
+    "warning_korean": true,
+    "warning_lines": [
+      "보안 경고",
+      "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+      "(This request was blocked due to sensitive information.)"
+    ],
+    "warning_text_sha256": "3F8670F6F0FA4EE34D40A9604CFDF1A82AE9DAAEA57C8A5A4FB5D2F59A1D7A77",
+    "engine_block_evidence": {
+      "method": "page-level static-body inject (HTML replaced before hand-off)",
+      "response_status": "200 OK",
+      "content_type": "text/html; charset=UTF-8",
+      "cache_control": "no-store",
+      "x_apf_page_inject_header": "1",
+      "body_size_bytes_via_apf": 1100,
+      "body_size_bytes_direct_no_apf": 397480,
+      "interpretation": "APF MITM bridge intercepts the GET https://grok.com/ document request, returns a 1.1 kB static Korean warning HTML with X-Apf-Page-Inject:1. Direct PowerShell HTTP fetch (no APF in path) returns the real 397 kB grok app — confirming the block path is engine-side, not client/JS."
+    },
+    "console": {
+      "errors": 0,
+      "warnings": 0,
+      "messages": 0,
+      "note": "DevTools Console pristine — no JS evaluated post-block (page is just the static warning)."
+    },
+    "network": {
+      "total_requests": 16,
+      "primary_doc_status": 200,
+      "primary_doc_size_kb": 1.1,
+      "ndjson_envelope_seen": false,
+      "note": "No grok_ndjson stream issued — block fires before chat UI ever loads. D20(b) static body path (response_type=grok_ndjson is irrelevant when page itself is intercepted)."
+    },
+    "dom_scan": {
+      "any_real_llm_pii_decode": false,
+      "pii_input_pattern": "880101-1234567",
+      "pii_substring_880101_in_dom": false,
+      "pii_substring_1234567_in_dom": false,
+      "scan_method": "Visual + UI tree + direct PowerShell HTTP body grep on independent path; APF-blocked browser body has no chat UI / no model output area at all.",
+      "verdict": "no PII echoed back — model never invoked; warning page contains only generic Korean+English block strings."
+    },
+    "prompt_submission": {
+      "attempted": false,
+      "reason": "grok page itself is replaced with the warning HTML — there is no input box, no chat UI, no submit affordance to drive. The block fires at the HTML document level, well before any prompt could be entered. This is the EXPECTED grok D20(b) static-body behavior post V6-F broaden."
+    }
+  },
+  "screenshots": {
+    "before": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\730\\before.png",
+    "after": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\730\\after.png",
+    "console": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\730\\console.png",
+    "network": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\730\\network.png"
+  },
+  "regression_check_vs_726": {
+    "character_ai_regression_730_repro": "n/a — different service",
+    "grok_warning_still_korean": true,
+    "grok_warning_still_visible": true,
+    "no_silent_pass_through_observed": true
+  },
+  "auth": {
+    "login_required": false,
+    "blocked_before_login_wall": true
+  }
+}
