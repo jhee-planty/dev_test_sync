@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat/",
+        "verify_timeout_s": 30,
+        "context": "★★★ FIX-E m365_copilot signalR envelope retest. Per #742 HAR sanitized analysis: existing path was injecting plain text frame which signalR/Chathub client wrapper silently discards (no JSON.parse → no envelope dispatch). Engine build_m365_copilot_signalr_envelope updated 2026-05-07 16:17 KST run_id=20260507-161737-55314. Now emits {type:1,target:'update',arguments:[{messages:[{text,adaptiveCards:[{body:[{TextBlock,text}]}]}],requestId,nonce}]}\\x1e per HAR msg 38 schema. Extracts clientCorrelationId from c2s accumulator (echoed as requestId). Combined with existing FIX-A close-frame (FIX-D-5 mode logic on inject_count>0) for S2 maintain. Expected: Korean security warning visible in chat bubble + RRN decode ABSENT."
+    },
+    "id": "747",
+    "created": "2026-05-07T07:18:00Z",
+    "attachments": [],
+    "notes": "m365_copilot FIX-E signalR envelope retest after #742 HAR finding. Verify warning text rendered via adaptiveCards.body[0].text + RRN decode absent."
+}
