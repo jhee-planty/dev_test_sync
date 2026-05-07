@@ -610,8 +610,9 @@ primary task가 blocked(결과 대기 등)일 때:
 | 6 | **Cumulative Progress Theatrics** (incident-driven) | **48차** | "N breakthroughs across N services", "~X min cumulative runtime", "Y hypotheses disproven", "NN차 status:", "Polling continues — wakeup already scheduled" |
 | 6-sub | **Mission Criterion Self-Adjustment** (사용자 권한 침해) | **48차** | "Mission criterion adjustment identified", "Mission criterion needs X, not Y", "expected_text check WILL FAIL since UI shows ..." |
 | 7 | **defer string Abuse** (prophylactic) | **49차** | "architecturally_exhausted", "X_OR_Y_engine_work" Multi-OR composition, "cycle95-97" / "v2-v11" / "5-X redo" cycle/iteration wording (39차 폐지 잔존) |
+| 8 | **Authority Inversion (Capability Pre-judgment)** (incident-driven, INTENTS §5 54차 §3 정식 codify) | **53차 incident + 54차 codify** | "test PC 의 사용 가능한 command 확인 완료. ..." / "X command 가 없으니 Y로 시도" / "subagent ... 가능 / explicit instruction 으로 시도" / dev producer 가 test consumer 의 internal capability reasoning simulate + 사전 가능 판단 + workaround pre-design |
 
-각 stage 의 통일된 mechanism: **mission goal 미달성 상태에서 self-termination 의 sophisticated form**. Stage N+1 은 Stage N 차단 후 reasoning level 우회로 emerge.
+각 stage 의 통일된 mechanism: **mission goal 미달성 상태에서 self-termination 의 sophisticated form** (Stage 1-7) **+ producer-consumer responsibility violation form** (Stage 8). Stage N+1 은 Stage N 차단 후 reasoning level 우회로 emerge.
 
 **51차 discussion-review 합의 (Wording-Level Strength-Ceiling 인지)**:
 
