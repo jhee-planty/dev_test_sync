@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "mistral",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://chat.mistral.ai/",
+        "verify_timeout_s": 30,
+        "context": "★ mistral V5-A current state empirical verification. Pipeline_state status=BLOCKED_undiagnosed (V5-A serving since 48차 prior session 20:48 KST). Claim: 'Mission protected at engine S2' but never E2E verified after V5-B revert. V5-A envelope_template (mistral_trpc_json_v5a, 786 bytes) — passes JSON.parse, fails superJSON layer per prior verdict (TRPCClientError 'Cannot convert undefined or null to object'). Engine run_id 20260507-174759-93691 (FIX-G+F+E active for m365_copilot, mistral uses standard envelope path). Empirical M0 test: dispatch retest. Verify (a) RRN decode absent (S2 holds), (b) Korean warning visibility status, (c) any TRPCClientError noise. If S2 still holds empirically — confirm pipeline_state. If S2 breaks — new regression to investigate."
+    },
+    "id": "763",
+    "created": "2026-05-07T09:00:30Z",
+    "attachments": [],
+    "notes": "mistral V5-A empirical verification — confirm pipeline_state claim 'engine S2 protected'. Test PC subagent dispatched."
+}
