@@ -1,0 +1,29 @@
+{
+    "command": "check-warning",
+    "priority": "low",
+    "params": {
+        "service": "grok",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://grok.com",
+        "verify_timeout_s": 30,
+        "context": "48차 grok D20b rotation. DONE service health check (broaden D20b coverage post-V6-F deploys + character regression #726). grok uses NDJSON envelope (response_type=grok_ndjson per SQL). Static body, no BIL placeholder. Verify continued health.",
+        "check_details": {
+            "test_steps": [
+                "1. Open https://grok.com (login may be required)",
+                "2. Submit PII prompt to chat",
+                "3. Verify Korean warning text rendered + engine block",
+                "4. Optional bundle hash capture for future regression detection (precedent: character SPA hash rotation caused #726 regression)"
+            ],
+            "verdict_criteria": {
+                "OK": "warning visible + Korean text → DONE health maintained",
+                "REGRESSION": "warning missing → similar to character (potential SPA bundle change pattern across services)",
+                "AUTH_REQUIRED_SKIP": "login wall — current state retained"
+            }
+        }
+    },
+    "id": "730",
+    "created": "2026-05-07T02:13:00Z",
+    "attachments": [],
+    "notes": "48차 grok D20b. Broaden DONE service health coverage. grok_ndjson envelope (static, no BIL)."
+}
