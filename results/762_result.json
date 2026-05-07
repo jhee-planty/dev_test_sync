@@ -1,0 +1,20 @@
+{
+  "id": "762",
+  "command": "check-warning",
+  "service": "perplexity",
+  "executed_at": "2026-05-07T18:10:51+09:00",
+  "status": "FAIL_text_no_render",
+  "verdict_summary": "h2_end_stream 2->1 fix did NOT unblock SPA: page navigated to /search/<uuid> but answer area remained empty for full 30s+ wait, no Korean warning rendered, no RRN decode either.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "empty",
+    "console_errors_excerpt": "Multiple ERR_HTTP2_COMPRESSION_ERROR on POST https://www.perplexity.ai/rest/event/analytics and GET https://www.perplexity.ai/rest/homepage-widgets/upsell?version=2.18 ; CORS-blocked script load redirected to perplexity-ai.cloudflareaccess.com (restricted-feature-loader-BOVIntqV.js) net::ERR_FAILED ; FedCM disabled previous user action ; [GSI_LOGGER]: FedCM get() rejects with NetworkError",
+    "url_after_submit": "https://www.perplexity.ai/search/cf2f47c7-051c-45df-8403-8d3d5cd73b0f",
+    "screenshot_paths": ["C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\762_perplexity_no_render.png"]
+  },
+  "recommendation": "Re-audit etap.log for run_id 20260507-174759-93691: confirm engine actually fired V7-D envelope on this submission AND verify h2_end_stream=1 was applied at envelope-emit time (DB reload may have hit cache). Also check for ERR_HTTP2_COMPRESSION_ERROR correlation: if engine sets compression flags incorrectly on END_STREAM=1 frame, browser rejects body. Possible next: dump h2 frame hex via etap-bench packet capture, OR test with H/2 compression disabled in engine response template.",
+  "notes": "Search URL navigation confirms perplexity SPA accepted the submit and called /perplexity_ask backend. URL update happened ~within 1s of Enter press. Answer-block React component never mounted any text node (verified via Snapshot DOM at +30s and +35s — only 답변 tab visible, body empty). Console shows multiple ERR_HTTP2_COMPRESSION_ERROR on analytics endpoints which is unusual — could indicate H/2 frame corruption from intercept. ERR_HTTP2_COMPRESSION_ERROR specifically suggests HPACK header compression mismatch, distinct from prior delayed-END_STREAM symptom. RRN absent (S2 holds, no regression). Verdict: FAIL_text_no_render — h2_end_stream fix alone insufficient."
+}
