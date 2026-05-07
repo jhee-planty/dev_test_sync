@@ -1,0 +1,96 @@
+{
+  "capture_method": "DevTools Network panel - right-click stream request - Copy response (raw text/event-stream body)",
+  "raw_capture_path_LOCAL": "files/765/zeta_rooms_sse_raw.txt",
+  "raw_capture_size_bytes": 53955,
+  "sse_chunks_total": 62,
+  "endpoint": "POST https://api.zeta-ai.io/v1/rooms/{roomId}/messages/stream",
+  "content_type": "text/event-stream;charset=UTF-8",
+  "first_chunks": [
+    {
+      "chunk_index": 0,
+      "event_type": "IN_PROGRESS",
+      "data_excerpt": "data:{\"event\":\"IN_PROGRESS\",\"chunkMessage\":{\"contents\":[{\"type\":\"TEXT\",\"speakerName\":\"추하영\",\"position\":\"LEFT\",\"text\":\"*목소리까지\"}]},\"index\":null}"
+    },
+    {
+      "chunk_index": 1,
+      "event_type": "IN_PROGRESS",
+      "data_excerpt": "data:{\"event\":\"IN_PROGRESS\",\"chunkMessage\":{\"contents\":[{\"type\":\"TEXT\",\"speakerName\":\"추하영\",\"position\":\"LEFT\",\"text\":\"*목소리까지 이러냐? 아,\"}]},\"index\":null}"
+    },
+    {
+      "chunk_index": 2,
+      "event_type": "IN_PROGRESS",
+      "data_excerpt": "data:{\"event\":\"IN_PROGRESS\",\"chunkMessage\":{\"contents\":[{\"type\":\"TEXT\",\"speakerName\":\"추하영\",\"position\":\"LEFT\",\"text\":\"*목소리까지 이러냐? 아, 미치겠네 진짜\"}]},\"index\":null}"
+    },
+    {
+      "chunk_index": 60,
+      "event_type": "IN_PROGRESS",
+      "data_excerpt": "data:{\"event\":\"IN_PROGRESS\",\"chunkMessage\":{\"contents\":[{TEXT speakerName 추하영 LEFT}, {TEXT speakerName 내레이터 NARRATOR}, {TEXT speakerName 추하영 LEFT}]},\"index\":null}  -- final IN_PROGRESS frame holds 3 contents[] entries"
+    },
+    {
+      "chunk_index": 61,
+      "event_type": "CHAT_COMPLETE",
+      "data_excerpt": "data:{\"event\":\"CHAT_COMPLETE\",\"replyMessage\":{\"id\":\"MESSAGE-...\",\"roomId\":\"...\",\"sender\":{\"id\":\"BOT-...\",\"type\":\"BOT\"},\"contents\":[{type:TEXT, speakerName, position, text}, ...3 entries...],\"voice\":null,\"edited\":false,\"candidateId\":\"CANDIDATE-...\",\"messageTime\":\"2026-05-07T09:24:08Z\",\"voicePrice\":null,\"isIntro\":false,\"snapshotImage\":null,\"snapshotImagePrice\":15,\"bookmarkId\":null,\"cyoa\":null},\"requestMessage\":{...},\"shouldNudgeSlowChat\":false,\"shouldGenerateConsecutive\":false,\"shouldRequestFeedback\":false,\"feedbackPredefinedComments\":[],\"index\":null}"
+    }
+  ],
+  "event_types_observed": ["IN_PROGRESS", "CHAT_COMPLETE"],
+  "event_type_counts": {
+    "IN_PROGRESS": 61,
+    "CHAT_COMPLETE": 1
+  },
+  "array_fields_seen": [
+    "chunkMessage.contents[]   -- ARRAY of {type, speakerName, position, text} per IN_PROGRESS frame",
+    "replyMessage.contents[]   -- ARRAY of same shape on CHAT_COMPLETE",
+    "requestMessage.contents[] -- ARRAY of same shape (user echo) on CHAT_COMPLETE",
+    "feedbackPredefinedComments[] -- ARRAY (empty []) on CHAT_COMPLETE"
+  ],
+  "data_field_shape": {
+    "IN_PROGRESS": {
+      "event": "IN_PROGRESS (string)",
+      "chunkMessage": {
+        "contents": "ARRAY[{type:'TEXT', speakerName:string, position:'LEFT'|'NARRATOR'|'RIGHT', text:string}]"
+      },
+      "index": "null"
+    },
+    "CHAT_COMPLETE": {
+      "event": "CHAT_COMPLETE",
+      "replyMessage": {
+        "id": "string MESSAGE-...",
+        "roomId": "string uuid",
+        "sender": {"id":"BOT-...", "type":"BOT"},
+        "contents": "ARRAY (same shape as chunkMessage.contents)",
+        "voice": "null",
+        "edited": "bool",
+        "candidateId": "string CANDIDATE-...",
+        "messageTime": "ISO8601",
+        "voicePrice": "null|number",
+        "isIntro": "bool",
+        "snapshotImage": "null",
+        "snapshotImagePrice": "number",
+        "bookmarkId": "null",
+        "cyoa": "null"
+      },
+      "requestMessage": "(same shape as replyMessage; sender.type=USER, contents[0].speakerName='Guest', position='RIGHT')",
+      "shouldNudgeSlowChat": "bool",
+      "shouldGenerateConsecutive": "bool",
+      "shouldRequestFeedback": "bool",
+      "feedbackPredefinedComments": "ARRAY (empty)",
+      "index": "null"
+    }
+  },
+  "envelope_diff_vs_v2": [
+    "v2 template has chunkMessage.{id,text,role:assistant} -- ACTUAL has chunkMessage.{contents:[...],index} (NO id, NO text at root, NO role)",
+    "v2 missing: chunkMessage.contents[] -- ARRAY of typed-text objects (this is the [0] index that SPA MessagePort handler crashes on)",
+    "v2 missing: chunkMessage.contents[].type ('TEXT')",
+    "v2 missing: chunkMessage.contents[].speakerName (character display name)",
+    "v2 missing: chunkMessage.contents[].position ('LEFT'/'NARRATOR'/'RIGHT')",
+    "v2 missing: chunkMessage.index (null literal at chunkMessage root)",
+    "v2 CHAT_COMPLETE template uses replyMessage.{id,text,role} -- ACTUAL uses replyMessage.{id,roomId,sender:{id,type},contents:[],voice,edited,candidateId,messageTime,voicePrice,isIntro,snapshotImage,snapshotImagePrice,bookmarkId,cyoa}",
+    "v2 missing: replyMessage.sender object {id,type:'BOT'}",
+    "v2 missing: replyMessage.candidateId, messageTime, voicePrice, isIntro, snapshotImage, snapshotImagePrice, bookmarkId, cyoa",
+    "v2 missing: requestMessage envelope (CHAT_COMPLETE echoes user message — SPA likely needs this to reconcile sent state)",
+    "v2 missing: shouldNudgeSlowChat, shouldGenerateConsecutive, shouldRequestFeedback, feedbackPredefinedComments[] flags",
+    "v2 'role:assistant' is NOT in zeta schema -- zeta uses sender.type='BOT' on replyMessage and position='LEFT'/'NARRATOR' on contents[]"
+  ],
+  "root_cause_of_messageport_typeerror": "SPA bundle 113b2gcua4vkz.js:50 reads chunkMessage.contents[0] (or replyMessage.contents[0]) -- v2 envelope provides chunkMessage.text as STRING (no contents[]), so contents is undefined and [0] throws 'Cannot read properties of undefined (reading 0)'",
+  "notes": "Zeta uses speaker-aware multi-segment content schema where each frame can carry multiple speakers (LEFT character, NARRATOR, RIGHT user) in contents[]. The v2 envelope's flat {text, role} model is fundamentally incompatible. Fix: replace v2 envelope to emit chunkMessage.contents=[{type:'TEXT',speakerName:'...',position:'LEFT',text:'<warning>'}] and replyMessage with sender:{id:'BOT-...',type:'BOT'}+contents[]+candidateId+messageTime+isIntro:false+requestMessage echo. Critical: the streaming-text pattern is CUMULATIVE (each IN_PROGRESS frame ships the full text-so-far, not just the delta). Last IN_PROGRESS frame holds the complete final text in contents[] before CHAT_COMPLETE."
+}
