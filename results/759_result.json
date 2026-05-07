@@ -1,0 +1,20 @@
+{
+  "id": "759",
+  "command": "check-warning",
+  "service": "perplexity",
+  "executed_at": "2026-05-07T17:56:00+09:00",
+  "status": "FAIL_text_no_render",
+  "verdict_summary": "V7-D envelope still produces empty answer area on perplexity.ai — no Korean warning rendered, no RRN decode, no normal answer. Identical symptom to #755.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "empty",
+    "console_errors_excerpt": "GET https://pplx-next-static-public.perplexity.ai/_spa/assets/mapbox-gl-Drc_gEH5.js net::ERR_HTTP2_PROTOCOL_ERROR 200 (OK); POST https://www.perplexity.ai/rest/event/analytics net::ERR_CONNECTION_CLOSED 200 (OK)",
+    "url_after_submit": "https://www.perplexity.ai/search/35bdc388-e27a-4102-9a1e-216b52ab1d18",
+    "screenshot_paths": ["C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\759_perplexity_empty.png"]
+  },
+  "recommendation": "V7-D envelope (1218 bytes with context_uuid/frontend_context_uuid/search_focus/source/expect_search_results/knowledge_cards/gpt4/answer_modes/search_mode) is INSUFFICIENT. URL navigates to /search/<uuid> indicating client-side routing succeeded, but answer area renders nothing. Suggests engine block prevents the SSE response, but the SPA store is still missing required state (likely the request_uuid/answer_id correlation, or a streaming-channel field) so React never mounts the answer block component to inject warning into. Next: capture FRESH baseline HAR of an actual unblocked perplexity request (with all SSE chunks), byte-byte diff against current V7-D 1218-byte envelope, and audit (a) request UUID echo path + (b) the SSE 'event' field structure that triggers SPA answer-block mount. Also verify engine is actually firing (check etap log for intercept on this run_id 20260507-174759-93691).",
+  "notes": "URL after submit changed (/search/<uuid>) confirming the client SDK accepted submission. Console shows ERR_HTTP2_PROTOCOL_ERROR + ERR_CONNECTION_CLOSED on adjacent requests (mapbox-gl asset, analytics) — these may be unrelated noise OR may indicate engine is severing connections too aggressively. Login state: not signed in (로그인 button visible in sidebar) — same as previous successful test runs, so auth is not the regression cause. Sidebar shows '최근 스레드가 없습니다' (no recent threads) confirming no successful answer was persisted."
+}
