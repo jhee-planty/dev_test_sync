@@ -1,0 +1,33 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "poe",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://poe.com",
+        "verify_timeout_s": 30,
+        "context": "48차 5-F poe verify after V6-F notion DONE. Check whether V6-F pattern applies to poe (poe.com h2_mode=2 path_patterns='/'). Service config + recent V6-F deploy may enable page_inject on poe SPA reload IF poe matches is_ai_service + is_page_load + recent block condition. Login likely required — if AUTH_REQUIRED, defer:user_login_provisioning. If V6-F fires for poe → potential mission advance.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "test_steps": [
+                "1. Open https://poe.com",
+                "2. If login required → return AUTH_REQUIRED_SKIP",
+                "3. Submit PII prompt",
+                "4. Check if APF block fires (engine logs)",
+                "5. Hard reload",
+                "6. Check V6-F intercept fires for poe"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + Korean text rendered → poe DONE → mission ratio 15→16/31=0.516",
+                "AUTH_REQUIRED_SKIP": "login wall → defer:user_login_provisioning",
+                "PARTIAL_block_only": "engine block fires but no warning UI → poe SPA architecture issue (page_inject doesn't catch)",
+                "FAIL": "regression"
+            }
+        }
+    },
+    "id": "723",
+    "created": "2026-05-07T01:08:00Z",
+    "attachments": [],
+    "notes": "48차 V6-F generalization test on poe."
+}
