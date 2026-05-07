@@ -1,0 +1,22 @@
+{
+  "id": "737",
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "executed_at": "2026-05-07T15:20:30+09:00",
+  "status": "OK_HAR_captured_LOCAL_ONLY",
+  "verdict_summary": "HAR captured (41.26MB) on test PC but git push BLOCKED by GitHub secret scanning — HAR contains Microsoft Azure Entra ID tokens. HAR remains LOCAL at C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\737\\.",
+  "evidence": {
+    "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\737\\m365_copilot_chathub_normal_session.har",
+    "har_size_bytes": 41259952,
+    "copilot_response_rendered": true,
+    "response_excerpt": "오늘(5월 7일) 기준으로 말해드리면👇 오늘 날씨 요약 — 전국: 대체로 흐림 + 곳곳에 비. 서울 기준: 낮 최고 약 20~21°C / 아침·저녁 10~13°C",
+    "har_contains_chathub": true,
+    "har_chathub_match_lines": 11,
+    "har_substrate_match_lines": 166,
+    "github_push_protection_violations": [
+      "Microsoft Azure Entra ID Token at HAR line 102325, 102400 (3DNudllnZ5EJQls4pFsV335X4fn)",
+      "Microsoft Azure Entra ID Token at HAR line 142702 (3DNudiiTusOXFecMzMHzac0JkYO)"
+    ]
+  },
+  "notes": "HAR captured via DevTools 'Export HAR' toolbar. 504+ requests, 11 Chathub + 166 substrate.office.com lines. NON-PII weather prompt rendered fully (no APF block). HOWEVER push BLOCKED by GitHub secret scanning (real Entra ID tokens embedded). DEV ACTION REQUIRED: either (a) request sanitized HAR (strip Authorization headers + cookies), (b) AnyDesk-pull the HAR from test PC's local files/737/ directory, or (c) provide unblock URL approval if tokens are intentionally captured for analysis. HAR remains gitignored (*.har in .gitignore) and local-only on test PC."
+}
