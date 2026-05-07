@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "perplexity",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.perplexity.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★ perplexity V7-G envelope (charset + progressive flush). Per #769 verdict TWO failures: (1) mojibake — Korean text appeared as CP949 (창큄혻챦쨍혧 instead of 차단), (2) Chrome EventStream parsed 0 events. V7-G addresses both: (a) Content-Type now explicitly 'text/event-stream; charset=utf-8' (was missing charset; Chrome may have defaulted to ISO-8859-1 / browser's locale codepage causing mojibake). (b) Added ': keepalive' SSE comment line BEFORE the message event to trigger progressive flush in Chrome's EventSource parser (per L-049 C3 hypothesis: atomic DATA+END_STREAM may race against parser dispatch; intermediate event forces buffer flush before close). Length 1143→1171 bytes. reload_templates SUCCESS. Combined with prior fixes (V7-D field gap closure, V7-E HPACK forbidden header strip, V7-F single message terminator). Auth-gate (Cloudflare Access) may still block on anonymous session (per L-053) — if test PC happens to be logged in, full S3 verify possible."
+    },
+    "id": "771",
+    "created": "2026-05-08T08:57:00Z",
+    "attachments": [],
+    "notes": "perplexity V7-G — charset=utf-8 (mojibake fix) + keepalive SSE comment (progressive flush trigger). If logged in: full S3 verify expected. If anonymous: at least mojibake should be resolved on observable response bytes."
+}
