@@ -1,0 +1,30 @@
+{
+    "command": "check-warning",
+    "priority": "normal",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 m365_copilot retest probe (post-#698 AUTH_REQUIRED 14h ago). User may have logged into M365 since. V8-A CORS Origin fix already deployed at engine layer. V6-F generic mechanism may also auto-fire on hard reload. Engine WS upgrade events confirm substrate.office.com reachable.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "test_steps": [
+                "1. Open https://m365.cloud.microsoft/chat",
+                "2. If still AUTH_REQUIRED → no change, status maintained",
+                "3. If LOGGED IN → submit PII prompt → V8-A CORS Origin fix path verification + V6-F generic page-inject fallback"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + Korean text → m365_copilot DONE → mission ratio 16→17/29=0.586",
+                "PARTIAL_block_only": "engine block fires but no UI render — investigate WS-side warning rendering (substrate.office.com Connect-RPC)",
+                "AUTH_REQUIRED_SKIP": "still login wall — no change",
+                "FAIL": "regression"
+            }
+        }
+    },
+    "id": "728",
+    "created": "2026-05-07T02:01:00Z",
+    "attachments": [],
+    "notes": "48차 m365_copilot probe — possible login state change since #698 (14h ago)."
+}
