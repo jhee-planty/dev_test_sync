@@ -1,0 +1,24 @@
+{
+  "id": "764",
+  "command": "check-warning",
+  "service": "gamma",
+  "executed_at": "2026-05-07T18:19:00+09:00",
+  "status": "FAIL_render_generation_error",
+  "verdict_summary": "h2_end_stream config fix (2->1) did NOT resolve the issue — ERR_HTTP2_PROTOCOL_ERROR persists on /ai/v2/render-generation, outline card #1 renders empty (no title, no body).",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "outline_card_1_title": "(empty - only card number '1' rendered, no title text)",
+    "outline_card_count": 1,
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "ui_state": "outline",
+    "console_errors_excerpt": "[PromptAndOutlineSettings] error generating outline: Unable to complete request | POST https://ai.api.gamma.app/ai/v2/render-generation net::ERR_HTTP2_PROTOCOL_ERROR | Uncaught (in promise) TypeError: Failed to fetch (ai.api.gamma.app) at e.s.generate.traceparent",
+    "render_generation_http2_error": true,
+    "har_captured_on_fail": false,
+    "har_path_LOCAL": null,
+    "screenshot_paths": ["C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\files\\764\\outline_state.png"]
+  },
+  "recommendation": "h2_end_stream=1 config change alone is insufficient. Same failure pattern as before fix: /ai/v2/generation block fires correctly (S2 holds — RRN ABSENT) BUT /ai/v2/render-generation still fails with ERR_HTTP2_PROTOCOL_ERROR. Possible causes: (a) DB reload didn't actually apply the new value to running etapd (verify: SELECT h2_end_stream FROM ai_prompt_services WHERE service='gamma'; AND check etap.log shows h2_end_stream=1 at runtime), (b) the H2 stream-close issue is at a different layer (e.g., HTTP/2 connection coalescing, GOAWAY frame emission, or rev4 envelope_template still has stream-close mismatch), (c) Chrome's H2 connection from prior failed attempt is being reused and is poisoned (HARD RELOAD after etapd restart did not help — try Chrome restart). Recommend: verify runtime config via etap.log signal at /ai/v2/generation block path, and consider explicit RST_STREAM frame after envelope.",
+  "notes": "Test executed cleanly: navigated to https://gamma.app/, hard reloaded (Ctrl+Shift+R), entered prompt verbatim, clicked '개요 생성' button, waited 15s. Outline panel rendered with single empty card (just shows '1' marker, no title or body). Lower right shows '총 카드 1개'. RRN decode is absent (S2 block holds correctly), but the warning text 'expected_text=차단' is NOT rendered — same outcome as #760 pre-fix attempt. Console clearly shows the unchanged failure trio: PromptAndOutlineSettings error + ERR_HTTP2_PROTOCOL_ERROR on render-generation + Failed to fetch. URL changed to gamma.app/create/generate/39zyv22oypcbh79 confirming submission landed. Build run_id 20260507-174759-93691 reload claim should be re-verified — runtime behavior identical to pre-fix state."
+}
