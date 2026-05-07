@@ -1,0 +1,35 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "notion",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://www.notion.so/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 V6-F REQUEST-SIDE intercept (run_id 20260507-095235-3362). #721 V6-E-fix PARTIAL_failed_doc_repro proved on_http2_response (response-side) trigger fires too late — upstream HEADERS already in flight when engine substitutes → browser sees stream tear-down → SW fallback. V6-F applies L-027 pattern (request-side intercept, like V7-E for perplexity) — engine intercepts BEFORE forwarding GET to notion server. New log signature: [APF:page_inject_h2_request] + [APF:domain_block_query_h2_req].",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Open https://www.notion.so/chat (logged in)",
+                "2. Submit PII prompt → V6-A NDJSON block fires",
+                "3. Hard reload (Ctrl+Shift+R) → new H2 connection",
+                "4. SPA fetches /chat?t=... → V6-F request-side intercept BEFORE upstream contacted",
+                "5. Engine emits H2-framed warning HTML (no upstream HEADERS conflict)",
+                "6. Browser receives valid 200 OK with warning body → renders → 보안 경고 visible"
+            ],
+            "verdict_criteria": {
+                "OK": "warning HTML rendered + Korean warning + 보안 경고 tab + browser network shows 200 OK with body (NOT 'failed' 0.0kB) → notion DONE → mission ratio 14→15/31=0.484",
+                "PARTIAL_failed_doc_repro": "still failed → V6-F also blocked at H2 framer (rare, would need wireshark analysis)",
+                "PARTIAL_h2_clean_no_render": "browser receives body but doesn't render warning (DOM/CSS issue)",
+                "FAIL": "regression — revert"
+            },
+            "expected_engine_log": "[APF:page_inject_h2_request] service=notion stream=N path=/chat?t=... effective_age_ms=N (V6-F request-side)"
+        }
+    },
+    "id": "722",
+    "created": "2026-05-07T00:53:00Z",
+    "attachments": [],
+    "notes": "48차 V6-F: request-side intercept (L-027 pattern). Replaces V6-E-fix on_http2_response (response-side) which fires too late. Highest confidence path."
+}
