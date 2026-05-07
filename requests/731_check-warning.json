@@ -1,0 +1,29 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat",
+        "verify_timeout_s": 30,
+        "context": "48차 m365_copilot retest after domain_patterns SQL fix (2026-05-07 11:21 KST). #728 FAIL revealed PII answered fully — APF rule was pinned to substrate.office.com but live endpoint is m365.cloud.microsoft. SQL UPDATE: domain_patterns='substrate.office.com,*.substrate.office.com,m365.cloud.microsoft,*.m365.cloud.microsoft'. reload_services PASS. Now V8-A CORS Origin fix + V6-F generic page-inject should engage on m365.cloud.microsoft hostname.",
+        "check_details": {
+            "MANDATORY_HARD_RELOAD": true,
+            "test_steps": [
+                "1. Open https://m365.cloud.microsoft/chat (logged in)",
+                "2. Submit PII prompt — engine should now intercept (domain match restored)",
+                "3. Verify: NO PII analysis returned + warning bubble OR Korean text visible"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble + Korean text → m365_copilot DONE → mission ratio 16→17/29=0.586",
+                "PARTIAL_block_only": "engine block fires but no UI render — investigate path_patterns or schema",
+                "FAIL_REGRESSION": "PII still answered fully → domain_patterns fix insufficient (different cause)"
+            }
+        }
+    },
+    "id": "731",
+    "created": "2026-05-07T02:22:00Z",
+    "attachments": [],
+    "notes": "48차 m365_copilot domain_patterns SQL fix retest. CRITICAL: #728 had PII fully answered — mission protection breach detected, immediate fix applied."
+}
