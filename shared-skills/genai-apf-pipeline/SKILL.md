@@ -28,9 +28,16 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 | pipeline_state | `~/Documents/workspace/claude_work/projects/apf-operation/state/pipeline_state.json (fallback: ~/Documents/workspace/dev_test_sync/local_archive/pipeline_state.json)` (schema_version=1.0) |
 | dashboard | `~/Documents/workspace/dev_test_sync/local_archive/pipeline_dashboard.md` (auto-regen) |
 | status.md | `shared-skills/genai-apf-pipeline/services/status.md` (auto-regen, **직접 수정 금지**) |
-| impl journal | `shared-skills/apf-warning-impl/services/{id}_impl.md` |
-| design doc | `shared-skills/genai-apf-pipeline/services/{id}_design.md` |
+| impl journal | `apf-operation/services/{service}/impl.md` (57차 α demote 후 — M4 actual move pending) / legacy `shared-skills/apf-warning-impl/services/{id}_impl.md` |
+| design doc | `apf-operation/services/{service}/design.md` (57차 α demote 후 — M4 actual move pending) / legacy `shared-skills/genai-apf-pipeline/services/{id}_design.md` |
+| analysis | `apf-operation/services/{service}/analysis.md` (이미 외부) |
+| protocol pattern | `shared-skills/apf-warning-impl/references/protocol-patterns/{pattern}.md` (57차 β 신설) |
 | 등록 DB | etap MySQL @ `ogsvm` (see references/db-access-and-diagnosis.md) |
+
+**Skill role 명확화 (57차 architectural shift, α + β)**:
+- Skill framework (genai-apf-pipeline + apf-warning-impl + 다른 skills) = 일반 framework + protocol pattern + phase reference
+- Service operational state (`apf-operation/services/{service}/`) = service-specific design / impl / analysis. Skill 외부.
+- 사용자 의도 (micro-skill design): skill = 일반 framework, service knowledge = runtime discovery + operational state cache
 
 ## Runtime 호출 규약
 

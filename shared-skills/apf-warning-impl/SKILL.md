@@ -13,12 +13,23 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 를 C++ generator 함수로 구현 → 빌드·배포 → test 검증 → 결과 반영 iteration.
 
 ### Input
-- `genai-apf-pipeline/services/{service_id}_design.md` — strategy (A/B/C/D), is_http2 값, 예상 동작
+- **Protocol pattern reference** (skill framework, 57차 신설): `references/protocol-patterns/{sse|websocket|trpc|signalr|ndjson|http-polling|spa-hydration}.md` — service 의 protocol pattern 식별 후 해당 reference 학습
+- **Service operational state** (skill 외부, 57차 demote — 사용자 M4 후 actual move): `apf-operation/services/{service}/{design,impl,analysis}.md` — service-specific strategy / iteration history / cause analysis. Skill 이 아닌 **mission state** 영역.
+- (legacy until file move 완료) `genai-apf-pipeline/services/{service_id}_design.md` / `apf-warning-impl/services/{service_id}_impl.md`
 
 ### Output
 - 수정된 C++ 소스 (EtapV3 repo)
-- `apf-warning-impl/services/{service_id}_impl.md` — iteration journal (항상 append, 덮어쓰기 금지)
+- `apf-operation/services/{service}/impl.md` (57차 demote 후) — iteration journal (항상 append, 덮어쓰기 금지)
 - Working warning (test PC 화면에 visible)
+
+### Skill role 명확화 (57차 architectural shift)
+
+| Layer | 위치 | Role |
+|---|---|---|
+| **Skill framework** (apf-warning-impl) | SKILL.md + references/protocol-patterns/ | 일반 framework + protocol pattern reference (7 patterns, 57차 신설) |
+| **Service operational state** | `apf-operation/services/{service}/` (M4 directive 후 actual move) | service-specific design / impl / analysis. Skill 외부. |
+
+**진정한 micro-skill design** (사용자 의도): skill = 일반 framework + protocol pattern. service-specific knowledge = LLM runtime discovery (HAR / log / sub-agent) + apf-operation operational state cache.
 
 ---
 
