@@ -1,0 +1,19 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "(no chat — sanitize existing HAR from #740)",
+        "expected_text": "(extraction task)",
+        "url": "(local file processing only)",
+        "verify_timeout_s": 30,
+        "context": "★ #740 HAR (155MB at C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\740\\gamma_normal_session.har) sanitization extract. Per #740 finding: 6x ai.api.gamma.app/ai/v2/generation + 9x ai.api.gamma.app/ai/v2/render-generation entries — exact endpoints needed for Option C forged-success outline. Target: extract sanitized JSON of ALL 6+9 = 15 entries (request URL + method + status + response.content.text), stripped of sensitive headers. Output: small clean JSON file pushable via git. Compare-target: gamma Option C design at proposals/gamma-option-C-forged-success-outline-design-2026-05-07.md (has {{HAR_REQUIRED}} placeholders). Test PC subagent: please determine appropriate extraction methodology.",
+        "check_details": {
+            "task_type": "har_extraction_sanitize"
+        }
+    },
+    "id": "745",
+    "created": "2026-05-07T06:52:00Z",
+    "attachments": [],
+    "notes": "gamma HAR sanitize extract for FIX Option C envelope_template completion. 6+9=15 target entries should fit in <500KB after sanitization."
+}
