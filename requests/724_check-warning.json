@@ -1,0 +1,36 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "poe",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://poe.com",
+        "verify_timeout_s": 30,
+        "context": "48차 #724 poe V6-F generalization re-test (사용자가 계정 등록 완료 2026-05-07). #723 verdict was AUTH_REQUIRED_SKIP — now login resolved. V6-F mechanism (request-side intercept, L-027 pattern, notion-validated) auto-applies when sd->is_ai_service && sd->is_page_load && has_recent_block. Expected: PII submit → V6-A NDJSON block (or other engine emit) → hard reload → V6-F intercept on poe.com text/html GET → warning HTML rendered.",
+        "check_details": {
+            "MANDATORY_LOGIN_PRE_VERIFIED": "사용자 이미 등록 완료 (per user message 2026-05-07)",
+            "MANDATORY_HARD_RELOAD": true,
+            "MANDATORY_DEVTOOLS": true,
+            "test_steps": [
+                "1. Open https://poe.com (logged in)",
+                "2. Submit PII prompt to chat input",
+                "3. Verify engine block fires ([APF:block_response] service=poe in production log)",
+                "4. Hard reload (Ctrl+Shift+R) → new H2 connection",
+                "5. SPA fetches /poe.com root or chat URL → V6-F request-side intercept",
+                "6. Engine emits H2-framed warning HTML → browser renders"
+            ],
+            "verdict_criteria": {
+                "OK": "warning bubble visible + Korean warning text + engine block + V6-F fire (production log [APF:page_inject_h2_request] service=poe) → poe DONE → mission ratio 15→16/31=0.516",
+                "PARTIAL_block_only": "engine block fires but no V6-F intercept on hard reload — investigate poe path matching (path_patterns='/' literal, may not match SPA /chat URLs)",
+                "PARTIAL_failed_doc": "V6-F fires but H2 framing issue (similar to V6-E-fix #721 failure) — engine code adjustment needed",
+                "FAIL": "regression vs prior poe behavior"
+            },
+            "expected_engine_logs": "[APF:block_response] service=poe + [APF:page_inject_h2_request] service=poe (V6-F generalization)"
+        }
+    },
+    "id": "724",
+    "created": "2026-05-07T01:30:00Z",
+    "attachments": [],
+    "notes": "48차 V6-F generalization test #2 on poe (post-login). User registered account; SSO no longer blocks. If V6-F fires for poe → autonomous mode SECOND advance."
+}
