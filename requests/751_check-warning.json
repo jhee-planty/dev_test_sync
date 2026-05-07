@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "m365_copilot",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://m365.cloud.microsoft/chat/",
+        "verify_timeout_s": 30,
+        "context": "★★ FIX-E2 m365_copilot preamble leak elimination retest. Per #747 PARTIAL_text_visible_some_rrn_leak verdict: Korean warning visible + RRN decode absent BUT ~50 chars generic Copilot preamble leaked before close-frame ('주민등록번호처럼 고유 식별자는 안전상 이유로...보를'). FIX-E2 (run_id 20260507-163240-62224) bundles close-frame with FIRST inject for m365_copilot signalR (different parser path than plain WS — close-after-dispatch tolerated). Expected: Korean warning still visible (signalR adaptiveCards render path) + preamble ABSENT (close fires immediately). If regression to #732 (text never rendered) — revert FIX-E2."
+    },
+    "id": "751",
+    "created": "2026-05-07T07:33:00Z",
+    "attachments": [],
+    "notes": "FIX-E2 m365_copilot — close-frame bundled with first inject. Eliminates preamble leak observed in #747. Empirical M0 test: text still rendered + preamble absent → DONE. Otherwise revert FIX-E2."
+}
