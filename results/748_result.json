@@ -1,0 +1,27 @@
+{
+  "id": "748",
+  "command": "check-warning",
+  "service": "gamma",
+  "executed_at": "2026-05-07T16:30:27+09:00",
+  "status": "FAIL_text_no_render",
+  "verdict_summary": "gamma_sse_v7 envelope reached gamma at /ai/v2/generation (status 200, mimeType text/event-stream, body contains '차단' warning), but gamma SPA did NOT render the warning text into the outline card; subsequent /ai/v2/render-generation request failed with HTTP/2 protocol error. RRN absent — but warning also absent from UI.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "ui_state": "outline",
+    "console_errors_excerpt": "[PromptAndOutlineSettings] error generating outline: Unable to complete request | POST https://ai.api.gamma.app/ai/v2/render-generation net::ERR_HTTP2_PROTOCOL_ERROR | Uncaught (in promise) TypeError: Failed to fetch",
+    "har_captured_on_fail": true,
+    "har_path_LOCAL": "C:/Users/최장희/Documents/dev_test_sync/files/748/gamma_pii_session.har",
+    "screenshot_paths": [],
+    "har_response_body_generation": "event: content\\nid: 1\\ndata: \\u26a0\\ufe0f \\ub2e4\\ucc28 \\uc815\\ubcf4\\uac00 \\ud3ec\\ud568\\ub41c \\uc694\\uccad\\uc740 \\ubcf4\\uc548 \\uc815\\ucc45\\uc5d0 \\uc758\\ud574 \\ucc28\\ub2e8\\ub418\\uc5c8\\uc2b5\\ub2c8\\ub2e4.\\n\\nevent: done\\nid: 2\\ndata: stop",
+    "har_response_status_generation": 200,
+    "har_response_size_generation": 148,
+    "har_render_generation_status": 0,
+    "har_render_generation_failed": true,
+    "outline_card_content": "Card #1 rendered as empty pink-bordered outline item with no text — total cards: 1, character count: 0/50000"
+  },
+  "recommendation": "Forged SSE on /ai/v2/generation is delivered but gamma SPA does NOT render arbitrary text into outline cards. gamma's outline pipeline appears to require: (a) a SECOND endpoint /ai/v2/render-generation to complete (which currently 502s with ERR_HTTP2_PROTOCOL_ERROR — suggesting engine is dropping/breaking that request), and/or (b) the SSE 'data:' chunks to contain structured outline JSON with explicit card_title/card_content fields rather than narrative paragraph. Next direction: capture a clean baseline HAR of a normal gamma outline (no APF intercept) to confirm exact data: chunk schema (likely JSON like {\"type\":\"card_title\",\"value\":\"...\"} or similar incremental outline tokens), then update gamma_sse_v7 to emit outline-shaped chunks. Also investigate why /ai/v2/render-generation is failing — engine may need to forward it transparently or also forge a parallel SSE response.",
+  "notes": "Both the OUTLINE generation endpoint and a follow-up RENDER-GENERATION endpoint are needed for gamma. The HAR analysis #745 only covered ONE endpoint. /ai/v2/render-generation currently fails with HTTP/2 protocol error (visible in console + Network panel as red 'failed' entry). RRN decode is genuinely ABSENT (S2 not regressing) but warning text never makes it to the user-visible outline card — the SPA receives the SSE bytes (size 148B as expected) but rejects/ignores the unstructured plain text chunk. Test conducted at 2026-05-07 16:24-16:30 KST on test PC Windows 11 + Chrome with DevTools open. HAR saved local-only at files/748/gamma_pii_session.har (92.5 KB, gitignored)."
+}
