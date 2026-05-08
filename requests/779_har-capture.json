@@ -1,0 +1,15 @@
+{
+    "command": "har-capture",
+    "priority": "high",
+    "params": {
+        "service": "mistral",
+        "url": "https://chat.mistral.ai/",
+        "scenario": "★ mistral baseline capture per #776 recommendation: capture FULL legitimate POST /api/trpc/message.newChat response from real chat session (NON-PII prompt). Required for byte-byte diff against current V5-A forged envelope. Test PC subagent: open mistral chat, submit innocuous prompt (e.g., '안녕하세요'), capture network response body for the message.newChat tRPC mutation. Per L-049 Method (c) DevTools Console fetch+ReadableStream replay if response is streaming. If single JSON response: DevTools Network → POST /api/trpc/message.newChat → Response tab → Copy response. Output: JSON with full response body, content-type, status_code, all headers + entire body bytes (especially the nested message/parts/attachments/toolCalls structure that V5-A is missing).",
+        "verify_timeout_s": 120,
+        "context": "★★ mistral 7th iteration baseline capture. Per #776 verdict: TRPCClientError 'Cannot convert undefined or null to object' fires at 41ms (h2_end_stream fix WORKING per L-051 — fast-fail vs prior indefinite hang). But V5-A schema rev (992 bytes, 11 added fields) STILL insufficient. TRPC zod/superjson deserializer hits undefined nested property. Likely candidates per #776 recommendation: nested message.parts[].content shape, attachments[], toolCalls[], discriminated-union tag field. Need REAL response payload to identify which exact field path causes the error. NO PII in this test (just innocuous 안녕하세요 prompt) — engine SHOULD pass through unmodified. Test PC subagent: please capture full message.newChat response body."
+    },
+    "id": "779",
+    "created": "2026-05-08T14:46:00Z",
+    "attachments": [],
+    "notes": "mistral baseline HAR — for V5-A vs legit byte-byte diff. L-049 Method (c) replay if needed."
+}
