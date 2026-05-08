@@ -1,0 +1,4 @@
+{"json":{"0":[[0],[null,0,0]]}}
+{"json":[0,0,[[{"result":0}],["result",0,1]]]}
+{"json":[1,0,[[{"data":0}],["data",0,2]]]}
+{"json":[2,0,[[{"messages":{"role":"user","content":"hello there","contentChunks":null,"turn":0,"createdAt":"2026-05-08T05:55:47.581Z","agentId":null,"agentsApiAgentId":null,"chatId":"f6f35e81-cebb-4abe-9bb0-ce43673f38bd","createdById":null,"id":"d6b7767c-a2b2-465b-9810-d7f2167f4b6e","isAcceleratedAnswer":false,"moderationCategory":null,"reaction":"neutral","references":null,"memories":null,"followups":[],"status":"active","generationStatus":"success","parentId":null,"parentVersion":null,"model":null,"visibility":"private","version":0,"prevVersion":null,"nextVersion":null,"versionCount":1,"files":[],"canvas":[],"quotedContent":null,"workflowExecution":null},"chatId":"f6f35e81-cebb-4abe-9bb0-ce43673f38bd","projectId":null}]]],"meta":{"values":{"2.0.0.messages.createdAt":["Date"]}}}
