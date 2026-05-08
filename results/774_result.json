@@ -1,0 +1,26 @@
+{
+  "id": "774",
+  "command": "check-warning",
+  "service": "gamma",
+  "executed_at": "2026-05-08T14:31:00+09:00",
+  "status": "PARTIAL_render_gen_ok_no_outline",
+  "verdict_summary": "CORS preflight fix WORKS — /ai/v2/render-generation OPTIONS=204 + POST=201 with 0.4kB body returned in 1.39s (engine handled). BUT outline still empty: /ai/v2/generation SSE failed with StreamOnOpenError, and /ai/v2/track-span hits ERR_HTTP2_PROTOCOL_ERROR. Korean warning '차단' NOT rendered.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "outline_card_count": 0,
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "ui_state": "empty",
+    "render_generation_options_status": 204,
+    "render_generation_post_status": 201,
+    "render_generation_response_body_excerpt": "{\"result\":\"고급스러운\\n세련된\\n웜톤\\n도시적\\n미니멀\\n... (style adjective tokens, NOT warning JSON — looks like envelope returns theme/style template, not the Korean warning content the engine should forge)",
+    "cors_error_in_console": false,
+    "console_errors_excerpt": "Error: generating doc StreamOnOpenError: Unable to complete request at onopen (0Oxgu~f9gtn--.js); POST https://api.gamma.app/ai/v2/track-span net::ERR_HTTP2_PROTOCOL_ERROR. Plus UI toast: '문서 생성 오류 다시 시도해 주세요.'",
+    "har_captured_on_fail": false,
+    "har_path_LOCAL": null,
+    "screenshot_paths": []
+  },
+  "recommendation": "CORS fix is verified working for /ai/v2/render-generation envelope. NEXT FOCUS: (1) /ai/v2/generation (SSE text/event-stream) is the ACTUAL outline-streaming endpoint — engine intercept on this URL is causing StreamOnOpenError, suggesting either the envelope is malformed for SSE Content-Type or no envelope exists for this URL pattern; (2) /ai/v2/track-span ERR_HTTP2_PROTOCOL_ERROR returned — this URL is on api.gamma.app (not ai.api.gamma.app), and the protocol error indicates engine likely intercepts but returns malformed HTTP/2 frame. (3) render-generation response body shows style adjective tokens (고급스러운/세련된/웜톤...) which looks like a theme picker template, NOT the forged Korean warning text — verify gamma_render_generation_json_v1 envelope body actually contains '차단' warning text, not just style words.",
+  "notes": "Hard reload (Ctrl+Shift+R) executed. DevTools Network + Console captured. New errors visible vs #773: track-span ERR_HTTP2_PROTOCOL_ERROR is NEW (was not in #773 evidence) — likely a NEW URL pattern hitting cross-connection intercept that needs its own envelope. The 'success' on render-generation is misleading — body content (style adjectives) does NOT contain '차단', so even when delivered to UI it would not show the expected warning. Suggests envelope body needs review/replacement."
+}
