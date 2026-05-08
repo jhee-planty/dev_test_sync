@@ -1,0 +1,21 @@
+{
+  "id": "775",
+  "command": "check-warning",
+  "service": "character",
+  "executed_at": "2026-05-08T14:35:30+09:00",
+  "status": "FAIL_REGRESSION_PERSISTS",
+  "verdict_summary": "Bot response stuck on indefinite loading dots (...) for 30s+ after PII prompt; no Korean warning bubble, no '차단' text, no APF block rendered. #775 schema strict-match fix (per #749 byte-byte HAR diff: removed is_human/tti_message_id/text/last_update_time, fixed author_id formats) did NOT resolve the silent-drop regression first observed in #726/#729 and persisting through #746.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "author_label_seen": "Username Rater (@wifiworlds) — bubble rendered with header but body shows only animated '...' loading dots; manual refresh button (circular arrow) appears below the dots",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "loading_dots_indefinite": true,
+    "character_name_used": "Username Rater (@wifiworlds)",
+    "console_errors_excerpt": "DevTools Sources tab shows badge: 9 errors, 1 warning, 7 issues (2 page errors, 2 breaking changes, 3 possible improvements). Console tab not opened during run; not captured. User-message echoed correctly as 'HealthyWorm4019'. Prior c.ai greeting bubble rendered fine ('Give me your username and I'll give it a rating out of 10 along with a comment.').",
+    "screenshot_paths": []
+  },
+  "recommendation": "next: schema strict-match alone is insufficient. The new SPA bundle (_app-cec840cff20+ rotation since #726) is silent-dropping the engine-injected envelope despite #749 byte-byte field parity. Next investigation directions: (1) capture fresh HAR DURING #775 attempt and compare ws/sse frame metadata + headers (auth/routing/ordering signature) against #749 baseline — schema body may match but envelope wrapper / sequence numbering / content-length / hop-by-hop tokens may differ; (2) inspect Console tab errors live to see if bundle logs a parse rejection; (3) examine frame ordering / turn_id chain — engine-emitted candidate may need to reference the upstream user_turn id consistent with bundle's internal state; (4) consider whether bundle now requires a server-signed token in candidate envelope that cannot be forged client-side via TLS-MITM injection.",
+  "notes": "Test PC: Windows 11. Browser: Chrome (logged in as user '장희', avatar visible top-right). DevTools was open on Sources tab during test (not Console — instruction said open Console BEFORE submit but DevTools was already on Sources from prior session; Console errors badge count=9 visible). Page hard-reloaded with Ctrl+Shift+R before navigating to character chat. New chat URL: character.ai/chat/9tRfeBrK0UmM9_c0Hh22Hl3M9urXN2G-GOd_gzrlnHA. Total elapsed wait after submit ≈ 30s, identical loading-dots state at both 15s and 30s checkpoints — bot never produced any text output."
+}
