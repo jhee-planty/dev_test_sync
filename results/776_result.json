@@ -1,0 +1,21 @@
+{
+  "id": "776",
+  "command": "check-warning",
+  "service": "mistral",
+  "executed_at": "2026-05-08T14:40:03+09:00",
+  "status": "OK_S2_baseline_TRPCError_persists",
+  "verdict_summary": "TRPCClientError 'Cannot convert undefined or null to object' STILL fires (elapsedMs=41, fast-fail) — h2_end_stream fix unblocked stream framing but V5-A schema gap remains the actual SPA blocker; warning absent, RRN absent (S2 baseline preserved).",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "trpc_client_error_in_console": true,
+    "trpc_error_excerpt": "mutation #5 message.newChat -> result: TRPCClientError: Cannot convert undefined or null to object | cause: TypeError: Cannot convert undefined or null to object | data: undefined | meta: undefined | name: 'TRPCClientError' | shape: undefined | message: 'Cannot convert undefined or null to object' | stack: TRPCClientError: Cannot convert undefined or null to object",
+    "trpc_error_elapsed_ms": 41,
+    "dom_state": "Empty chat area (only Mistral logo). User prompt did NOT render as chat bubble. No warning text. No error UI. Sign in / Sign up buttons visible top-right (guest session — no auth gate triggered, but newChat mutation processed and rejected client-side).",
+    "screenshot_paths": ["captured via windows-mcp Screenshot tool — no file persisted"]
+  },
+  "recommendation": "next: V5-A schema is INSUFFICIENT despite 786->992 byte rev with 11 added fields. The TRPC client deserialization (likely zod/superjson on response) still hits an undefined property path. Required: (a) capture the FULL legitimate Mistral response payload from a real chat session and diff against current forged response; (b) examine the cause stack to identify which specific field path triggers Object.keys(undefined) or Object.entries(undefined). Likely candidates: nested message.parts[].content shape, attachments[], toolCalls[], or a discriminated-union tag field. h2_end_stream=1 should be KEPT (it correctly closes stream); the framing fix is real and validated by elapsedMs=41 fast-fail vs prior indefinite hang.",
+  "notes": "Notable: elapsedMs=41 (very fast fail) confirms L-051 h2_end_stream=1 IS effective at closing stream — SPA no longer waits indefinitely. But this only EXPOSES the underlying schema gap rather than masking it as a hang. Net progress: hang -> immediate error. Root cause shifted from 'stream framing' to 'JSON schema mismatch' as previously hypothesized. Same TRPCClientError pattern as prior runs — full match. User session was guest mode (Sign in / Sign up visible) but mutation still processed (Mistral allows guest chat). Console shows: 5 errors total, mutation #5 newChat threw TRPCClientError synchronously upon receiving forged response. cause is TypeError from Object.keys/Object.entries/Object.assign on undefined — typical zod/superjson deserialization failure on an unexpected null/undefined nested field."
+}
