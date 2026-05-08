@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "character",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://character.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★★ character chat_id extraction fix (7th iteration). Per #749 HAR diff + 6 prior schema iterations all FAIL: field-level parity achieved (author_id base64-format, editor.author_id numeric, no extra fields), yet bundle still silent-drops. New hypothesis: chat_id MUST match active chat session (extracted from c2s create_and_generate_turn frame). Engine was using generate_uuid4() for chat_id → fresh UUID → bundle's chat-tree resolver routes to nonexistent chat → silent drop. Fix: extract chat_id from sd->ws_c2s_accumulated_buffer (and s2c fallback). Build run_id 20260508-144211-95440. Engine code: ai_prompt_filter.cpp lines 1948+2418-2425 — NEW chat_id_override parameter on build_character_add_turn_envelope, caller extracts from c2s buffer with s2c fallback. Header signature updated (4-arg form). Expected: bundle's chat-tree resolver matches → add_turn dispatched → Korean warning bubble rendered. RRN absent (S2 holds)."
+    },
+    "id": "778",
+    "created": "2026-05-08T14:43:00Z",
+    "attachments": [],
+    "notes": "character 7th iteration — chat_id from c2s extraction, NOT fresh UUID. Engine code change (90 lines added)."
+}
