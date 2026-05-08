@@ -1,0 +1,25 @@
+{
+  "id": "770",
+  "command": "check-warning",
+  "service": "gamma",
+  "executed_at": "2026-05-08T09:01:00+09:00",
+  "status": "FAIL_render_generation_error",
+  "verdict_summary": "P4 per-path JSON envelope did NOT fix render-generation; ERR_HTTP2_PROTOCOL_ERROR persists, outline card #1 empty, no Korean warning rendered.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "outline_card_1_title": "",
+    "outline_card_count": 1,
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "ui_state": "outline",
+    "render_generation_status_code": null,
+    "render_generation_response_body_excerpt": "Failed to load response data — No data found for resource with given identifier (Response headers: 0). Request was network-aborted before any HTTP response.",
+    "console_errors_excerpt": "[PromptAndOutlineSettings] error generating outline: Unable to complete request | POST https://ai.api.gamma.app/ai/v2/render-generation net::ERR_HTTP2_PROTOCOL_ERROR | Uncaught (in promise) TypeError: Failed to fetch (ai.api.gamma.app) at push.e.s.generate.traceparent",
+    "har_captured_on_fail": false,
+    "har_path_LOCAL": null,
+    "screenshot_paths": ["C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\770\\770_devtools_20260508-090112.png"]
+  },
+  "recommendation": "FAIL — per-path JSON envelope dispatch did NOT eliminate ERR_HTTP2_PROTOCOL_ERROR on /ai/v2/render-generation. Same network-abort symptom as #768. Hypotheses to investigate: (1) lookup_key override may not be reaching DB row (verify gamma_render_generation_json_v1 envelope row exists with proper headers and JSON body), (2) JSON envelope itself may have HTTP/2 framing issue (Content-Length mismatch, missing END_STREAM, illegal pseudo-header), (3) request_path matcher may not actually match /ai/v2/render-generation in dispatch — add etap.log trace at generate_block_response entry showing service/api_path/lookup_key actually selected, (4) Cloudflare/HTTP2 may reject server-forged response on this specific endpoint due to TLS/SNI state. Network shows /generation 200 OK (SSE) — but Chrome EventStream parsed ZERO events (still SSE framing issue from #769 may persist on /generation too). Recommend: (a) tcpdump wire capture of /render-generation to see what bytes engine actually sends, (b) compare engine forged frames vs. real gamma server frames byte-by-byte, (c) verify DB lookup_key dispatch with strace/debug log.",
+  "notes": "Outline panel rendered with one empty card #1 (counter shows '0/50000' chars, '총 카드 1개'). The /ai/v2/generation request returned 200 OK (fetch row, 0.7 kB) but Chrome's EventStream tab showed empty — same 'SSE framing/encoding issue' pattern observed in #769. The /ai/v2/render-generation request shows red (failed) with 0.0 kB transferred and Response headers (0). Console shows the cascade: ERR_HTTP2_PROTOCOL_ERROR → Failed to fetch → 'Unable to complete request'. Build run_id 20260508-085109-72131 is deployed (URL changed from previous, behavior changed). RRN decode is ABSENT (no S2 regression — that's the only positive). Mission criterion #2 NOT satisfied. Also observed: a small minor 'Content-Length: 538' on the failed POST request body (request was sent), and a successful 204 preflight before each, so engine code path was reached but the response phase failed."
+}
