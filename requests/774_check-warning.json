@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma P5 + CORS preflight fix verify. Per #773 verdict: P5 cross-connection intercept IS WORKING (prior ERR_HTTP2_PROTOCOL_ERROR gone, preflight returns 200 in 3ms = engine handled). New failure: browser CORS policy blocks POST because Access-Control-Allow-Headers doesn't include 'content-type'. Fixed: gamma_render_generation_json_v1 envelope_template UPDATE adds: 'access-control-allow-methods: POST, OPTIONS, GET, PUT, PATCH, DELETE' + 'access-control-allow-headers: content-type, authorization, x-client-version, aijsx-traceparent, *' + 'access-control-max-age: 2592000' + 'access-control-allow-credentials: true'. Length 406→605 bytes. reload_templates SUCCESS. Browser preflight should now pass → POST sent → engine emits forged JSON warning → outline panel renders Korean warning text. NO new build required (DB-only fix)."
+    },
+    "id": "774",
+    "created": "2026-05-08T14:05:00Z",
+    "attachments": [],
+    "notes": "gamma P5 CORS preflight headers completed. Build unchanged (run_id 20260508-121642-42969). Engine code path verified working from #773 evidence."
+}
