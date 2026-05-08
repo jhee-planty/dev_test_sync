@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "gamma",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://gamma.app/",
+        "verify_timeout_s": 60,
+        "context": "★★ gamma render-generation REQUEST-SIDE cross-connection intercept (P5 — proper architectural fix per #770 root cause). #770 P4 attempted lookup_key override at generate_block_response (called only when block_session fires from PII detection). But render-generation has no PII keyword in c2s body → block_session never called → override unreachable. New approach: REQUEST-SIDE intercept in on_http2_request (analogous to V6-F page-inject pattern). When (a) service=gamma, (b) api_path contains /ai/v2/render-generation, (c) query_domain_block returns recent ts → engine emits forged JSON response immediately without waiting for server. Build run_id 20260508-121642-42969. Engine code: ai_prompt_filter.cpp on_http2_request handler now has gamma render-generation cross-connection intercept block before V7-E perplexity intercept. Uses gamma_render_generation_json_v1 envelope (registered in DB) + sd->service_name http_response (warning text). Expected: render-generation gets engine forged JSON instead of server 400 → outline panel renders Korean warning."
+    },
+    "id": "773",
+    "created": "2026-05-08T12:18:00Z",
+    "attachments": [],
+    "notes": "gamma P5 (true cross-connection request-side intercept) — request-side, not block_session-driven. Mirrors V6-F page-inject architecture for API endpoint cross-connection."
+}
