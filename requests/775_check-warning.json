@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "character",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://character.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★★ character add_turn schema fix per #749 byte-byte HAR diff. Engine prior emit had 4 EXTRA fields not in legitimate frame baseline (#739): is_human, tti_message_id, text, last_update_time (candidate-level). Hypothesis: new SPA bundle (_app-cec840cff20+) parser strict-validates and silent-drops envelopes with unknown fields. Fix: removed all 4 extra fields, matched legitimate exactly. Also changed author.author_id from 'system' to opaque-format ID 'PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k' (sample from baseline) and editor.author_id to numeric-string '55435119' (matches baseline pattern). Build run_id 20260508-140748-81137. Engine helper build_character_add_turn_envelope updated to match #749 baseline byte-for-byte (within UUID variation). Expected: Korean warning rendered as character bubble + RRN decode absent."
+    },
+    "id": "775",
+    "created": "2026-05-08T14:08:00Z",
+    "attachments": [],
+    "notes": "character schema simplification (5+ iterations attempt) — strict match to legitimate baseline. If still FAIL: bundle may have stricter authentication/routing logic beyond schema."
+}
