@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "character",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://character.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★ character c2s buffer DUMP diagnostic. Per #780 etap.log audit at 08:38:35.909: [APF:character_inject_diag] req_id_extracted_len=0 chat_id_extracted_len=0 BOTH EMPTY despite accum_len=1142 ws_blocked fire. Engine code path reached but extraction grep finds neither 'request_id' nor 'chat_id' as substring in c2s buffer. Build run_id 20260511-084237-71901 adds [APF:character_c2s_buf_dump] log line: total_len + first256_chars + hex_first80. After this test, dev-side etap.log audit reveals what actual c2s buffer content looks like — JSON (different keys?), MsgPack binary, protobuf, custom format. Decides next iteration direction. RRN protected (S2 holds via existing block path)."
+    },
+    "id": "781",
+    "created": "2026-05-11T08:43:00Z",
+    "attachments": [],
+    "notes": "character c2s buffer dump — reveal actual content format. Same scenario as #778/#780."
+}
