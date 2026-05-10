@@ -1,0 +1,26 @@
+{
+  "id": "782",
+  "command": "check-warning",
+  "service": "gamma",
+  "executed_at": "2026-05-11T08:58:00+09:00",
+  "status": "FAIL_text_no_render",
+  "verdict_summary": "Keepalive ': keepalive\\n\\n' comment fix did NOT unblock gamma SPA — generation 200 OK but EventStream still 0 events parsed; outline shows only 1 empty card with no Korean warning '차단' visible. Same symptom as #777.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "outline_card_count": 1,
+    "outline_card_titles": ["1"],
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "ui_state": "outline",
+    "generation_sse_status": 200,
+    "generation_sse_events_parsed": 0,
+    "render_generation_status": 200,
+    "console_errors_excerpt": "[PromptAndOutlineSettings] error generating outline: Unable to complete request",
+    "har_captured_on_fail": false,
+    "har_path_LOCAL": null,
+    "screenshot_paths": ["C:/Users/최장희/Documents/dev_test_sync/files/782/outline_empty.png"]
+  },
+  "recommendation": "L-049/V7-G keepalive comment alone is INSUFFICIENT for gamma. Network layer is healthy (gen 200, render 200, no CORS regression) but Chrome SSE parser still emits 0 events. Hypothesis: gamma uses different SSE consumer than perplexity — likely needs (a) larger initial flush payload (multiple keepalive comments / dummy 'event: ping' at start), (b) explicit Content-Length / Transfer-Encoding chunked review, or (c) the warning event itself needs to be split into multiple smaller chunks. Recommend inspecting gamma frontend SSE parser code (look for graphql streaming or trpc-sse handling) and compare event boundary requirements vs perplexity. Consider sending real 'event: data' wrapper before the warning event:message — perplexity may have tolerated a single event but gamma's parser may require event sequence (data first, then end).",
+  "notes": "Network layer fix preserved: render-generation 200 (no CORS regression vs #774). DevTools EventStream tab confirmed 0 parsed events for /ai/v2/generation despite 200 OK. Console error 'error generating outline: Unable to complete request' identical to #777. RRN decode is ABSENT — no S2 regression. Outline panel renders the chrome (header '윤곽선', '총 카드 1개' counter, '카드 추가' button) but the single card body is empty (only the card index '1' shown as placeholder). v7-G keepalive pattern proven on perplexity does NOT generalize to gamma; gamma's SSE parsing path appears to require a richer initial event prelude or a different envelope structure entirely."
+}
