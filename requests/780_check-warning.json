@@ -1,0 +1,16 @@
+{
+    "command": "check-warning",
+    "priority": "high",
+    "params": {
+        "service": "character",
+        "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+        "expected_text": "차단",
+        "url": "https://character.ai/",
+        "verify_timeout_s": 30,
+        "context": "★★ character chat_id extraction DIAGNOSTIC. Per #778 verdict (7th iteration FAIL): need to verify if engine code path actually populated chat_id_override. Build run_id 20260511-083403-68279 adds [APF:character_inject_diag] log line at engine call site, logging req_id_extracted + chat_id_extracted values. After this test, dev side can grep etap.log for the diag line to determine: (a) extraction empty → c2s key name differs (try chatId camelCase, nested paths), (b) extraction populated but bundle still drops → chat_id hypothesis disproven, pivot to next direction. RRN protected (S2 holds). Same prompt as #778 for consistency."
+    },
+    "id": "780",
+    "created": "2026-05-11T08:35:00Z",
+    "attachments": [],
+    "notes": "character diagnostic — verify engine extraction values, not user-visible change. Same scenario as #778."
+}
