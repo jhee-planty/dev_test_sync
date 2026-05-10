@@ -1,0 +1,23 @@
+{
+  "id": "781",
+  "command": "check-warning",
+  "service": "character",
+  "executed_at": "2026-05-11T08:51:40+09:00",
+  "status": "FAIL_REGRESSION_PERSISTS",
+  "verdict_summary": "Bot loading dots indefinite >30s, no Korean warning, RRN absent from bot reply — same as #778/#780; expected diagnostic outcome, dump log should now exist in etap.log.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "author_label_seen": "William Afton (c.ai)",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "loading_dots_indefinite": true,
+    "character_name_used": "William Afton (@Sundownq)",
+    "console_errors_excerpt": "DevTools console: 0 errors, 3 warnings, 22 info, 3 verbose, 28 messages, 26 user messages, 28 hidden. No new errors triggered by submission. (Note: 2 Issues panel pre-existing.)",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\781_character_loading_dots.png"
+    ]
+  },
+  "recommendation": "Dev: grep etap.log for [APF:character_c2s_buf_dump] run_id 20260511-084237-71901 to inspect first256_chars + hex_first80 of c2s buffer — reveals actual content format (JSON/MsgPack/protobuf/custom). Submission timestamp ~08:50:33 KST. Also re-confirm [APF:character_inject_diag] still shows req_id_extracted_len=0 chat_id_extracted_len=0.",
+  "notes": "Test PC clock 08:51:40 KST 2026-05-11. Hard reload (Ctrl+Shift+R) executed prior to chat. New chat session opened via 새로운 채팅 dialog (PipSqueak 2 default style). Character: William Afton (@Sundownq, recent). Submission via send button at ~08:50:33 KST (run_id 20260511-084237-71901 build active). Send button required two clicks — first click missed target; second click at (1648,937) succeeded. RRN visible only in user-side prompt echo bubble (HealthyWorm4019 author label) — NOT a leak from bot. Bot reply bubble shows gray '...' dots only; no text rendered after 30+s wait. S2 holds (no bot RRN echo). Pattern matches #778/#780 exactly — expected per request context. Screen captured at 08:51:40 KST."
+}
