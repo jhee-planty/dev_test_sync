@@ -1,0 +1,25 @@
+{
+  "id": "807",
+  "command": "check-warning",
+  "service": "notion",
+  "executed_at": "2026-05-11T13:25:00+09:00",
+  "status": "REGRESSION_text_no_render_PERSISTS",
+  "verdict_summary": "h2_end_stream 2→1 fix did NOT resolve the silent-suppression. Symptom identical to #801/#805: PII prompt submitted (URL transitioned to new thread t=35d9aa2d8bdd805b986a00a9525315cc&wfv=chat, input cleared), but neither user bubble nor assistant bubble nor Korean warning rendered. Conversation area completely empty after >18s wait. The notion frontend's NDJSON parser still sees 0 events — root cause is NOT solely h2_end_stream timing. Direct navigation to https://www.notion.so/chat (no login redirect) initially returned the Korean APF block page (tab title '보안 정책 - 접근 차단', body blank with red警告 panel containing '차단되었습니다'); navigating via https://www.notion.so/ (root) then loaded the real Notion AI chat UI logged in as 최장희's Space. PII prompt was then submitted into the actual chat input. Submission was accepted by frontend (input cleared, URL changed to thread URL) but no chat content rendered.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "(only on /chat direct navigation block page, not in chat thread) '보안 경고\\n민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n(This request was blocked due to sensitive information.)' — but that block page rendered BEFORE prompt submission, on direct GET /chat. After submitting via the real chat UI, NO warning bubble rendered in the conversation area.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "empty — no user bubble, no assistant bubble, no warning text, no streaming indicator. URL transitioned from notion.so/chat to notion.so/chat?t=35d9aa2d8bdd805b986a00a9525315cc&wfv=chat (thread created server-side) but conversation pane remained blank. Header still shows placeholder 'AI에게 질문하기'. Input box (id=17) returned to value=(empty) confirming submission left the textarea but no message rendered.",
+    "logged_in": true,
+    "runInferenceTranscript_status": "not_observed_directly_devtools_was_closed_after_navigation_to_notion.so_root_to_get_real_chat_ui",
+    "runInferenceTranscript_body_visible": false,
+    "console_errors_excerpt": "DevTools was closed for the actual prompt submission to allow the chat UI to render (DevTools panel had blocked viewport when first GET /chat returned the APF block page). Console errors not captured for this run; recommend re-run with DevTools docked-bottom + preserve log to capture /api/v3/runInferenceTranscript response body.",
+    "url_after_submit": "https://www.notion.so/chat?t=35d9aa2d8bdd805b986a00a9525315cc&wfv=chat",
+    "screenshot_paths": [
+      "C:/Users/최장희/Documents/dev_test_sync/results/807_screenshots/807_after_submit.png"
+    ]
+  },
+  "recommendation": "h2_end_stream 2→1 alone is INSUFFICIENT. Two NEW data points to investigate: (1) Direct GET https://www.notion.so/chat (cold navigation, no referer/cookie path establishing notion app shell first) is now returning the APF block page document — title '보안 정책 - 접근 차단' — instead of the Notion app HTML. This is a class-A document-level intercept that did NOT exist in #805. Either an APF rule was tightened in 13:14 KST DB update OR the WAF cookie/sticky-session changed. (2) When user reaches chat UI through normal flow (notion.so → /chat), POST runInferenceTranscript still produces empty UI — same #805 silent-suppression. Suggested next steps: (a) capture fresh HAR with DevTools open BEFORE submission (use bash sanitize_har_*.py pattern from prior 745/749), (b) verify whether the forged-success NDJSON body from etap is now non-empty (xxd hex dump first 64 bytes), (c) check if frontend expects content-length header that h2 stream still omits, (d) rule out class-A overreach — the /chat block page rendering on cold load is regression-worthy by itself.",
+  "notes": "Test PC env: Windows 11, Chrome window grabbing focus across redirects required App switch to find the right window (Hugging Face was active, then notion redirected to APF block page tab named '보안 정책 - 접근 차단'). Total session ~3 minutes. Logged in as 최장희's Space confirmed via sidebar avatar + 6분-old prior 새 AI 채팅 entry. No Korean warning bubble appeared in the chat thread for the submitted PII prompt within 18s observation window — well past the 30s verify_timeout_s ceiling for the user-visible portion."
+}
