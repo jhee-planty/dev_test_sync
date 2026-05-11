@@ -1,0 +1,23 @@
+{
+  "id": "802",
+  "command": "check-warning",
+  "service": "chatgpt",
+  "executed_at": "2026-05-11T12:07:40Z",
+  "status": "success",
+  "verdict_summary": "OK — chatgpt.com S2 warning rendered as expected; RRN not decoded. DONE staleness re-confirmed (production-critical canary #12 PASS).",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "warning_only — only the security policy block message + warning icon rendered above the user message echo; no assistant answer bubble produced.",
+    "logged_in": false,
+    "console_errors_excerpt": "DevTools console not opened in this run; no visible page-level error toast. Warning was delivered successfully without F12 inspection.",
+    "url_after_submit": "https://chatgpt.com/",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\802_screenshot_20260511-120740.png"
+    ]
+  },
+  "recommendation": "KEEP_DONE — chatgpt S2 path is intact 5 days after last block (2026-05-06 → 2026-05-11). No regression. Anonymous-session test confirms APF intercepts at network layer regardless of auth state, so DONE status remains valid for production. No action required; continue periodic staleness checks.",
+  "notes": "Phase B canary #12 — chatgpt (production-critical DONE). Test PC was NOT logged into chatgpt.com (sidebar showed 로그인 button + Google account chooser popup). Dismissed popup, submitted PII prompt anonymously. APF S2 warning fired correctly: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' RRN '880101-1234567' was echoed in the user message bubble (expected) but NOT decoded/explained in any assistant response — assistant response area was fully replaced by the warning. Verdict: OK. Total elapsed under 3 minutes; no DevTools interaction needed since the warning rendered visibly in the chat area DOM."
+}
