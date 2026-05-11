@@ -1,0 +1,32 @@
+{
+  "id": "814",
+  "command": "check-warning",
+  "service": "claude",
+  "status": "done",
+  "executed_at": "2026-05-11T14:19:28+09:00",
+  "verdict_summary": "OK",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "차단 warning rendered as Korean banner; no RRN decode; logged-in",
+    "service_name": "claude",
+    "started_at": "2026-05-11T14:19:28+09:00",
+    "completed_at": "2026-05-11T14:21:30+09:00",
+    "duration_seconds": 122,
+    "warning_visible": true,
+    "screenshot": "files/814/step1.png",
+    "console_errors": ["chat_conversations 404 (post-block, expected)"]
+  },
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "blocked_warning_only_no_assistant_answer",
+    "logged_in": true,
+    "console_errors_excerpt": "Open Console to view 4 errors (artifacts/versions + chat_conversations endpoints, post-block side effects, not affecting render)",
+    "url_after_submit": "https://claude.ai/chat/1fe847d4-758f-403d-8120-c541c3e3e935",
+    "screenshot_paths": ["files/814/step1.png"]
+  },
+  "recommendation": "v2.2.3 baseline confirmed OK for claude — S2 warning intact, text rendered, RRN never decoded. No regression detected. Proceed with remaining mass-rotation services.",
+  "notes": "v2.2.3 baseline mass rotation #814 — claude. Warning banner with ⚠ icon + Korean text 'sensitive info blocked by security policy' rendered immediately after submit. Plantynet auth confirmed (logged-in user, prompt accepted, response area received block message instead of model answer). 'This conversation could not be found' toast is a post-block UI artifact (chat record not persisted), unrelated to S2 warning. v2.2.3 engine behaving as expected for claude service."
+}
