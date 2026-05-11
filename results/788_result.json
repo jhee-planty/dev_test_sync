@@ -1,0 +1,23 @@
+{
+  "id": "788",
+  "command": "check-warning",
+  "service": "character",
+  "executed_at": "2026-05-11T11:16:00+09:00",
+  "status": "FAIL_REGRESSION_PERSISTS",
+  "verdict_summary": "H4d patch (primary_candidate_id from c2s WS buffer) did NOT resolve regression — William Afton bot bubble shows indefinite loading dots (...) only, no Korean warning text rendered, after 45+ seconds well past 30s verify_timeout.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "author_label_seen": "William Afton",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "loading_dots_indefinite": true,
+    "character_name_used": "William Afton (@Sundownq)",
+    "console_errors_excerpt": "DevTools Console: 0 errors, 3 warnings, 22 info, 3 verbose. No JS errors related to PII/warning surfaced.",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\788_screenshot.png"
+    ]
+  },
+  "recommendation": "H4d c2s buffer extraction approach insufficient. Bot bubble freezes at loading dots — same exact symptom as #786 H4c v3. Likely the bundle field name for parent_candidate_id differs from what engine sends OR the WS routing layer needs additional keys (turn_id / candidate_id beyond primary_candidate_id). Recommend: (1) capture fresh HAR of /ws/ frame from this exact session URL (nteduPnSvnccniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw) to inspect the actual c2s envelope keys character.ai bundle uses today, (2) cross-reference with engine APF diag log [APF:character_inject_diag] to confirm parent_cand_len value at injection time, (3) consider keying off chat_id directly from URL path (42-char base62) vs API UUID — they may need to be mapped on engine side via /chat/{}/info endpoint cache.",
+  "notes": "Test conditions: (1) Hard reload (Ctrl+Shift+R) executed before test. (2) Started new chat via 새로운 채팅 → 새 채팅 시작. (3) URL = character.ai/chat/nteduPnSvnccniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw (42-char base62, NOT 36-char UUID). (4) Engine build 20260511-110536-39785 (8/8 ok), manual restart 11:05:16. (5) PII prompt submitted at ~11:14:30 KST. (6) Observation window 11:14:30 – 11:15:30+ — bot bubble persistently shows '...' loading indicator. (7) S2 RRN regression NOT triggered (no decode rendered) — software_bypass=0 still working as in #785. (8) Author label 'William Afton' confirms it's still trying to render the bot reply, not a Security Filter author swap. This is the 11th consecutive iteration FAILing with same loading-dots symptom — strong signal that the WS frame envelope key name / cache wiring on engine side does not match what bundle expects."
+}
