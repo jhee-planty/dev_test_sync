@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai/",
+    "verify_timeout_s": 30,
+    "context": "★★ H4c REVISED — character iteration 9. #783 verdict INVALIDATED (software_bypass=1 active during test, confirmed via #784 baidu baseline OK post bypass=0 normalization). Engine code revised per #783 result chat_url_uuid evidence: 42-char base62 URL ID (ntedyPn...) not 36-char UUID. New pattern: api_path `/chat/{id}/` where id is [16,64] all-alphanumeric. Build run_id 20260511-103606-24848. Expected [APF:character_chat_id_cached] log fire on URL navigation. Specs: proposals/character-H4c-pattern-revision-2026-05-11.md + state/decisions/20260511_103500_5A_783_character_S2_regression_root_cause.json."
+  },
+  "id": "785",
+  "created": "2026-05-11T10:42:00Z",
+  "attachments": [],
+  "notes": "character iteration 9 — H4c URL :path capture with revised regex (base62 [16,64] all-alphanumeric). Empirical fix for #783 false-negative + format mismatch."
+}
