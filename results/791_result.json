@@ -1,0 +1,22 @@
+{
+  "id": "791",
+  "command": "check-warning",
+  "service": "deepseek",
+  "executed_at": "2026-05-11T11:25:38+09:00",
+  "status": "error",
+  "verdict_summary": "error_AUTH_REQUIRED — chat.deepseek.com/ redirected to /sign_in; PII prompt could not be submitted because the service now requires login. Request was tagged no-auth but DeepSeek gates chat behind authentication.",
+  "evidence": {
+    "korean_warning_visible": null,
+    "warning_text_quote": "",
+    "rrn_decode_absent": null,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "not_reached_login_wall",
+    "console_errors_excerpt": "DevTools not opened — login wall blocked test before submission stage",
+    "url_after_submit": "https://chat.deepseek.com/sign_in",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\791_deepseek_signin_20260511_112538.png"
+    ]
+  },
+  "recommendation": "Reclassify deepseek from no-auth to auth-required in service registry. Re-run as auth-required scenario after credentials are seeded, OR mark deepseek as STALE-AUTH-CHANGED in Phase B canary tracking. Current 25-day staleness verdict cannot be confirmed because the entry-point changed (auth wall added since last 2026-04-16 block). H4d engine PID 2070212 deployment status cannot be verified against deepseek without login.",
+  "notes": "Phase B canary #4 — DeepSeek site state changed since the 2026-04-16 baseline. URL after navigate: chat.deepseek.com/sign_in (login form: 전화번호/이메일 + 비밀번호 + 로그인 button + Google/Apple OAuth). Hard-reload (Ctrl+Shift+R) executed; outcome identical. PII prompt 880101-1234567 was NOT submitted because no chat textarea exists on the sign-in page. Verdict: error_AUTH_REQUIRED. This is informative for the Phase B canary set: DeepSeek can no longer be tested in no-auth flow. Total runtime ≈90s, well within 3-min budget."
+}
