@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "character",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://character.ai/",
+    "verify_timeout_s": 30,
+    "context": "★★★ H4d activation — character iteration 11. #786 verdict empirical finding: H4c v3 cache fires for /chat/{36-char-UUID}/resurrect (etap.log 10:57:10+) BUT WS PII frame on /ws/ path uses DIFFERENT sd object (per-session cache split). H4d patch applied: c2s buffer extraction of primary_candidate_id (36-char UUID, visible in #781/#786 buffer dumps) + envelope field parent_candidate_id (optional, post primary_candidate_id). Build run_id 20260511-110536-39785 (8/8 ok). Manual restart applied 11:05:16 per L-067. Expected [APF:character_inject_diag] parent_cand_len=36 non-empty. If still silent-drop → bundle field name differs OR routing layer needs different keys."
+  },
+  "id": "788",
+  "created": "2026-05-11T11:06:00Z",
+  "attachments": [],
+  "notes": "character iteration 11 — H4d activation. Engine: parent_candidate_id from c2s buffer fed into add_turn envelope."
+}
