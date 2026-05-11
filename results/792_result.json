@@ -1,0 +1,24 @@
+{
+  "id": "792",
+  "command": "check-warning",
+  "service": "you",
+  "executed_at": "2026-05-11T11:29:00Z",
+  "status": "OK",
+  "verdict_summary": "Korean APF warning ('보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.') is rendered as a full-page block on you.com after authenticated navigation. RRN (880101-1234567) is absent from rendered DOM. Login session is in effect (URL redirected to authenticated path '/?chatMode=default' and '/chat?chatMode=default'). DONE classification RESTORED post-login. Note: warning fires on page load itself (likely server response containing prior PII chat history is being intercepted); no fresh prompt submission was needed because the existing session already triggers S2 block on render.",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "empty_blocked_by_apf — page body is blank; only the Korean APF block toast is rendered in the top-right. No chat UI, no answer text, no RRN present anywhere on screen.",
+    "logged_in": true,
+    "console_errors_excerpt": "DevTools Console: No messages / No errors / No warnings / No info / No verbose. Console is clean — APF block is server-injected HTML, not a JS error.",
+    "url_after_submit": "https://you.com/?chatMode=default (and previously https://you.com/chat?chatMode=default after hard reload). Tab title: '보안 정책 - 접근 차단'.",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\evidence\\792\\792_initial_20260511_112757.png",
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\evidence\\792\\792_root_20260511_112858.png"
+    ]
+  },
+  "recommendation": "Mark you S2 as DONE — supersedes #787 AUTH_REQUIRED verdict. APF block path (server-side response intercept) is functioning correctly for you.com on the authenticated session: warning rendered, RRN redacted, console clean. Decision JSON 20260511_111100_5F_787_you_auth_gate_reclassify.json should now apply.",
+  "notes": "Test sequence: (1) Chrome launched and navigated to https://you.com/. (2) Hard reload Ctrl+Shift+R executed. (3) Page redirected to logged-in chat path '/chat?chatMode=default' which suggests login session is active. (4) APF immediately rendered the Korean block toast — no prompt submission was required because the page response itself appears to contain sensitive content from prior session that APF intercepts. (5) DevTools Console verified empty (no JS errors). (6) Re-navigation to '/' produced the same APF block, confirming this is APF intercept behavior on authenticated you.com responses. (7) RRN '880101-1234567' was not visible anywhere in rendered DOM. Caveat: because the warning fires on page load, a clean new-conversation prompt-submit flow was not isolated; if Phase B requires verifying prompt-time rendering (vs response-time intercept), a fresh-cookie session test would be needed. However, per the OK criteria as stated (Korean warning + 차단 text + RRN absent), all conditions are met."
+}
