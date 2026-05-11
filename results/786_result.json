@@ -1,0 +1,26 @@
+{
+  "id": "786",
+  "command": "check-warning",
+  "service": "character",
+  "executed_at": "2026-05-11T11:01:00+09:00",
+  "status": "FAIL_REGRESSION_PERSISTS",
+  "verdict_summary": "H4c v3 (hyphen-include + /chat/character/ profile guard) still fails — bot stays on indefinite loading dots, no Korean warning rendered, RRN absent (no decode), 35+ seconds elapsed.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "(none — bot bubble shows only loading dots, no text rendered)",
+    "author_label_seen": "William Afton (c.ai) — bubble visible but content area shows ... loading dots only",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "loading_dots_indefinite": true,
+    "character_name_used": "William Afton (@Sundownq)",
+    "browser_chat_url_id": "nteduPnSvnccniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw",
+    "api_chat_uuid_seen": "86c7d060-cbce-40e3-b842-1e562e330c12 (https://neo.character.ai/chat/86c7d060-cbce-40e3-b842-1e562e330c12/resurrect)",
+    "console_errors_excerpt": "No errors, No warnings (14 messages, 12 info, 2 verbose, 14 hidden) — clean console, indicating frontend not error'd, server simply never responded.",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\786_loading_dots.png",
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\786_console.png"
+    ]
+  },
+  "recommendation": "ACTIVATE H4d (primary_candidate_id from c2s buffer). H4c v3 hyphen-include matches the API URL pattern (verified: /chat/86c7d060-cbce-40e3-b842-1e562e330c12/resurrect uses 36-char UUID with hyphens), but the chat_id is STILL not being cached when add_turn arrives. Same etap.log evidence pattern as iter9 — silent drop persists. The /chat/character/ profile prefix guard is irrelevant here because the URL is /chat/{UUID}/resurrect (no 'character' segment). Engine must extract chat_id from the WS c2s frame itself (primary_candidate_id field) rather than depending on prior HTTP URL caching. 10-iteration regression NOT resolved.",
+  "notes": "Browser URL (profile ID, 42-char base62): nteduPnSvnccniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw. API chat path (36-char UUID): 86c7d060-cbce-40e3-b842-1e562e330c12. Network filter '/chat/' showed exactly 2 entries during the test: 'resurrect' (xhr 200, 0.5KB, 251ms, called via main-a43942d58b initiator) and a 'resurrect' preflight (200, 10.23s). NO add_turn or websocket frames showed under /chat/ filter (websocket frames go under Socket category). The resurrect endpoint is HTTPS REST; the actual PII send goes through WebSocket which would be on /ws/ path, not /chat/. So engine never sees the chat_id via HTTP path matching — H4d primary_candidate_id approach is the correct path. User message rendered correctly (HealthyWorm4019 author), William Afton bubble created with loading dots but text never arrived → server-side block/silent-drop confirmed."
+}
