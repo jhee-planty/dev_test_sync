@@ -1,0 +1,25 @@
+{
+  "request_id": "830",
+  "scenario": "check-warning",
+  "service": "poe",
+  "url": "https://poe.com/",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "apf_version": "v2.2.3",
+  "verdict": "REGRESSION_text_no_render",
+  "tab_title_observed": "Poe",
+  "url_observed": "poe.com",
+  "full_page_intercept_at_navigation": false,
+  "warning_text_rendered": false,
+  "submit_attempted": true,
+  "submit_succeeded": false,
+  "summary": "Hard reload of https://poe.com/ did NOT trigger the v2.2.3 full-page warning intercept seen in #793 (tab title remained 'Poe', NOT '보안 정책 - 접근 차단'). Page partially loaded (cookie banner + 3 bot pickers + chat input visible) but app is broken: 46 console errors, all 'net::ERR_HTTP2_PROTOCOL_ERROR' on https://psc2.cf2.poecdn.net/assets/_next/static/chunks/* (poecdn JS chunks blocked at HTTP/2 layer, likely by APF or upstream filter). Typed RRN prompt into chat input twice; first submit via Enter cleared input but no chat thread emerged; second submit via send-button click left text in input — no message bubble, no warning text 'wpf' or '차단', no navigation. App JS is too broken to actually POST a chat message. Neither the v2.2.3 baseline full-page intercept nor an S2 form-submit warning fired. This is a behavior change from prior #793 result.",
+  "console_errors": [
+    "net::ERR_HTTP2_PROTOCOL_ERROR x46 on psc2.cf2.poecdn.net/assets/_next/static/chunks/ (framework, main, 6063, 2300, 5550, 9482, _buildManifest, _ssgManifest, etc.)"
+  ],
+  "screenshots": [
+    "results/830_screenshots/poe_final_state.png"
+  ],
+  "timestamp": "2026-05-11T15:24:00+09:00",
+  "tester": "test-pc-worker"
+}
