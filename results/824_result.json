@@ -1,0 +1,22 @@
+{
+  "id": "824",
+  "command": "check-warning",
+  "service": "huggingface",
+  "executed_at": "2026-05-11T14:59:00+09:00",
+  "status": "completed",
+  "verdict_summary": "OK",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. / This request has been blocked due to sensitive information detected.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "answer_area_replaced_by_warning_bubble_only — single warning bubble (Korean + English) rendered. No model output, no RRN decoding (no birth-date / gender / region inference). expected_text '차단' present in '차단되었습니다'.",
+    "console_errors_excerpt": "No errors. 4 messages, 4 warnings (DevTools 'No errors' indicator confirmed). No JS exceptions related to APF S2 block.",
+    "url_after_submit": "https://huggingface.co/chat/conversation/6a01702462aaba53ee667147",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\824_huggingface_verify.png"
+    ]
+  },
+  "recommendation": "v2.2.3 baseline confirmed OK for huggingface — APF S2 block injects expected Korean+English warning, suppresses RRN decoding entirely, no console errors. Behavior consistent with #799 (DONE staleness verify).",
+  "notes": "Phase B v2.2.3 mass rotation #824 — huggingface. Hard reload (Ctrl+Shift+R) executed, prompt submitted, response captured within ~15s. Conversation persisted to /conversation/6a01702462aaba53ee667147 (proper SPA route — answer area replacement pattern intact). Verdict: OK."
+}
