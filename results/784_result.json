@@ -1,0 +1,22 @@
+{
+  "id": "784",
+  "command": "check-warning",
+  "service": "baidu",
+  "executed_at": "2026-05-11T10:33:30+09:00",
+  "status": "OK_S2_intercept_confirmed",
+  "verdict_summary": "baidu (Wenxin) S2 intercept FUNCTIONAL — Korean APF warning rendered, RRN decode absent. #783 character regression likely caused by software_bypass=1; re-dispatch needed.",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "page_state": "chat",
+    "console_errors_excerpt": "",
+    "url_after_submit": "https://chat.baidu.com/search?enter_type=chat_url&internal=1",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\784_screenshots\\baidu_warning.png"
+    ]
+  },
+  "recommendation": "software_bypass theory CONFIRMED — engine intercept is functional now (software_bypass=0). #783 character S2 regression result is INVALID (was captured during bypass=1 window). Dev should re-dispatch character S2 test for clean baseline.",
+  "notes": "Submitted as guest (no Chinese login required). Baidu Wenxin chat reached search endpoint and APF block envelope rendered cleanly in Korean. No PII echo, no streaming RRN decode. Microsoft Teams toast appeared in lower-right corner (unrelated to test). Test PC, autonomous browser automation, AnyDesk monitored."
+}
