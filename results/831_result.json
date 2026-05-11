@@ -1,0 +1,29 @@
+{
+  "request_id": "831",
+  "scenario": "check-warning",
+  "service": "qianwen",
+  "url": "https://tongyi.aliyun.com/qianwen",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "apf_version": "v2.2.3",
+  "verdict": "error_AUTH_REQUIRED",
+  "tab_title_observed": "千问-阿里 AI 助手",
+  "url_observed": "tongyi.aliyun.com/qianwen",
+  "full_page_intercept_at_navigation": false,
+  "warning_text_rendered": false,
+  "submit_attempted": true,
+  "submit_succeeded": false,
+  "summary": "Hard reload of https://tongyi.aliyun.com/qianwen did NOT trigger any v2.2.3 full-page warning intercept (tab title remained '千问-阿里 AI 助手', NOT '보안 정책 - 접근 차단'). Page loaded normally with chat input + 登录 (Login) button prominent — user is NOT authenticated. Pasted RRN prompt into chat input via clipboard, pressed Enter; input field cleared (placeholder '向千问提问' restored) but NO chat thread, NO message bubble, NO assistant response, and NO warning text containing '차단' rendered. Login button still visible after submit attempt — qianwen rejects unauth submissions silently (or with hidden modal). Cannot disambiguate between (a) APF S2 warning lost in regression vs (b) qianwen client never POSTed due to missing auth. Recommend re-running with logged-in qianwen session to clear AUTH confound. DevTools console showed 19 errors (mostly @ali/qianwen-web/2.7.2 chunk loads + fireyejs WAF, secdev sufei_data) but none referenced '차단' or APF block.",
+  "console_errors": [
+    "Multiple @ali/qianwen-web/2.7.2 async chunk references (2456.js, 8030.js, vendor-mos-agent.js, 1426.js, 1061.js)",
+    "fireyejs.js (Aliyun WAF) errors x2",
+    "secdev/sufei_data/3.9.14 index.js errors x2",
+    "Total: 19 errors / 13 warnings / 21 issues per DevTools panel"
+  ],
+  "screenshots": [],
+  "auth_state": "logged_out (登录 button visible at coords (150,971))",
+  "input_field_state_post_submit": "cleared (BOM + placeholder '向千问提问' restored)",
+  "comparison_to_v2_2_3_baseline": "REGRESSION candidate — prior v2.2.3 baseline expectation was full-page intercept on navigation (per #793 poe baseline pattern). Here navigation completed normally to qianwen UI. Cannot fully classify as REGRESSION_S2_lost because S2 (form-submit) path was blocked by missing auth, not by APF.",
+  "timestamp": "2026-05-11T15:30:00+09:00",
+  "tester": "test-pc-worker"
+}
