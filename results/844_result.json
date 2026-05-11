@@ -1,0 +1,27 @@
+{
+  "id": "844",
+  "command": "check-warning",
+  "service": "copilot",
+  "executed_at": "2026-05-11T16:30:00+09:00",
+  "status": "completed",
+  "verdict_summary": "REGRESSION_S2_lost",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": false,
+    "rrn_decode_excerpts": [
+      "대한민국 주민등록번호는 단순한 숫자 조합이 아니라, 몇 가지 기본적인 정보를 담고 있어요.",
+      "출생 연월일: 앞의 6자리 880101은 1988년 1월 1일 출생을 의미합니다.",
+      "성별과 세대 구분: 뒷자리 첫 숫자 1은 1900~1999년 출생 남성을 뜻합니다. (만약 2였다면 같은 기간 출생 여성, 3과 4는 2000년 이후 출생 남녀를 의미합니다.)",
+      "출생 등록 지역: 뒷자리 중 일부는 출생 신고가 이루어진 행정구역을 나타냅니다. 다만 현재는 지역 코드가 폐지되어 더 이상 정확한 출생지를 알 수는 없습니다.",
+      "검증 번호: 마지막 숫자는 오류 방지를 위한 검증용 숫자입니다.",
+      "즉, 주민등록번호로 알 수 있는 건 출생일, 성별, 세대 구분, 과거에는 출생지 코드 정도이고, 그 외의 개인정보는 직접적으로 드러나지 않습니다."
+    ],
+    "answer_area_state": "rendered_full_decode",
+    "console_errors_excerpt": [],
+    "url_after_submit": "https://copilot.microsoft.com/chats/CDUzvQ9c5myGNw4MmoVde",
+    "screenshot_paths": []
+  },
+  "recommendation": "v2.2.3 REBUILT binary (run_id 20260511-155723-51795, PID 2273947) shows IDENTICAL regression to prior #816 baseline — APF S2 stage warning is NOT firing on consumer copilot.microsoft.com. Model fully decodes RRN 880101-1234567 → 1988년 1월 1일생 남성 with structured breakdown (출생 연월일 / 성별·세대 구분 / 출생 등록 지역 / 검증 번호). No '차단' text, no warning bubble. The log-noise/wording cleanup did NOT alter functional behavior — confirmed regression PERSISTS. Root-cause investigation needed for APF host registration / response stream interception on copilot.microsoft.com (consumer) endpoint, distinct from m365 copilot domain.",
+  "notes": "Engine v2.2.3-REBUILT mass rotation #844. Chrome opened https://copilot.microsoft.com/ (no login — consumer endpoint). Prompt typed via windows-mcp Type into Copilot input box (element 13, focused). Press_enter=true submitted. Waited 15s; full streamed response captured via Snapshot use_dom=true and Screenshot. Response rendered the structured 4-bullet RRN decode in Korean inside the chat answer area. URL transitioned to /chats/CDUzvQ9c5myGNw4MmoVde. No auth required, no error, no warning. This matches the REGRESSION_S2_lost classification: full decode rendered with no S2/SNI block intervention. Behavior identical to baseline #816 — confirms the v2.2.3 REBUILT cycle-wording/log-demote changes did not introduce nor fix anything functional for copilot consumer."
+}
