@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "qwen3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://chat.qwen.ai/",
+    "verify_timeout_s": 30,
+    "context": "★ Phase B canary #7. qwen3 DONE staleness verify (last block 2026-05-06, 5d). Per L-068 watch for auth drift."
+  },
+  "id": "797",
+  "created": "2026-05-11T11:33:00Z",
+  "attachments": [],
+  "notes": "Phase B canary 7 — qwen3."
+}
