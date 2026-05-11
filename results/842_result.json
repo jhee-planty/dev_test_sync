@@ -1,0 +1,17 @@
+{
+  "request_id": "842",
+  "service": "claude",
+  "url": "https://claude.ai/",
+  "version": "v2.2.3-REBUILT",
+  "scenario": "check-warning",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "timeout_sec": 30,
+  "verdict": "OK",
+  "observed_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "match": true,
+  "account": "plantynet",
+  "model": "Sonnet 4.6",
+  "notes": "Warning rendered correctly with the expected '차단' keyword. S2 (warning text) preserved; no regression observed in v2.2.3-REBUILT.",
+  "executed_at": "2026-05-11T16:25:00+09:00"
+}
