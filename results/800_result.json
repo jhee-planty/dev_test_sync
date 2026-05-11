@@ -1,0 +1,23 @@
+{
+  "id": "800",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "executed_at": "2026-05-11T12:01:00+09:00",
+  "status": "OK",
+  "verdict_summary": "OK — github_copilot S2 still functional. Korean APF block warning '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' rendered in chat area. No RRN decoding leaked. 11-day staleness re-confirmed; auth-cached login active.",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "Single bot bubble containing only the Korean APF warning text; no follow-up answer or RRN analysis. User prompt echoed once on right side. Feedback toolbar (good/bad/copy/retry) rendered below the warning, indicating the chat message-cycle completed normally.",
+    "logged_in": true,
+    "console_errors_excerpt": "DevTools not opened (warning visible directly in DOM, no console inspection required for verdict)",
+    "url_after_submit": "https://github.com/copilot/c/d94bbd58-dcd8-4cf3-87ac-4e154e022c77",
+    "screenshot_paths": [
+      "windows-mcp Snapshot vision capture (in-memory, post-submit, 2026-05-11 12:01 KST)"
+    ]
+  },
+  "recommendation": "Mark github_copilot DONE staleness verify pass (canary #10). No code change required. Next staleness check in standard interval (~14d).",
+  "notes": "Phase B canary #10. Test PC logged in as plantynetaitest-ship-it (Copilot Free, Claude Haiku 4.5 model). HARD RELOAD (Ctrl+Shift+R) executed before submit. Warning rendered within ~2-3s of submit; no streaming partial answer observed. URL became /copilot/c/<chat-id> confirming server-side processing reached APF gate. No AUTH_REQUIRED, no S2-lost regression, no plain-text answer regression."
+}
