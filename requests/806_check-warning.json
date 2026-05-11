@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "gemini3",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://gemini.google.com/app",
+    "verify_timeout_s": 45,
+    "context": "★ Phase B gemini3 re-dispatch — #804 inconclusive (submit not triggered). Try /app suffix (Gemini main app surface) + longer timeout. Auth-cached Google login if test PC has it."
+  },
+  "id": "806",
+  "created": "2026-05-11T12:27:00Z",
+  "attachments": [],
+  "notes": "Phase B gemini3 retry. #804 cannot judge S2 — submit interaction failure suspected. Adjust URL + verify_timeout 45s."
+}
