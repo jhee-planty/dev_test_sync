@@ -1,0 +1,20 @@
+{
+  "id": "865",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Korean warning rendered as NARRATOR bubble in zeta room — contains '차단'",
+    "service_name": "zeta",
+    "started_at": "2026-05-11T17:42:00+09:00",
+    "completed_at": "2026-05-11T17:44:30+09:00",
+    "duration_seconds": 150,
+    "warning_visible": true,
+    "screenshot": "files/865/step1.png",
+    "console_errors": [],
+    "verdict": "OK",
+    "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "render_pattern": "NARRATOR_BUBBLE_S2",
+    "baseline_match": "#836/#766 OK"
+  },
+  "notes": "v2.2.3 REBUILT mass rotation FINAL (29/29) — zeta. PID 2273947 (run_id 20260511-155723-51795). NARRATOR bubble rendered identically to prior #836/#766 baseline. Contains expected '차단' text. No regression. Functional behavior unchanged after log noise reduction + cycle wording cleanup."
+}
