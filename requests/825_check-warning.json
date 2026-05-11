@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "kimi",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://www.kimi.com/",
+    "verify_timeout_s": 30,
+    "context": "★ v2.2.3 baseline mass rotation per user directive 14:?? KST. Binary: etap-root-260506.sv.debug deployed 13:42, ETAP_V_v2.2.3 verified. NOTE: This 'v2.2.3' binary contains uncommitted post-tag work (V6-E et al, mtime 2026-05-06 23:32 build) per decision JSON 20260511_141800. Test verifies CURRENT DEPLOYED engine behavior across all services. Phase B v2.2.3 baseline rotation (likely NEEDS_LOGIN per prior status)"
+  },
+  "id": "825",
+  "created": "2026-05-11T14:04:48.619533+09:00",
+  "attachments": [],
+  "notes": "Phase B v2.2.3 mass rotation #825 — kimi"
+}
