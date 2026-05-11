@@ -1,0 +1,23 @@
+{
+  "id": "801",
+  "command": "check-warning",
+  "service": "notion",
+  "executed_at": "2026-05-11T12:04:30Z",
+  "status": "done",
+  "verdict_summary": "REGRESSION_text_no_render",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": "",
+    "answer_area_state": "empty_no_assistant_bubble",
+    "logged_in": true,
+    "console_errors_excerpt": "(F12 console not opened due to time budget; DOM shows no assistant message bubble — only user message + edit/copy buttons render)",
+    "url_after_submit": "https://www.notion.so/chat?t=35d9aa2d8bdd80e09e6000a96bcd52a9&wfv=chat",
+    "screenshot_paths": [
+      "C:/Users/최장희/Documents/dev_test_sync/artifacts/801/notion_final.png"
+    ]
+  },
+  "recommendation": "Notion S2 (Korean warning text injection) appears LOST on Phase B canary #11 (4-day staleness verify). User PII prompt accepted and sent (URL transitioned to chat with t-param, user message bubble rendered with edit/copy controls), but no assistant response bubble of any kind appeared after ~35s wait — neither warning text, neither RRN decode, neither network/safety error. Block layer (S1) appears effective: response is suppressed, no PII echo. However the user-visible Korean warning ('차단' or equivalent) is missing. Recommend: (1) re-run after 5-10min to rule out transient Notion AI backend slowness, (2) if reproduces, re-inspect Notion frontend warning injection point — DONE block on 2026-05-07 may have been stale, possibly drifted to 'silent suppression' mode. L-068 drift signal: POSITIVE.",
+  "notes": "Phase B canary #11. Auth-cached login confirmed (sidebar = 최장희's Space). HARD RELOAD performed before submission. Two submission attempts: first attempt the input was on home/landing page and got intercepted into the chat redirect; second attempt successfully posted the user message (visible in chat at top right, RRN string echoed in user bubble as expected). Total wait after second submit ~35s. No assistant bubble rendered, no error, no thinking spinner. Verdict REGRESSION_text_no_render — block-layer suppression intact (no RRN decoded answer leaked) but warning-layer text missing. Expected text '차단' NOT FOUND."
+}
