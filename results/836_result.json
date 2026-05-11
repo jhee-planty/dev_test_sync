@@ -1,0 +1,26 @@
+{
+  "id": "836",
+  "command": "check-warning",
+  "service": "zeta",
+  "executed_at": "2026-05-11T15:46:00+09:00",
+  "status": "OK",
+  "verdict_summary": "zeta v2.2.3 baseline confirmed. Korean warning rendered in chat room as a system/narrator-style bubble (icon-prefixed line) containing both '[경고]' header and '차단' keyword inside '보안 정책' message. RRN '880101-1234567' is NOT echoed back in the DOM (PII not leaked). Consistent with prior #766 OK result — APF zeta_sse_v3 envelope is still intercepting the SSE stream and replacing assistant output with the Korean warning narrator bubble.",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "tab_title_observed": "제타",
+    "has_block_text_in_body": true,
+    "has_warning_marker_in_body": true,
+    "has_security_policy_in_body": true,
+    "has_rrn_echoed_in_body": false,
+    "body_innertext_length": 303,
+    "url_after_submit": "https://zeta-ai.io/ko/rooms/479d3343-fef0-41c1-a4aa-5dfd30b3b8aa",
+    "render_location": "in-chat narrator bubble (보안 시스템 speaker style) below 여은아's prior message; uses zeta's own message-list rendering pipeline (zeta_sse_v3 envelope)",
+    "console_errors_excerpt": "43 errors, 6 warnings. CORS preflight failures on api.zeta-ai.io/v1/rooms/.../user-chat-profiles and api.zeta-ai.io/v1/rooms/active-room-id (No 'Access-Control-Allow-Origin' header). Also 404s on /v1/hashtag-topics, /v1/layout-sections/home (pre-existing zeta UX issues, not related to APF). One ERR_CONNECTION_REFUSED on cs.nex8.net/cs/openx (ad network). No ERR_CONNECTION_CLOSED on chat/SSE path — APF cleanly substitutes payload rather than dropping connection.",
+    "auth_state": "logged in to zeta (장희 최 session)",
+    "character_room": "남시찬 (plotId 0b53b715-54c8-4dc9-9ebe-f84b0e3a1ca9, roomId 479d3343-fef0-41c1-a4aa-5dfd30b3b8aa)",
+    "submit_method": "Type into '내용 입력하기' textarea then click send button (right-arrow play icon at right of input bar)"
+  },
+  "recommendation": "PASS — zeta is the FINAL service of the 26-service rotation and matches its #766 baseline exactly: in-chat narrator-bubble injection works, no PII leak, no connection drop. Together with the other rotation results, zeta confirms that v2.2.3's SSE-envelope substitution mechanism remains stable for services that use streaming JSON-frame APIs (claude.ai, gemini, chatgpt, perplexity, copilot, zeta family). Watch out: in-page subscription-banner modal ('더 편리한 zeta 앱에서 대화를 즐겨보세요') appears after first message and obscures bottom of warning — UX only, not a regression. No follow-up required.",
+  "notes": "Test PC: Windows 11, Chrome (DevTools Console open from prior #835 you.com session). v2.2.3 baseline test for ticket #836 — FINAL of 26-service rotation. Procedure: navigated address bar to https://zeta-ai.io/ → site auto-redirected to /ko (Korean locale). Ctrl+Shift+R hard reload. Home page rendered ranking grid; clicked top-left character card '남시찬'. Profile page loaded; clicked '대화 시작하기' (purple CTA). Chat room loaded with greeting narrator turn (남시찬 + 여은아). Clicked input field '내용 입력하기', typed PII prompt verbatim, clicked send arrow at (1577, 989). Waited 15s. In-chat narrator bubble appeared with system-icon prefix '=' containing the warning. App-modal pop-up '더 편리한 zeta 앱에서 대화를 즐겨보세요' overlaid the bottom half but did not block the warning bubble (which is rendered higher up in the message list). Dismissed modal (×). Opened DevTools Console — ran JSON.stringify({title:document.title,has_block:document.body.innerText.includes('차단'),has_warning:document.body.innerText.includes('[경고]'),has_security:document.body.innerText.includes('보안 정책'),has_rrn:document.body.innerText.includes('880101-1234567'),body_len:document.body.innerText.length}) → returned '{\"title\":\"제타\",\"has_block\":true,\"has_warning\":true,\"has_security\":true,\"has_rrn\":false,\"body_len\":303}'. All four positive markers true, RRN absent. Verdict: OK matches #766 exactly."
+}
