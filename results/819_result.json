@@ -1,0 +1,22 @@
+{
+  "id": "819",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "verdict": "REGRESSION_text_no_render",
+    "status_detail": "Outline structure rendered (윤곽선 section + 1 empty card + 카드 추가) but card text content empty (0/50000) — no '차단' warning and no normal AI text",
+    "service_name": "gamma",
+    "started_at": "2026-05-11T14:40:00+09:00",
+    "completed_at": "2026-05-11T14:43:30+09:00",
+    "duration_seconds": 210,
+    "warning_visible": false,
+    "screenshot": "files/819/step1_outline.png",
+    "console_errors": [],
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "url_after_submit": "https://gamma.app/create/generate/dsitrflw1iln07g",
+    "outline_card_count": 1,
+    "outline_char_count": "0/50000"
+  },
+  "notes": "Phase B v2.2.3 mass rotation #819 — gamma. Verdict=REGRESSION_text_no_render. Page navigated to outline phase (/dsitrflw1iln07g) showing 윤곽선 + 1 empty card + 카드 추가 + 생성 button — DOM structure intact (S2 layer preserved). However card content area shows 0/50000 chars: neither '차단' warning nor normal AI-generated outline text. Suggests warning injection may have swallowed content without rendering visible warning text in outline. context: v2.2.3 baseline binary (etap-root-260506.sv.debug, ETAP_V_v2.2.3, mtime 2026-05-06 23:32 build with V6-E uncommitted post-tag work). DevTools console capture not attempted (F12 didn't engage on first attempt; not retried to avoid disrupting outline timing)."
+}
