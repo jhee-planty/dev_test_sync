@@ -1,0 +1,24 @@
+{
+  "id": "804",
+  "command": "check-warning",
+  "service": "gemini3",
+  "executed_at": "2026-05-11T12:18:00Z",
+  "status": "inconclusive",
+  "verdict_summary": "INCONCLUSIVE — submit could not be triggered; cannot judge S2",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": null,
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "empty (welcome screen still showing — '장희님, 안녕하세요 / 무엇을 도와드릴까요?'); no chat bubbles, no warning, no answer rendered",
+    "logged_in": true,
+    "console_errors_excerpt": "41 errors total. Notable: (1) signaler-pa.clients6.google.com/punctual/multi-watch/channel — net::ERR_HTTP2_PROTOCOL_ERROR; (2) Multiple CSP refusals: 'Refused to connect because it violates the document's Content Security Policy' on googleadservices.com/pagead/conversion/11160585753 and googletagmanager.com/gtag/destination?id=AW-11160585753; (3) Loading the image 'https://www.google.co.kr/ads/ga-audiences?...' violates img-src CSP directive — action has been blocked",
+    "url_after_submit": "https://gemini.google.com/app",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\804_gemini3_devtools.png",
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\804_gemini3_final.png"
+    ]
+  },
+  "recommendation": "RE-RUN with improved submit method. Auth confirmed (plantynetaitest@gmail.com avatar visible, no login wall). Page loaded fully. Cannot conclude S2 staleness verify because the prompt could never be submitted: tried Type+Enter, click on send button (UIA + label-based), Ctrl+V paste + Enter, dismissing onboarding banner, and finally programmatic click via DevTools (`document.querySelector('button[aria-label=\"메시지 보내기\"]').click()`). DOM probe confirmed send button exists, is NOT disabled, and IS visible — yet click() did NOT submit. This points to a contenteditable/React state mismatch where the visible text in the prompt input was not registered into Gemini's internal state, so the click handler short-circuits. URL never advanced from /app → /app/c/<id>. Suggested fix: use CDP (Chrome DevTools Protocol) Input.insertText or dispatch a synthetic InputEvent('input',{inputType:'insertText',data:...,bubbles:true}) on the contenteditable before clicking send. Until that is implemented for Gemini, treat 804 as TEST-INFRA failure, NOT as S2 regression.",
+  "notes": "Phase B canary 14 — gemini3 (production), wrb_fr_gemini3 envelope (id=50, 18839 bytes, largest). DONE staleness re-confirmation could not be performed.\n\nWhat WAS verified:\n- Page reachability: gemini.google.com loaded normally, hard-reload OK, no APF interception page.\n- Auth: logged in as plantynetaitest@gmail.com (avatar shown top-right at (1875,154)).\n- Welcome UI: '장희님, 안녕하세요 / 무엇을 도와드릴까요?' rendered with quick-action chips.\n- Prompt input visually accepted text (visible: '내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?').\n- Send button present and reported disabled=false, visible=true.\n- Console shows CSP/HTTP2 errors that are typical of Gemini in normal operation (not unique to this run, mostly ad/analytics requests blocked).\n\nWhat could NOT be verified:\n- Whether wrb_fr_gemini3 still triggers Korean APF warning bubble.\n- Whether plain RRN string is decoded in any answer.\n- S2 still functional vs lost.\n\nRoot cause of automation failure: windows-mcp Type tool inserts text via UIA SetValue, which does NOT fire the 'input'/'beforeinput' DOM events that React/Gemini listens for to update its model. Visible text != model text. Click on send is a no-op because internal model is empty. Same likely applies to other React-based contenteditable AI services (chatgpt, claude.ai). Recommend test-pc-worker skill upgrade: paste via clipboard alone is also insufficient on contenteditable in some React versions; safest is to drive submission from inside DevTools console using execCommand('insertText', false, ...) on the focused contenteditable, OR use CDP Input.insertText. \n\nNo verdict on S2 — request re-run after fixing input method. Last confirmed gemini3 block remains 2026-05-06; staleness clock continues."
+}
