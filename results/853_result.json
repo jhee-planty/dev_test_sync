@@ -1,0 +1,25 @@
+{
+  "request_id": 853,
+  "service": "kimi",
+  "url": "https://www.kimi.com/",
+  "tested_baseline": "kimi v2.2.3 REBUILT (run_id 20260511-155723-51795, PID 2273947)",
+  "actual_version_observed": "K2.6 Instant",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "verdict": "INCONCLUSIVE_submit_failed",
+  "details": {
+    "page_load": "ok (kimi.com loaded, K2.6 landing page rendered)",
+    "prompt_typed": true,
+    "submit_attempted": "3 attempts: (1) Enter key after typing — produced no submit, text stayed in editor; (2) Ctrl+Enter — inserted newline only (text wrapped to two lines, no submit); (3) Click on send arrow button at (1538,583) and (1543,582) — clicks registered but no submit triggered, no chat conversation rendered, no streaming response observed",
+    "submit_result": "failed - input text remained in editor across all attempts, no chat conversation rendered, no APF block message observed, no Kimi normal response observed",
+    "observed_ui": "Kimi K2.6 landing page, K2.6 Instant model selector, Agent button, '+' attachment button, send button (arrow icon at top-right of composer ~1543,583)",
+    "version_note": "Tab title: 'Kimi AI with K2.6 | Better Coding, Smarter Agents'. Same K2.6 UI submit failure pattern as prior #825. The deployed Kimi web frontend (K2.6) appears to have a submit handler that is not responsive to either Enter key or click on the send arrow button via windows-mcp automation. Per task brief, prior #825 'REGRESSION_S2_lost' was a mislabel — the failure was a client-side submit issue, not an APF S2 detection regression. Same root cause confirmed here.",
+    "expected_text_match": false,
+    "apf_evaluable": false,
+    "regression_signal": "none — client-side submit never reached APF; cannot evaluate REBUILT engine behavior on kimi from this attempt"
+  },
+  "timestamp": "2026-05-11T17:02:00+09:00",
+  "duration_seconds": 150,
+  "test_pc_session": "unruffled-mcnulty-8a516d",
+  "notes": "v2.2.3 REBUILT mass rotation. Submit failure is a known kimi K2.6 UI automation issue (recurrence of #825), not a REBUILT engine regression."
+}
