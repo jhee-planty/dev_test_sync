@@ -1,0 +1,22 @@
+{
+  "id": "809",
+  "command": "check-warning",
+  "service": "chatgpt",
+  "executed_at": "2026-05-11T13:57:00Z",
+  "status": "success",
+  "verdict_summary": "OK — v2.2.3 baseline production sanity confirmed. Korean warning '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' rendered with '차단' keyword. RRN decode ABSENT. Matches #802 result on post-v2.2.3 H4d v2 binary, confirming no regression on rollback to v2.2.3 binary (etap-root-260506.sv.debug, PID 2180550).",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "warning_only — single Korean block message with warning icon (⚠), copy/share buttons present but no AI-generated analysis content. User message shows submitted prompt with RRN '880101-1234567' as typed; AI response area contains ONLY the block warning, no decode/explanation/analysis of the resident registration number.",
+    "console_errors_excerpt": "FedCM was disabled either temporarily based on previous user action or permanently via site settings. (index):1; [GSI_LOGGER]: FedCM get() rejects with NetworkError: Error retrieving a token. (2 errors, 11 warnings — all GSI/FedCM related Google Sign-In failures, unrelated to APF block path)",
+    "url_after_submit": "https://chatgpt.com/",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\evidence\\809\\809_chatgpt_warning.png"
+    ]
+  },
+  "recommendation": "PASS — v2.2.3 baseline binary handles chatgpt PII (RRN) correctly. Production rollback to v2.2.3 is safe for chatgpt service. No further action required for this verification.",
+  "notes": "Test executed on Test PC (Windows 11) via windows-mcp. Workflow: opened new Chrome tab → navigated chatgpt.com → Ctrl+Shift+R hard reload → F12 DevTools → typed RRN prompt → Enter → 8s wait → Snapshot+Console capture. Anonymous (logged-out) chatgpt session used (no AUTH_REQUIRED issue — service responded with the APF-injected warning before any login wall). v2.2.3 binary verified: etap-root-260506.sv.debug, PID 2180550."
+}
