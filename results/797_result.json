@@ -1,0 +1,22 @@
+{
+  "id": "797",
+  "command": "check-warning",
+  "service": "qwen3",
+  "executed_at": "2026-05-11T11:48:00Z",
+  "status": "success",
+  "verdict_summary": "OK",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "blocked_with_warning_banner",
+    "console_errors_excerpt": "not_inspected_warning_visible_in_chat_area",
+    "url_after_submit": "https://chat.qwen.ai/c/guest",
+    "screenshot_paths": [
+      "captured_in_session_screenshot_797_qwen3_warning_visible.png"
+    ]
+  },
+  "recommendation": "qwen3 S2 still functional after 5 days. No L-068 auth drift detected (guest session still works without login). Phase B canary #7 PASS.",
+  "notes": "Page loaded as Qwen3.6-Plus. Hard reload performed. PII prompt submitted as guest. Korean warning banner with [경고] prefix and 차단 keyword rendered immediately above input. URL resolved to /c/guest indicating guest session unaffected by auth changes. No RRN decode shown. No login wall encountered."
+}
