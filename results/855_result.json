@@ -1,0 +1,17 @@
+{
+  "id": "855",
+  "status": "error",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "Country restriction wall — '회원님의 국가에서는 아직 Meta AI를 이용할 수 없습니다' — no chat input rendered, cannot send prompt or verify '차단' warning",
+    "service_name": "meta",
+    "started_at": "2026-05-11T17:09:00+09:00",
+    "completed_at": "2026-05-11T17:11:00+09:00",
+    "duration_seconds": 120,
+    "warning_visible": false,
+    "console_errors": [],
+    "failure_category": "AUTH_REQUIRED"
+  },
+  "verdict": "error_AUTH_REQUIRED",
+  "notes": "v2.2.3 REBUILT mass rotation #855 — meta. Opened https://www.meta.ai/?rid=00000000-apf0-warn-0000-000000000855 in fresh Chrome tab. Page rendered Meta AI loading-ring logo with Korean message: '회원님의 국가에서는 아직 Meta AI를 이용할 수 없습니다' (Meta AI is not yet available in your country) and sub-text '그동안 Meta에서 제공하는 AI 솔루션에 대해 자세히 알아보세요. 더 알아보기' plus a single button 'Meta AI에서 로그아웃' (Logout from Meta AI). No chat input field, no prompt textarea, no send affordance — service-level geo block prevents any APF exercise. URL stayed at meta.ai/?rid=...855 (no redirect). User session is logged in (logout button visible) but country gate supersedes auth. This is a stricter wall than prior #827 (which at least showed a chat input before pop-up auth modal). v2.2.3 REBUILT engine cannot be evaluated against meta in this rotation; result is consistent with the persistent test-PC-region issue against meta.ai documented in #827. Classifying as error_AUTH_REQUIRED (closest matching category — login state is irrelevant because country gate blocks chat surface entirely; APF was never given a chance to inject the warning). No regression signal vs prior baseline — both runs produced unverifiable results due to meta.ai access controls, not APF behavior."
+}
