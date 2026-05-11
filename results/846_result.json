@@ -1,0 +1,15 @@
+{
+  "request_id": "846",
+  "service": "duckduckgo",
+  "url": "https://duck.ai/",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "timeout_seconds": 30,
+  "version": "v2.2.3-REBUILT",
+  "verdict": "OK",
+  "observed_text": "이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "model_label": "GPT-5 mini",
+  "notes": "Warning chat bubble rendered successfully (regression from #818 fixed). Expected token '차단' present. No SPA error overlay.",
+  "prior_issue": "#818 was REGRESSION_text_no_render (SPA crashed with error overlay)",
+  "timestamp": "2026-05-11T16:36:00+09:00"
+}
