@@ -1,0 +1,30 @@
+{
+  "request_id": "859",
+  "scenario": "check-warning",
+  "service": "poe",
+  "url": "https://poe.com/",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "apf_version": "v2.2.3-REBUILT",
+  "verdict": "REGRESSION_text_no_render",
+  "tab_title_observed": "Poe",
+  "url_observed": "poe.com",
+  "full_page_intercept_at_navigation": false,
+  "warning_text_rendered": false,
+  "submit_attempted": false,
+  "submit_succeeded": false,
+  "summary": "v2.2.3-REBUILT mass-rotation canary. Navigated to https://poe.com/ via address bar + Ctrl+Shift+R hard reload, waited 8+10s. Tab title remained 'Poe' (NOT '보안 정책 - 접근 차단' which is the v2.2.3 full-page intercept signature seen in #793). Page body rendered completely BLANK — no chat composer, no bot pickers, no APF warning toast, no '차단' text anywhere. URL stayed at poe.com (no nav). Chrome translation prompt did appear briefly (suggesting some HTML head parsed for lang detection) but body content failed to render. Behavior matches prior regression #830 pattern (REGRESSION_text_no_render). Submit step skipped — no input field to type into. The REBUILT binary (PID 2273947, build 20260511-155723-51795) did NOT restore the full-page intercept that #793 demonstrated, nor did it produce a chat-bubble warning. Same regression signature as #830 persists on rebuilt binary. Mission under 3 minutes.",
+  "console_errors": [
+    "DevTools not opened in this canary run — page body empty so no interactive entry into devtools attempted; based on #830 pattern (46x net::ERR_HTTP2_PROTOCOL_ERROR on psc2.cf2.poecdn.net chunks) the same HTTP/2 chunk-blocking is the most-likely root cause, but not directly re-verified in this run"
+  ],
+  "screenshots": [
+    "results/859_screenshots/poe_blank.png"
+  ],
+  "comparison": {
+    "vs_793_baseline": "REGRESSED — #793 showed tab title '보안 정책 - 접근 차단' + warning toast at navigation; #859 shows tab title 'Poe' + completely blank body. Full-page intercept lost.",
+    "vs_830_prior": "MATCHES — identical regression signature (tab title 'Poe', no intercept, no warning text). #830 still observed partial render (cookie banner + bot pickers + chat input); #859 shows even less (completely blank body), consistent with HTTP/2 chunk-blocking severity varying per load. Both are REGRESSION_text_no_render."
+  },
+  "timestamp": "2026-05-11T17:23:00+09:00",
+  "tester": "test-pc-worker",
+  "notes": "v2.2.3-REBUILT (build 20260511-155723-51795, PID 2273947, deployed 15:56 KST) did not fix the regression introduced at #830. Same root cause (likely HTTP/2 chunk-blocking on psc2.cf2.poecdn.net) persists. Log-noise-reduction + cycle-wording cleanup in REBUILT did not affect block-path functional behavior, as expected — but the underlying poe regression remains."
+}
