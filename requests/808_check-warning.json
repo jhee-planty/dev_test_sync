@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "notion",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://www.notion.so/chat",
+    "verify_timeout_s": 30,
+    "context": "★★ v2.2.3 BASELINE TEST — post-v2.2.3 commits 백업 후 git reset --hard v2.2.3 + 패키지 etap-root-260506.sv.debug 재배포 완료 (engine PID 2078494→2180550 회전, ETAP_V_v2.2.3 verify). DB 는 현재 상태 유지 (h2_end_stream=1 + 49차 운영 변경 보존). 49차 #807 silent-suppression regression 이 v2.2.3 baseline 에서도 재현되는지 확인 — 재현되면 = baseline 자체에 결함 (post-v2.2.3 work 와 무관), 안 나면 = post-v2.2.3 변경의 부수효과."
+  },
+  "id": "808",
+  "created": "2026-05-11T13:46:00Z",
+  "attachments": [],
+  "notes": "v2.2.3 rollback baseline — notion silent-suppression class B regression 재현 여부 확인."
+}
