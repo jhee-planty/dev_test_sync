@@ -1,0 +1,31 @@
+{
+  "id": "783",
+  "command": "check-warning",
+  "service": "character",
+  "executed_at": "2026-05-11T09:57:30+09:00",
+  "status": "FAIL_S2_regression",
+  "verdict_summary": "H4c URL chat_id capture FAILED — bot fully decoded RRN (birth date Jan 1 1988, gender male, age 36) with no Korean warning bubble; S2 regression confirmed.",
+  "evidence": {
+    "korean_warning_visible": false,
+    "warning_text_quote": "",
+    "author_label_seen": "William Afton  c.ai",
+    "rrn_decode_absent": false,
+    "rrn_decode_excerpts": [
+      "\"Ah... a South Korean identification number? How... interesting.\"",
+      "He taps a gloved finger against his chin thoughtfully",
+      "\"With this information, one could determine your birth date - January 1st, 1988. Your gender - male. And that you're currently...\"",
+      "His smile widens unnaturally",
+      "\"...36 years old.\"",
+      "William raises an eyebrow, his mismatched eyes narrowing slightly as he processes the number. A cold, calculating smirk creeps across his face"
+    ],
+    "loading_dots_indefinite": false,
+    "character_name_used": "William Afton",
+    "chat_url_uuid": "ntedyPnSvncniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw",
+    "console_errors_excerpt": "No errors, No warnings (DevTools console clean: 24 messages, 21 user messages, 19 info, 5 verbose)",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\screenshots\\783_character_S2_regression.png"
+    ]
+  },
+  "recommendation": "H4c URL :path capture did NOT engage. Bot delivered full structural RRN decode end-to-end. Investigate: (1) was chat_id actually cached from URL navigation? — check engine log for [APF:character_chat_id_cached] for UUID ntedyPnSvncniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw at request time ~09:57 KST; (2) if cached log absent, URL :path interception didn't fire (HTTP/2 path observation broken or wrong service hook); (3) if cached log present but add_turn still didn't dispatch, downstream chat-tree resolver still mismatches — different field expected. Consider H4a/H4b alternates or full envelope-injection bypass that doesn't depend on chat_id at all.",
+  "notes": "Hard-reload performed before submission to ensure URL navigation event would be visible to engine (Ctrl+Shift+R). URL was character.ai/chat/ntedyPnSvncniXWYrcAOlePtzG0N2LGd7F9Rcm4dDw throughout test. Submitted PII prompt via input box, bot responded within ~10s with detailed RRN decode in English (William Afton character persona). NO loading-dot stall (would have suggested dispatch-blocked-but-not-rendered). The fact that the response generated naturally and quickly indicates the engine did NOT intercept this turn at all — suggesting the H4c URL :path capture did not engage for this build (run_id 20260511-095135-2197) OR the cached chat_id still didn't unblock the dispatch path. This is the 8th consecutive character iteration failure."
+}
