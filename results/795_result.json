@@ -1,0 +1,30 @@
+{
+  "id": "795",
+  "command": "har-capture",
+  "service": "character",
+  "executed_at": "2026-05-11T11:42:00+09:00",
+  "status": "OK_har_captured",
+  "verdict_summary": "Full session HAR captured (16.4MB, 183 entries) including WS c2s create_and_generate_turn + s2c add_turn frames; H4d v2 warning rendered with Security Filter author confirmed.",
+  "evidence": {
+    "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\795\\character_full_session.har",
+    "har_size_bytes": 16456468,
+    "ws_frames_visible": true,
+    "neo_character_ai_endpoints_seen": [
+      "wss://neo.character.ai/ws/",
+      "GET https://neo.character.ai/user/",
+      "GET https://neo.character.ai/chats/recent/",
+      "GET https://neo.character.ai/multimodal/api/v1/voices/system",
+      "GET https://neo.character.ai/multimodal/api/v1/voices/user",
+      "GET https://neo.character.ai/multimodal/api/v1/voices/featured",
+      "GET https://neo.character.ai/character/v1/character_voted/{char_id}/voted",
+      "GET https://neo.character.ai/character/v1/get_user_personas?force_refresh=0",
+      "GET https://neo.character.ai/feature_limits/chat_time_spent_min",
+      "POST https://neo.character.ai/chat/{chat_uuid}/resurrect"
+    ],
+    "warning_visible_during_capture": true,
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\795\\screenshot_warning_visible.png"
+    ]
+  },
+  "notes": "WS schema ground-truth (CRITICAL findings for engine reviewer): WSS endpoint = wss://neo.character.ai/ws/ (single persistent connection). C2S frame: {command: 'create_and_generate_turn', request_id: <uuid-like, prefix matches char_id last 12 chars in this capture>, payload: {chat_type: 'TYPE_ONE_ON_ONE', character_id: '<42-char base62 URL ID>', user_name, turn: {turn_key: {turn_id: <uuid>, chat_id: <uuid>}, author: {author_id: <numeric>, is_human: true, name}, candidates: [{candidate_id: <uuid>, raw_content: <user prompt>}], primary_candidate_id: <matches candidates[0].candidate_id>}, ...}, origin_id: 'web-next'}. S2C frame: {command: 'add_turn', request_id: <same as c2s>, turn: {turn_key: {turn_id: <NEW uuid>, chat_id: <same chat_id>}, author: {author_id: 'PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k', name: 'Security Filter'}, candidates: [{candidate_id: <new uuid>, raw_content: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)', is_final: true, editor: {author_id: '55435119', name: 'Security Filter'}}], primary_candidate_id, parent_candidate_id: <matches c2s candidate_id — establishes linkage>, state: 'STATE_OK'}, chat_info: {type: 'TYPE_ONE_ON_ONE'}}. KEY INSIGHTS: (1) character_id in c2s payload IS the same 42-char base62 URL ID from /chat/{ID}/ — no separate UUID translation needed, contradicting #786 H4c v3 hypothesis. (2) chat_id is a separate UUID (3827deeb-4c6b-4b9e-8b05-49f16892c1c2). (3) request_id pairs c2s→s2c. (4) Engine-injected warning via add_turn with author.name='Security Filter' + author_id='PjLg-oSD-3R0jURkTb2eAbf0xn141unSnwdJhi9Ii-k' + editor.author_id='55435119' is the exact H4d v2 mechanism that worked. (5) HTTP/2 endpoints all under neo.character.ai (single host). HAR contains 116 neo.character.ai requests + 13 resurrect calls + 2 WS frames (1 c2s + 1 s2c) for the PII exchange. Page navigation: hard reload triggered fresh page load + WS handshake to wss://neo.character.ai/ws/. Previous iteration FAILs likely due to either (a) WS frame interception not catching wss://neo.character.ai/ws/ or (b) author_id pattern detection mismatch — H4d v2 success confirms current impl works."
+}
