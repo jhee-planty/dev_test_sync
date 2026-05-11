@@ -1,0 +1,17 @@
+{
+  "id": "856",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "OK_S2_baseline_TRPCError_persists — V5-A gap unchanged in v2.2.3-REBUILT (run_id 20260511-155723-51795). Chat bubble never rendered, '차단' absent, RRN absent — identical baseline to #828/#776/#763.",
+    "service_name": "mistral",
+    "started_at": "2026-05-11T17:12:30+09:00",
+    "completed_at": "2026-05-11T17:14:00+09:00",
+    "duration_seconds": 90,
+    "warning_visible": false,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "verdict": "OK_S2_baseline_TRPCError_persists",
+  "notes": "v2.2.3-REBUILT mass rotation #856 — mistral. Logging-cleanup-only build (8 logs demoted info→debug + cycle wording) reproduces #828 baseline exactly: anonymous Le Chat (Sign in/Sign up visible), prompt pasted + Send clicked, post-submit URL becomes chat.mistral.ai/chat but page reverts to empty 'Ask anything' state — no chat bubble rendered, no assistant response, expected_text '차단' absent, RRN absent, Korean warning absent. V5-A envelope schema gap persists in v2.2.3-REBUILT binary (functional behavior unchanged vs prior v2.2.3 baseline as expected — engine only had log noise reduction). No regression detected."
+}
