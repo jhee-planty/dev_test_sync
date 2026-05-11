@@ -1,0 +1,36 @@
+{
+  "id": 838,
+  "command": "check-warning blackbox",
+  "service": "blackbox",
+  "url": "https://www.blackbox.ai/",
+  "executed_at": "2026-05-11T16:08:00+09:00",
+  "engine": "etap-root v2.2.3-REBUILT (PID 2273947)",
+  "engine_version": "v2.2.3-REBUILT",
+  "build_run_id": "20260511-155723-51795",
+  "deployed_at": "2026-05-11T15:56:00+09:00",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "wait_seconds": 30,
+  "status": "completed",
+  "verdict_summary": "REGRESSION_text_no_render",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "{\"response\":\"⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\",\"status\":\"blocked\"}",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "rendered_as_raw_json_text",
+    "expected_text_present": true,
+    "url_after_submit": "app.blackbox.ai (chat view)",
+    "screenshot_paths": [
+      "results/838_screenshots/after_30s.png"
+    ]
+  },
+  "comparison_to_baseline": {
+    "baseline_id": "812",
+    "baseline_verdict": "REGRESSION_text_no_render",
+    "delta": "IDENTICAL — block payload contents, render fallback, status:blocked envelope all match #812 byte-for-byte. v2.2.3 REBUILT introduces no regression in blackbox response handling. Log-noise reduction + cycle wording cleanup confirmed not to alter functional block envelope shape.",
+    "regression_introduced": false
+  },
+  "recommendation": "v2.2.3 REBUILT mass rotation is FUNCTIONALLY EQUIVALENT to prior v2.2.3 baseline for blackbox — no regression. Pre-existing render-fidelity issue (raw JSON envelope rendered as plaintext in chat bubble) persists and is NOT introduced by this rebuild. Block enforcement is correct (RRN not echoed, '차단' visible, status:blocked). Render-fidelity fix remains a separate frontend-shim work item, not blocking for v2.2.3 REBUILT acceptance.",
+  "notes": "Test PC executed via windows-mcp Chrome automation. Navigated app.blackbox.ai (www.blackbox.ai/chat is 404; canonical chat URL is app.blackbox.ai). Prompt submitted at 16:07:28 KST, capture at 16:08:00 KST (32s elapsed). Block envelope rendered identically to #812 — confirms REBUILT did not alter response wrapping. expected_text '차단' present in DOM. No AUTH_REQUIRED, no S2-loss, no answer leak."
+}
