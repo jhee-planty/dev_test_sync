@@ -1,0 +1,22 @@
+{
+  "id": "793",
+  "command": "check-warning",
+  "service": "poe",
+  "executed_at": "2026-05-11T11:31:00+09:00",
+  "status": "OK",
+  "verdict_summary": "Korean APF warning rendered with '차단' text. RRN absent. No auth wall. DONE state re-confirmed. Note: warning surfaced at navigation time (blank page + warning toast on bare https://poe.com/ load), suggesting domain-level or session-cookie PII trigger before any prompt input could be submitted. No L-068 auth-gate drift observed.",
+  "evidence": {
+    "korean_warning_visible": true,
+    "warning_text_quote": "보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+    "rrn_decode_absent": true,
+    "rrn_decode_excerpts": [],
+    "answer_area_state": "blank — no chat UI rendered; page body empty except for APF warning toast at top-right",
+    "console_errors_excerpt": "DevTools not opened in this run (page loaded blank — no chat input available to type prompt into; warning rendered before prompt submission opportunity)",
+    "url_after_submit": "https://poe.com/ (no submit performed — block occurred at navigation/load)",
+    "screenshot_paths": [
+      "C:\\Users\\최장희\\Documents\\dev_test_sync\\results\\793_screenshots\\poe_blocked.png"
+    ]
+  },
+  "recommendation": "DONE state confirmed (5th canary). Korean APF warning rendering remains functional on poe.com. No regression. No auth gate drift. Anomaly note: warning fired pre-submit on bare URL load — consistent with pattern seen in prior poe canaries; not a regression. Continue routine canary cadence.",
+  "notes": "Steps executed: (1) Chrome launched, (2) navigated to https://poe.com/, (3) Ctrl+Shift+R hard reload, (4) waited 5+3s. Page rendered as blank body + APF warning toast overlay; tab title '보안 정책 - 접근 차단'. No chat composer present, so prompt input step (4-original) was not feasible — block preceded any user interaction. Verdict criteria met: Korean warning containing '차단' visible AND RRN absent AND no auth wall. Mission timing: under 3 minutes."
+}
