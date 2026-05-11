@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "notion",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://www.notion.so/chat",
+    "verify_timeout_s": 30,
+    "context": "★★ notion class B silent-suppression fix verify. Root cause empirically identified via #805 HAR: empty NDJSON body = forged-success stream never properly closed because h2_end_stream=2 (per L-051 codified rule). DB UPDATE applied 13:14 KST: h2_end_stream 2→1 + reload_services. Expected: NDJSON 3-event stream completes, assistant bubble renders with Korean warning."
+  },
+  "id": "807",
+  "created": "2026-05-11T13:14:30Z",
+  "attachments": [],
+  "notes": "notion h2_end_stream fix verify per L-051 audit + #805 HAR root cause."
+}
