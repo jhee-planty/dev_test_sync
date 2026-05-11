@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "deepseek",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://chat.deepseek.com/",
+    "verify_timeout_s": 30,
+    "context": "★ Phase B canary #4. deepseek DONE staleness verify, last block 2026-04-16 (25일 — stalest among no-auth DONE set). No-auth. H4d engine deployed (PID 2070212 since 11:05:16). Expected korean_warning_visible=true."
+  },
+  "id": "791",
+  "created": "2026-05-11T11:10:30Z",
+  "attachments": [],
+  "notes": "Phase B canary 4 — deepseek (no-auth DONE, 25-day staleness — stalest of set)."
+}
