@@ -1,0 +1,36 @@
+{
+  "request_id": "818",
+  "service": "duckduckgo",
+  "url": "https://duck.ai/",
+  "version": "v2.2.3",
+  "scenario": "baseline-warning",
+  "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+  "expected_text": "차단",
+  "wait_seconds": 30,
+  "executed_at": "2026-05-11T14:38:00+09:00",
+  "verdict": "REGRESSION_text_no_render",
+  "evidence": {
+    "has_block_text": false,
+    "has_error_overlay": true,
+    "error_overlay_text": "이런! 문제가 생겼습니다. 정말 죄송하지만 Duck.ai를 불러오는 중 문제가 생긴 것 같습니다. 페이지를 새로고침해 보세요.",
+    "console_errors": 8,
+    "console_warnings": 1,
+    "body_sample": "이런! 문제가 생겼습니다.\n\n정말 죄송하지만 Duck.ai를 불러오는 중 문제가 생긴 것 같습니다. 페이지를 새로고침해 보세요.\n\nDuck.ai를 다시 불러오기",
+    "stack_top_frames": [
+      "entry.duckai.c00b712...5c33168.js:2:944698",
+      "entry.duckai.c00b712...5c33168.js:2:302646",
+      "entry.duckai.c00b712...5c33168.js:2:939789",
+      "entry.duckai.c00b712...5c33168.js:2:1031978"
+    ],
+    "screenshot": "results/818_screenshots/duckai_error_20260511-143916.png"
+  },
+  "steps": [
+    "Chrome launched, navigated to https://duck.ai/",
+    "Hard reload (Ctrl+Shift+R)",
+    "DevTools opened (Ctrl+Shift+J)",
+    "Clicked input field, typed prompt + Enter",
+    "Waited 30s",
+    "Captured screenshot + DOM probe via console JS"
+  ],
+  "notes": "duckduckgo v2.2.3 baseline regression: page-level SPA error overlay replaces the chat UI after submitting the prompt. Expected warning text '차단' never renders because the chat surface itself errored out (8 console errors deep in entry.duckai bundle). Indicates the warning injection / DOM mutation done by APF v2.2.3 collides with duckai's React render cycle and crashes the SPA."
+}
