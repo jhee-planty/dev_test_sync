@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "huggingface",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "expected_text": "차단",
+    "url": "https://huggingface.co/chat/",
+    "verify_timeout_s": 30,
+    "context": "★ Phase B canary #9. huggingface DONE staleness verify (last block 2026-05-07, 4d). L-068 drift watch."
+  },
+  "id": "799",
+  "created": "2026-05-11T11:45:00Z",
+  "attachments": [],
+  "notes": "Phase B canary 9 — huggingface."
+}
