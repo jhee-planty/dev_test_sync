@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T08:00:29Z",
+  "last_updated": "2026-05-13T08:00:38Z",
   "tasks": [
     {
       "id": "531",
@@ -3133,6 +3133,22 @@
       "created": "2026-05-13T08:00:29Z",
       "updated": "2026-05-13T08:00:29Z",
       "summary": "multi-PC v2.0 first dual dispatch — character cross-env verify priority=A tag=v2.2.4-d29d868-postfix-dual",
+      "target_pc": "both",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "pending",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "896",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T08:00:38Z",
+      "updated": "2026-05-13T08:00:38Z",
+      "summary": "multi-PC v2.0 first dual dispatch — copilot cross-env verify (prev #893 FAIL traffic delivery) priority=A tag=v2.2.4-d29d868-postfix-dual",
       "target_pc": "both",
       "pc1_status": "pending",
       "pc1_verdict": "",
