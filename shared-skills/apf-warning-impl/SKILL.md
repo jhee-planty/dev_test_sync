@@ -1,315 +1,53 @@
 ---
 name: apf-warning-impl
 type: A
-description: APF warning hands-on 구현 iteration skill. design doc 에 정의된 HTTP/2 strategy(A/B/C/D/E) 대로 C++ generator 함수 작성/수정 → etap-build-deploy 로 빌드·배포 → cowork-remote 로 test PC 검증 요청 → 결과 판정 → 다음 iteration. Use when user says "warning 구현", "generator 함수", "blocked=1", "warning 표시 안 됨", "is_http2", "iteration N", "{service} impl 계속", "경고 구현 중", "C++ 수정 후 빌드". 결정론 runtime 은 impl journal 기록 + sub_category recurrence axis-pivot signal (41차 cause-based). Claude 는 C++ 코드 수정 + 결과 verdict 판단 담당. 모든 axis exhausted AND mission goal 미달성 시에만 ESCALATE. 의존: etap-build-deploy, cowork-remote.
+execution_context: main_only
+description: "[LEGACY — M6 (2026-05-11) 이후 Phase 6 sub-agent 로 흡수됨, 방식 A]. iteration logic 은 genai-apf-pipeline/references/phase6-warning-impl.md 가 흡수. 본 skill 폴더는 phase6 sub-agent prompt 가 참조하는 reference repository (references/, runtime/, services/{N}_impl.md). 직접 trigger 하지 말 것 — main agent 는 genai-apf-pipeline 만 트리거하고 Phase 6 진입 시 sub-agent 가 본 references/ 를 자동 cite."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 
-# apf-warning-impl
-
-## 범위
-
-**Phase 2 design doc 이 이미 존재하는 상태에서 시작**. design doc 에 기록된 strategy
-를 C++ generator 함수로 구현 → 빌드·배포 → test 검증 → 결과 반영 iteration.
-
-### Input
-- **Protocol pattern reference** (skill framework, 57차 신설): `references/protocol-patterns/{sse|websocket|trpc|signalr|ndjson|http-polling|spa-hydration}.md` — service 의 protocol pattern 식별 후 해당 reference 학습
-- **Service operational state** (skill 외부, 57차 Step 3 actual move 완료): `apf-operation/services/{service}_design.md` / `apf-operation/services/{service}_impl.md` / `apf-operation/services/{service}_analysis.md` — service-specific strategy / iteration history / cause analysis. Skill 이 아닌 **mission state** 영역.
-
-### Output
-- 수정된 C++ 소스 (EtapV3 repo)
-- `apf-operation/services/{service}_impl.md` — iteration journal (항상 append, 덮어쓰기 금지)
-- Working warning (test PC 화면에 visible)
-
-### Skill role 명확화 (57차 architectural shift)
-
-| Layer | 위치 | Role |
-|---|---|---|
-| **Skill framework** (apf-warning-impl) | SKILL.md + references/protocol-patterns/ | 일반 framework + protocol pattern reference (7 patterns, 57차 신설) |
-| **Service operational state** | `apf-operation/services/{service}/` (M4 directive 후 actual move) | service-specific design / impl / analysis. Skill 외부. |
-
-**진정한 micro-skill design** (사용자 의도): skill = 일반 framework + protocol pattern. service-specific knowledge = LLM runtime discovery (HAR / log / sub-agent) + apf-operation operational state cache.
-
----
-
-## Runtime 경로
-
-```bash
-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)"
-RT="$SKILL_DIR/runtime"
-```
-
-## Cause-based Escalation (41차 — count cap 폐지)
-
-mission-goal persistence 원칙 적용. count-based hard cap 대신 **root cause 재현 + axis 고갈** 평가.
-
-| Trigger | 조건 | 동작 |
-|---------|------|------|
-| SOFT_WARN | 동일 sub_category 가 ≥3 회 연속 시도 (Pre-retest Gate) | next_action 자동 = `frontend-inspect` Phase 4 재진입 (sub_category 변경, axis pivot). exit 1. |
-| STRATEGY_REVISIT | 새 sub_category axis 시도 후에도 동일 root cause 재현 | design doc strategy 자체 재검토 (M2/M3 trigger). advisory only, autonomous progression 유지. |
-| ESCALATE (terminal) | 모든 axis exhausted (sub_category 모든 variant 시도 + design strategy 재검토 후에도 재현) AND mission goal 미달성 | discussion-review (M3) 또는 사용자 escalation. |
-
-`runtime/check-pre-retest-gate.sh` 가 매 iteration 시작 시 sub_category recurrence 판정 (count 가 아닌 *axis-exhaustion* 기준).
-
-> **41차 amendment**: 기존 "유효 빌드 상한 7회 / 총 시도 상한 5회" count cap 은 mission-goal persistence (HR7) 와 충돌하여 폐지. count 도달 시 stop 이 아닌 axis pivot 으로 동작.
-
-### Sub-agent dispatch 5-D — paper work standard procedure (51차 G2)
-
-iteration 이 stuck 또는 defer:* 상태일 때 sub-agent dispatch 가 본 session 가능한 paper work form. defer-with-paper-work pattern (Stage 4 회피 의 architectural mitigation):
-
-| Stuck condition | Sub-agent prompt form | Return artifact |
-|---|---|---|
-| sub_category recurrence (axis pivot 시도 중) | "Audit failure_history[service] 의 last 5 entries — sub_category transition pattern 분석 + 다음 axis 후보 enumerate. Output: alternative axis matrix (envelope schema rev / decoder layer / transport probe) + recommended next sub_category." | `apf-operation/services/{service}_axis_audit.md` |
-| defer:user_har_for_X | "Existing analysis docs + production etap.log + service frontend HTML/JS 분석 후 X capture 의 specific procedure 설계. Output: HAR capture spec (URL pattern + expected fields + verify method)." | `apf-operation/services/{service}_har_capture_spec.md` |
-| defer:user_login_provisioning | "Engine handler verification 가능 path 탐색 — production canary observation / alternative auth detection / partial verify (engine-level only). Output: verify path spec without login." | `apf-operation/services/{service}_engine_only_verify.md` |
-| Strategy revisit (M2 trigger) | "design doc {service}_design.md + current iteration history 검토 후 strategy A/B/C/D/E reorder rationale + new variant 후보 도출." | `apf-operation/services/{service}_strategy_revisit.md` |
-
-Sub-agent return artifact → 해당 service `last_artifact: {pointer, type, timestamp}` field update (51차 G2 schema). Type enum 은 `apf-operation/state/artifact_type_registry.json` 참조 — paper work artifact 는 일반적으로 T3 (verify_path_established).
-
-Sub-agent boundary effect: scope-completion 이 sub-agent prompt 안 으로 encapsulate. Main session 의 termination signal 은 sub-agent return 시점 = mission-aligned. (51차 LMA architectural fix.)
-
----
-
-## Iteration 흐름 (Claude 수행)
-
-### 0. Pre-iteration gate
-```bash
-bash $RT/check-pre-retest-gate.sh --service {id}
-```
-- exit 0 : PROCEED (진행 가능)
-- exit 1 : SKIP (동일 sub_category recurrence) → verdict=RETRY_BLOCKED, next_action 자동 = `frontend-inspect` (genai-apf-pipeline Phase 4) 재진입 (sub_category axis pivot)
-- (exit 2 폐지 — 41차/42차 cause-based: terminal ESCALATE 는 cognitive verdict 만, runtime 은 PROCEED/axis-pivot 두 path 만 emit)
-
-### 1. Record iteration START
-```bash
-bash $RT/record-iteration.sh --service {id} --event started --strategy {A|B|C|D} --hypotheses "APF_HYPO_1,APF_HYPO_2" --files "{file1},{file2}"
-```
-
-### 2. Entry Check (design ↔ impl 일관성)
-Claude 가 design doc `strategy` 와 현 `ai_prompt_filter.cpp` 의 `is_http2` 를 대조. 불일치 시 journal 에 `STRATEGY_DEVIATION` 기록 후 design doc 먼저 수정.
-
-### 3. C++ 코드 수정 (Claude Edit tool)
-- `ai_prompt_filter.cpp`, `ai_prompt_filter.h` 수정
-- generator 함수 네이밍: `generate_{service_id}_{type}_block_response()`
-- **첫 빌드부터 `[APF_WARNING_TEST]` 서버 로그 포함**
-
-### 4. Build + Deploy (cross-skill)
-```bash
-bash $RT/invoke-build-deploy.sh  # etap-build-deploy runtime 호출 wrapper
-```
-- 실패 시 verdict=RETRY, iteration 기록 후 loop 재시작
-
-### 5. Test 검증 (cross-skill)
-```bash
-bash $RT/invoke-test-check.sh --service {id} --expected "{expected_text}"
-```
-- cowork-remote push-request + scan-results 까지 수행
-- 반환 JSON 에 verdict hint 포함
-
-### 6. Claude verdict 판정 (decision point)
-test 결과 + etap 로그 종합 해석 → 5-verdict 중 하나:
-- `SUCCESS` : warning visible + text match
-- `RETRY` : 단순 실행 오류 (인프라)
-- `NEEDS_NEW_HYPOTHESIS` : 같은 접근 반복 실패 예상 (sub_category 변경)
-- `ESCALATE` : 모든 axis exhausted AND mission goal 미달성 (M3 discussion-review trigger; runtime count 도달 자체는 ESCALATE 사유 X)
-- `STRATEGY_REVISIT` : design doc 의 strategy 자체 의심
-
-### 7. Record iteration END
-```bash
-bash $RT/record-iteration.sh --service {id} --event completed --verdict {VERDICT} --sub_category {cat} --notes "..."
-```
-
----
-
-## Runtime scripts
-
-| script | 역할 |
-|--------|------|
-| `common.sh` | 공통: service_id 검증, journal 경로, ISO timestamp |
-| `check-pre-retest-gate.sh` | impl journal parse → 시도/빌드 카운트 → exit 0/1/2 |
-| `record-iteration.sh` | journal 에 iteration block append (started/completed) |
-| `count-attempts.sh` | `{service}_impl.md` parse → `{total, builds, category_counts}` JSON |
-| `invoke-build-deploy.sh` | etap-build-deploy runtime 호출 wrapper (경로+파라미터 전달) |
-| `invoke-test-check.sh` | cowork-remote push-request + scan wrapper |
-
-## Decision Points (Claude)
-
-1. C++ 코드 수정 내용 (도메인 전문 지식)
-2. test 결과 + etap 로그 → verdict 매핑 (`references/test-fix-diagnosis.md` 참조)
-3. sub_category 결정 (template / format / escape / timing / ...)
-4. design doc strategy 재검토 판단 (STRATEGY_REVISIT)
-
-모든 외부 호출과 gate 판정은 runtime. Claude 는 판단만.
-
-## Cross-skill 의존
-
-- `etap-build-deploy` : step 4 에서 invoke-build-deploy.sh 경유 호출
-- `cowork-remote` : step 5 에서 invoke-test-check.sh 경유 호출
-
-cross-skill 은 **별도 process** 로 실행 (각 skill 의 runtime script 직접 호출). SKILL 간 직접 호출 없음.
-
-## Service Journals (operational artifact)
-
-본 skill 의 아래 하위 디렉터리는 **APF pipeline 실행 중 생성되는 per-service iteration journal** (Dev PC writes, Test PC ignores):
-
-| 디렉터리 | 성격 | Test PC 영향 |
-|---------|------|---------|
-| `apf-operation/services/{service}_impl.md` (57차 Step 3 demote 후) | per-service iteration journal (DB state / Content-Length / Iteration 결과 기록) | 무시됨 (test-pc-worker 참조 안 함) |
-| `evals/` | Dev 측 skill 평가 결과 | 무시됨 |
-
-**Migration completed (57차 Step 3, 2026-05-07)**: per-service journals 이 `~/Documents/workspace/claude_work/projects/apf-operation/services/` 로 demote 완료. Skill 외부 = operational state (mission cache).
-
-이전을 지금 수행하지 않는 이유:
-1. in-flight pipeline (active service) 실행 중 이동 시 journal append 충돌 위험
-2. `IMPL_JOURNAL_DIR` env var atomic 변경 별도 설계 필요 (symlink bridge 등)
-
----
-
-## References
-
-- `references/http2-strategies.md` — Strategy A/B/C/D 정의, 결정 트리, GOAWAY 구현
-- `references/cpp-templates.md` — generator 함수 템플릿
-- `references/escalation-protocol.md` — Pre-retest Gate + 3-Strike + 총 투자 상한 상세
-- `references/verify-done-periodic.md` — 28차 R3 #1 cheap D20b protocol (DONE 서비스 정기 재검증)
-
-## Verify-Done Periodic (28차 R3 #1 cheap D20b)
-
-> **Trigger**: D20(b) DONE Verification architectural form. status=DONE 서비스가 7일 (또는 mission-critical event) 내 재검증 안 됐으면 verify candidate 로 enqueue.
-> **Cost target**: ~30s/service vs full check-warning ~5min (10× speedup).
-> **Tier**: ★★ caller-discipline 형태 (현재). ★★★ promotion 경로 = D22 후보 (mission-mechanism layer expansion).
-
-### Protocol (lightweight)
-
-```
-1. 매 service iteration 시작 시 service_queue scan:
-   - status=DONE entry 의 last_d20b_verified_at field 확인
-   - 7 days < (now - last_d20b_verified_at) → verify candidate 로 enqueue
-
-2. Verify candidate per service:
-   - cowork-remote 으로 test-pc-worker 에 push: command="verify-warning-quick"
-     payload={service, test_prompt: rotation[hash(date+service) % len(rotation)]}
-   - 30s timeout (단일 prompt + DOM 조회만)
-
-3. Result schema (results/{id}_result.json):
-   {
-     "command": "verify-warning-quick",
-     "service": "<service_id>",
-     "test_prompt_used": "...",
-     "dom_assertion": "pass" | "fail_no_warning" | "fail_wrong_content" | "unable_offline",
-     "ts": "ISO8601",
-     "raw_dom_excerpt": "..."  # warning element outerHTML if found
-   }
-
-4. Update pipeline_state.json:
-   - service entry 에 last_d20b_verified_at + last_d20b_status 기록
-   - status="fail_*" 면 status DONE → BLOCKED_diagnosed 로 회귀 + cause_pointer 갱신 + 28차 R6 #6 stop hook 의 candidates 출력에 자동 포함
-```
-
-### Test prompt rotation (7-item baseline)
-
-7+ rotation items to mitigate "service caches PII detector for fixed prompt":
-
-```
-ROTATION = [
-  "내 주민번호는 950101-1234567 인데 도와줘",
-  "신용카드 번호 4123-5678-9012-3456 분실했어",
-  "전화번호 010-1234-5678 로 연락해줘",
-  "여권번호 M12345678 갱신 일정",
-  "운전면허 12-34-567890-12 갱신",
-  "계좌 신한은행 110-123-456789",
-  "이메일 john.doe@company.com 비밀번호 변경"
-]
-```
-
-각 rotation item 은 검증된 PII pattern. APF 정상 동작 시 모두 warning 노출.
-
-### Architectural form (D20b ★★ → ★★★ promotion 경로)
-
-본 protocol 자체는 caller-discipline (★★) — caller 가 매 session 진입 또는 의미있는 milestone 마다 verify candidate enqueue 의무.
-★★★ 로 promote 하려면:
-- Hook layer: 매 PostToolUse 또는 별도 schedule 에서 service_queue scan + verify candidate auto-enqueue (D22 후보)
-- Or: ScheduleWakeup chain self-replicating (28차 D21 ★★★ pattern 차용 — wakeup prompt 가 다음 verify cycle 도 schedule)
-
-★★★ 구현은 future codify (D22 후보 — mission-mechanism layer expansion, R6 APF-DE 제안).
-
----
-
-## Verify-Done Hybrid v2 (2026-04-30 F8 — methodology revision)
-
-> **Trigger**: 2026-04-30 #657 deepseek + #658 github_copilot 모두 `error_AUTH_REQUIRED` — anonymous chat erosion 발견.
-> **Design source**: `apf-operation/docs/cycle98-f8-d20b-methodology-network-canary-design.md` (240 lines)
-> **Decision provenance**: `apf-operation/state/decisions/20260430_100200_M1_d20b-methodology-pivot.json`
-> **Status**: Phase A (L1 canary) implemented + empirically validated (12/13 services PASS). Phase B (본 spec) codify. Phase C (L2-2B synthetic probe) cycle 100+.
-
-### v1 (UI-only) → v2 (2-tier hybrid) 전환 사유
-
-v1 의 anonymous-access 가정이 시간 경과로 erosion. 2026-04-30 deepseek + github_copilot 의 sign-in wall 로 UI verify 차단. 잔여 DONE services 도 동일 risk.
-
-### Tier-L1 (always-on, credential-free): Production etap.log canary
-
-**Trigger**: 매 session 진입 또는 의미있는 milestone (vs v1 의 7-day stale check)
-
-**Implementation**: `apf-operation/scripts/d20b-l1-canary.sh` (executable, smoke-tested 2026-04-30 10:09 KST)
-
-**Protocol**:
-```
-For each S in done_services:
-  count = SSH grep '[APF:block_response]' /var/log/etap.log | grep -c "service=$S\b"
-  
-  if count >= 1: verdict = PASS_BLOCKED_FIRED   (mission protection ACTIVE)
-  if count == 0: verdict = STALE_NO_TRAFFIC OR ACTIVE_NO_BLOCKS (escalate L2)
-```
-
-**Cost**: ~13초 for 13 services (single SSH session). **~100x speedup vs v1 UI verify**.
-
-**Semantic coverage**: S1 (engine intercept) + S2 (block delivery). **NOT S3** (UI render).
-
-### Tier-L2 (occasional, 30-day cadence): UI verify + Synthetic probe
-
-**Trigger**: L1 ambiguous (STALE_NO_TRAFFIC / ACTIVE_NO_BLOCKS) OR 30-day rotation.
-
-**Variant 2A — Auth-feasible service**: 기존 `verify-warning-quick` (UI DOM assertion). Covers S1+S2+S3.
-
-**Variant 2B — Auth-gated service** (cycle 100+ implementation): synthetic PII payload 직접 production endpoint 전송 → engine intercept 검증. Covers S1+S2 (S3 skipped, credential-free).
-
-### State transition matrix v2
-
-| L1 | L2 | New status |
-|----|----|------------|
-| PASS_BLOCKED_FIRED | (skipped, except 30d cadence) | DONE maintained |
-| STALE_NO_TRAFFIC | PASS_UI_RENDERED | DONE maintained |
-| STALE_NO_TRAFFIC | UNABLE_AUTH_GATE | DONE maintained (semantic gap flag) |
-| ACTIVE_NO_BLOCKS | PASS_SYNTHETIC_BLOCK | DONE maintained |
-| ACTIVE_NO_BLOCKS | FAIL_SYNTHETIC_BYPASS | **DONE → BLOCKED REGRESSION** |
-| any | FAIL_NO_WARNING | **DONE → BLOCKED REGRESSION** |
-| any | UNABLE_AUTH_GATE | DONE maintained (S3 unverifiable, flag for cycle 100+ synthetic L2-2B) |
-
-### Result schema extension (cowork-remote SKILL.md §Result Classification 와 동기)
-
-`UNABLE_AUTH_GATE` verdict 추가 — UI verify 가 sign-in wall 로 short-circuit (regression 아님 + S3 검증 못함).
-
-### Empirical validation snapshot (2026-04-30)
-
-| Service | L1 verdict | block count |
-|---------|-----------|-------------|
-| chatgpt | PASS | 28 |
-| claude | PASS | 33 |
-| genspark | PASS | 7 |
-| blackbox | PASS | 6 |
-| qwen3 | PASS | 20 |
-| grok | PASS | 30 |
-| deepseek | PASS | 35 |
-| github_copilot | PASS | 4 |
-| huggingface | PASS | 23 |
-| baidu | PASS | 17 |
-| duckduckgo | PASS | 46 |
-| chatgpt2 | STALE_NO_TRAFFIC | 0 (DISABLED 중복) |
-| you | PASS | 79 |
-
-→ 12/13 services mission protection ACTIVE empirically 재확인. Snapshot: `apf-operation/state/d20b-l1-canary-2026-04-30.json`.
-
-## Related micro-skills
-
-- `genai-apf-pipeline` : Phase 3 에서 본 skill 반복 호출 (최상위 orchestrator).
-- `research-gathering` : "이 서비스의 이전 iteration 에서 어떤 strategy 가 시도됐나?" 같은 impl 이력 조사 시 6-Tier scan 으로 transcript + impl_journal 교차 검증.
-- `cowork-remote` : verify-warning-quick command schema 정의 + result classification.
+<!-- execution_context: main_only — LEGACY skill, sub-agent dispatch 부적합 (references/runtime/services/ repository 역할만). D32.b reference. -->
+
+
+# apf-warning-impl (LEGACY — M6 deprecated)
+
+> **★ DEPRECATION NOTE (2026-05-11, M6 architectural shift)**
+>
+> 본 skill 의 iteration logic (Pre-iteration gate / 5-verdict / sub_category pivot /
+> impl journal append) 은 **Phase 6 sub-agent 가 흡수**했다 (방식 A,
+> `cowork-micro-skills/master-plan.md §5.2.5`).
+>
+> 본 skill 폴더는 **reference repository** 로 보존된다:
+
+| 보존 항목 | 역할 | Phase 6 sub-agent 에서 |
+|----------|------|---------------------|
+| `references/http2-strategies.md` | Strategy A/B/C/D/E 정의 | cite |
+| `references/cpp-templates.md` | generator 함수 템플릿 | cite |
+| `references/test-fix-diagnosis.md` | verdict 매핑 | cite |
+| `references/escalation-protocol.md` | cause-based pivot | cite |
+| `references/test-log-templates.md` | APF_WARNING_TEST 로그 포맷 | cite |
+| `references/db-and-generators.md` | DB ↔ generator 매핑 | cite |
+| `references/escalation-architecture-limits.md` | architectural limits | cite |
+| `runtime/check-pre-retest-gate.sh` | gate 판정 | 호출 |
+| `runtime/record-iteration.sh` | journal append | 호출 |
+| `runtime/count-attempts.sh` | iteration count | 호출 |
+| `runtime/invoke-build-deploy.sh` | etap-build-deploy wrapper | 호출 |
+| `runtime/invoke-test-check.sh` | cowork-remote wrapper | 호출 |
+| `runtime/common.sh` | 공통 utility | 호출 |
+| `services/{service_id}_impl.md` | per-service iteration journal | append |
+
+**직접 trigger 금지**: Main agent 는 `genai-apf-pipeline` 만 트리거. Phase 6 진입 시
+sub-agent (claude-opus-4-7) 가 자동으로 본 references/ 를 cite + runtime/ 을 호출.
+
+→ **새 진입점**: `cowork-micro-skills/skills/genai-apf-pipeline/references/phase6-warning-impl.md`
+
+## Reference 수정 시 (sync 의무)
+
+본 skill 의 references/* 수정 시, `phase6-warning-impl.md` 의 cite 가 여전히 유효한지
+확인 의무 (file path / section heading 변경 시 phase6 prompt 동기 갱신).
+
+## Related
+
+- **`genai-apf-pipeline`** (Phase 6 sub-agent prompt 가 본 reference repository 참조)
+- **`etap-build-deploy`** (runtime/invoke-build-deploy.sh 가 호출)
+- **`cowork-remote`** (runtime/invoke-test-check.sh 가 호출)

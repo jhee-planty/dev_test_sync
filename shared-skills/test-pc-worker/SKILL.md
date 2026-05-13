@@ -1,9 +1,13 @@
 ---
 name: test-pc-worker
 type: A
+execution_context: main_only
 description: Test PC (Windows) 전용 worker. dev 가 push 한 requests/ 를 git pull 로 수신 → PowerShell + windows-mcp 로 Chrome 자동화 실행 → results/ 에 결과 push. Use when on test PC and user says "새 요청 확인", "요청 처리", "check-warning 실행", "check-block 실행", "dev 에서 요청 왔어?", "result push". 결정론 runtime 은 PowerShell script. Claude 는 DOM/Console 판독 + scenario decision 만 담당. 응답 대기 중 자동 에스컬레이션 없음 (cowork-remote 와 pair).
 allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, mcp__windows-mcp__Scrape, mcp__windows-mcp__Snapshot, mcp__windows-mcp__Wait, mcp__windows-mcp__Clipboard, mcp__windows-mcp__Scroll, Bash, Read, Write
 ---
+
+<!-- execution_context: main_only — Test PC (Windows) 환경 의존, windows-mcp tool 사용. Sub-agent dispatch 부적합 (별도 environment). D32.b reference. -->
+
 
 # test-pc-worker
 
@@ -107,13 +111,13 @@ END_VERDICT
 | Mode | 조건 | Main fallback |
 |------|------|--------------|
 | F-A | Subagent 응답 없음 (5min soft / 10min hard timeout) | `runtime/skeleton-timeout-result.json` 사용 → `overall_status=TIMEOUT` 결과 push |
-| F-B | 텍스트 반환 but `WINDOWS_MCP_VERDICT...END_VERDICT` schema 깨짐 | 다른 axis (prompt 에 "STRICT FORMAT" 강조 / format hint 변경) 시도. root cause 재현 시 → F-D 경로 |
+| F-B | 텍스트 반환 but `WINDOWS_MCP_VERDICT...END_VERDICT` schema 깨짐 | 1회 재시도 (prompt 에 "STRICT FORMAT" 강조). 2번째도 실패 → F-D 경로 |
 | F-C | Schema parse OK but 필수 필드 누락 (overall_status 등) | 누락 필드 한정 supplementary subagent |
-| F-D | 동일 root cause 가 새 axis 시도 (다른 strategy / CDP fallback / Chrome restart) 후에도 재현 | `result.json` 에 `error_INFRASTRUCTURE` + notes "subagent unstable, axis exhausted" 기록 후 push (test PC = user channel 부재, dev side 가 통지 받음). 다음 request 진행. |
-| F-E | Agent tool 자체 error (rate limit / auth) | 다른 axis (다른 model / 다른 prompt / wait-then-retry) 시도. root cause 재현 시 → F-D |
-| F-F | Verdict 반환 정상이지만 factually 의심 (silent drift) | **OPT-IN spot-check** (default OFF) — milestone trigger (예: D20b cycle 시작) 시 parallel 검증 subagent. 두 verdict 불일치 시 escalate |
+| F-D | 동일 task 가 ≥3 회 실패 | **ESCALATE** — `result.json` 에 `error_INFRASTRUCTURE` + notes "subagent unstable" + ScheduleWakeup polling 중지 |
+| F-E | Agent tool 자체 error (rate limit / auth) | 1회 retry → 지속되면 F-D |
+| F-F | Verdict 반환 정상이지만 factually 의심 (silent drift) | **OPT-IN spot-check** (default OFF) — 매 5번째 verification 마다 parallel 검증 subagent. 두 verdict 불일치 시 escalate |
 
-**Retry policy (41차 amendment)**: count-based hard cap (2/3 attempts) 폐지. **Cause-based**: 새 axis (다른 entry path / 다른 input strategy / 다른 tool) 시도 후 동일 root cause 재현 시 escalate. test PC = user channel 부재 — escalate 도 result.json push 형태 (dev side 가 NEEDS_LOGIN/INFRASTRUCTURE 분류).
+**모든 retry hard cap = 2 (총 3 attempts).** F-D = 자동 복구 불가, 사용자 attention 필요.
 
 ### Hard Rule 6/7 호환
 
@@ -157,44 +161,6 @@ END_VERDICT
    - overall_status enum 결정 : `SUCCESS | FAIL | PARTIAL | BLOCKED | TIMEOUT`
    - failure_category (5종) — INFRASTRUCTURE / PROTOCOL_MISMATCH / NOT_RENDERED / SERVICE_CHANGED / AUTH_REQUIRED
 4. Runtime: `write-result.ps1 -reqId {id} -resultJson {literal_json}` → `results/{id}_result.json` + state.last_processed_id 갱신
-
-### Capability Judgment (53차 codify — Authority Boundary inbound responsibility)
-
-**의도된 분리** (async request-response pattern, cowork-remote SKILL §Authority Boundary 참조):
-- Dev PC outbound = request 발행 (작업 intent + parameters). Test PC capability simulation 금지.
-- **Test PC inbound = 자기 capability 로 판단 + 진행 / reject**
-
-**Inbound 의무**:
-1. **Capability check (자기 권한)**: request 의 command + params 가 test PC 의 실제 capability 로 가능한지 자기 판단
-   - 정의된 command 인가? (check-warning / check-block / check-cert / capture-screenshot / report-status)
-   - 필수 params 충족? (expected_text / service / timeout 등)
-   - 환경 가능? (Chrome 살아있음 / WMC 권한 / Snapshot 의존성)
-2. **가능 시 → 진행**: §B Execute command flow 정상 수행
-3. **불가 시 → reject**:
-   - `result.json` verdict = `BLOCKED` 또는 `error_INFRASTRUCTURE`
-   - `notes` 에 reject reason 명시 ("command X not supported", "Chrome focus failed", "auth required")
-   - **간단한 alternative 제안 OK** (예: "consider check-block instead") — 다만 reject reason 의 sub-section 으로
-   - **Alternative 의 새 strategy 결정은 dev PC 영역** — test PC 가 새 request 발행 X
-4. **dev PC 가 사전 판단해서 보낸 capability 이슈는 test PC 가 정정**:
-   - dev outbound 가 "X 가능할 것" 추측한 경우, test PC 가 실제 가능 여부 판단 후 result 에 정정 명시
-   - 예: dev request 의 notes 에 "subagent 로 HAR 가능?" 가정이 있으면, test PC 가 result.notes 에 "HAR not supported in current command set, only check-warning subagent has Chrome DevTools" 형태로 corrective evidence
-
-**Inbound 금지**:
-- Dev PC 의 새 strategy 설계 / 다른 service 로 자율 redirect
-- Mission criterion 자율 재정의 (Stage 6-sub immutability — request 의 expected_text 같은 criterion 이 dev 가 명시한 것이면 자율 변경 X)
-
-**Boundary line**:
-| Pattern | 분류 |
-|---|---|
-| Capability check + 진행 결정 (자기 권한) | OK |
-| Reject reason + 간단한 alternative suggestion | OK |
-| Corrective evidence (dev 의 capability 가정 정정) | OK |
-| 새 strategy 결정 / 새 request 자율 발행 | **Anti-pattern** (dev 영역) |
-| Mission criterion 자율 재정의 | **Anti-pattern** (Stage 6-sub immutability) |
-
-**Rationale**: producer/consumer responsibility 분리. Dev (producer) = intent 정의, test (consumer) = capability 판단 + 실행. Producer 가 consumer reasoning 추측 = leaky abstraction (cowork-remote §Authority Boundary). Consumer 가 producer 결정 영역 침해 = inverse over-reach. 양쪽 모두 차단.
-
-→ See `cowork-micro-skills/INTENTS.md §5 53차 entry` for full discussion-review consensus.
 
 ### C. Push results
 

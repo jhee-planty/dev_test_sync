@@ -11,6 +11,15 @@ docs/
 sql/
 artifacts/
 
+# === dev_test_sync 목적 외 디렉토리 차단 (2026-05-13) ===
+# DB dumps / dev scripts / files 는 별도 위치에 둔다.
+# - DB dumps → local_archive/backups/ (이미 gitignored 위 local_archive/ rule)
+# - dev scripts → claude_work/projects/apf-operation/scripts/
+# - test PC 산출물 → results/files/ (이미 위 results/files/ rule)
+backups/
+scripts/
+/files/
+
 # OS files
 .DS_Store
 Thumbs.db

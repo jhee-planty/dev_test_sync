@@ -1,8 +1,12 @@
 ---
 name: etap-bench
 type: A
+execution_context: main_or_subagent
 description: "Etap 브릿지 성능 벤치마크 스킬. Dell 테스트베드에서 ab/hi (L7 HTTPS) + etapcomm 통계로 모듈 on/off 비교. pktgen-dpdk (L2/L3 raw packet) 는 본 testbed 사용 불가 (참조-only). 측정: RSS / imissed / dropPps / etapcomm 통계. Use this skill whenever: \"벤치마크\", \"성능 측정\", \"throughput\", \"모듈별 성능 비교\", \"etap-bench\", \"performance test\". Do NOT trigger for: 기능 테스트(etap-testbed), 빌드/배포(etap-build-deploy)."
 ---
+
+<!-- execution_context: main_or_subagent — 성능 벤치마크 long-running 시 sub-agent dispatch 가치 (ab/hi load test + etapcomm stats 수집), short measure 는 main 적합. D32.b reference. -->
+
 
 # Etap Performance Benchmark (etap-bench)
 

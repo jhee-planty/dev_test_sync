@@ -1,9 +1,13 @@
 ---
 name: cowork-remote
 type: A
+execution_context: main_or_subagent
 description: Dev PC (Mac) ↔ Test PC (Windows) 간 Git 기반 비동기 협업. dev 가 request push, test 가 result push. 본 skill 은 dev 쪽 전담 (test 쪽은 test-pc-worker). Use when user says "test PC 에 요청 보내줘", "check-warning {서비스}", "check-block {서비스}", "큐 상태", "결과 확인", "원격 작업", "폴링", "result scan", or any cross-PC coordination. 결정론적 runtime (bash scripts) 으로 git/filesystem 작업 수행, Claude 는 자연어→command 추론 + 결과 성공/실패 판정만 담당. Auto STALLED 에스컬레이션 없음 (응답 도착까지 반복 scan). 3-Strike 는 genai-apf-pipeline 에서 판정.
 allowed-tools: Bash, Read, Write, Edit
 ---
+
+<!-- execution_context: main_or_subagent — push-request / scan-results 등 short ops 는 main 적합. genai-apf-pipeline Phase 3/4/6 sub-agent prompt 안에서도 호출. D32.b reference. -->
+
 
 # cowork-remote
 
@@ -50,65 +54,20 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 
 **금지**: ID 를 Claude 가 직접 할당 금지. 반드시 push-request.sh 에 위임.
 
-### Authority Boundary (53차 codify — D9 Stage 8 candidate Capability Pre-judgment Anti-pattern)
-
-**의도된 분리** (async request-response pattern):
-- **Dev PC outbound**: 작업 intent + parameters 명시 (request form). Test PC 의 가능 여부 판단 권한 인정.
-- **Test PC inbound**: 자기 capability 로 가능 여부 판단 (test-pc-worker SKILL §Capability Judgment 참조).
-
-**Outbound 의무**:
-- Request intent 명시 (왜 필요한지)
-- Skill 에 정의된 command + parameter 명시 (§Request Schema)
-- 가능 여부 판단은 test PC 권한 — request 작성 후 dispatch (사전 결정 X)
-
-**Outbound 금지** (D9 Stage 8 candidate — Authority Inversion):
-- **Test PC capability inventorying**: "test PC 의 사용 가능한 command 확인 완료. ..." 류 enumeration
-- **Internal reasoning simulation**: "subagent ... Chrome DevTools 사용 가능" / "explicit instruction 으로 시도" 등 test PC 의 runtime 추측
-- **사전 가능/불가 판단**: "X command 가 없으니 ..." → 작업 진행 여부 dev 가 결정
-- **Workaround pre-design**: test PC 의 execution path 추측 후 alternative spec
-
-**Boundary line**:
-| Pattern | 분류 |
-|---|---|
-| Skill 정의된 command name 인용 ("check-warning command 사용") | OK (public interface 인용) |
-| Request parameter 명시 | OK |
-| Test PC 가능 여부 판단 권한 인정 명시 | OK |
-| Capability inventorying / internal reasoning simulation | **Anti-pattern** |
-| 사전 가능 판단 후 작업 진행 결정 | **Anti-pattern** |
-| Workaround pre-design (execution path 추측) | **Anti-pattern** |
-
-**Rationale**: producer/consumer responsibility 분리 (DTA distributed architecture 원칙). Producer over-specifying consumer behavior = leaky abstraction. Pre-judgment 은 round-trip cost 보다 cheap 한 경우만 정당 — 대부분 over-reach.
-
-→ See `cowork-micro-skills/INTENTS.md §5 53차 entry` for full discussion-review consensus.
-
 ### B. Inbound — scan, 판정, 갱신
 
 **Trigger**: "결과 확인해줘", "새 결과 왔어?", "폴링 한번 돌려줘" 등.
 
 **흐름**:
 1. Runtime: `bash $RT_DIR/scan-results.sh` — git pull + filesystem scan + 새 결과 ID 목록 stdout (newline separated)
-2. 새 결과 없음 (stdout empty) → `ScheduleWakeup(delaySeconds=270, prompt="<<autonomous-loop-dynamic>>")` 자동 재예약 후 turn 종료 (cache-warm 영역, Polling Policy v2 / HR3 — chain 유지). 장시간 idle (mission ratio = 1.0 maintenance mode OR test PC 명시적 unavailable) 만 1200-1800s 허용 (41차 mission-goal-based, "count==0 증명" 폐지).
-3. 새 결과 있음 → **batch 의 모든 ID 처리 의무 (55차 codify — Single-task Batch Slice Anti-pattern 차단)**:
+2. 새 결과 없음 (stdout empty) → "대기 중" 짧게 보고 + 종료 (추가 polling 여부는 사용자 지시)
+3. 새 결과 있음 → **각 ID 별로 아래 루프**:
    a. `cat $GIT_SYNC_REPO/results/{id}_result.json` 읽기
    b. **Claude 판단** (§Result Classification 가이드) — verdict ∈ `{done, error_PROTOCOL_MISMATCH, error_NOT_RENDERED, error_SERVICE_CHANGED, error_AUTH_REQUIRED, error_INFRASTRUCTURE}`
    c. Runtime: `bash $RT_DIR/update-queue.sh {id} {verdict} "{summary}"`
    d. Runtime: `bash $RT_DIR/archive-completed.sh {id}` (request+result → local_archive/YYYY-MM-DD/)
    e. (옵션) Runtime: `bash $RT_DIR/notify.sh "APF" "#{id} {verdict}"` — 핵심 이벤트만
-4. **Batch completeness 의무**: scan-results.sh stdout 의 **모든 ID 처리 완료** 후 turn 종료. 일부 ID 만 처리 후 turn 끝맺기 = Single-task Batch Slice Anti-pattern (55차 codify, D9 Stage 5/6 sub-form).
-5. 사용자에게 요약 보고 : 처리된 ID 들 + verdict 들
-
-**Batch completeness 의무 상세 (55차)**:
-
-| Pattern | 분류 |
-|---|---|
-| Batch 모든 IDs sequentially 처리 후 turn 끝 | OK |
-| 한 ID 처리 시 engine fix → build → deploy → dispatch 진행 (long sequence), 그 후 같은 turn 안에서 다음 ID 처리 | OK (engine fix sequence 가 그 ID 의 한 step) |
-| **첫 ID 처리 후 "이번 turn 완료" 결론 → 나머지 ID 무시 + turn 끝** | **Anti-pattern (D9 Stage 5/6 sub-form — single-task batch slice)** |
-| **"polling chain alive +Ns" / "ScheduleWakeup 사용함" 으로 batch slice 정당화** | **Anti-pattern (D9 Stage 6 telltale 정확 매칭)** |
-
-**Rationale**: scan-results.sh batch 의 모든 IDs 는 producer (test PC) 가 같은 batch 로 produce 한 결과. Consumer (dev PC) 가 "이번 turn 에 N 개 중 1 개만 처리" 결정 = scope-completion judgment narrowing (51차 root cause). Batch 처리 의무 = positive procedure (D27 적용) — anti-pattern 차단 wording 외 standard operating procedure form.
-
-**예외**: ID 처리 중 외부 의존성 (build infrastructure unavailable / git push 실패 / sub-agent dispatch 진행 중) 으로 step 진행 불가 시 — 해당 ID 만 defer, 나머지 IDs 는 계속 처리 의무.
+4. 사용자에게 요약 보고 : 처리된 ID 들 + verdict 들
 
 **중요**:
 - 응답 대기 중 자동 STALLED 에스컬레이션 **없음**. 결과 안 오면 계속 scan 반복 (호출자 루프 책임).
@@ -127,7 +86,7 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 ```json
 {
   "id": "{auto-assigned-by-runtime-do-not-set}",
-  "command": "check-warning | check-block | check-cert | capture-screenshot | verify-access | run-scenario | report-status | verify-warning-quick",
+  "command": "check-warning | check-block | check-cert | capture-screenshot | verify-access | run-scenario | report-status",
   "priority": "normal | urgent",
   "params": {
     "service": "gemini",
@@ -142,40 +101,6 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 
 runtime 이 `id` / `created` 를 채움. Claude 는 **id 를 절대 채우지 않는다**.
 
-### verify-warning-quick command (28차 R3 #1, cheap D20b)
-
-> **Purpose**: D20(b) DONE Verification 의 lightweight form. 30s/service target (vs check-warning ~5min).
-> **Spec source**: `apf-warning-impl/SKILL.md §Verify-Done Periodic`.
-
-**Request payload**:
-```json
-{
-  "command": "verify-warning-quick",
-  "params": {
-    "service": "<service_id>",
-    "test_prompt": "<rotation item — apf-warning-impl §Verify-Done Periodic 의 7-item rotation set 에서>",
-    "timeout_seconds": 30
-  }
-}
-```
-
-**Result classification (verify-warning-quick 전용)**:
-
-| 조건 | verdict |
-|------|---------|
-| `dom_assertion == "pass"` | `done_verified` (status=DONE 유지) |
-| `dom_assertion == "fail_no_warning"` | `done_drift` (status DONE → BLOCKED_diagnosed regression, cause_pointer 갱신) |
-| `dom_assertion == "fail_wrong_content"` | `done_drift_partial` (warning element 있지만 content mismatch — render-layer schema gap, mistral F-5 분류) |
-| `dom_assertion == "unable_offline"` | `error_INFRASTRUCTURE` (test PC unreachable) |
-| `dom_assertion == "unable_no_login"` | `error_AUTH_REQUIRED` (NEEDS_LOGIN 으로 status mutation) |
-
-**Test PC worker 구현 시 핵심 제약**:
-- 단일 prompt push + DOM 조회 1회만 (timing 최적화)
-- Subagent dispatch 패턴 따름 (test-pc-worker §Subagent Dispatch canonical)
-- Result 의 `raw_dom_excerpt` field 에 warning element outerHTML 1개 포함 (size cap: 2KB)
-
-**아직 미구현**: 본 spec 은 28차 codify 만. test-pc-worker side 의 verify-warning-quick handler 는 future implementation session 에서 추가.
-
 ## Result Classification 가이드 (Claude 판단)
 
 Result JSON 의 `status` 와 `result` 필드를 읽고 다음 분기:
@@ -186,22 +111,9 @@ Result JSON 의 `status` 와 `result` 필드를 읽고 다음 분기:
 | `status == "error"` && notes 에 "HTTP 2XX but blocked" / SSE/WebSocket mismatch | `error_PROTOCOL_MISMATCH` |
 | `status == "done"` && warning_visible=false (DOM 삽입 but 보이지 않음) | `error_NOT_RENDERED` |
 | `status == "error"` && notes 에 "endpoint changed" / "structure differs" | `error_SERVICE_CHANGED` |
-| `status == "error"` && notes 에 "login" / "session" / "CAPTCHA" / **"sign-in modal"** / **"anonymous removed"** | `error_AUTH_REQUIRED` |
+| `status == "error"` && notes 에 "login" / "session" / "CAPTCHA" | `error_AUTH_REQUIRED` |
 | `status == "error"` && notes 에 "timeout" / "crash" / "desktop-commander" | `error_INFRASTRUCTURE` |
 | 분류 불확실 | `error_INFRASTRUCTURE` + notes 에 "CATEGORIZATION_UNCERTAIN" 명시 |
-
-### D20(b) verify-warning-quick 전용 추가 verdict (F8 2026-04-30)
-
-UI verify 가 auth gate 로 short-circuit 되는 경우 — regression 아님 + S3 검증 불가 (semantic gap):
-
-| 조건 | verdict | mission impact |
-|------|---------|----------------|
-| `dom_assertion == "unable_no_login"` OR sign-in wall short-circuit | `UNABLE_AUTH_GATE` | regression 아님 (production state unchanged). L1 canary 가 mission protection 실증, L2-2B synthetic probe 로 향후 보완 (future) |
-| `dom_assertion == "unable_offline"` | `UNABLE_OFFLINE` | infrastructure issue, retry next session |
-
-→ `error_AUTH_REQUIRED` 와 `UNABLE_AUTH_GATE` 차이: 전자는 일반 check-warning 실패 시, 후자는 D20(b) verify 의 명시적 semantic gap (status=DONE 유지). 2026-04-30 #657/#658 = 후자 사례.
-
-→ Canonical: `apf-warning-impl/SKILL.md §Verify-Done Hybrid v2` + `apf-operation/docs/cycle98-f8-d20b-methodology-network-canary-design.md`.
 
 **summary** 한 줄 (60자 이내) 필수. 예: "gemini warning visible + text match"
 
@@ -211,7 +123,7 @@ UI verify 가 auth gate 로 short-circuit 되는 경우 — regression 아님 + 
 
 ## Rate Limit Gate
 
-runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2). 초과 시 exit 1 + stderr 에 현재 pending ID 목록 출력. Claude 자동 처리: `scan-results.sh` 우선 실행 → pending 처리 → push 재시도. inbound 도 비어 있으면 `ScheduleWakeup(270s)` 후 재시도 (cache-warm).
+runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2). 초과 시 exit 1 + stderr 에 현재 pending ID 목록 출력. Claude 는 사용자에게 "대기 후 재시도" 안내.
 
 ## Git Sync 단일 경로
 
@@ -228,7 +140,7 @@ runtime 의 `push-request.sh` 가 자동 적용 (filesystem pending count ≤ 2)
 ## 에러 복구
 
 - `git push` 실패 : runtime 이 자동 3-retry (즉시 / `pull --rebase` / `stash+pull+pop`). 그래도 실패면 exit 2.
-- `scan_results.sh` 실패 : exit 2 → 1회 retry (`git fetch && git reset --hard origin/main`) → 여전히 실패 시 `state.json.notes` 에 "scan_runtime_error: {원인}" 기록 + `ScheduleWakeup(270s)` 후 재시도 (cache-warm, transient infra 가정).
+- `scan_results.sh` 실패 : exit 2 → Claude 는 사용자에게 "scan runtime error" 보고 + 원인 전달.
 
 ---
 
