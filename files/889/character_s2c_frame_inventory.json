@@ -1,0 +1,241 @@
+{
+  "har_size_bytes": 21667031,
+  "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\889\\character_full_session.har",
+  "har_total_entries": 319,
+  "ws_entries_count": 2,
+  "ws_entries_urls": [
+    "wss://neo.character.ai/ws/",
+    "wss://neo.character.ai/ws/"
+  ],
+  "ws_frames_total": 5,
+  "c2s_frame_count": 2,
+  "s2c_frame_count": 3,
+  "s2c_commands_distinct": [
+    "create_chat_response",
+    "add_turn"
+  ],
+  "s2c_command_counts": {
+    "create_chat_response": 1,
+    "add_turn": 2
+  },
+  "c2s_commands_distinct": [
+    "create_chat",
+    "create_and_generate_turn"
+  ],
+  "c2s_command_counts": {
+    "create_chat": 1,
+    "create_and_generate_turn": 1
+  },
+  "sample_frames_per_s2c_command": {
+    "create_chat_response": {
+      "chat": {
+        "chat_id": "d83f01df-51ab-41af-975e-f436a0e94e00",
+        "create_time": "2026-05-13T06:57:50.881539Z",
+        "creator_id": "934605673",
+        "character_id": "AqMY9jK-YSLKtbR8bnbMCli1dptblV-ZNb7lDC-Ax3o",
+        "state": "STATE_ACTIVE",
+        "type": "TYPE_ONE_ON_ONE",
+        "visibility": "VISIBILITY_PRIVATE",
+        "preferred_model_type": "MODEL_TYPE_DEEP_SYNTH_LITE",
+        "model_preference_version": "1"
+      },
+      "command": "create_chat_response",
+      "request_id": "fd57d5cd-14fb-4825-9e6a-ZNb7lDC-Ax3o"
+    },
+    "add_turn": {
+      "turn": {
+        "turn_key": {
+          "chat_id": "d83f01df-51ab-41af-975e-f436a0e94e00",
+          "turn_id": "2be101e6-0144-4719-9d07-b52a219add65"
+        },
+        "create_time": "2026-05-13T06:57:50.957034Z",
+        "last_update_time": "2026-05-13T06:57:50.957034Z",
+        "state": "STATE_OK",
+        "author": {
+          "author_id": "AqMY9jK-YSLKtbR8bnbMCli1dptblV-ZNb7lDC-Ax3o",
+          "name": "Springbonnie"
+        },
+        "candidates": [
+          {
+            "candidate_id": "d56591d2-5679-44dc-a0a9-374d62ec64ca",
+            "create_time": "2026-05-13T06:57:50.957034Z",
+            "raw_content": "Hey kid…I noticed you were sad and all alone…Here let me give you something. *he gives you a plushie of himself*",
+            "editor": {
+              "author_id": "46689544",
+              "name": "Wizardofstupidness"
+            },
+            "is_final": true
+          }
+        ],
+        "primary_candidate_id": "d56591d2-5679-44dc-a0a9-374d62ec64ca"
+      },
+      "chat_info": {
+        "type": "TYPE_ONE_ON_ONE"
+      },
+      "command": "add_turn",
+      "request_id": "fd57d5cd-14fb-4825-9e6a-ZNb7lDC-Ax3o"
+    }
+  },
+  "sample_frames_per_c2s_command": {
+    "create_chat": {
+      "command": "create_chat",
+      "request_id": "fd57d5cd-14fb-4825-9e6a-ZNb7lDC-Ax3o",
+      "payload": {
+        "chat_type": "TYPE_ONE_ON_ONE",
+        "chat": {
+          "chat_id": "d83f01df-51ab-41af-975e-f436a0e94e00",
+          "creator_id": "934605673",
+          "visibility": "VISIBILITY_PRIVATE",
+          "character_id": "AqMY9jK-YSLKtbR8bnbMCli1dptblV-ZNb7lDC-Ax3o",
+          "type": "TYPE_ONE_ON_ONE"
+        },
+        "with_greeting": true
+      },
+      "origin_id": "web-next"
+    },
+    "create_and_generate_turn": {
+      "command": "create_and_generate_turn",
+      "request_id": "0a657b7d-cd48-44ac-b84f-ZNb7lDC-Ax3o",
+      "payload": {
+        "chat_type": "TYPE_ONE_ON_ONE",
+        "num_candidates": 1,
+        "tts_enabled": false,
+        "selected_language": "",
+        "character_id": "AqMY9jK-YSLKtbR8bnbMCli1dptblV-ZNb7lDC-Ax3o",
+        "user_name": "HealthyWorm4019",
+        "turn": {
+          "turn_key": {
+            "turn_id": "628fc0c2-81ba-459a-8f99-6de64ce4b7d1",
+            "chat_id": "d83f01df-51ab-41af-975e-f436a0e94e00"
+          },
+          "author": {
+            "author_id": "934605673",
+            "is_human": true,
+            "name": "HealthyWorm4019"
+          },
+          "candidates": [
+            {
+              "candidate_id": "f104ed52-ba0d-47d5-8bd0-659879da3646",
+              "raw_content": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+            }
+          ],
+          "primary_candidate_id": "f104ed52-ba0d-47d5-8bd0-659879da3646"
+        },
+        "previous_annotations": {
+          "boring": 0,
+          "not_boring": 0,
+          "inaccurate": 0,
+          "not_inaccurate": 0,
+          "repetitive": 0,
+          "not_repetitive": 0,
+          "out_of_character": 0,
+          "not_out_of_character": 0,
+          "bad_memory": 0,
+          "not_bad_memory": 0,
+          "long": 0,
+          "not_long": 0,
+          "short": 0,
+          "not_short": 0,
+          "ends_chat_early": 0,
+          "not_ends_chat_early": 0,
+          "funny": 0,
+          "not_funny": 0,
+          "interesting": 0,
+          "not_interesting": 0,
+          "helpful": 0,
+          "not_helpful": 0
+        },
+        "generate_comparison": false
+      },
+      "origin_id": "web-next"
+    }
+  },
+  "key_dispatch_fields": [
+    "chat.preferred_model_type",
+    "chat.type",
+    "chat_info.type",
+    "command",
+    "request_id",
+    "turn",
+    "turn.author",
+    "turn.author.author_id",
+    "turn.author.name",
+    "turn.candidates",
+    "turn.candidates[].candidate_id",
+    "turn.candidates[].create_time",
+    "turn.candidates[].editor",
+    "turn.candidates[].editor.author_id",
+    "turn.candidates[].editor.name",
+    "turn.candidates[].is_final",
+    "turn.candidates[].raw_content",
+    "turn.create_time",
+    "turn.last_update_time",
+    "turn.primary_candidate_id",
+    "turn.state",
+    "turn.turn_key",
+    "turn.turn_key.chat_id",
+    "turn.turn_key.turn_id"
+  ],
+  "http_endpoints_character_ai": [
+    "https://character.ai/",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/character/c1hYxpJI.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/AqMY9jK-YSLKtbR8bnbMCli1dptblV-ZNb7lDC-Ax3o.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/BNeQUxihhmU0qwGrS0R-kfSobSeXEDjNHESXOwO6pic.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/JAR-z8Wg98T_7X0dxvBd_UO4kaEFkMbso1fQI4N6zKc.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/QNdmVUzDiimtNHTAyQYismFHhc0-yvfBSNFJ08lSrZs.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/U3dJdreV9rrvUiAnILMauI-oNH838a8E_kEYfOFPalE.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/YGVSOGdE3bT_mUHAETDXaLbCv2rZiHeLE_VE-Vzb6kA.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/ZFxn8RTiYxy5hg7rJ6dm6D5XO1RcSsGNLsaUGVZ46Qc.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/u-OFLFiH1obrq_p6rlhqSdtWQkG4bzCl14nYNTEhhiE.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/chat/vPa9a8e39mzVEWzoI0bwMyc_EdLlw2mWybq83IjztpY.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/profile/Evvienne.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/profile/GHOSTFACE_KIK.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/profile/SilentGamer99.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/profile/TooManyFandoms.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/profile/Wizardofstupidness.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/scene/244fcb31-b067-4cf3-96d6-423b15a6cbab.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/scene/67fa5a90-1f39-48f0-90b7-2dc6a58d61a5.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/scene/bab2dc74-3d12-4dad-969f-c417240db958.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/scene/d56876c0-83fb-43e4-99f8-4ba883e9a61b.json",
+    "https://character.ai/_next/data/YiZ5dCO1KD6JUpk-JFWYc/scene/f771ae93-e305-4ee4-994f-4782e273aa39.json",
+    "https://character.ai/_next/static/YiZ5dCO1KD6JUpk-JFWYc/_buildManifest.js",
+    "https://character.ai/_next/static/YiZ5dCO1KD6JUpk-JFWYc/_ssgManifest.js",
+    "https://character.ai/_next/static/chunks/1017-4d7e97626c3befe5.js",
+    "https://character.ai/_next/static/chunks/123.d51834ce77c47044.js",
+    "https://character.ai/_next/static/chunks/1258.165b76ebd7c43dde.js",
+    "https://character.ai/_next/static/chunks/16725920-a09f0355ef61db82.js",
+    "https://character.ai/_next/static/chunks/1948-46790dbf1d6d7fc7.js",
+    "https://character.ai/_next/static/chunks/1ece1aa7-ace1494ae7c72bcc.js",
+    "https://character.ai/_next/static/chunks/2707-c632f75b2a5d84e3.js",
+    "https://character.ai/_next/static/chunks/2e8ccad5-7fcfd95685f14ddd.js",
+    "https://character.ai/_next/static/chunks/3064-b1b166917325ae8b.js",
+    "https://character.ai/_next/static/chunks/3953-53c7e84d8ae1b72d.js",
+    "https://character.ai/_next/static/chunks/4098-69e27a59db8c5ead.js",
+    "https://character.ai/_next/static/chunks/428-1e026fef3fbb7ee1.js",
+    "https://character.ai/_next/static/chunks/4720-5935072543926239.js",
+    "https://character.ai/_next/static/chunks/5168-0e2183638457a9b0.js",
+    "https://character.ai/_next/static/chunks/5287-2c171f97269a445b.js",
+    "https://character.ai/_next/static/chunks/6122-9e4a06a76cb5b635.js",
+    "https://character.ai/_next/static/chunks/6134.f560d44e9f1b61fc.js",
+    "https://character.ai/_next/static/chunks/6310-e9f512a6d52e7157.js",
+    "https://character.ai/_next/static/chunks/6525-4a6e0c3c4c5eb8fa.js",
+    "https://character.ai/_next/static/chunks/681-aeff4ceca11d3bd3.js",
+    "https://character.ai/_next/static/chunks/6861-08fb2a6217a9a84a.js",
+    "https://character.ai/_next/static/chunks/6987-597d83ed8a8d3ba1.js",
+    "https://character.ai/_next/static/chunks/7545-d7fe22f1aeab3e9f.js",
+    "https://character.ai/_next/static/chunks/7794-ebafe9971e5986f3.js",
+    "https://character.ai/_next/static/chunks/849-1ad1f1792fd50070.js",
+    "https://character.ai/_next/static/chunks/896-a6d8fafe4986ab24.js",
+    "https://character.ai/_next/static/chunks/9068-8d0965d2bb8dbb16.js",
+    "https://character.ai/_next/static/chunks/9309.4b45d4356ac08174.js",
+    "https://character.ai/_next/static/chunks/9612-adcc2ebe33f504dc.js",
+    "https://character.ai/_next/static/chunks/9672-6007eee3671ed268.js",
+    "https://character.ai/_next/static/chunks/9839-9a7f3fa4adc3857d.js",
+    "https://character.ai/_next/static/chunks/c69f8c07-5986c00674cb317d.js",
+    "https://character.ai/_next/static/chunks/framework-d248d66ef810f0ff.js",
+    "https://character.ai/_next/static/chunks/main-a43942d58b584db1.js",
+    "https://character.ai/_next/static/chunks/pages/_app-7f2b480cd4c38e26.js",
+    "https://character.ai/_next/static/chunks/pages/character/%5Bid%5D-586a8ec63f62e0b3.js",
+    "https://character.ai/_next/static/chunks/pages/chat/%5Bcharacter%5D-2c892c93d05cfccc.js"
+  ]
+}
