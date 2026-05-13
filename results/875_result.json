@@ -1,0 +1,26 @@
+{
+  "id": "875",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "verdict": "OK",
+    "status_detail": "APF v2.2.4 d29d868: grok.com page-replacement block + warning toast visible (contains '차단')",
+    "service_name": "grok",
+    "started_at": "2026-05-13T04:51:42Z",
+    "completed_at": "2026-05-13T04:53:30Z",
+    "duration_seconds": 108,
+    "warning_visible": true,
+    "engine_intercept_fired": true,
+    "warning_rendered": true,
+    "expected_text_found": "차단",
+    "screenshot": "files/875/step1_blocked_page.png",
+    "console_errors": [],
+    "warning_text": "보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+    "delivery_method": "page_replacement_with_warning_toast",
+    "url_observed": "grok.com",
+    "tab_title_observed": "보안 정책 - 접근 차단",
+    "page_state": "blocked_at_load",
+    "console_messages": "6 warnings, 0 errors, 0 user messages"
+  },
+  "notes": "grok APF v2.2.4 (d29d868 property-driven refactor) production verify OK. Guest mode (no login). Hard reload performed. Page itself was replaced with security block page (tab title='보안 정책 - 접근 차단') and warning toast appeared in top-right corner with '보안 경고' header + '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' body + English subtitle. Expected_text '차단' confirmed in DOM (tab title + toast body). User saw the block clearly via toast notification. Note: grok.com appears to be intercepted at page-load level (HTTPS request body or cached PII context from prior session triggers replacement) rather than at chat-submit level — this is APF wholesale-block delivery method. Mission anchor satisfied: warning visible on user screen for PII context."
+}
