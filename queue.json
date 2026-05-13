@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-04T01:54:45Z",
+  "last_updated": "2026-05-13T02:14:28Z",
   "tasks": [
     {
       "id": "531",
@@ -1596,6 +1596,15 @@
       "created": "2026-05-04T01:54:45Z",
       "updated": "2026-05-04T01:54:45Z",
       "summary": "check-warning request"
+    },
+    {
+      "id": "866",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T02:14:28Z",
+      "updated": "2026-05-13T02:14:28Z",
+      "summary": "APF v2.2.4 d29d868 production verify — priority=A svc=character tag=d29d868_changed_WS_url_capture (batch 2026-05-13)"
     }
   ]
 }
