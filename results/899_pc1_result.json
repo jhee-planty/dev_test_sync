@@ -1,0 +1,16 @@
+{
+  "id": "899",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "PII prompt not submitted — outline rendered unrelated topic (Kraken/sea monsters), no APF intercept, no 차단 text",
+    "service_name": "gamma",
+    "started_at": "2026-05-13T23:18:00Z",
+    "completed_at": "2026-05-13T23:24:00Z",
+    "duration_seconds": 360,
+    "warning_visible": false,
+    "screenshot": "files/899/no_screenshot_subagent_protection.txt",
+    "console_errors": []
+  },
+  "notes": "RETRY (after software_bypass=off toggle). Test infrastructure issue: prompt input box not properly populated before clicking 개요 생성. Outline generation succeeded with non-PII topic (Kraken/심해 생물 — likely cached topic OR Gamma generated from empty/fallback prompt). Network panel shows successful graphql + ai/v2/track-span calls (Gamma processed something successfully). No APF interception observed because no PII reached APF. windows-mcp Click did not accept loc=[x,y] format (validation error 'list_type' on str input) — coords-based click fell back to PowerShell mouse_event which targeted (1298,540) but Gamma SPA prompt textarea may have been at different position. Cannot verify V7-H 4-event lifecycle without successful PII submission. Recommend dev side: (a) confirm whether default Gamma prompt is auto-injected from URL-cached state, (b) provide Gamma prompt input selector hint or use ?prompt= URL param if supported. Verdict reflects HONEST observation: no engine activity, no warning, but ALSO no valid PII test executed — cannot conclude V7-H rendering verdict."
+}
