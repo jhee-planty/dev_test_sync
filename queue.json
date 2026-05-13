@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T08:00:38Z",
+  "last_updated": "2026-05-13T08:00:49Z",
   "tasks": [
     {
       "id": "531",
@@ -3149,6 +3149,22 @@
       "created": "2026-05-13T08:00:38Z",
       "updated": "2026-05-13T08:00:38Z",
       "summary": "multi-PC v2.0 first dual dispatch — copilot cross-env verify (prev #893 FAIL traffic delivery) priority=A tag=v2.2.4-d29d868-postfix-dual",
+      "target_pc": "both",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "pending",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "897",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T08:00:49Z",
+      "updated": "2026-05-13T08:00:49Z",
+      "summary": "multi-PC v2.0 first dual dispatch — cohere V2 schema cross-env verify priority=A tag=v2.2.4-d29d868-postfix-dual",
       "target_pc": "both",
       "pc1_status": "pending",
       "pc1_verdict": "",
