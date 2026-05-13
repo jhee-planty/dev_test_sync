@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T23:06:55Z",
+  "last_updated": "2026-05-13T23:43:36Z",
   "tasks": [
     {
       "id": "531",
@@ -3229,6 +3229,22 @@
       "created": "2026-05-13T23:06:55Z",
       "updated": "2026-05-13T23:06:55Z",
       "summary": "copilot retry (wave 2) — priority=A svc=copilot tag=v2.2.4-d29d868-postfix-wave2",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "902",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T23:43:36Z",
+      "updated": "2026-05-13T23:43:36Z",
+      "summary": "post mistral fix: path_patterns / + envelope INSERT mistral_warning_v1. Verify dispatcher fires + warning text renders in Le Chat. tag=v2.2.4-d29d868-postfix-wave3",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
