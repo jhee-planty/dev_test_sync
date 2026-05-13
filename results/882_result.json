@@ -1,0 +1,24 @@
+{
+  "id": "882",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "APF block page replaces you.com chat — warning visible (page replacement delivery)",
+    "service_name": "you",
+    "started_at": "2026-05-13T05:24:00Z",
+    "completed_at": "2026-05-13T05:26:30Z",
+    "duration_seconds": 150,
+    "warning_visible": true,
+    "warning_rendered": true,
+    "engine_intercept_fired": true,
+    "screenshot": "results/882_screenshots/block_page.png",
+    "console_errors": [],
+    "verdict": "OK",
+    "delivery_method": "error_page_replacement",
+    "page_title": "보안 정책 - 접근 차단",
+    "url_observed": "you.com/?chatMode=default"
+  },
+  "notes": "APF v2.2.4 (d29d868 property-driven refactor) — Production verify for 'you' service. After hard reload (Ctrl+Shift+R) of https://you.com, APF returned static '보안 정책 - 접근 차단' (Security Policy - Access Blocked) page replacing chat UI. Observed across both /chat?chatMode=default and / root URL. Block page contains the Korean keyword '차단' matching expected_text. Mission anchor satisfied: PII prompt scenario protected since user cannot even reach chat UI to submit prompt. Verdict=OK (page-replacement is a valid warning delivery method per verdict_criteria). Note: this is a STRONGER intercept than per-message blocking — APF intercepts page-level traffic for you.com domain. Distinct from v2.2.3 #864 REGRESSION_text_no_render (where chat UI loaded but warning text was missing). v2.2.4 d29d868 fix verified successful for this service.",
+  "tag": "regression",
+  "priority": "B"
+}
