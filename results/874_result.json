@@ -1,0 +1,26 @@
+{
+  "id": "874",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "verdict": "OK",
+    "status_detail": "APF v2.2.4 d29d868: PII intercept fired + warning bubble visible (red, contains '차단')",
+    "service_name": "qwen3",
+    "started_at": "2026-05-13T04:48:00Z",
+    "completed_at": "2026-05-13T04:49:30Z",
+    "duration_seconds": 90,
+    "warning_visible": true,
+    "engine_intercept_fired": true,
+    "warning_rendered": true,
+    "expected_text_found": "차단",
+    "screenshot": "files/874/step1_after_send.png",
+    "console_errors": [
+      "[Violation] Permissions policy violation: unload is not allowed in this document.",
+      "GET https://chat.qwen.ai/api/v1/auths/ 401 (Unauthorized)"
+    ],
+    "warning_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "delivery_method": "error_replacement_with_warning_bubble",
+    "url_observed": "chat.qwen.ai/c/guest"
+  },
+  "notes": "qwen3 APF v2.2.4 (d29d868 property-driven refactor) production verify OK. Guest mode used (no login). Hard reload performed. PII (RRN 901010-1234567) prompt submitted via clipboard paste + Enter. Engine intercept fired and warning bubble rendered with '[경고]...차단되었습니다' text — user saw the block clearly. Expected_text '차단' confirmed in DOM. 401 console error is pre-existing (auths endpoint, unrelated to APF). Mission anchor satisfied."
+}
