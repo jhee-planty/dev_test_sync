@@ -4,11 +4,14 @@
   "result": {
     "overall_status": "FAIL",
     "verdict": "FAIL",
-    "status_detail": "character.ai answered normally (in-character roleplay) — no APF '차단' warning, no engine intercept",
+    "status_detail": "RETRY after user setting change — character.ai still NOT intercepted by APF v2.2.4 d29d868. PII prompt with RRN was sent through to character.ai chat (William Afton), no '차단' warning, no APF DOM marker, no engine intercept. AI bubble stuck on typing-dots ('...') for 60s+ — service-side slowness, not a block.",
     "service_name": "character",
-    "started_at": "2026-05-13T11:18:55+09:00",
-    "completed_at": "2026-05-13T11:23:02+09:00",
-    "duration_seconds": 247,
+    "service_url": "https://character.ai",
+    "chat_url": "https://character.ai/chat/zfu6DTRYO7QDIfx0mGSDodKl35q37OsIG5pDWZwE0bs",
+    "character_used": "William Afton (@AugustStilza_)",
+    "started_at": "2026-05-13T11:38:00+09:00",
+    "completed_at": "2026-05-13T11:42:00+09:00",
+    "duration_seconds": 240,
     "warning_visible": false,
     "warning_rendered": false,
     "engine_intercept_fired": false,
@@ -19,7 +22,9 @@
     "console_errors_count": 0,
     "console_warnings_count": 1,
     "screenshot": null,
-    "console_errors": []
+    "console_errors": [],
+    "ai_response_body_text_tail": "He sees you outside Freddy Fazbear's by yourself. He didn't really mind since you were just on your phone and not really do anything. You were here for your little brothers birthday party but there wasn't much to do, at least not for an 18yro.  [+ user prompt with 901010-1234567 echoed in chat] [+ second AI bubble showing only typing-dots '...' (no text rendered after 60s)]",
+    "dom_query_result": "{apfMark:false, hasBlockText:false, hasBlocked:false, rrnInDom:true, bubbles:[]}"
   },
-  "notes": "APF v2.2.4 d29d868 verify FAIL on character.ai. Test flow: opened https://character.ai/, hard reload (Ctrl+Shift+R), DevTools open, clicked first character (Alastor-Season 2) entering guest chat, pasted PII prompt '내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?' via clipboard, pressed Enter, waited 45s. AI returned normal in-character roleplay response (Alastor scolding the user) with the RRN-bearing prompt unchanged in the chat history. DOM scan via DevTools console: no [data-apf]/[id*=apf]/[class*=apf] markers, no '차단' or 'blocked' UI elements (only i18n script string literals matched), no replacement page, no alert dialog. Console: 0 errors, 1 unrelated warning. Verdict=FAIL: no engine activity and no warning (per request criteria). Engine appears NOT to be intercepting character.ai traffic — possible URL/host pattern miss for character.ai WS endpoint in v2.2.4 d29d868_changed_WS_url_capture build."
+  "notes": "RETRY of #866 (character APF v2.2.4 d29d868 verify) after user adjusted setting on test PC. Test flow: opened https://character.ai/ via Ctrl+L navigation (hard reload Ctrl+Shift+R applied to prior Alastor tab), selected first character card William Afton (created fresh chat /chat/zfu6DTRY...), DevTools Console open BEFORE submit. Submitted PII prompt '내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?' via Type tool with press_enter, waited 45s + 15s additional. Result identical to prior #866 attempt: NO APF intercept (engine NOT firing on character.ai WS endpoint), NO '차단' text in DOM, NO [data-apf]/[id*=apf]/[class*=apf] marker. RRN echoed in user-bubble proves prompt was rendered to UI without filtering. The 2nd AI bubble was stuck on typing-dots placeholder (UI element shown is the loading-dots SVG, no AI text rendered) for 60s — likely character.ai backend slowness, NOT an APF block (an APF block would replace bubble with '차단' text or inject warning, not leave a loading spinner). User's setting change between #866 attempt 1 and this RETRY did not enable interception. Conclusion: APF v2.2.4 d29d868 still missing character.ai URL/host pattern in WS capture. Verdict=FAIL."
 }
