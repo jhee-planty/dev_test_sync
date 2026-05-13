@@ -1,0 +1,154 @@
+{
+  "service": "m365_copilot",
+  "test_id": "898",
+  "captured_at": "2026-05-13T18:04:00+09:00",
+  "session_url": "https://m365.cloud.microsoft/chat",
+  "conversation_id": "92ce0834-3253-42eb-92e5-959dc9e25ec7",
+  "wss_endpoint_url": "wss://substrate.office.com/m365Copilot/Chathub/{user_oid}@{tenant_id}?chatsessionid={sid}&XRoutingParameterSessionKey={sid}&clientrequestid={sid}&X-SessionId={sid}&ConversationId={conv}&access_token={JWT}&variants=...&source=%22officeweb%22&product=Office&agentHost=Bizchat.FullScreen&licenseType=Starter&agent=web&scenario=OfficeWebIncludedCopilot",
+  "wss_host": "substrate.office.com",
+  "wss_path": "/m365Copilot/Chathub/{user_oid}@{tenant_id}",
+  "wss_path_observed_concrete": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+  "ws_upgrade_headers": {
+    "Upgrade": "websocket",
+    "Origin": "https://m365.cloud.microsoft",
+    "Connection": "Upgrade",
+    "Sec-WebSocket-Key": "{ephemeral}",
+    "Sec-WebSocket-Version": "13",
+    "Host": "substrate.office.com",
+    "Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+    "Sec-WebSocket-Protocol": "(not sent; access_token in query)",
+    "auth_method": "JWT in access_token query param (aud=https://substrate.office.com/sydney, scp includes sydney.readwrite, M365Chat.Read, CopilotPlatformContent.Process.All)"
+  },
+  "ws_handshake_response": {
+    "status": 101,
+    "Upgrade": "websocket",
+    "Connection": "Upgrade",
+    "Sec-WebSocket-Accept": "{computed}"
+  },
+  "protocol": "SignalR JSON Hub Protocol (record-separator 0x1E framed)",
+  "signalr_handshake": "{\"protocol\":\"json\",\"version\":1}\\u001e",
+  "c2s_frames_seen": [
+    {
+      "signalr_type": 1,
+      "name": "Invocation",
+      "count_in_session": 2,
+      "targets_observed": ["GetResponse (implicit, inferred — main chat send)", "Metrics"],
+      "main_send_sample_excerpt": {
+        "arguments_outer": {
+          "source": "officeweb",
+          "clientCorrelationId": "{sid 32hex}",
+          "sessionId": "{sid 8-4-4-4-12}",
+          "optionsSets": ["cwc_flux_image", "cwc_code_interpreter", "cwc_flux_v3", "flux_v3_progress_messages", "..."],
+          "streamingMode": "ConciseWithPadding",
+          "spokenTextMode": "None",
+          "allowedMessageTypes": ["Chat", "Suggestion", "InternalSearchQuery", "Progress", "GeneratedCode", "TriggerPlugin", "EndOfRequest", "..."],
+          "traceId": "{sid 32hex}",
+          "isStartOfSession": false,
+          "clientInfo": {
+            "clientPlatform": "mcmcopilot-web",
+            "clientAppName": "Office",
+            "clientEntrypoint": "mcmcopilot-officeweb",
+            "clientSessionId": "{sid}",
+            "ProductCategory": "Chat",
+            "clientAppType": "Web",
+            "productEntryPoint": "ChatPanel",
+            "deviceOS": "Windows"
+          }
+        },
+        "user_prompt_location": "arguments[0].userMessage / .message (truncated in 800-char sample; confirmed by RECV type=2 echo)"
+      },
+      "metrics_send_sample": {
+        "arguments": [{"Timestamps": {"ConnectionStart": "...", "UserInputStart": "...", "ConnectionEstablished": "...", "UserInputSubmit": "..."}}],
+        "target": "Metrics",
+        "type": 1
+      }
+    },
+    {"signalr_type": 4, "name": "StreamInvocation", "count_in_session": 1, "note": "stream-mode invocation observed once"},
+    {"signalr_type": 6, "name": "Ping", "count_in_session": 17, "sample": "{\"type\":6}"}
+  ],
+  "s2c_frames_seen": [
+    {
+      "signalr_type": 1,
+      "name": "Invocation (stream update)",
+      "count_in_session": 153,
+      "target": "update",
+      "schema": {
+        "arguments[0].cursor": {"j": "$['{messageId}'].adaptiveCards[0].body[0].text", "p": "<int>"},
+        "arguments[0].messages": [
+          {
+            "text": "<token chunk or full text>",
+            "author": "bot",
+            "responseIdentifier": "Default",
+            "createdAt": "<ISO>",
+            "messageId": "<uuid>",
+            "offense": "Unknown",
+            "adaptiveCards": [{"type": "AdaptiveCard", "version": "1.0", "body": [{"type": "TextBlock", "text": "<full or delta text>", "wrap": true}]}],
+            "sourceAttributions": [],
+            "contentOrigin": "DeepLeo"
+          }
+        ],
+        "arguments[0].nonce": "<base64>",
+        "arguments[0].requestId": "<sid 32hex>"
+      },
+      "content_path_for_filter": "arguments[0].messages[].text  AND  arguments[0].messages[].adaptiveCards[].body[].text"
+    },
+    {"signalr_type": 2, "name": "StreamItem / Completion bundle", "count_in_session": 1, "note": "final bundled item with full user+bot messages, locationInfo, full adaptiveCards, contentOrigin=officeweb (user) and DeepLeo (bot)"},
+    {"signalr_type": 3, "name": "Completion", "count_in_session": 1, "note": "final completion marker"},
+    {"signalr_type": 6, "name": "Ping", "count_in_session": 17}
+  ],
+  "ws_frames_total": 192,
+  "ws_frames_c2s": 20,
+  "ws_frames_s2c": 172,
+  "http2_endpoints_observed": [
+    {"method": "GET",  "url": "https://m365.cloud.microsoft/chat",                                  "purpose": "SPA shell"},
+    {"method": "POST", "url": "https://m365.cloud.microsoft/chat",                                  "purpose": "shell POST (preflight/session init)"},
+    {"method": "GET",  "url": "https://m365.cloud.microsoft/spalanding",                            "purpose": "landing"},
+    {"method": "GET",  "url": "https://m365.cloud.microsoft/client_health_ping",                    "purpose": "heartbeat (6x)"},
+    {"method": "POST", "url": "https://m365.cloud.microsoft/events",                                "purpose": "telemetry"},
+    {"method": "POST", "url": "https://login.microsoftonline.com/{tid}/oauth2/v2.0/token",          "purpose": "OAuth token exchange (22x — many silent refreshes)"},
+    {"method": "GET",  "url": "https://login.microsoftonline.com/{tid}/oauth2/v2.0/authorize",      "purpose": "auth"},
+    {"method": "GET",  "url": "https://substrate.office.com/m365Copilot/Chathub/{oid}@{tid}",       "purpose": "WSS upgrade (the chat hub)"},
+    {"method": "POST", "url": "https://substrate.office.com/pacman/api/clientevents",               "purpose": "client telemetry (11x)"},
+    {"method": "POST", "url": "https://substrate.office.com/search/api/v1/userconfig",              "purpose": "search config"},
+    {"method": "POST", "url": "https://substrate.office.com/searchservice/api/v1/userconfig",       "purpose": "search-service config"},
+    {"method": "GET",  "url": "https://substrate.office.com/recommended/api/v2.0/edgeworth/recent", "purpose": "recents"},
+    {"method": "GET",  "url": "https://substrate.office.com/search/api/v2/init",                    "purpose": "search init"},
+    {"method": "GET",  "url": "https://graph.microsoft.com/v1.0/me/drive/special/copilotuploads",   "purpose": "drive context"},
+    {"method": "GET",  "url": "https://graph.microsoft.com/v1.0/me/informationProtection/sensitivityLabels", "purpose": "MIP labels"},
+    {"method": "GET",  "url": "https://graph.microsoft.com/v1.0/me/photo/$value",                   "purpose": "avatar"},
+    {"method": "GET",  "url": "wss://go.trouter.teams.microsoft.com/v4/c?...&dom=m365.cloud.microsoft", "purpose": "Trouter signalling (2x — secondary; NOT the chat hub)"},
+    {"method": "POST", "url": "https://teams.microsoft.com/registrar/prod/V3/registrations",        "purpose": "Trouter registration"}
+  ],
+  "host_distribution_top10": {
+    "res.public.onecdn.static.microsoft": 609,
+    "substrate.office.com": 41,
+    "browser.pipe.aria.microsoft.com": 27,
+    "browser.events.data.microsoft.com": 26,
+    "login.microsoftonline.com": 25,
+    "m365.cloud.microsoft": 14,
+    "res-1.cdn.office.net": 12,
+    "graph.microsoft.com": 12,
+    "content.lifecycle.office.net": 8,
+    "res.cdn.office.net": 7
+  },
+  "substrate_vs_m365_diff": {
+    "summary": "m365.cloud.microsoft/chat is ONLY the SPA shell. The actual AI chat WSS endpoint is substrate.office.com/m365Copilot/Chathub/{oid}@{tid} — the same substrate.office.com host as the legacy 'BizChat / M365 Chat' route. So #867 hypothesis (DB only matches substrate.office.com) is in fact MATCHING this session at the host level — the problem is NOT a missing host pattern.",
+    "wss_path_observed": "/m365Copilot/Chathub/{oid}@{tid}",
+    "wss_host_observed": "substrate.office.com",
+    "wss_origin_header": "https://m365.cloud.microsoft",
+    "current_db_substrate_pattern_assumption": "substrate.office.com (host-only or /chathub/* style)",
+    "real_divergence_axis": "If DB pattern restricts on PATH (e.g. /chathub/ → match) — confirm; if PATH pattern is more specific (e.g. /substrate.office.com/sydney/* or /chathub/) it will MISS /m365Copilot/Chathub/.",
+    "recommended_domain_patterns_to_extend": [
+      "host=substrate.office.com path-prefix=/m365Copilot/Chathub/",
+      "host=substrate.office.com path-prefix=/m365Copilot/  (broader, future-proof for m365Copilot/* variants)",
+      "(reference) host=substrate.office.com path-prefix=/chathub/  — legacy BizChat route, keep alongside"
+    ],
+    "warning_implementation_axis_for_apf": "WSS s2c frames are SignalR type=1 target='update' with delta tokens in arguments[0].messages[].text AND arguments[0].messages[].adaptiveCards[].body[].text. Both paths must be rewritten/blocked. Final type=2 bundle has the same paths + the echoed user message at item.messages[0].text — useful for retrospective block detection.",
+    "additional_notes": [
+      "JWT access_token (audience=https://substrate.office.com/sydney) carries scp 'sydney.readwrite M365Chat.Read' — confirms substrate.office.com IS the canonical AI chat host even from the m365.cloud.microsoft frontend.",
+      "Trouter WSS (go.trouter.teams.microsoft.com/v4/c) is established but appears to be Teams presence/signaling, NOT the AI prompt/response stream.",
+      "Test result: PII prompt (880101-1234567) was NOT blocked by Microsoft side — Copilot answered with full 주민등록번호 structure decode (생년월일, 성별, 출생지역, 검증). This is the BASELINE for APF block expectation."
+    ]
+  },
+  "regression_observation_for_867": "Service responded successfully with PII decode (no provider-side block). APF must intercept at the WSS frame layer (substrate.office.com path /m365Copilot/Chathub/) — confirm DB pattern covers this path; if not, extend."
+}
