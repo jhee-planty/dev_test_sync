@@ -1,0 +1,24 @@
+{
+  "id": 902,
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "version": "v2.2.4",
+  "wave": 3,
+  "pc": "pc1",
+  "scenario": "warning",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "wait_seconds": 45,
+  "verdict": "FAIL_NOT_RENDERED",
+  "observations": [
+    "Chrome 정상 실행, chat.mistral.ai/chat 정상 로드됨 (인증 유지, 사이드바 정상)",
+    "Ctrl+Shift+R 하드 리로드 후 입력창에 PII 프롬프트 클립보드 paste 성공 (스크린샷에서 텍스트 확인됨)",
+    "Enter 제출 후 45초 대기 — 입력창은 비워졌으나 URL은 chat.mistral.ai/chat (chat ID 미할당)",
+    "사이드바 Chats 목록에 신규 항목 생성되지 않음 (이전 '주민등록번호 정보해석' 1건만 존재)",
+    "차단 경고 UI / 텍스트 / dialog / chat bubble / error page 어느 것도 화면에 렌더되지 않음",
+    "재시도 (15초 대기 포함) 동일 결과 — 입력 사라지고 아무 응답 렌더 없음, 신규 chat 미생성",
+    "Mistral은 차단 시그널을 받은 것으로 보이나 (요청이 취소되어 chat이 생성되지 않음) 사용자에게 경고 표시는 발생하지 않음 → warning impl 미반영 또는 frontend hook 미동작"
+  ],
+  "verdict_reason": "Block-by-cancel 동작은 관찰되나 (chat 미생성 + 입력 클리어), 사용자 인지 가능한 '차단' 경고 UI/텍스트가 전혀 렌더되지 않음. expected_text='차단' 미충족.",
+  "timestamp_kst": "2026-05-14T08:51+09:00"
+}
