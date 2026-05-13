@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T23:43:36Z",
+  "last_updated": "2026-05-13T23:44:35Z",
   "tasks": [
     {
       "id": "531",
@@ -3245,6 +3245,22 @@
       "created": "2026-05-13T23:43:36Z",
       "updated": "2026-05-13T23:43:36Z",
       "summary": "post mistral fix: path_patterns / + envelope INSERT mistral_warning_v1. Verify dispatcher fires + warning text renders in Le Chat. tag=v2.2.4-d29d868-postfix-wave3",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "903",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T23:44:35Z",
+      "updated": "2026-05-13T23:44:35Z",
+      "summary": "RETRY of #899 (FAIL_INVALID_TEST). windows-mcp Click coord format issue 재현 가능 — if PII 미제출 시 동일 INVALID_TEST. test PC manual prompt 입력 가능하면 시도. tag=v2.2.4-d29d868-postfix-wave3",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
