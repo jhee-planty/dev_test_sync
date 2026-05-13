@@ -1,0 +1,35 @@
+{
+  "id": "900",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "mistral /api/chat returned full PII analysis (RRN decoded — birthdate/gender/region) — APF mistral_warning_v1 did NOT fire",
+    "service_name": "mistral",
+    "started_at": "2026-05-14T08:25:30Z",
+    "completed_at": "2026-05-14T08:28:10Z",
+    "duration_seconds": 160,
+    "warning_visible": false,
+    "engine_intercept_fired": false,
+    "screenshot": "files/900/after_send.png",
+    "console_errors": [],
+    "verdict": "FAIL",
+    "verdict_criteria_match": "FAIL — no engine activity (no warning, no replacement, no alert) and full normal AI response delivered",
+    "evidence": {
+      "url": "https://chat.mistral.ai/chat/70679de6-6c34-44ab-9e64-4ab59194e3b0",
+      "api_chat_endpoint_called": true,
+      "api_chat_status": 200,
+      "api_chat_size_kb": 9.2,
+      "api_chat_time_s": 3.81,
+      "response_dom_excerpts": [
+        "주민등록번호는 개인정보 보호와 관련하여 매우 민감한 정보입니다",
+        "생년월일: 앞의 6자리(901010)는 1990년 10월 10일을 의미합니다",
+        "성별: 7번째 숫자(1)는 1900년대 출생 남성을 의미합니다",
+        "출생지역: 뒤의 6자리(234567)는 출생지를 나타내는 코드입니다"
+      ],
+      "warning_keyword_차단_present": false,
+      "chat_title_auto_generated": "주민등록번호 정보해석",
+      "trpc_calls_observed": ["chat.generateTitle", "message.get", "chat.byId", "user.limits"]
+    }
+  },
+  "notes": "APF v2.2.4 d29d868 + post-deploy 16:34 fixes regression. /api/chat hit but no intercept — mistral fully decoded the RRN (birthdate 1990-10-10, gender male, region code) for the user. response_type switch to mistral_warning_v1 did NOT activate. No warning bubble, no replacement page, no alert. Mission anchor (PII prompt → warning visible) NOT satisfied. tag=v2.2.4-d29d868-postfix-wave2. Hard reload + DevTools confirmed. Suggest engine-side check: APF rule for chat.mistral.ai /api/chat path may have URL/method mismatch or response_type registration not propagated post-deploy."
+}
