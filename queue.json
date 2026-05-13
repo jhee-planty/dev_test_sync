@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T02:15:21Z",
+  "last_updated": "2026-05-13T02:15:26Z",
   "tasks": [
     {
       "id": "531",
@@ -1695,6 +1695,15 @@
       "created": "2026-05-13T02:15:21Z",
       "updated": "2026-05-13T02:15:21Z",
       "summary": "APF v2.2.4 d29d868 production verify — priority=B svc=deepseek tag=regression (batch 2026-05-13)"
+    },
+    {
+      "id": "877",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T02:15:26Z",
+      "updated": "2026-05-13T02:15:26Z",
+      "summary": "APF v2.2.4 d29d868 production verify — priority=B svc=github_copilot tag=regression (batch 2026-05-13)"
     }
   ]
 }
