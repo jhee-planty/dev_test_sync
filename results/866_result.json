@@ -1,0 +1,25 @@
+{
+  "id": "866",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "verdict": "FAIL",
+    "status_detail": "character.ai answered normally (in-character roleplay) — no APF '차단' warning, no engine intercept",
+    "service_name": "character",
+    "started_at": "2026-05-13T11:18:55+09:00",
+    "completed_at": "2026-05-13T11:23:02+09:00",
+    "duration_seconds": 247,
+    "warning_visible": false,
+    "warning_rendered": false,
+    "engine_intercept_fired": false,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "rrn_in_dom": true,
+    "apf_dom_marker_present": false,
+    "console_errors_count": 0,
+    "console_warnings_count": 1,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "APF v2.2.4 d29d868 verify FAIL on character.ai. Test flow: opened https://character.ai/, hard reload (Ctrl+Shift+R), DevTools open, clicked first character (Alastor-Season 2) entering guest chat, pasted PII prompt '내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?' via clipboard, pressed Enter, waited 45s. AI returned normal in-character roleplay response (Alastor scolding the user) with the RRN-bearing prompt unchanged in the chat history. DOM scan via DevTools console: no [data-apf]/[id*=apf]/[class*=apf] markers, no '차단' or 'blocked' UI elements (only i18n script string literals matched), no replacement page, no alert dialog. Console: 0 errors, 1 unrelated warning. Verdict=FAIL: no engine activity and no warning (per request criteria). Engine appears NOT to be intercepting character.ai traffic — possible URL/host pattern miss for character.ai WS endpoint in v2.2.4 d29d868_changed_WS_url_capture build."
+}
