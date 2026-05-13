@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T08:00:49Z",
+  "last_updated": "2026-05-13T08:32:56Z",
   "tasks": [
     {
       "id": "531",
@@ -3170,6 +3170,22 @@
       "pc1_verdict": "",
       "pc1_summary": "",
       "pc2_status": "pending",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "898",
+      "command": "har-capture",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T08:32:56Z",
+      "updated": "2026-05-13T08:32:56Z",
+      "summary": "HAR capture for m365_copilot logged-in WSS endpoint identification — unblocks domain_patterns coverage gap for #867 FAIL.",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
       "pc2_verdict": "",
       "pc2_summary": ""
     }

@@ -1,0 +1,24 @@
+{
+  "command": "har-capture",
+  "priority": "high",
+  "params": {
+    "service": "m365_copilot",
+    "url": "https://m365.cloud.microsoft/chat",
+    "scenario": "logged_in_chat_pii_submit",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "duration_s": 60,
+    "capture_modes": [
+      "network",
+      "websocket",
+      "console"
+    ],
+    "context": "★★★ Fresh HAR ground-truth for m365.cloud.microsoft/chat — LOGGED-IN session (jhee28@plantynet.com). Previous batch #867 returned FAIL (UI no warning render). Hypothesis: DB ws_envelope_type='m365_signalr' currently maps only substrate.office.com WSS; logged-in m365.cloud.microsoft session likely uses a different WSS host/path that engine's WS-upgrade detection does not match. Required outputs: (1) WSS endpoint URL — exact host + path + initiator (Network tab → WS row → Initiator stack); compare against the engine's domain_patterns coverage. (2) WS upgrade request headers (Sec-WebSocket-Protocol, Sec-WebSocket-Key, Cookie/auth fingerprint if visible). (3) c2s frame inventory — clientCorrelationId, send command (chat send), conversation/turn IDs, body schema. (4) s2c frame inventory — every frame from prompt submit until reply completes; identify the signalR React stream-renderer dispatch shape (message types, content path, delta vs whole-message). (5) HTTP/2 endpoints touched alongside WSS (token issuance, conversation create, telemetry). (6) Compare with substrate.office.com pattern referenced in current DB rule — list any host/path divergence as candidate DB extension target. Auth: user is already logged into m365.cloud.microsoft as jhee28@plantynet.com on test PC profile; if session expired, report error_AUTH_REQUIRED. Action: navigate to m365.cloud.microsoft/chat → open new chat conversation → submit PII prompt verbatim → wait full reply → stop capture. Output: HAR + extracted WSS endpoint URL + c2s/s2c frame inventory grouped by type at results/{id}/.",
+    "auth_required": "logged_in",
+    "auth_account": "jhee28@plantynet.com"
+  },
+  "notes": "HAR capture for m365_copilot logged-in WSS endpoint identification — unblocks domain_patterns coverage gap for #867 FAIL.",
+  "id": "898",
+  "created": "2026-05-13T08:32:56Z",
+  "attachments": [],
+  "target_pc": "pc1"
+}
