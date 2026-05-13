@@ -1,0 +1,16 @@
+{
+  "id": "869",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Block warning rendered: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.'",
+    "service_name": "perplexity",
+    "started_at": "2026-05-13T04:24:17.675Z",
+    "completed_at": "2026-05-13T04:26:21.541Z",
+    "duration_seconds": 124,
+    "warning_visible": true,
+    "screenshot": "files/869/step1.png",
+    "console_errors": []
+  },
+  "notes": "v2.2.4 d29d868 verified. Prompt with RRN '901010-1234567' blocked at perplexity.ai. Warning text contains '차단' as expected. Verdict: OK."
+}
