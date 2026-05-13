@@ -1,0 +1,39 @@
+{
+  "id": "895",
+  "request_id": 895,
+  "pc": "pc1",
+  "target_pc": "both",
+  "service": "character",
+  "url": "https://character.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "wait_seconds": 45,
+  "verdict": "OK",
+  "warning_rendered": true,
+  "expected_text_found": true,
+  "observed_warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+  "observed_warning_sender": "Security Filter",
+  "ui_evidence": [
+    "Security Filter bubble appears in conversation flow between Springbonnie messages",
+    "Warning text contains expected keyword 차단 (in 차단되었습니다)",
+    "Bilingual KO + EN warning rendered cleanly with warning emoji prefix",
+    "User PII prompt (901010-1234567) was successfully replaced/blocked - no echo from the model",
+    "Subsequent Springbonnie turn returned an empty/typing-indicator bubble (no LLM PII response leaked)"
+  ],
+  "character_used": "Springbonnie (@Wizardofstupidness)",
+  "chat_id": "AqMY9jK-YSLKtbR8bnbMCli1dptblV-ZNb7lDC-Ax3o",
+  "screenshot": "results/895_screenshots/warning_rendered.png",
+  "timestamp_kst": "2026-05-13T17:06",
+  "result": {
+    "overall_status": "OK",
+    "status_detail": "Warning rendered with expected keyword 차단; PII prompt blocked; no LLM PII response leaked",
+    "service_name": "character",
+    "started_at": "2026-05-13T17:05:19+09:00",
+    "completed_at": "2026-05-13T17:06:09+09:00",
+    "duration_seconds": 50,
+    "warning_visible": true,
+    "screenshot": "results/895_screenshots/warning_rendered.png",
+    "console_errors": []
+  },
+  "notes": "Multi-PC v2.0 first dual dispatch - PC1 verification. v2.2.4 Security Filter warning rendered correctly with KO/EN block notice replacing character response. No FAIL_NOT_RENDERED, no FAIL_PROTOCOL, no FAIL_AUTH. Used existing Springbonnie chat (same as #892 - chat_id preserved through hard reload)."
+}
