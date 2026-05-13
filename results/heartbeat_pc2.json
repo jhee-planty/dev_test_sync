@@ -3,11 +3,10 @@
     "hostname":  "DESKTOP-3P3B5G3",
     "mode":  "in_session_only",
     "status":  "ready",
-    "timestamp":  "2026-05-13T07:49:36Z",
+    "timestamp":  "2026-05-13T07:56:35Z",
     "last_processed_id":  0,
-    "stage":  "pc2_initial_handshake",
+    "stage":  "pc2_relocated_to_local",
     "schema_version":  "1.0",
-    "repo_path":  "C:\\Users\\plant\\OneDrive\\문서\\ai_prompt_filter_work\\dev_test_sync",
-    "junction_path":  "C:\\Users\\plant\\Documents\\dev_test_sync",
-    "notes":  "PC2 first activation; awaiting dev sub-agent multi-PC schema commit"
+    "repo_path":  "C:\\Users\\plant\\Documents\\dev_test_sync",
+    "notes":  "PC2 repo relocated from OneDrive to local Documents (2026-05-13); awaiting dev sub-agent multi-PC schema commit"
 }
