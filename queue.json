@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T06:51:23Z",
+  "last_updated": "2026-05-13T06:51:32Z",
   "tasks": [
     {
       "id": "531",
@@ -1812,6 +1812,15 @@
       "created": "2026-05-13T06:51:23Z",
       "updated": "2026-05-13T06:51:23Z",
       "summary": "HAR re-capture for character WS s2c envelope identification — unblocks Phase 6 character iteration."
+    },
+    {
+      "id": "890",
+      "command": "har-capture",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T06:51:32Z",
+      "updated": "2026-05-13T06:51:32Z",
+      "summary": "HAR capture for copilot guest-mode streaming endpoint identification — current rules miss this path."
     }
   ]
 }

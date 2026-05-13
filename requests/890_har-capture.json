@@ -1,0 +1,21 @@
+{
+  "command": "har-capture",
+  "priority": "high",
+  "params": {
+    "service": "copilot",
+    "url": "https://copilot.microsoft.com/",
+    "scenario": "guest_mode_pii_submit",
+    "prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?",
+    "duration_s": 60,
+    "capture_modes": [
+      "network",
+      "websocket",
+      "sse"
+    ],
+    "context": "★★★ Fresh HAR ground-truth for copilot.microsoft.com (consumer guest-mode). Previous batch (#886) returned FAIL — current APF rules likely do not match guest-mode endpoint. Required: (1) GUEST MODE only — do NOT log in (close any signed-in session, use incognito or fresh profile if needed). (2) Identify the streaming endpoint used in guest mode (SSE? WebSocket? Path? Hostname?). (3) Compare with logged-in copilot path — list both if observable, but primary target is GUEST. (4) Full request payload (method, headers including auth/cookie/sec-* fingerprint, body shape) + full response stream body (SSE chunks or WS frames). Action: visit copilot.microsoft.com WITHOUT signing in → submit PII prompt → capture until reply finishes. Output: HAR + identified streaming endpoint URL + request payload sample + response chunks sample at results/{id}/."
+  },
+  "notes": "HAR capture for copilot guest-mode streaming endpoint identification — current rules miss this path.",
+  "id": "890",
+  "created": "2026-05-13T06:51:32Z",
+  "attachments": []
+}
