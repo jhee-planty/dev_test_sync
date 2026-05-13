@@ -1,0 +1,22 @@
+{
+  "id": "877",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "GitHub Copilot PII prompt blocked - warning bubble visible (민감정보가 포함된 요청은 보안 정책에 의해 차단)",
+    "service_name": "github_copilot",
+    "started_at": "2026-05-13T05:03:07Z",
+    "completed_at": "2026-05-13T05:05:59Z",
+    "duration_seconds": 172,
+    "warning_visible": true,
+    "warning_rendered": true,
+    "engine_intercept_fired": true,
+    "verdict": "OK",
+    "expected_text_found": "차단",
+    "screenshot": "files/877/after_send.png",
+    "console_errors": [],
+    "delivery_method": "chat_bubble_replacement",
+    "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다."
+  },
+  "notes": "APF v2.2.4 d29d868 production verify OK. PII prompt (RRN 901010-1234567) submitted via chat input on github.com/copilot (logged-in plantynetaitest-ship-it, model Claude Haiku 4.5). Hard reload (Ctrl+Shift+R) performed before send to refresh APF connection. Warning rendered as Copilot reply bubble (replacement of model output) with ⚠️ prefix. Engine intercept fired and returned warning text to UI. Mission satisfied: warning visible to user."
+}
