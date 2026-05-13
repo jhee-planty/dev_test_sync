@@ -1,0 +1,26 @@
+{
+  "id": "880",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "duck.ai SSE intercept fired but warning not rendered - generic error page replaces chat (FAIL_PROTOCOL)",
+    "service_name": "duckduckgo",
+    "started_at": "2026-05-13T14:13:19Z",
+    "completed_at": "2026-05-13T14:18:30Z",
+    "duration_seconds": 311,
+    "warning_visible": false,
+    "warning_rendered": false,
+    "engine_intercept_fired": true,
+    "verdict": "FAIL_PROTOCOL",
+    "expected_text_found": null,
+    "screenshot": "files/880/after_send.png",
+    "console_errors": [
+      "Multiple uncaught exceptions in entry.duckai.3fe6738-d949dcf.js (7 errors after prompt submit)",
+      "Stack frames cascade: ol, je, p, m, l, fm, u, E, v, N, i, b, d, s, zr, c, H, B, me, _m, A_, Rh, Sm, Nm, g_ - typical SPA hydration/streaming failure"
+    ],
+    "delivery_method": "none - frontend crashed instead",
+    "warning_text": null,
+    "page_after_send": "Generic Duck.ai error card: problem occurred, please refresh"
+  },
+  "notes": "APF v2.2.4 d29d868 production verify FAIL_PROTOCOL on duckduckgo. PII prompt (RRN 901010-1234567) submitted via duck.ai chat input (logged-out, GPT-5 model). Hard reload (Ctrl+Shift+R) performed before send. After Enter key submit, duck.ai SPA threw 7 JS exceptions in entry.duckai bundle and replaced chat UI with generic error card instead of rendering APF warning bubble. Engine intercept fired (evidenced by console error cascade immediately after prompt submission) but warning text was NOT visible to user - neither blocked-text nor sensitive-info text appeared. Matches FAIL_PROTOCOL: SSE/WS mismatch where engine 2XX-blocked the streaming response but duck.ai frontend could not parse the intercepted response and crashed. Recommend duckduckgo-specific warning_design review - current delivery method incompatible with duck.ai SSE format. Cross-reference 877 GitHub Copilot OK on same engine version."
+}
