@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T07:37:20Z",
+  "last_updated": "2026-05-13T07:37:29Z",
   "tasks": [
     {
       "id": "531",
@@ -1839,6 +1839,15 @@
       "created": "2026-05-13T07:37:20Z",
       "updated": "2026-05-13T07:37:20Z",
       "summary": "v2.2.4 d29d868 + post-deploy 16:34 fixes verify (character envelope identity fields / copilot WSS envelope / cohere V2 schema) — priority=A svc=character tag=v2.2.4-d29d868-postfix"
+    },
+    {
+      "id": "893",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T07:37:29Z",
+      "updated": "2026-05-13T07:37:29Z",
+      "summary": "v2.2.4 d29d868 + post-deploy 16:34 fixes verify (character envelope identity fields / copilot WSS envelope / cohere V2 schema) — priority=A svc=copilot tag=v2.2.4-d29d868-postfix"
     }
   ]
 }
