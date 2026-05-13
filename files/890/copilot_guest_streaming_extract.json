@@ -1,0 +1,97 @@
+{
+  "streaming_endpoint_url": "wss://copilot.microsoft.com/c/api/chat?api-version=2&clientSessionId={uuid}",
+  "endpoint_hostname": "copilot.microsoft.com",
+  "endpoint_path": "/c/api/chat",
+  "endpoint_query_params": {
+    "api-version": "2",
+    "clientSessionId": "df2cdaf0-e932-45dd-abee-49589f5ad3be (per-session uuid)"
+  },
+  "http_method": "GET (WebSocket Upgrade)",
+  "content_type": "websocket (wss://) — JSON envelope `{\"event\":\"...\"}` per frame",
+  "transport": "WebSocket over TLS (wss)",
+  "websocket_subprotocol": null,
+  "status_code": 101,
+  "guest_mode_confirmed": true,
+  "guest_mode_evidence": {
+    "url_bar": "copilot.microsoft.com/chats/FeRQ47AUXJ1zxLEPoyUae",
+    "auth_cookie_value": "_C_Auth=; (EMPTY)",
+    "ui_state": "로그인 (Sign in) button visible at top-right; never clicked",
+    "incognito_window": true
+  },
+  "request_headers_sample": {
+    "Upgrade": "websocket",
+    "Connection": "Upgrade",
+    "Sec-WebSocket-Version": "13",
+    "Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+    "Sec-WebSocket-Key": "<base64 nonce>",
+    "Origin": "https://copilot.microsoft.com",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ... Chrome/148.0.0.0",
+    "Accept-Language": "ko-KR,ko;q=0.9",
+    "Cookie": "_C_Auth=; MUID=...; MUIDB=...; _EDGE_S=F=1&SID=...; _EDGE_V=1; _cf_bm=...; userSidebarOpen_cmc=close"
+  },
+  "response_headers_sample": {
+    "Upgrade": "websocket",
+    "Connection": "upgrade",
+    "Sec-WebSocket-Accept": "FCfKA58bvlLSCsvK8mrQkoBu/Tc=",
+    "Server": "cloudflare",
+    "CF-RAY": "9fafd1b1de34e9f7-ICN",
+    "X-Trace-Id": "e3c6836afea6ef2dbb131329e40348e8",
+    "Access-Control-Allow-Origin": "https://copilot.microsoft.com",
+    "Access-Control-Allow-Credentials": "true"
+  },
+  "request_body_sample": "n/a — WebSocket handshake has no request body; payload is sent as WS frames after upgrade",
+  "websocket_frame_protocol": {
+    "envelope": "JSON object with `event` discriminator field",
+    "client_to_server_events": ["setOptions", "reportLocalConsents", "send", "challengeResponse", "ping"],
+    "server_to_client_events": ["connected", "challenge", "pong"]
+  },
+  "request_frames_sample": [
+    {
+      "type": "send",
+      "frame": "{\"event\":\"setOptions\",\"supportedFeatures\":[\"partial-generated-images\",\"composer-prefill-conversation-action\",\"composer-send-conversation-action-v2\",\"session-duration-nudge\",\"compose-email-html\"],\"supportedCards\":[\"weather\",\"local\",\"image\",\"sports\",\"video\",\"healthcareEntity\",\"healthcareInfo\",\"chart\",...]}",
+      "note": "First WS frame after connect — sets capabilities"
+    },
+    {
+      "type": "send",
+      "frame": "{\"event\":\"reportLocalConsents\",\"grantedConsents\":[]}"
+    },
+    {
+      "type": "send",
+      "frame": "{\"event\":\"send\",\"conversationId\":\"FeRQ47AUXJ1zxLEPoyUae\",\"content\":[{\"type\":\"text\",\"text\":\"내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?\"}],\"mode\":\"smart\",\"context\":{}}",
+      "note": "★★★ KEY FRAME — this is the user-prompt PII payload. `send` event with `content[0].type=text` + `content[0].text=<prompt>`. APF rule must match this WS-frame text field."
+    },
+    {
+      "type": "send",
+      "frame": "{\"event\":\"challengeResponse\",\"token\":\"3002399751580331\",\"method\":\"hashcash\"}",
+      "note": "Hashcash proof-of-work response to server challenge — required before send is accepted"
+    },
+    {
+      "type": "send",
+      "frame": "{\"event\":\"ping\"}"
+    }
+  ],
+  "response_chunks_sample": [
+    "{\"event\":\"connected\",\"requestId\":\"e3c6836afea6ef2dbb131329e40348e8\",\"id\":\"0\"}",
+    "{\"event\":\"challenge\",\"method\":\"hashcash\",\"parameter\":\"cb095fe1ce7c394502c655bb74f2757514061b65e53da7d20c4c9cb5a7630e52:1\",\"id\":\"0.0001\"}",
+    "{\"event\":\"challenge\",\"method\":null,\"parameter\":null,\"id\":\"0.0002\"}",
+    "{\"event\":\"pong\",\"id\":\"0.0003\"}",
+    "{\"event\":\"pong\",\"id\":\"0.0004\"}"
+  ],
+  "anti_automation_observed": {
+    "cloudflare_turnstile_iframe": "사람인지 확인하십시오 (UI captcha — Cloudflare Turnstile, was shown but never solved during automation)",
+    "hashcash_protocol_challenge": "Server sent {\"event\":\"challenge\",\"method\":\"hashcash\",\"parameter\":\"<hash>:1\"} immediately after the send frame; further `challenge` frames continued — automation could not bypass",
+    "_cf_bm_cookie": "Cloudflare bot management cookie present in request headers",
+    "consequence": "No assistant response frames (no `messageStream`/`messageDelta`/`finalResponse`) were received because hashcash + Turnstile gating blocked further processing. The PII `send` frame WAS transmitted on the wire, but the server did not produce streaming content."
+  },
+  "logged_in_observed": false,
+  "apf_rule_target": {
+    "match_url_pattern": "wss://copilot.microsoft.com/c/api/chat",
+    "match_protocol": "WebSocket (HTTP 101 upgrade — NOT a plain XHR/Fetch POST)",
+    "match_payload_field": "WebSocket TEXT frame where JSON.event == \"send\" → JSON.content[].text",
+    "rationale_for_previous_miss": "Existing APF rules likely target HTTP POST request bodies on a /c/api/chats/... or REST-style /c/api/send path. The actual streaming/send transport is a single long-lived wss:// WebSocket where the PII text is buried inside a frame whose JSON envelope's `event` field is `send` and the user content sits at `content[0].text`. APF must inspect WS TEXT frames on this URL pattern, not HTTP POST bodies, for guest-mode copilot.microsoft.com."
+  },
+  "additional_endpoints_observed": [
+    {"url": "https://copilot.microsoft.com/c/api/clarity/signal", "method": "POST", "purpose": "MS Clarity telemetry"},
+    {"url": "https://copilot.microsoft.com/c/api/conversations/{convId}/autosuggest?query=", "method": "GET", "purpose": "input-suggestion fetch (XHR) — not the streaming path"}
+  ]
+}
