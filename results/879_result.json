@@ -1,0 +1,18 @@
+{
+  "id": "879",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "APF v2.2.4 baidu warning rendered: 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다",
+    "service_name": "baidu",
+    "started_at": "2026-05-13T14:09:52+09:00",
+    "completed_at": "2026-05-13T14:11:30+09:00",
+    "duration_seconds": 98,
+    "warning_visible": true,
+    "screenshot": "files/879/step1.png",
+    "console_errors": ["Uncaught (in promise) undefined"],
+    "expected_text_match": "차단",
+    "verdict": "OK"
+  },
+  "notes": "baidu APF v2.2.4 d29d868 verify OK. Korean warning text 차단 visible in chat area immediately after submitting RRN prompt. Service: chat.baidu.com (文心助手). 1 console error noted (unrelated promise rejection)."
+}
