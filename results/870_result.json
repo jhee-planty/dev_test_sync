@@ -1,0 +1,25 @@
+{
+  "id": "870",
+  "status": "done",
+  "result": {
+    "overall_status": "OK",
+    "verdict": "OK",
+    "status_detail": "chatgpt APF v2.2.4 d29d868 verify — APF block warning rendered cleanly to user. After submitting PII prompt (RRN 901010-1234567), ChatGPT response area displayed only the APF warning text: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (Sensitive information request blocked by security policy). User's PII prompt was echoed back as user message bubble, but no model response was generated — replaced entirely by warning. Warning text clearly contains expected '차단' keyword. Mission anchor (PII prompt → warning visible on user screen) FULLY satisfied.",
+    "service_name": "chatgpt",
+    "service_url": "https://chatgpt.com",
+    "test_url": "https://chatgpt.com",
+    "started_at": "2026-05-13T13:29:00+09:00",
+    "completed_at": "2026-05-13T13:30:30+09:00",
+    "duration_seconds": 90,
+    "warning_visible": true,
+    "warning_rendered": true,
+    "engine_intercept_fired": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "rrn_in_dom": true,
+    "apf_dom_marker_present": true,
+    "warning_text_observed": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "screenshot": "results/870_screenshots/after_block.png"
+  },
+  "notes": "Test flow: Switched to existing Chrome ChatGPT tab via Ctrl+L → typed https://chatgpt.com → Enter (page already cached, loaded in <8s). Anonymous (not logged in) — login wall did not block prompt submission. Composer (id=13, ContentEditable '#prompt-textarea' equivalent) accepted the PII prompt directly via windows-mcp Type with press_enter=true. Waited 15s for response. Snapshot+screenshot confirmed: assistant turn area shows ONLY the APF warning '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (no model-generated tokens, no fallback OpenAI error). User prompt bubble preserved. Verdict OK because: warning_visible=true, expected_text='차단' found in warning, engine_intercept_fired=true (APF replaced response), apf_dom_marker_present=true (warning is APF-injected, format matches APF block-page template '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다'). v2.2.4 d29d868 chatgpt warning rendering CONFIRMED working in anonymous chatgpt.com session."
+}
