@@ -1,0 +1,45 @@
+{
+  "streaming_endpoint_url": "https://api.cohere.com/v2/chat",
+  "content_type": "text/event-stream",
+  "request_method": "POST",
+  "request_body_schema": {
+    "messages": [{"role": "user", "content": [{"type": "text", "text": "..."}]}],
+    "temperature": 0.3,
+    "model": "command-a-03-2025",
+    "stream": true
+  },
+  "raw_chunks_sample": [
+    "event: stream-start\ndata: {\"event_type\":\"stream-start\",\"generation_id\":\"c192d162-c9d7-4eae-86af-65b0e8cea528\"}\n\n",
+    "event: text-generation\ndata: {\"event_type\":\"text-generation\",\"text\":\"⚠️ 명감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"}\n\n",
+    "event: stream-end\ndata: {\"event_type\":\"stream-end\",\"finish_reason\":\"COMPLETE\",\"response\":{\"text\":\"⚠️ 명감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"}}\n\n"
+  ],
+  "type_discriminant_field": "event_type",
+  "type_discriminant_alt_sse_header": "event",
+  "type_values_observed": [
+    "stream-start",
+    "text-generation",
+    "stream-end"
+  ],
+  "content_path": "data.text (for text-generation chunks); response object also has finish_reason and response.text in stream-end",
+  "required_fields_for_warning_chunk": [
+    "event_type=text-generation",
+    "text (the warning content string)"
+  ],
+  "critical_finding": {
+    "schema_mismatch": "Cohere PLAYGROUND FRONTEND expects V2 schema discriminant 'type' (e.g. message-start, content-delta, content-end, message-end) but the actual backend response from /v2/chat is V1 SSE schema using 'event_type' (stream-start, text-generation, stream-end). The APF warning was successfully streamed in V1 format but the V2 playground UI rejected it with '[error] response: Missing discriminant (\"type\")'.",
+    "warning_text_delivery_status": "Backend stream contained the warning text in V1 'text-generation' chunks, but playground UI did NOT render it because of the discriminant mismatch.",
+    "expected_v2_minimum_event_types": [
+      "message-start",
+      "content-start",
+      "content-delta",
+      "content-end",
+      "message-end"
+    ],
+    "expected_v2_content_path": "delta.message.content.text  (under content-delta event)",
+    "implication": "APF block path producing the warning needs to emit V2-schema SSE chunks (type=content-delta with delta.message.content[].text) for cohere playground UI to render the warning. V1 schema currently breaks the UI on this service."
+  },
+  "evidence_source_har": "files/891/cohere_playground_session.har",
+  "frontend_error_message_seen": "[error] response: Missing discriminant (\"type\")",
+  "model_used": "command-a-03-2025",
+  "captured_prompt": "내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어?"
+}
