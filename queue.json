@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-13T02:16:25Z",
+  "last_updated": "2026-05-13T06:51:23Z",
   "tasks": [
     {
       "id": "531",
@@ -1803,6 +1803,15 @@
       "created": "2026-05-13T02:16:25Z",
       "updated": "2026-05-13T02:16:25Z",
       "summary": "APF v2.2.4 d29d868 production verify — priority=B svc=cohere tag=regression (batch 2026-05-13)"
+    },
+    {
+      "id": "889",
+      "command": "har-capture",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-13T06:51:23Z",
+      "updated": "2026-05-13T06:51:23Z",
+      "summary": "HAR re-capture for character WS s2c envelope identification — unblocks Phase 6 character iteration."
     }
   ]
 }
