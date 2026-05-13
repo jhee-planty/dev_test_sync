@@ -28,6 +28,29 @@ $script:StateJson   = Join-Path $LocalArchive 'state.json'
 if (-not (Test-Path $LocalArchive)) { New-Item -ItemType Directory -Path $LocalArchive -Force | Out-Null }
 if (-not (Test-Path $ResultsDir))   { New-Item -ItemType Directory -Path $ResultsDir -Force | Out-Null }
 
+# --- WORKER_ID resolution (multi-PC support) ---
+# Priority:
+#   1. $env:TPW_WORKER_ID  (explicit override, e.g. "pc1" or "pc2")
+#   2. $LocalArchive\worker_id.txt  (persisted, one-line file)
+#   3. fallback "pc1" (legacy single-PC default — preserves backward compat)
+#
+# Allowed values: pc1, pc2 (extendable; lowercase ASCII).
+$script:WorkerId = $env:TPW_WORKER_ID
+if (-not $script:WorkerId) {
+    $widFile = Join-Path $LocalArchive 'worker_id.txt'
+    if (Test-Path $widFile) {
+        $script:WorkerId = (Get-Content $widFile -Raw).Trim()
+    }
+}
+if (-not $script:WorkerId) {
+    $script:WorkerId = 'pc1'  # legacy default
+}
+$script:WorkerId = $script:WorkerId.ToLower()
+if ($script:WorkerId -notmatch '^pc[0-9]+$') {
+    Write-Error "[test-pc-worker] invalid WORKER_ID: '$($script:WorkerId)' (expected pc1, pc2, ...)"
+    exit 2
+}
+
 function Write-TpwLog {
     param([string]$Msg)
     $ts = Get-Date -Format 'HH:mm:ss'

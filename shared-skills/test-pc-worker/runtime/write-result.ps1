@@ -1,6 +1,9 @@
-# write-result.ps1 -ReqId <id> -ResultJsonPath <path> [-Service <service>]
+# write-result.ps1 -ReqId <id> -ResultJsonPath <path> [-Service <service>] [-NoWorkerSuffix]
 # - Validates required fields (6 MUST fields in result.* nested)
-# - Writes results/{id}_result.json  (or results/{id}_{service}_result.json for batch)
+# - Writes results/{id}_result_{WorkerId}.json (multi-PC, default)
+#         or results/{id}_{service}_result_{WorkerId}.json (batch)
+#         or results/{id}_result.json (-NoWorkerSuffix for legacy behavior)
+# - Embeds worker_id into the result JSON itself for traceability.
 # - Updates state.json.last_processed_id
 # - Exit 0 success / exit 1 validation failure / exit 2 fatal
 
@@ -8,6 +11,7 @@ param(
     [Parameter(Mandatory=$true)][string]$ReqId,
     [Parameter(Mandatory=$true)][string]$ResultJsonPath,
     [string]$Service = '',
+    [switch]$NoWorkerSuffix,
     [string]$Base = ''
 )
 
@@ -42,11 +46,20 @@ $idNum = [int]$ReqId
 $id3 = '{0:D3}' -f $idNum
 $obj.id = $id3
 
-# Compute filename
-if ($Service) {
-    $fname = "${id3}_${Service}_result.json"
+# Embed worker_id into the result JSON (multi-PC traceability)
+$me = $script:WorkerId
+if ($obj.PSObject.Properties.Name -contains 'worker_id') {
+    $obj.worker_id = $me
 } else {
-    $fname = "${id3}_result.json"
+    $obj | Add-Member -NotePropertyName 'worker_id' -NotePropertyValue $me -Force
+}
+
+# Compute filename (with per-PC suffix unless -NoWorkerSuffix)
+$suffix = if ($NoWorkerSuffix) { '' } else { "_$me" }
+if ($Service) {
+    $fname = "${id3}_${Service}_result${suffix}.json"
+} else {
+    $fname = "${id3}_result${suffix}.json"
 }
 $target = Join-Path $script:ResultsDir $fname
 
@@ -55,7 +68,7 @@ $tmp = "$target.tmp"
 $obj | ConvertTo-Json -Depth 16 | Set-Content -Path $tmp -Encoding UTF8
 Move-Item -Path $tmp -Destination $target -Force
 
-Write-TpwLog "wrote $target"
+Write-TpwLog "wrote $target (worker_id=$me)"
 
 # Update state.last_processed_id if higher
 $state = Get-State

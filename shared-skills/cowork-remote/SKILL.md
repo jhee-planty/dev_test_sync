@@ -20,6 +20,61 @@ Dev PC 전용 micro-control skill. 결정론 runtime + Claude 판단 분리.
 - **쓰기 분리**: dev → `requests/`, test → `results/` (위반 금지)
 - **State**: `local_archive/state.json` (gitignored, dev 전용 필드)
 
+## Multi-PC Architecture (2026-05-13 — Dual verify + Union FAIL)
+
+본 skill 은 ≥1 대 Test PC 동시 운영 지원. 사용자가 새 PC 추가 시 `--target-pc both`
+로 dispatch 하면 두 PC 모두 같은 request 를 처리하고 각자 result 를 push.
+
+### 라우팅 키
+
+- **`target_pc`** ∈ `{pc1, pc2, both}` (Request JSON `.target_pc` + queue.json task field)
+- 각 Test PC 는 `TPW_WORKER_ID` env (또는 `local_archive/worker_id.txt`) 로 자기 ID 보유
+- Test PC scan 시 `target_pc IN (WORKER_ID, "both")` 만 pick up
+- 새 dispatch 의 default = `both` (Dual verify pattern). `CR_DEFAULT_TARGET_PC` env 로 override 가능
+
+### Per-PC status fields (queue.json task)
+
+```
+target_pc      : "pc1" | "pc2" | "both"
+pc1_status     : "pending" | "done" | "error" | "n/a"
+pc1_verdict    : ""        | "done"  | "error_*"
+pc1_summary    : ""        | <PC1 result summary>
+pc2_status / pc2_verdict / pc2_summary  (동일)
+status         : aggregate (union-FAIL — 어느 한 PC 라도 error 면 error)
+```
+
+### Union-FAIL aggregation rule (Dual verify strategy)
+
+| pc1 | pc2 | aggregate |
+|-----|-----|-----------|
+| any=error | * | **error** |
+| pending | done/n/a | pending |
+| done | pending | pending |
+| done | done | **done** |
+| done | n/a | done (single-PC) |
+| n/a | done | done (single-PC) |
+| n/a | n/a | pending |
+
+"all user environments" mission 충족 = 양 PC 모두 done. PC 둘 중 하나라도
+warning 미표시 → 운영 환경 차이 (login state / CDN edge / browser fingerprint)
+때문일 수 있으므로 robust pass 아님 (사용자 정의).
+
+### Result file naming
+
+| File | When |
+|------|------|
+| `{id}_result_{pc}.json` | Multi-PC (default) — pc ∈ {pc1, pc2, ...} |
+| `{id}_{service}_result_{pc}.json` | Batch fan-out per-PC |
+| `{id}_result.json` | Legacy single-PC (pre-multipc, 또는 `-NoWorkerSuffix`) |
+
+### Heartbeat
+
+- `results/heartbeat_{pc}.json` (PC 별)
+- Legacy `results/heartbeat.json` 은 호환 유지 (active PC 가 push 안 함)
+- Dev 측 `bash $RT_DIR/list-workers.sh` 로 live worker list 조회
+
+---
+
 ## Runtime 호출 규약
 
 본 skill 의 모든 결정론 작업은 `$SKILL_DIR/runtime/` 또는 프로젝트 루트의 `runtime/cowork-remote/` 의 bash script 를 통해 수행.
@@ -42,10 +97,13 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 **흐름**:
 1. Claude: 자연어 → `command` + `params` 추론
 2. 임시 JSON 파일 생성 (`/tmp/req-draft-XXX.json`) — schema 는 §Request Schema 참조
-3. Runtime 실행: `bash $RT_DIR/push-request.sh /tmp/req-draft-XXX.json`
+3. Routing decision: dual verify 가 default → `--target-pc both`. 사용자가
+   특정 PC 명시 시 (`pc1` 만 / `pc2` 만 / 한쪽 down) → 해당 값 전달.
+4. Runtime 실행: `bash $RT_DIR/push-request.sh /tmp/req-draft-XXX.json [--target-pc both|pc1|pc2]`
    - ID 자동 할당, rate limit gate (pending ≤ 2 확인), requests/ copy, queue.json append, git push (3-retry)
+   - target_pc 가 request JSON + queue.json 두 곳에 기록됨
    - exit 0 = 성공 + 할당된 ID stdout / exit 1 = rate limit 초과 / exit 2 = fatal
-4. 사용자에게 보고: "작업 #{id} 전송 완료"
+5. 사용자에게 보고: "작업 #{id} 전송 완료 (target=both)"
 
 **Claude 판단 부분** (자연어 → JSON):
 - `service` 추출 (gemini/chatgpt/claude/deepseek/…)
@@ -58,16 +116,26 @@ RT_DIR="${RT_DIR:-$SKILL_DIR/runtime}"
 
 **Trigger**: "결과 확인해줘", "새 결과 왔어?", "폴링 한번 돌려줘" 등.
 
-**흐름**:
-1. Runtime: `bash $RT_DIR/scan-results.sh` — git pull + filesystem scan + 새 결과 ID 목록 stdout (newline separated)
-2. 새 결과 없음 (stdout empty) → "대기 중" 짧게 보고 + 종료 (추가 polling 여부는 사용자 지시)
-3. 새 결과 있음 → **각 ID 별로 아래 루프**:
-   a. `cat $GIT_SYNC_REPO/results/{id}_result.json` 읽기
+**흐름** (Multi-PC mode — recommended):
+1. Runtime: `bash $RT_DIR/scan-results.sh --mode pairs` — git pull + filesystem scan
+   - stdout: `{ID3} {pc}` 한 줄씩 (pc ∈ {pc1, pc2, legacy})
+   - 같은 ID 가 두 PC 에서 result 푸시한 경우 두 줄 emit
+2. 새 결과 없음 → "대기 중" 짧게 보고 + 종료
+3. 새 결과 있음 → **각 (id, pc) tuple 별로 아래 루프**:
+   a. result file path:
+      - pc1/pc2 → `results/{id}_result_{pc}.json` (또는 `{id}_{service}_result_{pc}.json`)
+      - legacy → `results/{id}_result.json`
    b. **Claude 판단** (§Result Classification 가이드) — verdict ∈ `{done, error_PROTOCOL_MISMATCH, error_NOT_RENDERED, error_SERVICE_CHANGED, error_AUTH_REQUIRED, error_INFRASTRUCTURE}`
-   c. Runtime: `bash $RT_DIR/update-queue.sh {id} {verdict} "{summary}"`
-   d. Runtime: `bash $RT_DIR/archive-completed.sh {id}` (request+result → local_archive/YYYY-MM-DD/)
-   e. (옵션) Runtime: `bash $RT_DIR/notify.sh "APF" "#{id} {verdict}"` — 핵심 이벤트만
-4. 사용자에게 요약 보고 : 처리된 ID 들 + verdict 들
+   c. Runtime: `bash $RT_DIR/update-queue.sh {id} {verdict} "{summary}" --pc {pc}`
+      - per-PC field 갱신 + aggregate `.status` union-FAIL 재계산
+      - legacy entry 는 `--pc` 생략 (기존 동작)
+   d. 두 PC 모두 도착하여 aggregate 가 final (done/error) 이 되면:
+      `bash $RT_DIR/archive-completed.sh {id}` (request + 모든 result_* + screenshots → archive)
+   e. (옵션) `bash $RT_DIR/notify.sh "APF" "#{id} {pc}={verdict}"`
+4. 사용자에게 요약 보고 : 처리된 (id, pc) tuple + per-PC verdict + aggregate
+
+**Legacy flat mode** (back-compat): `scan-results.sh` (no `--mode`) → ID-only stdout.
+이 경우 같은 ID 의 per-PC result 는 dev 가 직접 enumerate.
 
 **중요**:
 - 응답 대기 중 자동 STALLED 에스컬레이션 **없음**. 결과 안 오면 계속 scan 반복 (호출자 루프 책임).

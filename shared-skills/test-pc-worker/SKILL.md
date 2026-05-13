@@ -24,6 +24,36 @@ Test PC (Windows) 전용 micro-control skill. Pair of `cowork-remote` (dev 쪽).
 - **쓰기 규칙**: `results/` 에만 write. `requests/`, `queue.json` 수정 금지.
 - **State**: `local_archive/state.json` — `{last_processed_id, last_delivered_id, updated_at, schema_version}`
 
+## Multi-PC 운영 (2026-05-13)
+
+본 worker 는 **PC 별로 별도 ID** (`WORKER_ID`) 를 갖고, dev 가 보낸 request 의
+`target_pc` 가 자기 ID 또는 `"both"` 인 것만 pick up 한다. cowork-remote 의
+Dual verify + Union FAIL strategy 와 짝.
+
+### WORKER_ID 해석 순위
+
+1. `$env:TPW_WORKER_ID` — 세션 시작 시 explicit env (예: `setx TPW_WORKER_ID pc2`)
+2. `$LocalArchive\worker_id.txt` (1-line file) — 영속화
+3. fallback `pc1` (legacy single-PC 호환)
+
+허용 값: `pc1`, `pc2`, …(소문자 ASCII, `^pc[0-9]+$`)
+
+### 효과
+
+- `scan-requests.ps1` 가 `target_pc ∈ {WORKER_ID, "both"}` 만 처리. 그 외는 skip
+  (반대편 PC 가 처리). target_pc 누락된 legacy request 는 `pc1` 으로 간주.
+- `write-result.ps1` 가 `results/{id}_result_{WORKER_ID}.json` 으로 저장.
+  Service-tagged batch 면 `{id}_{service}_result_{WORKER_ID}.json`.
+- `push-result.ps1` 가 `results/heartbeat_{WORKER_ID}.json` 작성 + commit message
+  에 `[worker]` prefix 포함.
+- Result JSON 에 `worker_id` 필드 자동 embed (dev 측 traceability).
+
+### 운영 권장
+
+- 새 PC 활성화 시 `setx TPW_WORKER_ID pc2` (영속 env) 또는
+  `Set-Content worker_id.txt 'pc2'` 후 PowerShell 세션 재시작.
+- 두 PC 동시 운영 시 polling cadence 동일 (60s 기본). 각 PC 가 자기 heartbeat 만 write.
+
 ## Runtime 호출 규약
 
 모든 결정론 작업은 PowerShell script via `windows-mcp` PowerShell tool (또는 Bash):

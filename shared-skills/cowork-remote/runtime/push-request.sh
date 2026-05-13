@@ -1,21 +1,59 @@
 #!/usr/bin/env bash
-# push-request.sh <request-json-path>
+# push-request.sh <request-json-path> [--target-pc pc1|pc2|both]
 # - Validates JSON
 # - Assigns next ID (max requests/*+local_archive/**/* + 1)
 # - Enforces rate limit (filesystem pending ≤ 2)
-# - Writes requests/{id}_{command}.json
-# - Appends to queue.json
+# - Writes requests/{id}_{command}.json (single entry, target_pc field embedded)
+# - Appends to queue.json with per-PC status fields
 # - git add/commit/push with 3-retry
 # - stdout: assigned ID on success
 # - exit 0 success / exit 1 recoverable (rate-limit / push-fail) / exit 2 fatal
+#
+# Multi-PC routing (--target-pc):
+#   pc1  → only PC1 picks up    (queue: pc1_status=pending, pc2_status=n/a)
+#   pc2  → only PC2 picks up    (queue: pc1_status=n/a,    pc2_status=pending)
+#   both → both PCs pick up     (queue: pc1_status=pending, pc2_status=pending) [default]
+# Each Test PC filters by WORKER_ID matching target_pc OR "both".
 
 set -eu
 # shellcheck disable=SC1091
 source "$(dirname "$0")/common.sh"
 
-[[ $# -ge 1 ]] || cr_die "usage: push-request.sh <request-json-path>"
-DRAFT="$1"
+# --- arg parse ---
+DRAFT=""
+TARGET_PC="${CR_DEFAULT_TARGET_PC:-both}"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --target-pc)
+            TARGET_PC="$2"; shift 2 ;;
+        --target-pc=*)
+            TARGET_PC="${1#*=}"; shift ;;
+        -h|--help)
+            echo "usage: push-request.sh <request-json-path> [--target-pc pc1|pc2|both]" >&2
+            exit 0 ;;
+        -*)
+            cr_die "unknown option: $1" ;;
+        *)
+            if [[ -z "$DRAFT" ]]; then DRAFT="$1"; else cr_die "unexpected positional arg: $1"; fi
+            shift ;;
+    esac
+done
+
+[[ -n "$DRAFT" ]] || cr_die "usage: push-request.sh <request-json-path> [--target-pc pc1|pc2|both]"
 [[ -f "$DRAFT" ]] || cr_die "draft JSON not found: $DRAFT"
+case "$TARGET_PC" in
+    pc1|pc2|both) : ;;
+    *) cr_die "invalid --target-pc: '$TARGET_PC' (must be pc1|pc2|both)" ;;
+esac
+
+# Derive per-PC initial status
+if [[ "$TARGET_PC" == "pc1" ]]; then
+    PC1_INIT="pending"; PC2_INIT="n/a"
+elif [[ "$TARGET_PC" == "pc2" ]]; then
+    PC1_INIT="n/a"; PC2_INIT="pending"
+else
+    PC1_INIT="pending"; PC2_INIT="pending"
+fi
 
 # 1. Validate JSON + required fields
 command=$(jq -r '.command // empty' "$DRAFT")
@@ -24,9 +62,15 @@ params=$(jq -c '.params // {}' "$DRAFT")
 [[ -n "$params" ]] || cr_die "missing .params in draft"
 
 # 2. Rate-limit gate
-#    pending = (requests/{id}_*.json ids) - (results/{id}_result.json ids)
+#    pending = (requests/{id}_*.json ids) - (results/{id}*_result*.json ids)
+#    Multi-PC note: a request with target_pc=both is "pending" until BOTH PCs
+#    have pushed a result. Rate-limit uses union (id NOT covered by ANY result
+#    file is pending). This conservatively limits new dispatches when at least
+#    one PC is lagging — fine for dual-verify cadence.
 REQ_ID_LIST=$(ls "$REQUESTS_DIR"/*.json 2>/dev/null | xargs -n1 -I{} basename {} | sed -nE 's/^0*([0-9]+)_.*\.json$/\1/p' | sort -un)
-RES_ID_LIST=$(ls "$RESULTS_DIR"/*_result.json 2>/dev/null | xargs -n1 -I{} basename {} | sed -nE 's/^0*([0-9]+)_.*_result\.json$/\1/p; s/^0*([0-9]+)_result\.json$/\1/p' | sort -un)
+# Accept legacy {id}_result.json, service-tagged {id}_{svc}_result.json,
+# and new multi-PC {id}[_..]_result_{pc}.json
+RES_ID_LIST=$(ls "$RESULTS_DIR"/*_result*.json 2>/dev/null | xargs -n1 -I{} basename {} | sed -nE 's/^0*([0-9]+)_.*_result(_[a-z0-9]+)?\.json$/\1/p; s/^0*([0-9]+)_result(_[a-z0-9]+)?\.json$/\1/p' | sort -un)
 
 PENDING_IDS=""
 PENDING_COUNT=0
@@ -58,26 +102,33 @@ done < <(find "$REQUESTS_DIR" "$LOCAL_ARCHIVE" -maxdepth 3 -name '[0-9]*_*.json'
 NEXT_ID=$((MAX_ID + 1))
 ID3=$(printf '%03d' "$NEXT_ID")
 
-# 4. Write final request JSON
+# 4. Write final request JSON (embed target_pc for Test PC filtering)
 NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 TARGET="$REQUESTS_DIR/${ID3}_${command}.json"
-jq --arg id "$ID3" --arg created "$NOW" \
-   '.id = $id | .created = $created | .priority = (.priority // "normal") | .attachments = (.attachments // []) | .notes = (.notes // "")' \
+jq --arg id "$ID3" --arg created "$NOW" --arg tpc "$TARGET_PC" \
+   '.id = $id | .created = $created | .priority = (.priority // "normal") | .attachments = (.attachments // []) | .notes = (.notes // "") | .target_pc = $tpc' \
    "$DRAFT" > "$TARGET"
-cr_log "wrote $TARGET"
+cr_log "wrote $TARGET (target_pc=${TARGET_PC})"
 
-# 5. Append to queue.json
+# 5. Append to queue.json with per-PC status fields
 if [[ ! -f "$QUEUE_JSON" ]]; then
-    echo '{"last_updated":"","tasks":[]}' > "$QUEUE_JSON"
+    echo '{"last_updated":"","tasks":[],"schema_version":"2.0-multi-pc"}' > "$QUEUE_JSON"
 fi
 SUMMARY=$(jq -r '.notes // empty' "$DRAFT")
 [[ -z "$SUMMARY" ]] && SUMMARY="${command} request"
 tmpq=$(mktemp)
 jq --arg id "$ID3" --arg cmd "$command" --arg created "$NOW" --arg sum "$SUMMARY" \
-   '.tasks += [{id:$id, command:$cmd, to:"test", status:"pending", created:$created, updated:$created, summary:$sum}] | .last_updated = $created' \
+   --arg tpc "$TARGET_PC" --arg p1 "$PC1_INIT" --arg p2 "$PC2_INIT" \
+   '.tasks += [{
+        id:$id, command:$cmd, to:"test", status:"pending",
+        created:$created, updated:$created, summary:$sum,
+        target_pc:$tpc,
+        pc1_status:$p1, pc1_verdict:"", pc1_summary:"",
+        pc2_status:$p2, pc2_verdict:"", pc2_summary:""
+    }] | .last_updated = $created' \
    "$QUEUE_JSON" > "$tmpq"
 mv "$tmpq" "$QUEUE_JSON"
-cr_log "queue.json updated with pending ${ID3}"
+cr_log "queue.json updated: ${ID3} target_pc=${TARGET_PC} pc1=${PC1_INIT} pc2=${PC2_INIT}"
 
 # 6. state.json last_request_id
 cr_state_set "last_request_id" "$NEXT_ID"

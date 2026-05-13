@@ -24,15 +24,21 @@ for f in "$REQUESTS_DIR/${ID3}"_*.json; do
     cr_log "archived: $(basename "$f")"
     MOVED=$((MOVED+1))
 done
-# Results (may be multiple: batch fan-out)
-for f in "$RESULTS_DIR/${ID3}"_*_result.json "$RESULTS_DIR/${ID3}_result.json"; do
+# Results (may be multiple: batch fan-out + per-PC fan-out)
+#   legacy:    {id}_result.json
+#   batch:     {id}_{service}_result.json
+#   multi-PC:  {id}_result_{pc}.json  or  {id}_{service}_result_{pc}.json
+for f in "$RESULTS_DIR/${ID3}"_*_result.json \
+         "$RESULTS_DIR/${ID3}_result.json" \
+         "$RESULTS_DIR/${ID3}"_*_result_*.json \
+         "$RESULTS_DIR/${ID3}_result_"*.json; do
     [[ -f "$f" ]] || continue
     mv "$f" "$DATE_DIR/"
     cr_log "archived: $(basename "$f")"
     MOVED=$((MOVED+1))
 done
-# Attached files
-for d in "$REQUESTS_DIR/files/${ID3}" "$RESULTS_DIR/files/${ID3}"; do
+# Attached files (incl. {id}_screenshots dir produced by Test PC)
+for d in "$REQUESTS_DIR/files/${ID3}" "$RESULTS_DIR/files/${ID3}" "$RESULTS_DIR/${ID3}_screenshots"; do
     [[ -d "$d" ]] || continue
     mv "$d" "$DATE_DIR/"
     cr_log "archived dir: $(basename "$d")"
