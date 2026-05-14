@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T00:46:05Z",
+  "last_updated": "2026-05-14T00:46:11Z",
   "tasks": [
     {
       "id": "531",
@@ -3420,6 +3420,22 @@
       "status": "pending",
       "created": "2026-05-14T00:46:05Z",
       "updated": "2026-05-14T00:46:05Z",
+      "summary": "PC2 full re-test post user setup (network routing + IPv6 + visible_tls reload). 이전 #895-897 FAIL_AUTH/FAIL_NOT_FIRED = reference only (setup 미적용 시점). Claude-in-chrome MCP based test. [Priority A (engine fix verify / dual cross-env)] tag=v2.2.4-d29d868-postfix-pc2-full-rerun",
+      "target_pc": "pc2",
+      "pc1_status": "n/a",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "pending",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "914",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T00:46:11Z",
+      "updated": "2026-05-14T00:46:11Z",
       "summary": "PC2 full re-test post user setup (network routing + IPv6 + visible_tls reload). 이전 #895-897 FAIL_AUTH/FAIL_NOT_FIRED = reference only (setup 미적용 시점). Claude-in-chrome MCP based test. [Priority A (engine fix verify / dual cross-env)] tag=v2.2.4-d29d868-postfix-pc2-full-rerun",
       "target_pc": "pc2",
       "pc1_status": "n/a",
