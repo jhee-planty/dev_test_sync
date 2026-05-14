@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T07:51:59Z",
+  "last_updated": "2026-05-14T08:22:54Z",
   "tasks": [
     {
       "id": "531",
@@ -4033,6 +4033,22 @@
       "created": "2026-05-14T07:51:59Z",
       "updated": "2026-05-14T07:51:59Z",
       "summary": "Phase 1 HAR capture — chatglm proprietary SSE schema discovery for envelope_template fix (ChatGLM FAIL_NOT_RENDERED root cause: envelope_schema_mismatch sub-agent aff415ad1accb62b9).",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "949",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T08:22:54Z",
+      "updated": "2026-05-14T08:22:54Z",
+      "summary": "check-warning request",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
