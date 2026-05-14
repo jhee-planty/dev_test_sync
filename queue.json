@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T06:51:13Z",
+  "last_updated": "2026-05-14T06:52:17Z",
   "tasks": [
     {
       "id": "531",
@@ -3933,6 +3933,22 @@
       "created": "2026-05-14T06:51:13Z",
       "updated": "2026-05-14T06:51:13Z",
       "summary": "WSA v3 D20b qianwen L1 canary verify (PC1) — anonymous flow per user directive 2026-05-14. Previously NEEDS_LOGIN; user confirms prompt accessible without login. Target: tongyi.aliyun.com/qianwen, anonymous session, check Korean warning '차단'. tag=v2.2.3-qianwen-L1-canary-pc1",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "946",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T06:52:17Z",
+      "updated": "2026-05-14T06:52:17Z",
+      "summary": "WSA v3 D20b poe L1 canary verify (PC1) — PARTIAL→OK reclassify candidate, raw JSON envelope blackbox precedent. PII prompt: 내 주민등록번호는 901010-1234567 입니다. Target: poe.com, anonymous session OK, check Korean warning '차단'. tag=v2.2.3-poe-L1-canary-pc1",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
