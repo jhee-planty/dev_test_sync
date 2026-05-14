@@ -5,27 +5,36 @@
     "target_pc":  "both",
     "service":  "copilot",
     "url":  "https://copilot.microsoft.com/",
-    "prompt":  "??二쇰??깅줉踰덊샇??901010-1234567 ?낅땲?? ?닿구濡?臾댁뾿???????덈굹??",
-    "expected_text":  "李⑤떒",
+    "prompt":  "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text":  "차단",
     "wait_seconds":  45,
-    "verdict":  "FAIL_AUTH",
+    "verdict":  "FAIL",
     "warning_rendered":  false,
-    "engine_intercept_fired":  "not_attempted",
+    "engine_intercept_fired":  false,
     "expected_text_found":  false,
+    "ui_evidence":  [
+                        "User logged into Microsoft account, profile completion done since first attempt",
+                        "Hard reload (Ctrl+Shift+R) executed before prompt submission",
+                        "PII prompt sent successfully — chat URL changed to copilot.microsoft.com/chats/dXtm6PqvzsJ9y5ZzaE8sU",
+                        "Copilot responded with detailed PII decode: 출생 연도(90→1990), 출생 월일(1010→10/10), 성별 및 세대 구분(1→1900s male), 지역 코드, 검증 번호",
+                        "Copilot summary: \u0027이 번호로 출생일, 성별, 출생 세대, 출생 신고 지역 정도를 알 수 있습니다\u0027",
+                        "No 차단 / 보안 정책 / warning bubble anywhere in DOM",
+                        "PII leak occurred — APF did not intercept WSS chat envelope on PC2"
+                    ],
     "status":  "error",
     "result":  {
-                   "overall_status":  "BLOCKED",
-                   "status_detail":  "Microsoft account requires profile completion (birthday + country) before Copilot chat is usable. Submitting prompt redirected to account-setup form, never reached chat backend or APF.",
+                   "overall_status":  "FAIL",
+                   "status_detail":  "Copilot responded with detailed RRN decode (year/month/day/sex/region) — APF intercept did NOT fire on PC2. No 차단 text. Confirms PC2 routing bypass pattern from 895.",
                    "service_name":  "copilot",
-                   "started_at":  "2026-05-14T00:13:35Z",
-                   "completed_at":  "2026-05-14T00:15:59Z",
-                   "duration_seconds":  144,
+                   "started_at":  "2026-05-14T00:26:00Z",
+                   "completed_at":  "2026-05-14T00:29:15Z",
+                   "duration_seconds":  195,
                    "warning_visible":  false,
                    "screenshot":  "",
                    "console_errors":  [
 
                                       ]
                },
-    "notes":  "PC2 cross-env verify (Multi-PC v2.0 first dual dispatch ??copilot WSS investigation per prev #893 FAIL). Cannot diagnose WSS envelope/protocol mismatch from this PC2 session: account-details onboarding form (?앹씪/援??) intercepts before the prompt reaches Copilot\u0027s chat backend. No /chat/* or /sydney/* network request emitted post-Enter. APF intercept never had a chance to fire on PC2. Required to unblock: complete MS account profile in this Chrome instance, then re-dispatch 896. Browser automation via Claude_in_Chrome substitute.",
+    "notes":  "PC2 retry after MS account profile completion. Critical finding: not only did APF fail to intercept, the model actively decoded the PII structure and explained what info can be derived from the RRN — exact data leak the APF/VT pair is supposed to prevent. Strongly corroborates 895 finding that PC2 Chrome traffic is NOT going through the Etap APF bridge. Dev next: confirm PC2 NIC/route toward Dell bridge; check etapcomm stats for copilot.microsoft.com from PC2 IP; verify module.xml APF enable for PC2 subnet. WSS envelope path from 893 PC1 FAIL irrelevant here — PC2 didn\u0027t even reach the engine. Browser automation via Claude_in_Chrome substitute.",
     "worker_id":  "pc2"
 }
