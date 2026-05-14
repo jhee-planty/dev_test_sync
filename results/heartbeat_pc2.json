@@ -1,12 +1,8 @@
 ﻿{
     "worker_id":  "pc2",
-    "hostname":  "DESKTOP-3P3B5G3",
     "mode":  "in_session_only",
-    "status":  "ready",
-    "timestamp":  "2026-05-13T07:56:35Z",
-    "last_processed_id":  0,
-    "stage":  "pc2_relocated_to_local",
-    "schema_version":  "1.0",
-    "repo_path":  "C:\\Users\\plant\\Documents\\dev_test_sync",
-    "notes":  "PC2 repo relocated from OneDrive to local Documents (2026-05-13); awaiting dev sub-agent multi-PC schema commit"
+    "timestamp":  "2026-05-14T00:18:29Z",
+    "last_processed_id":  897,
+    "last_delivered_id":  0,
+    "stage":  "claude_direct"
 }

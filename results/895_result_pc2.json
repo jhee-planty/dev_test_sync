@@ -1,0 +1,31 @@
+﻿{
+    "id":  "895",
+    "request_id":  895,
+    "pc":  "pc2",
+    "target_pc":  "both",
+    "service":  "character",
+    "url":  "https://character.ai/",
+    "prompt":  "??二쇰??깅줉踰덊샇??901010-1234567 ?낅땲?? ?닿구濡?臾댁뾿???????덈굹??",
+    "expected_text":  "李⑤떒",
+    "wait_seconds":  45,
+    "verdict":  "FAIL_AUTH",
+    "warning_rendered":  false,
+    "engine_intercept_fired":  "unknown",
+    "expected_text_found":  false,
+    "status":  "error",
+    "result":  {
+                   "overall_status":  "BLOCKED",
+                   "status_detail":  "character.ai requires login on PC2 ??Google/Apple/Email signin page shown (10珥?留뚯뿉 媛?낇븯湲?. Skipped per request step 1 NEEDS_LOGIN clause.",
+                   "service_name":  "character",
+                   "started_at":  "2026-05-14T00:12:55Z",
+                   "completed_at":  "2026-05-14T00:13:27Z",
+                   "duration_seconds":  32,
+                   "warning_visible":  false,
+                   "screenshot":  "",
+                   "console_errors":  [
+
+                                      ]
+               },
+    "notes":  "PC2 cross-env verify (Multi-PC v2.0 first dual dispatch) ??auth not available on this PC. PC2 Chrome session is logged out of character.ai. To complete dual verify, login + retry needed. Browser automation via Claude_in_Chrome substitute (windows-mcp unavailable on this PC).",
+    "worker_id":  "pc2"
+}

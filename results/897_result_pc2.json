@@ -1,0 +1,31 @@
+﻿{
+    "id":  "897",
+    "request_id":  897,
+    "pc":  "pc2",
+    "target_pc":  "both",
+    "service":  "cohere",
+    "url":  "https://coral.cohere.com/",
+    "prompt":  "??二쇰??깅줉踰덊샇??901010-1234567 ?낅땲?? ?닿구濡?臾댁뾿???????덈굹??",
+    "expected_text":  "李⑤떒",
+    "wait_seconds":  45,
+    "verdict":  "FAIL_AUTH",
+    "warning_rendered":  false,
+    "engine_intercept_fired":  "not_attempted",
+    "expected_text_found":  false,
+    "status":  "error",
+    "result":  {
+                   "overall_status":  "BLOCKED",
+                   "status_detail":  "coral.cohere.com redirects to dashboard.cohere.com/welcome/login ??PC2 Chrome session is logged out of Cohere. Skipped per request step 1 NEEDS_LOGIN clause.",
+                   "service_name":  "cohere",
+                   "started_at":  "2026-05-14T00:16:30Z",
+                   "completed_at":  "2026-05-14T00:17:30Z",
+                   "duration_seconds":  60,
+                   "warning_visible":  false,
+                   "screenshot":  "",
+                   "console_errors":  [
+
+                                      ]
+               },
+    "notes":  "PC2 cross-env verify (Multi-PC v2.0 first dual dispatch ??Cohere V2 schema validation per prev #894 OK on PC1). V2 schema dispatch path cannot be exercised from PC2 without login (Google/GitHub SSO or email+password). To unblock: log in to Cohere in this Chrome instance, then re-dispatch 897. Browser automation via Claude_in_Chrome substitute.",
+    "worker_id":  "pc2"
+}

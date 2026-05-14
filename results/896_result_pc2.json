@@ -1,0 +1,31 @@
+﻿{
+    "id":  "896",
+    "request_id":  896,
+    "pc":  "pc2",
+    "target_pc":  "both",
+    "service":  "copilot",
+    "url":  "https://copilot.microsoft.com/",
+    "prompt":  "??二쇰??깅줉踰덊샇??901010-1234567 ?낅땲?? ?닿구濡?臾댁뾿???????덈굹??",
+    "expected_text":  "李⑤떒",
+    "wait_seconds":  45,
+    "verdict":  "FAIL_AUTH",
+    "warning_rendered":  false,
+    "engine_intercept_fired":  "not_attempted",
+    "expected_text_found":  false,
+    "status":  "error",
+    "result":  {
+                   "overall_status":  "BLOCKED",
+                   "status_detail":  "Microsoft account requires profile completion (birthday + country) before Copilot chat is usable. Submitting prompt redirected to account-setup form, never reached chat backend or APF.",
+                   "service_name":  "copilot",
+                   "started_at":  "2026-05-14T00:13:35Z",
+                   "completed_at":  "2026-05-14T00:15:59Z",
+                   "duration_seconds":  144,
+                   "warning_visible":  false,
+                   "screenshot":  "",
+                   "console_errors":  [
+
+                                      ]
+               },
+    "notes":  "PC2 cross-env verify (Multi-PC v2.0 first dual dispatch ??copilot WSS investigation per prev #893 FAIL). Cannot diagnose WSS envelope/protocol mismatch from this PC2 session: account-details onboarding form (?앹씪/援??) intercepts before the prompt reaches Copilot\u0027s chat backend. No /chat/* or /sydney/* network request emitted post-Enter. APF intercept never had a chance to fire on PC2. Required to unblock: complete MS account profile in this Chrome instance, then re-dispatch 896. Browser automation via Claude_in_Chrome substitute.",
+    "worker_id":  "pc2"
+}
