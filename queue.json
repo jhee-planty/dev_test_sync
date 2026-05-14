@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T00:22:34Z",
+  "last_updated": "2026-05-14T00:22:45Z",
   "tasks": [
     {
       "id": "531",
@@ -3293,6 +3293,22 @@
       "created": "2026-05-14T00:22:34Z",
       "updated": "2026-05-14T00:22:34Z",
       "summary": "PC2 claude-in-chrome MCP — DOM-aware navigation, shadow DOM piercing via CDP. Decisive verdict for prior #887 INCONCLUSIVE (Korean SPA shadow DOM). tag=v2.2.4-d29d868-postfix-pc2-wave1",
+      "target_pc": "pc2",
+      "pc1_status": "n/a",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "pending",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "906",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T00:22:45Z",
+      "updated": "2026-05-14T00:22:45Z",
+      "summary": "PC2 claude-in-chrome MCP — DOM-aware navigation, CDP keyboard/mouse dispatch. Dual-verify with PC1 OK. tag=v2.2.4-d29d868-postfix-pc2-wave1",
       "target_pc": "pc2",
       "pc1_status": "n/a",
       "pc1_verdict": "",
