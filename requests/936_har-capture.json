@@ -1,0 +1,21 @@
+{
+  "command": "har-capture",
+  "priority": "normal",
+  "params": {
+    "service": "genspark",
+    "url": "https://www.genspark.ai",
+    "duration_s": 60,
+    "capture_modes": [
+      "network_har",
+      "websocket_frames",
+      "console_log"
+    ],
+    "scenario": "logged-in PII prompt submit",
+    "context": "Nuxt SPA bundle entry + chat API endpoint identification for V6-F page-load or WS envelope design. Current Nuxt SPA bundle crashes with 22 HTTP/2 protocol errors per #872 FAIL_NOT_RENDERED. Need dynamic import chain + actual endpoints."
+  },
+  "attachments": [],
+  "notes": "PC1 HAR re-capture — genspark #872 FAIL_NOT_RENDERED prereq for architectural pivot",
+  "id": "936",
+  "created": "2026-05-14T02:11:25Z",
+  "target_pc": "pc1"
+}
