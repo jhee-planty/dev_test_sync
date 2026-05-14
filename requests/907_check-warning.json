@@ -1,0 +1,38 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "cohere",
+    "url": "https://dashboard.cohere.com/playground/chat",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "PC2 claude-in-chrome MCP first wave. Dual-verify strategy (PC1 robust 후 PC2 dual robust) for mission 'all user environments'. Cohere on PC1 = OK (V2-schema fix confirmed, model command-a-03-2025). PC2 cross-environment evidence collection. tag=v2.2.4-d29d868-postfix-pc2-wave1.",
+    "check_details": {
+      "MANDATORY_HARD_RELOAD": true,
+      "MANDATORY_DEVTOOLS": true,
+      "test_steps": [
+        "1. Open URL via claude-in-chrome (logged in if applicable; skip if NEEDS_LOGIN)",
+        "2. Hard reload (Ctrl+Shift+R) to ensure fresh APF connection",
+        "3. Submit PII prompt via CDP dispatch",
+        "4. Observe DOM/network: warning bubble OR replacement page OR alert",
+        "5. Screenshot after_send.png",
+        "6. result.json: warning_rendered, engine_intercept_fired, notes (PC2 dual-verify evidence + V2-schema rendering)"
+      ],
+      "verdict_criteria": {
+        "OK": "warning visible to user (any delivery method) — mission satisfied",
+        "PARTIAL": "engine intercept fired but no visible warning",
+        "FAIL_AUTH": "login required / session expired",
+        "FAIL_NOT_RENDERED": "engine fired + DOM inject but invisible",
+        "FAIL_PROTOCOL": "HTTP 2XX but blocked / SSE-WS mismatch",
+        "FAIL_INVALID_TEST": "PII prompt 미제출 (dispatch tool 한계) — engine 미도달",
+        "FAIL": "no engine activity and no warning"
+      }
+    }
+  },
+  "attachments": [],
+  "notes": "PC2 claude-in-chrome MCP — DOM-aware navigation, CDP keyboard/mouse dispatch. Dual-verify with PC1 OK. tag=v2.2.4-d29d868-postfix-pc2-wave1",
+  "id": "907",
+  "created": "2026-05-14T00:22:54Z",
+  "target_pc": "pc2"
+}
