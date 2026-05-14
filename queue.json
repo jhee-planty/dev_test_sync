@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T00:22:54Z",
+  "last_updated": "2026-05-14T00:26:03Z",
   "tasks": [
     {
       "id": "531",
@@ -3330,6 +3330,22 @@
       "pc1_verdict": "",
       "pc1_summary": "",
       "pc2_status": "pending",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "908",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T00:26:03Z",
+      "updated": "2026-05-14T00:26:03Z",
+      "summary": "Mistral V5-B JSONL envelope spec (1299B, indexed superjson refs). Verify engine intercept + UI render after revert to mistral_trpc_json_v5a + V5-B spec apply (sub-agent ad1bcc0e). tag=v2.2.4-d29d868-postfix-mistral-v5b",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
       "pc2_verdict": "",
       "pc2_summary": ""
     }
