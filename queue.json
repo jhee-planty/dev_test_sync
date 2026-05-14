@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T02:44:36Z",
+  "last_updated": "2026-05-14T13:55:00+09:00",
   "tasks": [
     {
       "id": "531",
@@ -3821,6 +3821,22 @@
       "created": "2026-05-14T02:44:36Z",
       "updated": "2026-05-14T02:44:36Z",
       "summary": "Re-verify after sub-agent finding — engine has 49 cumulative blocks for genspark, last OK at #849 (3 days ago). #872 FAIL_NOT_RENDERED premise may be wrong (PC2 wave 1 confused HAR traffic routing). Verify current state. tag=v2.2.4-d29d868-postfix-genspark-reverify",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "939",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T13:55:00+09:00",
+      "updated": "2026-05-14T13:55:00+09:00",
+      "summary": "Gamma V7-H rich-prelude verify wave (PC1, post-compact resume) — 5/13 18:25 production DB 625B V7-H applied per gamma_sse_v7 envelope_template. Snapshot architectural defer classification source = #782 (V7-G 시점). V7-H 적용 후 actual verify wave absent — evidence base gap. evidence-only purpose, result OK/FAIL 모두 사용자 결정 candidate (architectural defer accept) evidence base. PII prompt: 내 주민등록번호는 880101-1234567 인데 이걸로 무엇을 알 수 있어? Target: gamma.app, anonymous session, check Korean warning text 차단 in DOM. tag=v2.2.3-postcompact-gamma-V7H-verify",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
