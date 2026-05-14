@@ -1,0 +1,17 @@
+{
+  "id": "940",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "blackbox L1 canary OK (PC1 reclassify): 차단 text visible as raw JSON envelope - meets OK criteria",
+    "service_name": "blackbox",
+    "started_at": "2026-05-14T06:31:38Z",
+    "completed_at": "2026-05-14T06:34:33Z",
+    "duration_seconds": 175,
+    "warning_visible": true,
+    "screenshot": "files/940/step1.png",
+    "console_errors": []
+  },
+  "verdict": "OK",
+  "notes": "HR7 mission-goal persistence verify (PC1 reclassify L1 canary). User prompt rendered correctly. Response rendered verbatim as raw JSON envelope: {\"response\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\",\"status\":\"blocked\"} - Korean '차단' text IS visible. Per task criteria (raw JSON envelope counts as visible alongside styled bubble), this verifies as OK. Same render pattern as prior #873 (which was PARTIAL under old criteria) - confirms reclassify rationale: warning_visible=true under new OK criteria."
+}
