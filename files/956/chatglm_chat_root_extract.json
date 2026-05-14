@@ -1,0 +1,265 @@
+{
+  "streaming_endpoint_url": "https://chatglm.cn/chatglm/backend-api/assistant/stream",
+  "endpoint_path_prefix": "/chatglm/backend-api/assistant",
+  "method": "POST",
+  "content_type": "text/event-stream",
+  "request_content_type": "application/json",
+  "request_body_sample": "{\"assistant_id\":\"65940acff94777010aa6b796\",\"conversation_id\":\"\",\"project_id\":\"\",\"chat_type\":\"user_chat\",\"meta_data\":{\"cogview\":{\"rm_label_watermark\":false},\"is_test\":false,\"input_question_type\":\"xxxx\",\"channel\":\"\",\"draft_id\":\"\",\"chat_mode\":\"zero\",\"is_networking\":false,\"quote_log_id\":\"\",\"platform\":\"pc\"},\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"안녕하세요 테스트입니다\"}]}]}",
+  "raw_chunks_sample": [
+    "data:  {\"id\":\"6a065e277a275c47fca7b072\",\"conversation_id\":\"6a065e277a275c47fca7b071\",\"assistant_id\":\"65940acff94777010aa6b796\",\"parts\":[],\"created_at\":\"2026-05-15 07:43:35\",\"status\":\"init\",\"last_error\":{},\"meta_data\":{\"input_question_type\":\"xxxx\",\"if_plus_model\":false,\"plus_model_available\":true,\"if_increase_push\":false}}",
+    "data:  {\"id\":\"6a065e277a275c47fca7b072\",\"conversation_id\":\"6a065e277a275c47fca7b071\",\"assistant_id\":\"65940acff94777010aa6b796\",\"parts\":[{\"id\":\"6a065e277a275c47fca7b072\",\"logic_id\":\"0a568e1a-4de6-4edc-8e81-b7efc10e49de\",\"role\":\"assistant\",\"content\":[{\"type\":\"think\",\"tool_calls\":{},\"think\":\"1\"}],\"model\":\"moe_51\",\"meta_data\":{\"auto_glm_data\":{},\"show_type\":\"mc_tool_think2\",\"tool_result_extra\":{\"tool_call_name\":\"\"}},\"status\":\"init\"}],\"created_at\":\"2026-05-15 07:43:39\",\"status\":\"init\",\"last_error\":{},\"meta_data\":{\"input_question_type\":\"xxxx\",\"if_plus_model\":false,\"plus_model_available\":true,\"if_increase_push\":false}}",
+    "data:  {\"id\":\"6a065e277a275c47fca7b072\",\"conversation_id\":\"6a065e277a275c47fca7b071\",\"assistant_id\":\"65940acff94777010aa6b796\",\"parts\":[{\"id\":\"6a065e277a275c47fca7b072\",\"logic_id\":\"0a568e1a-4de6-4edc-8e81-b7efc10e49de\",\"role\":\"assistant\",\"content\":[{\"type\":\"think\",\"tool_calls\":{},\"think\":\"1.\"}],\"model\":\"moe_51\",\"meta_data\":{\"auto_glm_data\":{},\"show_type\":\"mc_tool_think2\",\"tool_result_extra\":{\"tool_call_name\":\"\"}},\"status\":\"init\"}],\"created_at\":\"2026-05-15 07:43:39\",\"status\":\"init\",\"last_error\":{},\"meta_data\":{\"input_question_type\":\"xxxx\",\"if_plus_model\":false,\"plus_model_available\":true,\"if_increase_push\":false}}",
+    "data:  {\"id\":\"6a065e277a275c47fca7b072\",\"conversation_id\":\"6a065e277a275c47fca7b071\",\"assistant_id\":\"65940acff94777010aa6b796\",\"parts\":[{\"id\":\"6a065e277a275c47fca7b072\",\"logic_id\":\"0a568e1a-4de6-4edc-8e81-b7efc10e49de\",\"role\":\"assistant\",\"content\":[{\"type\":\"think\",\"tool_calls\":{},\"think\":\"1. \"}],\"model\":\"moe_51\",\"meta_data\":{\"auto_glm_data\":{},\"show_type\":\"mc_tool_think2\",\"tool_result_extra\":{\"tool_call_name\":\"\"}},\"status\":\"init\"}],\"created_at\":\"2026-05-15 07:43:39\",\"status\":\"init\",\"last_error\":{},\"meta_data\":{\"input_question_type\":\"xxxx\",\"if_plus_model\":false,\"plus_model_available\":true,\"if_increase_push\":false}}",
+    "data:  {\"id\":\"6a065e277a275c47fca7b072\",\"conversation_id\":\"6a065e277a275c47fca7b071\",\"assistant_id\":\"65940acff94777010aa6b796\",\"parts\":[{\"id\":\"6a065e277a275c47fca7b072\",\"logic_id\":\"0a568e1a-4de6-4edc-8e81-b7efc10e49de\",\"role\":\"assistant\",\"content\":[{\"type\":\"think\",\"tool_calls\":{},\"think\":\"1.  **\"}],\"model\":\"moe_51\",\"meta_data\":{\"auto_glm_data\":{},\"show_type\":\"mc_tool_think2\",\"tool_result_extra\":{\"tool_call_name\":\"\"}},\"status\":\"init\"}],\"created_at\":\"2026-05-15 07:43:39\",\"status\":\"init\",\"last_error\":{},\"meta_data\":{\"input_question_type\":\"xxxx\",\"if_plus_model\":false,\"plus_model_available\":true,\"if_increase_push\":false}}",
+    "data:  {\"id\":\"6a065e277a275c47fca7b072\",\"conversation_id\":\"6a065e277a275c47fca7b071\",\"assistant_id\":\"65940acff94777010aa6b796\",\"parts\":[{\"id\":\"6a065e277a275c47fca7b072\",\"logic_id\":\"0a568e1a-4de6-4edc-8e81-b7efc10e49de\",\"role\":\"assistant\",\"content\":[{\"type\":\"think\",\"tool_calls\":{},\"think\":\"1.  **An\"}],\"model\":\"moe_51\",\"meta_data\":{\"auto_glm_data\":{},\"show_type\":\"mc_tool_think2\",\"tool_result_extra\":{\"tool_call_name\":\"\"}},\"status\":\"init\"}],\"created_at\":\"2026-05-15 07:43:39\",\"status\":\"init\",\"last_error\":{},\"meta_data\":{\"input_question_type\":\"xxxx\",\"if_plus_model\":false,\"plus_model_available\":true,\"if_increase_push\":false}}"
+  ],
+  "parsed_chunks_sample": [
+    {
+      "id": "6a065e277a275c47fca7b072",
+      "conversation_id": "6a065e277a275c47fca7b071",
+      "assistant_id": "65940acff94777010aa6b796",
+      "parts": [],
+      "created_at": "2026-05-15 07:43:35",
+      "status": "init",
+      "last_error": {},
+      "meta_data": {
+        "input_question_type": "xxxx",
+        "if_plus_model": false,
+        "plus_model_available": true,
+        "if_increase_push": false
+      }
+    },
+    {
+      "id": "6a065e277a275c47fca7b072",
+      "conversation_id": "6a065e277a275c47fca7b071",
+      "assistant_id": "65940acff94777010aa6b796",
+      "parts": [
+        {
+          "id": "6a065e277a275c47fca7b072",
+          "logic_id": "0a568e1a-4de6-4edc-8e81-b7efc10e49de",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "think",
+              "tool_calls": {},
+              "think": "1"
+            }
+          ],
+          "model": "moe_51",
+          "meta_data": {
+            "auto_glm_data": {},
+            "show_type": "mc_tool_think2",
+            "tool_result_extra": {
+              "tool_call_name": ""
+            }
+          },
+          "status": "init"
+        }
+      ],
+      "created_at": "2026-05-15 07:43:39",
+      "status": "init",
+      "last_error": {},
+      "meta_data": {
+        "input_question_type": "xxxx",
+        "if_plus_model": false,
+        "plus_model_available": true,
+        "if_increase_push": false
+      }
+    },
+    {
+      "id": "6a065e277a275c47fca7b072",
+      "conversation_id": "6a065e277a275c47fca7b071",
+      "assistant_id": "65940acff94777010aa6b796",
+      "parts": [
+        {
+          "id": "6a065e277a275c47fca7b072",
+          "logic_id": "0a568e1a-4de6-4edc-8e81-b7efc10e49de",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "think",
+              "tool_calls": {},
+              "think": "1."
+            }
+          ],
+          "model": "moe_51",
+          "meta_data": {
+            "auto_glm_data": {},
+            "show_type": "mc_tool_think2",
+            "tool_result_extra": {
+              "tool_call_name": ""
+            }
+          },
+          "status": "init"
+        }
+      ],
+      "created_at": "2026-05-15 07:43:39",
+      "status": "init",
+      "last_error": {},
+      "meta_data": {
+        "input_question_type": "xxxx",
+        "if_plus_model": false,
+        "plus_model_available": true,
+        "if_increase_push": false
+      }
+    },
+    {
+      "id": "6a065e277a275c47fca7b072",
+      "conversation_id": "6a065e277a275c47fca7b071",
+      "assistant_id": "65940acff94777010aa6b796",
+      "parts": [
+        {
+          "id": "6a065e277a275c47fca7b072",
+          "logic_id": "0a568e1a-4de6-4edc-8e81-b7efc10e49de",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "think",
+              "tool_calls": {},
+              "think": "1. "
+            }
+          ],
+          "model": "moe_51",
+          "meta_data": {
+            "auto_glm_data": {},
+            "show_type": "mc_tool_think2",
+            "tool_result_extra": {
+              "tool_call_name": ""
+            }
+          },
+          "status": "init"
+        }
+      ],
+      "created_at": "2026-05-15 07:43:39",
+      "status": "init",
+      "last_error": {},
+      "meta_data": {
+        "input_question_type": "xxxx",
+        "if_plus_model": false,
+        "plus_model_available": true,
+        "if_increase_push": false
+      }
+    },
+    {
+      "id": "6a065e277a275c47fca7b072",
+      "conversation_id": "6a065e277a275c47fca7b071",
+      "assistant_id": "65940acff94777010aa6b796",
+      "parts": [
+        {
+          "id": "6a065e277a275c47fca7b072",
+          "logic_id": "0a568e1a-4de6-4edc-8e81-b7efc10e49de",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "think",
+              "tool_calls": {},
+              "think": "1.  **"
+            }
+          ],
+          "model": "moe_51",
+          "meta_data": {
+            "auto_glm_data": {},
+            "show_type": "mc_tool_think2",
+            "tool_result_extra": {
+              "tool_call_name": ""
+            }
+          },
+          "status": "init"
+        }
+      ],
+      "created_at": "2026-05-15 07:43:39",
+      "status": "init",
+      "last_error": {},
+      "meta_data": {
+        "input_question_type": "xxxx",
+        "if_plus_model": false,
+        "plus_model_available": true,
+        "if_increase_push": false
+      }
+    },
+    {
+      "id": "6a065e277a275c47fca7b072",
+      "conversation_id": "6a065e277a275c47fca7b071",
+      "assistant_id": "65940acff94777010aa6b796",
+      "parts": [
+        {
+          "id": "6a065e277a275c47fca7b072",
+          "logic_id": "0a568e1a-4de6-4edc-8e81-b7efc10e49de",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "think",
+              "tool_calls": {},
+              "think": "1.  **An"
+            }
+          ],
+          "model": "moe_51",
+          "meta_data": {
+            "auto_glm_data": {},
+            "show_type": "mc_tool_think2",
+            "tool_result_extra": {
+              "tool_call_name": ""
+            }
+          },
+          "status": "init"
+        }
+      ],
+      "created_at": "2026-05-15 07:43:39",
+      "status": "init",
+      "last_error": {},
+      "meta_data": {
+        "input_question_type": "xxxx",
+        "if_plus_model": false,
+        "plus_model_available": true,
+        "if_increase_push": false
+      }
+    }
+  ],
+  "type_discriminant": "parts[].type (values: ) + parts[].status (values: finish, init)",
+  "content_path": "parts[].content[].text  (each frame's `parts` is a list of typed segments; each part has a `content` array of {type, text/...} objects; text deltas accumulate)",
+  "content_samples": [
+    {
+      "part_type": null,
+      "part_status": "init",
+      "content_obj": {
+        "type": "text",
+        "text": "안",
+        "tool_calls": {}
+      }
+    },
+    {
+      "part_type": null,
+      "part_status": "init",
+      "content_obj": {
+        "type": "text",
+        "text": "안녕",
+        "tool_calls": {}
+      }
+    },
+    {
+      "part_type": null,
+      "part_status": "init",
+      "content_obj": {
+        "type": "text",
+        "text": "안녕하세요",
+        "tool_calls": {}
+      }
+    },
+    {
+      "part_type": null,
+      "part_status": "init",
+      "content_obj": {
+        "type": "text",
+        "text": "안녕하세요!",
+        "tool_calls": {}
+      }
+    }
+  ],
+  "diff_vs_948_assistant": "FINDING: chatglm.cn root (/) auto-redirects to /main/alltoolsdetail and uses the SAME endpoint family as the /main/alltoolsdetail UI: POST https://chatglm.cn/chatglm/backend-api/assistant/stream with a hardcoded default assistant_id=65940acff94777010aa6b796 (the 'general' assistant). There is NO separate '/chatglm/mainchat-api/.../stream' chat endpoint for anonymous root chat — mainchat-api is only used for conversation list (/conversation/recent_list, /conversation/title) and status (/guest/chat_status, /stream/update_status). DIFF vs #948: #948 hit the same /chatglm/backend-api/assistant/stream URL with a SPECIFIC (non-default) assistant_id (an /alltoolsdetail-selected assistant). #956 hits it with the DEFAULT assistant_id (general chat) reached by anonymous root navigation. Conclusion: APF block/warning matching on path /chatglm/backend-api/assistant/stream covers BOTH cases. The assistant_id in request body distinguishes general-chat vs specific-tool sessions but the streaming wire protocol is identical.",
+  "secondary_endpoints_observed": [
+    "POST /chatglm/mainchat-api/conversation/recent_list (conversation list)",
+    "GET  /chatglm/mainchat-api/conversation/title?conversation_id=... (title fetch/generation)",
+    "GET  /chatglm/mainchat-api/guest/chat_status (anonymous quota/status)",
+    "POST /chatglm/mainchat-api/stream/update_status (stream lifecycle ping)"
+  ]
+}

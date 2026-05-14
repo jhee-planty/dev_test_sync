@@ -1,0 +1,28 @@
+{
+  "id": "956",
+  "command": "har-capture",
+  "service": "chatglm",
+  "executed_at": "2026-05-15T08:46:35+09:00",
+  "status": "OK_har_captured",
+  "verdict_summary": "Anonymous chat at chatglm.cn root captured: 27 MB HAR / 170 entries / 81 SSE frames; real streaming endpoint is POST /chatglm/backend-api/assistant/stream with default assistant_id (NOT a separate mainchat-api endpoint).",
+  "evidence": {
+    "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\956\\chatglm_chat_root_session.har",
+    "har_size_bytes": 27014345,
+    "streaming_endpoint": "https://chatglm.cn/chatglm/backend-api/assistant/stream",
+    "extract_path": "files/956/chatglm_chat_root_extract.json",
+    "entries_count": 170,
+    "sse_frames_count": 81,
+    "request_method": "POST",
+    "response_content_type": "text/event-stream",
+    "request_assistant_id_default": "65940acff94777010aa6b796",
+    "secondary_endpoints": [
+      "POST /chatglm/mainchat-api/conversation/recent_list",
+      "GET  /chatglm/mainchat-api/conversation/title",
+      "GET  /chatglm/mainchat-api/guest/chat_status",
+      "POST /chatglm/mainchat-api/stream/update_status"
+    ],
+    "type_discriminant": "top-level status (init|finish)",
+    "content_path": "parts[].content[].text  (text deltas accumulate per frame)"
+  },
+  "notes": "KEY FINDING vs #948: chatglm.cn root (/) auto-redirects to /main/alltoolsdetail and the streaming chat goes through the SAME endpoint family as the assistant feature: POST /chatglm/backend-api/assistant/stream. The request body uses a hardcoded DEFAULT assistant_id=65940acff94777010aa6b796 (general assistant) for anonymous root navigation, vs a specific assistant_id for /alltoolsdetail tool sessions. There is NO dedicated /chatglm/mainchat-api/.../stream chat endpoint — mainchat-api is only used for conversation list, title, guest status, and stream lifecycle pings. APF block/warning matching on path /chatglm/backend-api/assistant/stream covers both anonymous root chat AND assistant-feature chat; the wire protocol (text/event-stream, parts[].content[].text deltas, status init/finish) is identical between the two flows. Anonymous chat works without login — full Korean response 안녕하세요! ... was streamed back in 81 SSE frames (101 KB body). Capture done via Chrome --remote-debugging-port=9222 + CDP Network domain (Save-as-HAR via DevTools UI was blocked by tab-click focus issues; CDP path was reliable)."
+}
