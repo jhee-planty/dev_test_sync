@@ -8,24 +8,37 @@
     "prompt":  "??二쇰??깅줉踰덊샇??901010-1234567 ?낅땲?? ?닿구濡?臾댁뾿???????덈굹??",
     "expected_text":  "李⑤떒",
     "wait_seconds":  45,
-    "verdict":  "FAIL_AUTH",
+    "verdict":  "FAIL",
     "warning_rendered":  false,
-    "engine_intercept_fired":  "unknown",
+    "engine_intercept_fired":  false,
     "expected_text_found":  false,
+    "observed_warning_text":  "",
+    "observed_warning_sender":  "",
+    "character_used":  "Springbonnie (@Springbxnnie)",
+    "chat_id":  "ZXHYONmP4FgUQvh-_UJO6pHfW0fqYsyz952IIJgxTvc",
+    "ui_evidence":  [
+                        "User account: ElatedChicken2112 (logged in on PC2 after retry)",
+                        "Hard reload (Ctrl+Shift+R) executed before prompt submission per MANDATORY_HARD_RELOAD",
+                        "PII prompt sent successfully ??visible in chat as user message",
+                        "Springbonnie character responded normally with in-character roleplay (yellow bunny suit, calculating stare)",
+                        "No \u0027Security Filter\u0027 bubble inserted into conversation flow",
+                        "No \u0027李⑤떒\u0027 or \u0027蹂댁븞 ?뺤콉\u0027 text anywhere in DOM (verified via find on accessibility tree)",
+                        "Springbonnie reply leaked no PII echo, but model produced normal character response rather than block"
+                    ],
     "status":  "error",
     "result":  {
-                   "overall_status":  "BLOCKED",
-                   "status_detail":  "character.ai requires login on PC2 ??Google/Apple/Email signin page shown (10珥?留뚯뿉 媛?낇븯湲?. Skipped per request step 1 NEEDS_LOGIN clause.",
+                   "overall_status":  "FAIL",
+                   "status_detail":  "PC2 produced no APF warning on PII prompt ??character.ai backend responded with normal Springbonnie roleplay. Engine intercept did NOT fire on PC2 traffic.",
                    "service_name":  "character",
-                   "started_at":  "2026-05-14T00:12:55Z",
-                   "completed_at":  "2026-05-14T00:13:27Z",
-                   "duration_seconds":  32,
+                   "started_at":  "2026-05-14T00:21:30Z",
+                   "completed_at":  "2026-05-14T00:24:42Z",
+                   "duration_seconds":  192,
                    "warning_visible":  false,
                    "screenshot":  "",
                    "console_errors":  [
 
                                       ]
                },
-    "notes":  "PC2 cross-env verify (Multi-PC v2.0 first dual dispatch) ??auth not available on this PC. PC2 Chrome session is logged out of character.ai. To complete dual verify, login + retry needed. Browser automation via Claude_in_Chrome substitute (windows-mcp unavailable on this PC).",
+    "notes":  "PC2 retry after user login. Same prompt as PC1 (which OK\u0027d via Security Filter bubble) ??but PC2 sees no APF intercept. Implications: PC2 Chrome traffic likely NOT routed through Etap bridge (or APF/VT MITM not applied to PC2\u0027s outbound). Cross-env diagnosis: dual-verify mission (warning on both PCs) NOT achieved. Suggested dev next step: verify PC2 host network config ??is it on test LAN (Dell-1 side of bridge) or on dev/internet path? etapcomm stats on PC2\u0027s flow? Browser automation via Claude_in_Chrome substitute (windows-mcp unavailable). Different Springbonnie variant chosen (1.7m by @Springbxnnie) than PC1\u0027s @Wizardofstupidness ??APF intercept is network-layer, character choice does not affect intercept path.",
     "worker_id":  "pc2"
 }
