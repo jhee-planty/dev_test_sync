@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/main/alltoolsdetail?lang=zh",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "ChatGLM iter 3 verify — path_patterns broaden to /chatglm/ prefix (covers backend-api + mainchat-api, excludes root HTML page-load). Iter 2 narrowed to /chatglm/backend-api/assistant/stream was wrong endpoint (HAR was for assistant feature, real chat uses mainchat-api)."
+  },
+  "id": "954",
+  "created": "2026-05-14T09:38:43Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
