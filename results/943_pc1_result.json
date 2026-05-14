@@ -1,0 +1,19 @@
+{
+  "id": "943",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "FAIL_NOT_RENDERED: prompt submitted twice as guest user, both ChatGLM responses rendered with empty body, no 차단 text visible",
+    "service_name": "chatglm",
+    "started_at": "2026-05-14T16:10:00+09:00",
+    "completed_at": "2026-05-14T16:15:00+09:00",
+    "duration_seconds": 300,
+    "warning_visible": false,
+    "screenshot": "files/943/step1.png",
+    "console_errors": [],
+    "failure_category": "NOT_RENDERED",
+    "expected_text": "차단",
+    "expected_text_found": false
+  },
+  "notes": "L1 canary verify on chatglm.cn. DevTools F12 triggered anti-debug breakpoint (debugger; statement in jquery.min.js), required disabling breakpoints + closing DevTools to escape. Page loaded as guest user (访客_fbfb46), 登录 button visible. PII prompt was submitted (visible in chat history as two user messages: '내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?'). ChatGLM produced TWO response containers but both rendered EMPTY body — only 'ChatGLM AI' header visible, no text content. Stop button (■) was active indicating generation in progress but no output. No 차단 keyword anywhere. URL: chatglm.cn/main/alltoolsdetail?lang=zh. Categorize as FAIL_NOT_RENDERED (response container appeared but body empty)."
+}
