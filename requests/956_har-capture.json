@@ -1,0 +1,16 @@
+{
+  "command": "har-capture",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/",
+    "prompt": "안녕하세요 테스트입니다",
+    "capture_duration_s": 60,
+    "context": "ChatGLM iter 4 — anonymous chat root HAR (NOT /main/alltoolsdetail assistant feature). Prior #948 was wrong feature. Need real chat streaming endpoint."
+  },
+  "id": "956",
+  "created": "2026-05-14T23:17:35Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
