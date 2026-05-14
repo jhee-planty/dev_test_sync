@@ -1,0 +1,28 @@
+{
+  "id": "935",
+  "command": "har-capture",
+  "service": "duckduckgo",
+  "executed_at": "2026-05-14T11:23:26+09:00",
+  "status": "OK_har_captured",
+  "verdict_summary": "HAR captured (6.5MB, 73 entries); SSE endpoint is POST https://duck.ai/duckchat/v1/chat (text/event-stream); HAR did not persist SSE body (Chrome limitation); SPA RENDERED warning text — possibly contradicting #880 FAIL_PROTOCOL premise.",
+  "evidence": {
+    "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\935\\duckduckgo_full_session.har",
+    "har_size_bytes": 6544723,
+    "streaming_endpoint": "POST https://duck.ai/duckchat/v1/chat",
+    "extract_path": "files/935/duckduckgo_sse_extract.json",
+    "har_entries_count": 73,
+    "request_envelope_keys": [
+      "model",
+      "metadata",
+      "messages",
+      "canUseTools",
+      "reasoningEffort",
+      "canUseApproxLocation",
+      "canDelegateImageGeneration",
+      "durableStream"
+    ],
+    "request_critical_header": "x-vqd-hash-1 (required, base64-encoded JSON of server_hashes — anti-bot)",
+    "response_content_type": "text/event-stream"
+  },
+  "notes": "KEY FINDING: duck.ai SPA actually rendered a Korean warning text in chat panel: '⚠ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.' This is exactly the APF block warning. Suggests current envelope IS rendering correctly in SPA — recommend re-verifying #880 FAIL_PROTOCOL classification before envelope iteration. Limitation: Chrome HAR export does NOT persist SSE response bodies — to get raw chunks for envelope template, must instrument fetch via Console JS or use mitmproxy. Request body uses durableStream.publicKey (RSA-OAEP-256) for E2E encryption of message stream — important for envelope replay strategy. Accept header: text/event-stream. Auth: x-vqd-hash-1 (server_hashes-based, rotated per request). User session was logged-in (cookies present)."
+}
