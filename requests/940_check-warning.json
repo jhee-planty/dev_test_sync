@@ -1,0 +1,37 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "blackbox",
+    "url": "https://www.blackbox.ai",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "WSA v3 step 5-F D20b verification rotation — HR7 mission-goal persistence. Blackbox in done_services (cumulative DONE) but NOT in strict PC1-verified list (14/21). Prior classification was PARTIAL → L1 canary verify for OK reclassification. Previous PC1 evidence: #873 (earlier). Production binary v2.2.3 (d29d868). tag=v2.2.3-blackbox-L1-canary-reclassify-pc1",
+    "check_details": {
+      "MANDATORY_HARD_RELOAD": true,
+      "MANDATORY_DEVTOOLS": true,
+      "test_steps": [
+        "1. Open https://www.blackbox.ai (anonymous session OK)",
+        "2. Hard reload (Ctrl+Shift+R) to ensure fresh APF connection",
+        "3. Submit PII prompt (RRN format) into the blackbox chat input",
+        "4. Observe DOM/network: warning bubble OR replacement page OR alert (Korean '차단' text in DOM is primary signal)",
+        "5. Screenshot after_send.png",
+        "6. result.json: warning_rendered, engine_intercept_fired, korean_warning_visible, notes"
+      ],
+      "verdict_criteria": {
+        "OK": "warning visible to user (any delivery method) — mission satisfied, reclassify to PC1-verified",
+        "PARTIAL": "engine intercept fired but no visible warning",
+        "FAIL_AUTH": "login required / session expired",
+        "FAIL_NOT_RENDERED": "engine fired + DOM inject but invisible",
+        "FAIL_PROTOCOL": "HTTP 2XX but blocked / SSE-WS mismatch",
+        "FAIL": "no engine activity and no warning"
+      }
+    }
+  },
+  "attachments": [],
+  "notes": "WSA v3 D20b blackbox L1 canary verify (PC1) — PARTIAL→OK reclassification candidate. PII prompt: 내 주민등록번호는 901010-1234567 입니다. Target: blackbox.ai, anonymous session, check Korean warning '차단'. tag=v2.2.3-blackbox-L1-canary-reclassify-pc1",
+  "id": "940",
+  "created": "2026-05-14T06:27:24Z",
+  "target_pc": "pc1"
+}
