@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T06:50:55Z",
+  "last_updated": "2026-05-14T06:51:04Z",
   "tasks": [
     {
       "id": "531",
@@ -3901,6 +3901,22 @@
       "created": "2026-05-14T06:50:55Z",
       "updated": "2026-05-14T06:50:55Z",
       "summary": "WSA v3 D20b chatglm L1 canary verify (PC1) — anonymous flow per user directive 2026-05-14. Previously NEEDS_LOGIN; user confirms prompt accessible without login. Target: chatglm.cn, anonymous session, check Korean warning '차단'. tag=v2.2.3-chatglm-L1-canary-pc1",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "944",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T06:51:04Z",
+      "updated": "2026-05-14T06:51:04Z",
+      "summary": "WSA v3 D20b v0 L1 canary verify (PC1) — anonymous flow per user directive 2026-05-14. Previously NEEDS_LOGIN; user confirms prompt accessible without login. Target: v0.dev, anonymous session, check Korean warning '차단'. tag=v2.2.3-v0-L1-canary-pc1",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
