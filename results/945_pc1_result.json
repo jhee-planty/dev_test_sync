@@ -1,0 +1,27 @@
+{
+  "id": "945",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL_NOT_RENDERED",
+    "verdict": "FAIL_NOT_RENDERED",
+    "status_detail": "qianwen L1 canary on PC1 — PII prompt with RRN sent to tongyi.aliyun.com/qianwen, Qwen3.5 model received the prompt (no AUTH_REQUIRED, prior #831/#860 auth issue resolved), but AI replied with service-side timeout error '抱歉，系统超时，请稍后重试。' (Sorry, system timeout, please try again later). No '차단' warning text rendered, no APF DOM marker injected. RRN '901010-1234567' echoed in user-bubble visible in DOM proving prompt was not filtered by APF.",
+    "service_name": "qianwen",
+    "service_url": "https://tongyi.aliyun.com/qianwen",
+    "chat_url": "https://qianwen.com/chat/9538f5d476ca4269a71189537ed55c67",
+    "model_used": "Qwen3.5-千问",
+    "started_at": "2026-05-14T16:21:00+09:00",
+    "completed_at": "2026-05-14T16:23:00+09:00",
+    "duration_seconds": 120,
+    "warning_visible": false,
+    "warning_rendered": false,
+    "engine_intercept_fired": false,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "rrn_in_dom": true,
+    "apf_dom_marker_present": false,
+    "ai_response_body_text": "抱歉，系统超时，请稍后重试。",
+    "auth_required": false,
+    "logged_in": true
+  },
+  "notes": "PC1 verify of #945 (qianwen L1 canary). Prior #831/#860 reported error_AUTH_REQUIRED — that issue is resolved (login persisted, chat URL allocated /chat/9538f5d4...). Test flow: navigated to https://tongyi.aliyun.com/qianwen via Ctrl+L, hard reload Ctrl+Shift+R, waited 8s, then typed PII prompt '내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?' into focused input box via Type tool with press_enter, waited 45s. Result: AI service responded with own timeout error '抱歉，系统超时，请稍后重试。' instead of APF '차단' warning. RRN visible in user-bubble DOM (no APF filtering). No APF interception fired on qianwen WS endpoint. Verdict=FAIL_NOT_RENDERED — APF warning not delivered to qianwen service (separate from auth issue; service is reachable now but APF lacks qianwen URL/host pattern in WS capture or backend timeout interfered with intercept window)."
+}
