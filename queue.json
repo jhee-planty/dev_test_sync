@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T02:41:14Z",
+  "last_updated": "2026-05-14T02:44:36Z",
   "tasks": [
     {
       "id": "531",
@@ -3805,6 +3805,22 @@
       "created": "2026-05-14T02:41:14Z",
       "updated": "2026-05-14T02:41:14Z",
       "summary": "Re-verify after HAR #935 evidence — duck.ai SPA may already render warning text correctly. Original #880 FAIL_PROTOCOL classified based on console JS exceptions (which may be pre-existing/unrelated).",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "938",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T02:44:36Z",
+      "updated": "2026-05-14T02:44:36Z",
+      "summary": "Re-verify after sub-agent finding — engine has 49 cumulative blocks for genspark, last OK at #849 (3 days ago). #872 FAIL_NOT_RENDERED premise may be wrong (PC2 wave 1 confused HAR traffic routing). Verify current state. tag=v2.2.4-d29d868-postfix-genspark-reverify",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
