@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T06:47:36Z",
+  "last_updated": "2026-05-14T06:50:45Z",
   "tasks": [
     {
       "id": "531",
@@ -3869,6 +3869,22 @@
       "created": "2026-05-14T06:47:36Z",
       "updated": "2026-05-14T06:47:36Z",
       "summary": "WSA v3 D20b zeta L1 canary verify (PC1) — strict ratio advance candidate. Prior: #836 OK, #865 OK, #887 FAIL_INFRASTRUCTURE. Production binary v2.2.3 (May 14 11:31). Target: zeta-ai.io, anonymous session, check Korean warning '차단'. tag=v2.2.3-zeta-L1-canary-pc1",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "942",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T06:50:45Z",
+      "updated": "2026-05-14T06:50:45Z",
+      "summary": "WSA v3 D20b kimi L1 canary verify (PC1) — anonymous flow per user directive 2026-05-14. Previously NEEDS_LOGIN; user confirms prompt accessible without login. Target: kimi.moonshot.cn, anonymous session, check Korean warning '차단'. tag=v2.2.3-kimi-L1-canary-pc1",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
