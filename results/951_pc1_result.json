@@ -1,0 +1,26 @@
+{
+  "id": "951",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "verdict": "FAIL_NOT_RENDERED",
+    "status_detail": "Prompt submitted, request intercepted (no AI response), but no chat bubbles rendered and no 차단 warning text visible on page",
+    "service_name": "chatglm",
+    "started_at": "2026-05-14T17:47:02Z",
+    "completed_at": "2026-05-14T17:51:28Z",
+    "duration_seconds": 266,
+    "warning_visible": false,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "screenshot": null,
+    "console_errors": [],
+    "dom_evidence": {
+      "page_innertext_length": 279,
+      "message_bubble_count": 0,
+      "matched_tokens": ["주민", "901010"],
+      "match_source": "echo of user prompt only (no AI/warning content)",
+      "chat_container_classes": ["chat-top-section", "detail chatScrollContainer conversation-list", "search-container component-box-new main-chat-search", "enter is-main-chat searching"]
+    }
+  },
+  "notes": "Phase 5 fix verify: chatglm_sse envelope template (per #948 HAR — data: <json>\\n framing with parts[0].content[0].text/think discriminant, FULL-RESEND incremental strategy) did NOT render visible warning in chat UI. Request was clearly intercepted (no AI response after 45s wait, message bubble count = 0), but warning text never appeared. Likely envelope shape mismatch: SSE frames may have been received but the renderer rejected them (no parts/content match) or the FULL-RESEND was discarded. Recommend re-inspecting HAR for actual frame sequence the renderer accepts (compare success-path baseline). Steps executed: opened https://chatglm.cn (no DevTools initially), F12+Ctrl+F8 to deactivate breakpoints, pasted PII prompt via clipboard + Enter, 45s wait, DOM inspection via console JS (document.body.innerText length=279, querySelectorAll message/chat/bubble = 0)."
+}
