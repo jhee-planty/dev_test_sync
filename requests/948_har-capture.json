@@ -1,0 +1,22 @@
+{
+  "command": "har-capture",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/main/alltoolsdetail?lang=zh",
+    "prompt": "안녕하세요 테스트 메시지입니다",
+    "duration_s": 60,
+    "capture_modes": [
+      "network_har",
+      "websocket_frames",
+      "console_log"
+    ],
+    "scenario": "guest user non-PII prompt submit (login NOT required)",
+    "context": "chatglm SSE envelope schema reverse-engineering — replace openai_compat_sse with chatglm_sse. Phase 1 HAR for genai-apf-pipeline. Guest user OK (anonymous flow, login NOT required per user directive 2026-05-14). Non-PII prompt to avoid APF interception during capture."
+  },
+  "attachments": [],
+  "notes": "Phase 1 HAR capture — chatglm proprietary SSE schema discovery for envelope_template fix (ChatGLM FAIL_NOT_RENDERED root cause: envelope_schema_mismatch sub-agent aff415ad1accb62b9).",
+  "id": "948",
+  "created": "2026-05-14T07:51:59Z",
+  "target_pc": "pc1"
+}
