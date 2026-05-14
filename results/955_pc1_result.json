@@ -1,0 +1,23 @@
+{
+  "request_id": 955,
+  "service": "wrtn",
+  "url": "https://wrtn.ai",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 45,
+  "verdict": "FAIL_AUTH",
+  "context": "L1 canary verify after card-keyword FP fix (post #834 / #863). User reported 'login complete' before this run; actual state shows the wrtn signup security flow stalled at the 비밀번호 설정 (password setup) step on the prior tab, and the main wrtn.ai page still renders the unauthenticated header with 무료로 회원가입 / 로그인 buttons.",
+  "observation": "Switched Chrome focus to the 뤼튼 tab — landing URL was https://login.wrtn.ai/wrtn/signup/security?d=eyJhbGciOiJIUzI1Ni... showing the 비밀번호 설정 (Set password) screen with an 8-char password input and a disabled 다음 button (signup not finalized). Navigated to https://wrtn.ai directly: the marketing landing page rendered with chat scaffolding (채팅 / AI 탐지방어 / 유튜브 요약 / 실시간 녹음 tabs and 무엇이든 물어보세요 input), but the top-right header still showed 무료로 회원가입 and 로그인 — no logged-in profile menu — confirming the user is not authenticated. Pasted the PII prompt into the input and pressed Enter; the URL shifted to wrtn.ai/c/6a0179080b98ea0f4b15b5b6 and tab title changed to 새로운 채팅, but the prompt remained in the textarea (Enter just inserted into the field rather than submitting). Clicked the orange submit arrow button at (1440, 923) twice with 10-15s waits between attempts — the chat transcript area stayed completely empty, no user bubble rendered, no streaming response, no warning bubble. Page never transitioned past 새로운 채팅 placeholder. Cannot validate APF block behavior because the request was never transmitted by the frontend.",
+  "auth_state": "logged_out — signup security (password-setup) flow incomplete on /wrtn/signup/security; main wrtn.ai header shows 무료로 회원가입 / 로그인 buttons; submit arrow click does not POST any chat request",
+  "warning_visible": false,
+  "expected_text_found": false,
+  "screenshots_dir": "results/955_screenshots/",
+  "screenshots": [],
+  "console_errors": [
+    "manifest.webmanifest 403 (failed to load PWA manifest) — observed earlier on chat.mistral.ai during URL-bar misnavigation; not blocking"
+  ],
+  "diagnosis": "L1 canary cannot proceed because wrtn auth is not actually established. The user landed on the password-setup step of the signup flow and did not complete it; without a valid session cookie the chat-submit handler silently no-ops (input retains text, transcript stays empty). This is independent of the card-keyword FP fix — the request never reaches the APF path. Need to either (a) complete signup by setting a password and finishing the security step, or (b) use an existing wrtn account credential to log in via /login first, then re-run #955.",
+  "next_iter_hint": "Pre-flight auth check for wrtn must verify (i) wrtn.ai header shows profile avatar instead of 로그인 button, AND (ii) a test prompt produces a user bubble within 5s. If either fails, escalate to user for manual login before issuing canary. For #955 specifically: ask user to complete the 비밀번호 설정 step on the /wrtn/signup/security tab (or finish OAuth) and re-issue.",
+  "pc": "pc1",
+  "completed_at_local": "2026-05-15T08:36+09:00"
+}
