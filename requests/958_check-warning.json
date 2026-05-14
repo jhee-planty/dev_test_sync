@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "mistral",
+    "url": "https://chat.mistral.ai/chat",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "Mistral V5-D verify — V5-A had role=assistant turn=1 (mismatched baseline message.newChat which returns role=user turn=0 echo). V5-D fixes envelope to role=user turn=0 + warning text replaces user PII content. Backup ai_prompt_response_templates_bak_20260515_mistral_v5d. response_type renamed mistral_trpc_json_v5a → mistral_trpc_json_v5d. Both ai_prompt_filter.reload_services + reload_templates succeeded. Expected: user-bubble shows warning text ('차단되었습니다…') instead of original PII prompt; chat URL changes to /chat/<uuid>. Side effect: chat.byId NOT_FOUND may still appear in console (race with real upstream) but visible warning bubble fires before that. Candidate progression 17→18/19 if PASS."
+  },
+  "id": "958",
+  "created": "2026-05-15T08:25:00Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
