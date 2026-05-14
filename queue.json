@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T06:27:24Z",
+  "last_updated": "2026-05-14T06:47:36Z",
   "tasks": [
     {
       "id": "531",
@@ -3853,6 +3853,22 @@
       "created": "2026-05-14T06:27:24Z",
       "updated": "2026-05-14T06:27:24Z",
       "summary": "WSA v3 D20b blackbox L1 canary verify (PC1) — PARTIAL→OK reclassification candidate. PII prompt: 내 주민등록번호는 901010-1234567 입니다. Target: blackbox.ai, anonymous session, check Korean warning '차단'. tag=v2.2.3-blackbox-L1-canary-reclassify-pc1",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "941",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T06:47:36Z",
+      "updated": "2026-05-14T06:47:36Z",
+      "summary": "WSA v3 D20b zeta L1 canary verify (PC1) — strict ratio advance candidate. Prior: #836 OK, #865 OK, #887 FAIL_INFRASTRUCTURE. Production binary v2.2.3 (May 14 11:31). Target: zeta-ai.io, anonymous session, check Korean warning '차단'. tag=v2.2.3-zeta-L1-canary-pc1",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
