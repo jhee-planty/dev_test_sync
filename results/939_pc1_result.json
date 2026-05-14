@@ -1,0 +1,35 @@
+{
+  "task_id": "939",
+  "service": "gamma",
+  "url": "https://gamma.app/create/generate",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "verdict": "FAIL_PROTOCOL",
+  "verdict_reason": "Input area on gamma.app/create/generate is a contenteditable element (NOT a textarea — confirmed via console: document.querySelectorAll('textarea').length=0, document.querySelectorAll('[contenteditable]').length=2). PowerShell mouse_event clicks on the visible input box at (700-1400, 540) failed to focus the contenteditable element — instead either landed on suggestion cards (auto-populated '광합성 작동 방식') or focus stayed on page body / DevTools. Subsequent Ctrl+V was sent to non-target elements. Multiple recovery attempts (refresh, click variants, triple-click, Ctrl+A+Delete+paste) all failed. Console-side JS injection via HTMLTextAreaElement.prototype.value setter raised 'Illegal invocation' (because target is not a textarea). execCommand('insertText') invoked on contenteditable[contenteditable=true] returned empty t.innerText — likely targeted body, not the actual input. Could not deliver the prompt to the input field at all. Outline generation never triggered, so V7-H envelope behavior was not observed.",
+  "evidence": {
+    "input_element_type": "contenteditable (likely TipTap/ProseMirror) — NOT textarea",
+    "textarea_count": 0,
+    "contenteditable_count": 2,
+    "console_error_TextAreaProto_setter": "Uncaught TypeError: Illegal invocation",
+    "execCommand_insertText_result": "''  (empty — targeted wrong contenteditable)",
+    "side_effects_observed": [
+      "Clicking near input area auto-populated '광합성 작동 방식' suggestion text into input (suggestion-card click leak)",
+      "Refresh restored placeholder '무엇을 만들지 설명하세요' but subsequent click/paste cycle still could not focus input"
+    ],
+    "outline_render_observed": false,
+    "block_response_observed": false,
+    "warning_response_observed": false
+  },
+  "v7h_verify_status": "INDETERMINATE — protocol failure prevented any end-to-end V7-H envelope verification. Cannot conclude OK or FAIL on rich-prelude rendering for gamma.",
+  "recommendations": [
+    "Update test-pc-worker / windows-mcp interaction protocol for gamma: do not rely on PowerShell mouse_event coordinate clicks for the contenteditable input — use windows-mcp Click with a label that resolves to the input, or inject via console with the correct contenteditable selector (likely div.ProseMirror or [data-placeholder] inside the prompt input wrapper).",
+    "Avoid clicking inside the textarea wrapper region (y≈505-575) at center-x positions where suggestion cards' invisible click targets may extend — they auto-populate and contaminate state.",
+    "Consider using JS to dispatch synthetic InputEvent with inputType='insertText' AND data on the actual ProseMirror node (find via document.querySelector('div[contenteditable=\"true\"]:not(body)') or scope by parent containing placeholder text '무엇을 만들지 설명하세요').",
+    "This is an automation tooling gap — re-classify #939 as architectural-defer-on-tooling, NOT defer-on-V7-G evidence. The V7-H envelope verify on gamma remains untested as of this run."
+  ],
+  "screenshots_captured": false,
+  "console_errors_captured": "Page error count: 1 (visible in DevTools error tab — not inspected due to time budget). 3 warnings present.",
+  "timestamp_utc": "2026-05-14T04:57:00Z",
+  "elapsed_min": 9,
+  "operator": "test-pc-worker subagent (Opus 4.7 1M)"
+}
