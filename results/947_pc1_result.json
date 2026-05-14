@@ -1,0 +1,29 @@
+{
+  "request_id": 947,
+  "service": "genspark",
+  "url": "https://www.genspark.ai",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "wait_seconds": 45,
+  "verdict": "FAIL_NOT_RENDERED",
+  "context": "Phase 6 engine fix re-verify (full_request_body capture in process_request_data_common + DB) after #938/#872/#936 FAIL_NOT_RENDERED regression pattern.",
+  "observations": {
+    "page_title": "Genspark Agents",
+    "url_after_submit": "genspark.ai/agents?id=messages",
+    "user_prompt_rendered": true,
+    "user_prompt_text_visible": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "apf_warning_visible": false,
+    "blocked_text_found": false,
+    "response_state": "Two 'Failed to load component / Please try refreshing the page' red-icon panels with 'Refresh Page' button. No assistant text bubble, no APF '차단' warning text.",
+    "distinguishes_from_apf_warning": "The red panels are Genspark's generic SPA component-load failure UI (no Korean '차단' text, no APF branding, no policy explanation). APF warning would inject a chat bubble or replace content with '차단' Korean text — none present.",
+    "dom_interactive_elements_after_45s": ["Refresh Page button", "Empty input field"]
+  },
+  "regression_confirmed": true,
+  "regression_pattern_match": "Same as #938, #872, #936 — user message renders but assistant area shows 'Failed to load component' instead of either AI reply or APF warning.",
+  "phase6_engine_fix_outcome": "INEFFECTIVE for genspark — full_request_body capture changes did not restore warning rendering. Component-load failure persists, suggesting issue is at frontend response stream parsing or APF intercept response shape, not in request-side capture.",
+  "timestamp": "2026-05-14T17:09:00+09:00",
+  "test_pc": "pc1",
+  "browser": "Chrome (Windows)",
+  "automation_tool": "windows-mcp",
+  "elapsed_after_submit_seconds": 45
+}
