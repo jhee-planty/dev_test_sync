@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-14T02:11:25Z",
+  "last_updated": "2026-05-14T02:41:14Z",
   "tasks": [
     {
       "id": "531",
@@ -3789,6 +3789,22 @@
       "created": "2026-05-14T02:11:25Z",
       "updated": "2026-05-14T02:11:25Z",
       "summary": "PC1 HAR re-capture — genspark #872 FAIL_NOT_RENDERED prereq for architectural pivot",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "937",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-14T02:41:14Z",
+      "updated": "2026-05-14T02:41:14Z",
+      "summary": "Re-verify after HAR #935 evidence — duck.ai SPA may already render warning text correctly. Original #880 FAIL_PROTOCOL classified based on console JS exceptions (which may be pre-existing/unrelated).",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
