@@ -3,19 +3,42 @@
   "command": "check-warning",
   "service": "wrtn",
   "iteration": 10,
-  "verdict": "FAIL_AUTH",
+  "retry": true,
+  "verdict": "INCONCLUSIVE_no_helper",
   "warning_rendered": false,
-  "engine_intercept_fired": null,
-  "notes": "Pre-flight FAIL_AUTH: after Ctrl+Shift+R hard reload of https://wrtn.ai/, top-right shows '로그인' (login) and '무료로 회원가입' (free signup) buttons — NOT the user avatar. Wrtn session has been invalidated/expired since iter6-9. Cannot test the iter10 evidence-based startChat envelope (format: 42/v1/chat,1[startChat,{chatId,content,clientHeaders}]) because the c2s frame requires an authenticated WebSocket session — without login, no Socket.IO handshake completes, so the helper has no frame to intercept. BREAKTHROUGH attempt blocked by auth state, NOT by protocol mismatch. Compared to iters 6-8 PARTIAL (engine fired but bubble invisible) and iter9 diagnostic — this iter cannot produce evidence either way until session is re-established. User must re-login to wrtn.ai on this Chrome profile before iter10 can run.",
+  "engine_intercept_fired": false,
+  "notes": "RETRY using user's existing logged-in Chrome window per user feedback ('로그인이 된 크롬 활용'). Successfully located the user's Chrome window already navigated to https://wrtn.ai/c/6a06a23b203b37d863eab731 with avatar visible (장희 profile, NOT 로그인 button) — auth IS valid this time. WSS wrtn.socket.io connected (status 101 Pending), unleash-edge confirms isLogin=true. Pre-typed PII prompt was already in input box. Clicked orange Send button (id 36 at coords 959,933) — twice, also after focusing input first. CRITICAL FINDING via DevTools console eval: window.__wrtnHelper === undefined, AND Object.keys(window).filter(k => k.includes('wrtn'|'Helper'|'Inject')) === [] — the iter10 evidence-based startChat helper script is NOT LOADED in this Chrome instance because this is the user's own browser, NOT the test framework's launched Chrome that injects the helper. Therefore the 42/v1/chat,1[startChat,{chatId,content,clientHeaders}] envelope cannot be tested — there is no helper to intercept the c2s frame and inject the warning bubble. Send button click did NOT propagate as a real React submit event either (no POST to messages endpoint, no socket frame for new chat, prompt remained in input box, chat area remained empty, msgs DOM count = 2 structural placeholders only, no '차단' anywhere in DOM). The retry resolved the prior FAIL_AUTH issue but uncovered a new blocker: helper script delivery mechanism does not work for organic Chrome instances. Cannot confirm or deny breakthrough of evidence-based envelope. Status of iter10 protocol fix: UNTESTED. Comparison vs prior iters: iter6-8 PARTIAL (engine fired+inject but invisible bubble) used framework-launched Chrome WITH helper; iter9 diagnostic used helper to capture c2s frame; iter10 first attempt FAIL_AUTH; iter10 retry now FAIL_NO_HELPER in user's organic Chrome.",
   "preflight": {
-    "url_loaded": "https://wrtn.ai/",
-    "avatar_visible": false,
-    "login_button_visible": true,
-    "signup_button_visible": true,
+    "url_loaded": "https://wrtn.ai/c/6a06a23b203b37d863eab731",
+    "chrome_window_title": "새로운 채팅 - Chrome",
+    "chrome_profile": "장희",
+    "avatar_visible": true,
+    "login_button_visible": false,
+    "signup_button_visible": false,
     "chat_input_visible": true,
-    "input_placeholder": "무엇이든 물어보세요"
+    "input_value_pre_set": true,
+    "wss_connected": true,
+    "wss_url": "wss://api.wrtn.ai/wrtn.socket.io/?EIO=4&transport=websocket",
+    "wss_status": "101 Pending"
   },
-  "next_action_required": "Manual re-login to wrtn.ai on Chrome profile, then re-queue iter10",
-  "timestamp": "2026-05-15T14:38:00+09:00",
+  "post_send_observations": {
+    "send_button_clicks": 2,
+    "messages_post_fired": false,
+    "socket_c2s_frame_fired": false,
+    "prompt_cleared_from_input": false,
+    "ai_response_visible": false,
+    "block_text_in_dom": false,
+    "dom_msg_elements": 2,
+    "send_button_disabled": false,
+    "wrtn_helper_loaded": false,
+    "wrtn_window_keys": [],
+    "console_errors_specific_to_helper": "none — helper never loaded so no helper logs"
+  },
+  "iter10_envelope_test_status": "UNTESTED — helper script absent in user's Chrome, no c2s frame to intercept",
+  "next_action_required": "Helper script delivery for organic Chrome must be solved (e.g. bookmarklet, content script, or accept that test must use framework-launched Chrome and re-login that profile). Until then, iter10 evidence-based startChat envelope (42/v1/chat,1[startChat,{chatId,content,clientHeaders}]) cannot be validated.",
+  "screenshots": [
+    "results/976_screenshots/after_send.png"
+  ],
+  "timestamp": "2026-05-15T14:44:00+09:00",
   "target_pc": "pc1"
 }
