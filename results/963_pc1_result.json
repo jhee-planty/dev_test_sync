@@ -1,0 +1,11 @@
+{
+  "id": 963,
+  "command": "check-warning",
+  "service": "wrtn",
+  "verdict": "FAIL_AUTH",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "Password keyword FP fix CONFIRMED WORKING — was able to type and submit password 'TestPass123!@#' on signup/security page (previously blocked by APF). After password set, redirected to wrtn.ai/onboarding which is a 4-step onboarding wizard: (1) nickname (entered '테스터'), (2) profession (selected '개발자'), (3) birthdate (auto-filled '1990-0'), (4) phone number SMS verification with auto-populated phone '01045888016' showing '인증번호가 전송되었어요' (verification code sent) and 5:00 timer. Cannot proceed past step 4 — requires SMS OTP delivered to a real phone we do not have access to. Therefore unable to reach the chat UI to submit the PII RRN prompt. Verdict FAIL_AUTH because chat is unreachable (signup blocked by SMS verification, NOT by APF). Recommend dev side configure a test account that bypasses SMS, or pre-provision a logged-in session before re-running check-warning for wrtn.",
+  "timestamp": "2026-05-15T09:55:00+09:00",
+  "target_pc": "pc1"
+}
