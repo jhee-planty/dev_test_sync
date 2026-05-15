@@ -1,0 +1,12 @@
+{
+  "id": 960,
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "verdict": "FAIL_AUTH",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "Edge launched and navigated to https://m365.cloud.microsoft/chat which redirected to https://login.microsoftonline.com/common/oauth2/v2.0/authorize (Microsoft work-account sign-in page). User session is NOT active in Edge profile 1. Saved passkey for jhee28@plantynet.com is offered but completing it triggers a Windows Hello 'PIN을 입력하세요' modal dialog that blocks all automated interaction (no PIN available to worker). Cancel via ESC and SendKeys did not dismiss the modal — login is hard-gated behind user interaction. Cannot reach m365_copilot chat UI to submit prompt; therefore neither WSS connection to substrate.office.com/m365Copilot/Chathub nor any APF engine activity could be exercised. PII prompt was NEVER submitted. Recurring auth issue for this service — needs user-side login (PIN entry) before automated worker can verify. after_send.png captures the Windows Hello PIN modal blocking the OAuth flow.",
+  "timestamp": "2026-05-15T09:19:00+09:00",
+  "target_pc": "pc1"
+}
