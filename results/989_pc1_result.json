@@ -1,0 +1,11 @@
+{
+  "id": 989,
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "iter6 referer-capture + {{REFERER_QUERY_PARAM:id}} project_id template did NOT fix the Nuxt SPA error boundary catch. Same FAIL_NOT_RENDERED pattern as #872/#947/#949/#950/#953. Auth confirmed OK ('User already logged in' console log). After submitting PII prompt, URL navigated to /agents?type=super_agent&action=init-agent (Genspark Super Agent) — note URL has NO 'id' query param (only type and action), so REFERER_QUERY_PARAM:id template extraction would yield empty/null, which may explain why warning frame isn't matched to current session. User prompt is shown in chat ('내 주민등록번호는 901010-1234567 입니다') and immediately followed by 'Failed to load component / Please try refreshing the page' Nuxt error UI (multiple stacked error blocks visible). NO 'helper' / 'inject' / 'hook' / 'APF' globals detected on window — only native 'genspark_page_id'. This means the engine SSE rewrite is happening at network layer (etap MITM) but Nuxt's response parser still rejects the modified payload as malformed and triggers component error boundary. The SSE schema rewrite path (without a frontend helper to swap content cleanly) cannot succeed against this Nuxt parser. Recommendation for iter7: either (a) inject a frontend helper script that intercepts SSE before Nuxt sees it, or (b) rewrite SSE to be schema-valid genspark_event so Nuxt parses without throwing then surface warning via assistant text channel.",
+  "timestamp": "2026-05-15T19:07:00+09:00",
+  "target_pc": "pc1"
+}
