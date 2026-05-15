@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "Wrtn iter 15 — ACK bundle response 43/v1/chat,<ack_id>[{userMessage,assistantMessage with warning}] matching user's startChat ack_id (extracted from c2s buffer)"
+  },
+  "id": "981",
+  "created": "2026-05-15T07:07:15Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
