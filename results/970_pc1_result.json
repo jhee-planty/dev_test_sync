@@ -1,0 +1,30 @@
+{
+  "id": 970,
+  "command": "check-warning",
+  "service": "chatglm",
+  "url": "https://chatglm.cn/",
+  "verdict": "PARTIAL_THINK_ONLY",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "rrn_decoding_streamed": false,
+  "iteration": 7,
+  "envelope_flow": "3-event (init -> think:init -> text:finished)",
+  "observations": {
+    "think_bubble_visible": true,
+    "think_bubble_label": "思考中...",
+    "think_bubble_transitioned_to_text": false,
+    "text_bubble_visible": false,
+    "warning_text_present": false,
+    "stop_button_still_active": true,
+    "wait_duration_observed_s": 70
+  },
+  "comparison_to_968": {
+    "iter6_state": "PARTIAL — engine fired, RRN decoding suppressed, but full Korean RRN-decoding response was previously visible (residual chat history showed it)",
+    "iter7_change": "3-event envelope flow attempted to satisfy React state-machine think->text transition",
+    "iter7_outcome": "Stuck at think state (思考中...) — never transitions to text bubble. Engine intercept successfully suppressed RRN decoding (no PII leaked), but text replacement bubble with '차단' warning did not render. React state-machine appears blocked at think state; envelope flow incomplete or React not consuming the text:finished event."
+  },
+  "notes": "iter7 shows IMPROVEMENT in security (no RRN decoding streamed, unlike previous full-decoding history visible from prior iterations) but FAILS to render warning text. Page header shows '思考中...' with stop-button (square icon) remaining active for 70+ seconds — React never advances out of think state. The text:finished event is either not arriving, not parsed correctly, or React reducer not handling the think->text transition. Suggest: (a) verify SSE frame schema 'data:  <json>\\n' DOUBLE-SPACE is correctly used in text:finished frame, (b) inspect React reducer for think->text gate, (c) consider sending intermediate text:streaming frame before text:finished to nudge React.",
+  "timestamp": "2026-05-15T11:54:30+09:00",
+  "target_pc": "pc1",
+  "screenshot_path": "results/970_screenshots/after_send.png"
+}
