@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "ChatGLM iter 10 — Vue3/Vuex4 Phase 4 evidence-based 5-event flow. Events: init -> think:init -> think:finish -> tool_calls:finish -> text:finish. All 3 phases (think/tool_calls/text) reach content_status=finish per real success-case state machine. status='finish' (not 'finished') per success-case observation. Each phase has its own logic_id. model=moe_5l."
+  },
+  "id": "984",
+  "created": "2026-05-15T08:04:21Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}

@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-15T07:37:37Z",
+  "last_updated": "2026-05-15T08:04:21Z",
   "tasks": [
     {
       "id": "531",
@@ -4576,6 +4576,22 @@
       "status": "pending",
       "created": "2026-05-15T07:37:37Z",
       "updated": "2026-05-15T07:37:37Z",
+      "summary": "check-warning request",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "984",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-15T08:04:21Z",
+      "updated": "2026-05-15T08:04:21Z",
       "summary": "check-warning request",
       "target_pc": "pc1",
       "pc1_status": "pending",
