@@ -1,0 +1,61 @@
+{
+  "id": 979,
+  "command": "check-warning",
+  "service": "wrtn",
+  "iteration": 12,
+  "envelope_under_test": "endChat (REAL EVIDENCE-BASED s2c)",
+  "verdict": "INCONCLUSIVE_no_helper",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "iter12 BREAKTHROUGH candidate (event=endChat, format=42/v1/chat,[endChat,{id,chatId,content:{type:text,text}}]) could NOT be evaluated. Same blocker as iter10/iter11: only one Chrome window open on test PC = user's organic browser (PID 15768, title '안녕하세요 - Chrome', URL https://wrtn.ai/c/6a06be1f203b37d863ebed1d, profile 장희). NO Edge or framework-launched Chrome exists. DevTools console eval confirmed window.__APFHelper===undefined, window.__wrtnHelper===undefined, window.__APFRuntime===undefined, Object.keys(window).filter(k=>/apf|wrtn|helper|protect/i)=[]. Auth IS valid (avatar visible, no 로그인 button, unleash-edge isLogin=true, WSS wrtn.socket.io 101 connected). Did hard reload (Ctrl+Shift+R) and re-installed manual WebSocket constructor wrapper hook BEFORE clicking Send — but the existing socket-io connection had been re-established by Next.js _app bundle BEFORE my hook took effect, so my hook never wrapped the live socket. Typed PII prompt into input box (id 38, value confirmed), clicked orange Send button (id 41 at 959,933) — same iter10 symptom: prompt remained in input box, NO chat bubble appeared, NO new messages POST or socket frame fired (1142→1148 requests, all unrelated tracking). DOM probe confirms: block=false, loginVisible=false, inputValue still has full prompt, msgCount=5 (only 안녕하세요 exchange + structural placeholders), helperLoaded=false, hookCap=0. Without a helper to either intercept the c2s frame OR synthesize an s2c endChat envelope into the live socket, the BREAKTHROUGH question 'does endChat envelope render warning?' is UNTESTABLE in this Chrome instance. Two independent failure modes confirmed: (a) React submit handler is not triggered by programmatic Click on the Send button (likely due to React synthetic event requirements / framework_launched click semantics), and (b) helper script absent so even if c2s went out, no inject path. Comparison vs prior iters: same as iter10 retry (#976) and identical no-helper status. iter12 envelope hypothesis remains UNVALIDATED.",
+  "preflight": {
+    "url_loaded": "https://wrtn.ai/c/6a06be1f203b37d863ebed1d",
+    "chrome_window_title": "안녕하세요 - Chrome",
+    "chrome_pid": 15768,
+    "chrome_profile": "장희",
+    "edge_window_present": false,
+    "framework_chrome_present": false,
+    "avatar_visible": true,
+    "login_button_visible": false,
+    "chat_input_visible": true,
+    "input_value_pre_set": false,
+    "input_value_post_type": true,
+    "wss_connected": true,
+    "wss_url": "wss://api.wrtn.ai/wrtn.socket.io/?EIO=4&transport=websocket",
+    "wss_status": "101 Pending",
+    "hard_reload_performed": true,
+    "ws_constructor_hook_installed_pre_send": true
+  },
+  "post_send_observations": {
+    "send_button_clicks": 1,
+    "messages_post_fired": false,
+    "socket_c2s_frame_fired": false,
+    "prompt_cleared_from_input": false,
+    "ai_response_visible": false,
+    "block_text_in_dom": false,
+    "dom_msg_elements": 5,
+    "send_button_disabled": false,
+    "wrtn_helper_loaded": false,
+    "apf_helper_loaded": false,
+    "ws_hook_capture_count": 0,
+    "ws_hook_caught_existing_socket": false,
+    "console_errors_specific_to_helper": "none — helper never loaded",
+    "endChat_frame_observed": false
+  },
+  "iter12_envelope_test_status": "UNTESTED — helper script absent in user's Chrome AND React Send-button click never propagated, so no c2s frame went out to elicit any s2c (endChat or otherwise). The endChat hypothesis cannot be validated in this environment.",
+  "next_action_required": "CRITICAL: framework-launched Chrome with helper script preinstalled is required to test iter12 endChat envelope. Without it, every wrtn iter (10/11/12) lands at INCONCLUSIVE_no_helper. Options: (a) add Chrome extension content script that injects helper on wrtn.ai, (b) bookmarklet workflow where user manually triggers helper before each test, (c) puppeteer/playwright launch with --remote-debugging-port and CDP injection, or (d) accept that test PC must spin up a separate framework Chrome with re-login (per #976 path). Until the helper delivery mechanism for organic Chrome is solved, queueing more wrtn check-warning requests on this Chrome will yield identical INCONCLUSIVE_no_helper.",
+  "comparison_to_prior_iters": {
+    "iter6_iter8": "PARTIAL — engine fired+inject but invisible bubble (framework Chrome WITH helper)",
+    "iter9": "diagnostic — captured c2s frame format via helper",
+    "iter10_first": "FAIL_AUTH (framework Chrome auth expired)",
+    "iter10_retry_976": "INCONCLUSIVE_no_helper (organic Chrome, no helper)",
+    "iter11": "skipped",
+    "iter12_979_this": "INCONCLUSIVE_no_helper (organic Chrome, no helper) — same as #976"
+  },
+  "screenshots": [
+    "results/979_screenshots/before_inject.png",
+    "results/979_screenshots/after_send.png"
+  ],
+  "timestamp": "2026-05-15T15:50:00+09:00",
+  "target_pc": "pc1"
+}
