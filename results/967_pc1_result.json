@@ -1,0 +1,11 @@
+{
+  "id": 967,
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "FAIL",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "ChatGLM iter5 envelope content fix (multi-event init+finished + space-format created_at) did NOT work. Compared to #961 FAIL_PROTOCOL (HTTP2 protocol error / SSE schema mismatch causing transport-level break), iter5 envelope progressed beyond protocol failure — there is NO ERR_HTTP2_PROTOCOL_ERROR this time and the SSE stream connected cleanly. However the APF engine did NOT fire any block/warning at all: the LLM streamed a full, detailed Korean response decoding the RRN 901010-1234567 (birthdate 1990-10-10, male, Korean citizen, regional code 234, sequential 56, check digit 7), with extensive thought-trace also visible. No '차단' text anywhere in DOM, no warning bubble injected, no error page, no replacement message. Anonymous chat mode at /main/alltoolsdetail confirmed (visitor name '访客_31fd04', no login wall). Endpoint /chatglm/mainchat-api/ as expected. Conclusion: iter5 envelope was sufficient to keep the SSE transport alive (no more #961-style protocol break), but the warning content itself is not being injected into the visible chat stream — either APF is not detecting/intercepting this conversation, or the injected envelope is being consumed-but-not-rendered by the chatglm frontend (parts[0].content[0].text path not honored as planned). Need iter6 to verify whether envelope reached the engine logs and how the frontend renders parts[0].content[0].text vs .think.",
+  "timestamp": "2026-05-15T11:16:30+09:00",
+  "target_pc": "pc1"
+}
