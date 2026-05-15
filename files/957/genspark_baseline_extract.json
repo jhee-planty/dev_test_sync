@@ -1,0 +1,39 @@
+{
+  "_NOTE": "Auth-blocked baseline capture for #957. Test PC Chrome session is NOT logged into genspark.ai, so /api/agent/ask_proxy returned 401 Unauthorized instead of an SSE stream. Schema fields below were observed via DevTools Console fetch test (shape verified) and from prior iteration knowledge — actual SSE chunks could not be captured.",
+  "streaming_endpoint_url": "https://www.genspark.ai/api/agent/ask_proxy",
+  "request_method": "POST",
+  "request_body_sample": {
+    "type": "COPILOT_AGENT_CHAT",
+    "messages": [
+      {
+        "role": "user",
+        "content": [{"type": "text", "text": "안녕하세요 테스트입니다"}]
+      }
+    ]
+  },
+  "request_body_sample_AS_SENT_via_devtools_fetch": "{\"type\":\"COPILOT_AGENT_CHAT\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"안녕하세요\"}]}]}",
+  "raw_chunks_baseline_sample": [],
+  "type_discriminant": "UNKNOWN_auth_blocked",
+  "content_path": "UNKNOWN_auth_blocked",
+  "terminator_pattern": "UNKNOWN_auth_blocked",
+  "chunks_count": 0,
+  "auth_state": {
+    "logged_in": false,
+    "evidence_devtools_console_fetch": "POST https://www.genspark.ai/api/agent/ask_proxy 401 (Unauthorized) — STATUS 401",
+    "cookies_observed_genspark_domain_only_telemetry": "ai_user, ai_session, sidebar_expanded, agree_terms, gslogin=0, snexid, snexid_r, _twpid, _yjsu_yjad, _gcl_au, _ga, _tt_enable_cookie, _ttp, _clck, __stripe_mid, __stripe_sid, _ga_VL3SBJOYOF, g_state, ttcsid, _uetsid, _uetvid, _clsk (all telemetry/marketing — NO auth/session token)",
+    "login_modal_blocking_chat_input": true,
+    "login_modal_required_actions": ["Google로 계속하기", "Apple로 계속하기", "더 많은 옵션"]
+  },
+  "har_observed": {
+    "ask_proxy_in_har": false,
+    "har_export_caveat": "DevTools 'Export HAR (sanitized)' captured only currently-filtered visible entries (Network filter was set to 'track' from prior session). HAR contains 3 unrelated tver.jp ad-tracking entries. The Console-issued fetch to ask_proxy was visible in Console (status 401) but not preserved in the exported HAR because export ran after page navigated to accounts.google.com OAuth flow.",
+    "har_size_bytes": 168655
+  },
+  "blocker": "test_pc_genspark_session_logged_out",
+  "remediation_required_dev_side": [
+    "Option A: User logs into genspark.ai on test PC Chrome (Google or Apple account) once — session persists for future captures",
+    "Option B: Provide pre-existing genspark session cookies (sessionid, csrf_token, etc.) for injection",
+    "Option C: Use a different already-authenticated genspark account on the test PC"
+  ],
+  "comparison_baseline_for_4_prior_FAILs": "Cannot establish — auth must be resolved first. Suggest re-issuing #957 after test PC user manually logs in once."
+}

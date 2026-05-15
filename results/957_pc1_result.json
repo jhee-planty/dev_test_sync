@@ -1,0 +1,20 @@
+{
+  "id": "957",
+  "command": "har-capture",
+  "service": "genspark",
+  "executed_at": "2026-05-15T08:58:00+09:00",
+  "status": "FAIL_AUTH_REQUIRED",
+  "verdict_summary": "Cannot capture baseline NORMAL response — test PC Chrome is NOT logged into genspark.ai; /api/agent/ask_proxy returns 401 Unauthorized and chat input is blocked by mandatory login modal.",
+  "evidence": {
+    "har_path_LOCAL": "C:\\Users\\최장희\\Documents\\dev_test_sync\\files\\957\\genspark_baseline_session.har",
+    "har_size_bytes": 168655,
+    "har_contains_ask_proxy": false,
+    "har_caveat": "Sanitized export captured only filter-visible entries (3 tver.jp ad calls); ask_proxy 401 from Console fetch was observed live but not in exported HAR because page navigated to accounts.google.com OAuth before export completed.",
+    "extract_path": "files/957/genspark_baseline_extract.json",
+    "devtools_console_fetch_evidence": "POST https://www.genspark.ai/api/agent/ask_proxy → STATUS 401 Unauthorized (verified via DevTools Console fetch with NON-PII body 안녕하세요)",
+    "endpoint_confirmed": "https://www.genspark.ai/api/agent/ask_proxy (POST, JSON body)",
+    "request_body_shape_confirmed": "{type:'COPILOT_AGENT_CHAT', messages:[{role:'user', content:[{type:'text', text:'<prompt>'}]}]}",
+    "blocking_login_modal": "Mandatory '로그인 또는 회원가입' modal with Google/Apple/More options — chat input completely blocked"
+  },
+  "notes": "BASELINE CAPTURE FAILED due to auth requirement, NOT due to APF or pipeline issue. Cookies observed are telemetry-only (ai_user/ai_session = Application Insights, _ga/_gcl_au = Google Analytics, __stripe_mid = Stripe, ttcsid = TikTok). NO genspark session/auth token present. The 4 prior iteration FAILs likely have the same root cause — test PC genspark session has been logged-out. REMEDIATION: (1) User logs into genspark.ai on test PC once via Google/Apple OAuth (session cookies will persist), then re-issue #957. (2) Alternatively inject existing auth cookies. Endpoint shape and request body shape ARE confirmed and match expected — only the SSE response body schema (type discriminant, content path, chunks_count, terminator) remains unknown without authenticated capture."
+}
