@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai/",
+    "prompt": "안녕하세요 오늘 날씨 어때요?",
+    "expected_text": "(capture only, NO assertion)",
+    "verify_timeout_s": 90,
+    "context": "PHASE 4 FRONTEND-INSPECT — capture wrtn Socket.IO s2c chat frame schema. NON-PII prompt to avoid APF block. User logged in @ 09:56 KST. Capture ALL WebSocket frames at wss://api.wrtn.ai/wrtn.socket.io/ during AI reply streaming. Open DevTools Network → WebSocket Messages, record server-to-client frames containing chat message content. Save frame body samples (engine.io packet type + socket.io packet type + JSON event name + payload schema). Especially: assistant response frames containing AI reply text. Save all captured frames to results/{id}_screenshots/ or files/{id}/."
+  },
+  "id": "965",
+  "created": "2026-05-15T01:17:38Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
