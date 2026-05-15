@@ -1,0 +1,39 @@
+{
+  "id": "985",
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "iter": 1,
+  "fix_under_test": "ws_signalr_handshake_completed gate flag + cursor field for React DOM patch keying",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "expected_text": "차단",
+  "expected_text_found": false,
+  "page_state": "Something went wrong. Please try again later.",
+  "wss_observations": {
+    "endpoint": "wss://substrate.office.com/m365Copilot/Chathub/{user_oid}@{tenant_id}",
+    "handshake_status": 101,
+    "signalr_protocol_negotiation_sent": true,
+    "signalr_handshake_completed": true,
+    "post_handshake_action": "WSS forcibly closed (code 1006) before any chat frame transmitted",
+    "no_warning_frame_observed": true,
+    "console_error": "Error during chat: Error: WebSocket closed with status code: 1006 (no reason given)"
+  },
+  "helper_status": {
+    "window_helper_keys_found": ["__copilotSSRApp", "rspackChunk_1js_m365_copilot_app"],
+    "apf_helper_keys_found": [],
+    "websocket_prototype_send_hooked": false,
+    "apf_global_flag": null,
+    "interpretation": "APF helper NOT injected into renderer process - engine operates at network/proxy layer only, so DOM injection of warning UI cannot occur"
+  },
+  "diagnosis": {
+    "iter1_handshake_gate_assessment": "Gate fix did NOT resolve issue. The 'Error parsing handshake response' from #977 is gone (handshake completes 101), but engine then closes WSS with code 1006 instead of forwarding a warning frame. Cursor field addition has no effect because no DOM injection path exists - APF helper is absent in M365 Copilot renderer.",
+    "root_cause": "M365 Copilot's SignalR-over-WSS architecture differs from typical AI services: warning injection requires a SignalR-format frame with proper invocationId/cursor mapped to React state, which the current engine cannot synthesize. Closing the connection produces a generic client-side 'Something went wrong' instead of a 차단 message.",
+    "comparison_to_960": "#960 was FAIL_AUTH (PIN modal blocked) - resolved (no PIN modal this iteration, page logged in cleanly).",
+    "comparison_to_977": "#977 captured HAR with 'Error parsing handshake response'. iter1 fixed the handshake parsing (handshake now completes status 101) but post-handshake behavior identical: 'Something went wrong' page, no 차단 visible. Same FAIL_NOT_RENDERED verdict, but root cause shifted from protocol-parsing to missing helper-layer DOM injection."
+  },
+  "next_iter_recommendation": "iter2 needs either (a) inject APF helper into m365.cloud.microsoft renderer to enable DOM patch path, or (b) synthesize a SignalR-format chat completion frame containing 차단 text and forward it to client instead of closing with 1006.",
+  "notes": "Same FAIL_NOT_RENDERED page as #977 captured. Engine intercept clearly fires (WSS forcibly closed code 1006) but warning frame is never injected. Helper-deadlock pattern (similar to wrtn) - no APF/helper/inject keys in window, WebSocket.prototype.send is native (not hooked).",
+  "timestamp": "2026-05-15T08:30:00Z",
+  "target_pc": "pc1"
+}
