@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "ChatGLM iter 6 path correction — multi-pattern path_patterns now includes /chatglm/mainchat-api/ (actual chat endpoint per #967 evidence) AND /chatglm/backend-api/assistant/stream (legacy/assistant flow). Engine intercept should fire on real chat traffic now."
+  },
+  "id": "968",
+  "created": "2026-05-15T02:21:50Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
