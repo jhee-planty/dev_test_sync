@@ -1,0 +1,11 @@
+{
+  "id": 983,
+  "command": "check-warning",
+  "service": "wrtn",
+  "verdict": "INCONCLUSIVE_no_helper",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "7th consecutive INCONCLUSIVE_no_helper (#976/#979/#980/#981/#982 + #976 retry, now #983). Per task instructions, did NOT submit prompt because no helper present. Helper preflight on tab 076C62E3EEE83076367625C60001BA07 (https://wrtn.ai/c/6a06cccf248440ee3cde92b3): keys=[] (no APF/wrtn/helper/inject/hook/interceptor/plantynet/warning matches), wsNative=true (WebSocket NOT wrapped — no interceptor installed), __APF_renderWarning=undefined, __apfHelper=undefined, __APF_INJECTED=undefined, __VT=undefined, __APF_READY=false. iter17 three-frame flow (ACK + generateMessage chunk + endChat with same msg_id) cannot be exercised because the user-launched CDP-exposed Chrome has no APF helper or WebSocket interceptor — same architectural blocker as iter11–iter16. ESCALATE — recommend wrtn architectural FREEZE; further iterations on this Chrome instance will continue to be INCONCLUSIVE_no_helper until either (a) a framework-launched Chrome with APF inject is used, or (b) helper bootstrap is performed manually before each test.",
+  "timestamp": "2026-05-15T07:50:59Z",
+  "target_pc": "pc1"
+}
