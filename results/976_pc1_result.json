@@ -1,0 +1,21 @@
+{
+  "id": 976,
+  "command": "check-warning",
+  "service": "wrtn",
+  "iteration": 10,
+  "verdict": "FAIL_AUTH",
+  "warning_rendered": false,
+  "engine_intercept_fired": null,
+  "notes": "Pre-flight FAIL_AUTH: after Ctrl+Shift+R hard reload of https://wrtn.ai/, top-right shows '로그인' (login) and '무료로 회원가입' (free signup) buttons — NOT the user avatar. Wrtn session has been invalidated/expired since iter6-9. Cannot test the iter10 evidence-based startChat envelope (format: 42/v1/chat,1[startChat,{chatId,content,clientHeaders}]) because the c2s frame requires an authenticated WebSocket session — without login, no Socket.IO handshake completes, so the helper has no frame to intercept. BREAKTHROUGH attempt blocked by auth state, NOT by protocol mismatch. Compared to iters 6-8 PARTIAL (engine fired but bubble invisible) and iter9 diagnostic — this iter cannot produce evidence either way until session is re-established. User must re-login to wrtn.ai on this Chrome profile before iter10 can run.",
+  "preflight": {
+    "url_loaded": "https://wrtn.ai/",
+    "avatar_visible": false,
+    "login_button_visible": true,
+    "signup_button_visible": true,
+    "chat_input_visible": true,
+    "input_placeholder": "무엇이든 물어보세요"
+  },
+  "next_action_required": "Manual re-login to wrtn.ai on Chrome profile, then re-queue iter10",
+  "timestamp": "2026-05-15T14:38:00+09:00",
+  "target_pc": "pc1"
+}
