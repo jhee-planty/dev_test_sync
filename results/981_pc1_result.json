@@ -1,0 +1,11 @@
+{
+  "id": 981,
+  "command": "check-warning",
+  "service": "wrtn",
+  "verdict": "INCONCLUSIVE_no_helper",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "iter15 ACK bundle response approach (43/v1/chat,<ack_id>[{userMessage,assistantMessage with warning}]) cannot be tested — helper-delivery mechanism absent in browser. CDP probe on framework-launched browser tab (https://wrtn.ai/c/6a06c41344a5f328540e472a) returned: helperKeys=[] (no APF/wrtn/helper/inject/hook/interceptor/plantynet window keys), wsNative=true (window.WebSocket is native [native code], NOT wrapped by helper), fetchNative=false (fetch is wrapped — likely Next.js/wrtn internal instrumentation, not APF), ioType=undefined (Socket.IO 'io' not exposed globally), plantynet=undefined (no __plantynet__ global), apfRT=undefined (no __APFHruntime global). Per workflow step 5, prompt was NOT submitted to avoid muddying the signal. This is the 5th CONSECUTIVE INCONCLUSIVE_no_helper finding (#976, #979, #980, plus prior — now #981). DEFINITIVE ARCHITECTURAL BLOCKER CONFIRMED: without a helper-delivery mechanism injecting APF hooks into the wrtn page context, iter15 ACK bundle envelope is fundamentally untestable regardless of how perfect the Socket.IO 43 ACK frame format is. Recommend pivoting from envelope-iteration approach to addressing root-cause: helper injection mechanism for wrtn (CSP/Trusted Types/page-context isolation barriers must be diagnosed and resolved before any further envelope iterations can yield signal).",
+  "timestamp": "2026-05-15T16:20:00+09:00",
+  "target_pc": "pc1"
+}
