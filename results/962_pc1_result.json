@@ -1,0 +1,12 @@
+{
+  "id": "962",
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "DUPLICATE_OF_961",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "Identical params + context as #961 (created 22s apart: 961=00:09:04Z, 962=00:09:26Z). Single test execution covers both. See #961 result: FAIL_PROTOCOL — anonymous chat at chatglm.cn root (auto-redirects to /main/alltoolsdetail guest mode) uses endpoint `/chatglm/mainchat-api/` NOT `/chatglm/backend-api/assistant/stream`. APF iter4 path_patterns mismatched, SSE died with net::ERR_HTTP2_PROTOCOL_ERROR. RECOMMENDATION: APF iter5 should re-narrow path_patterns to `/chatglm/mainchat-api/`.",
+  "timestamp": "2026-05-15T09:35:00Z",
+  "target_pc": "pc1",
+  "duplicate_of": "961"
+}
