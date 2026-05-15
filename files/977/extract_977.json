@@ -1,0 +1,3779 @@
+{
+  "service": "m365_copilot",
+  "request_id": 977,
+  "capture_url": "https://m365.cloud.microsoft/chat",
+  "prompt_submitted": "내 주민등록번호는 901010-1234567 입니다",
+  "expected_block_pattern": "Something went wrong. Please try again later.",
+  "observed_block_pattern_in_dom": "Copilot — Something went wrong. Please try again later.",
+  "observed_console_error": "Uncaught (in promise) Error: Error parsing handshake response",
+  "console_error_source": "72675.4ae809aa.chunk.js (g._processHandshakeResponse)",
+  "har_meta": {
+    "har_version": "1.2",
+    "creator": {
+      "name": "WebInspector",
+      "version": "537.36"
+    },
+    "total_entries": 81,
+    "substrate_chathub_count": 17
+  },
+  "substrate_chathub_frames": [
+    {
+      "index": 0,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "/gKIyBufIeZP0IEk2O3HkQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0126"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "Bek8tOs23tA9MP/nRwvkBA.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "b43ce905-36eb-d0de-3d30-ffe7470be404"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=36"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:53:56 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "xTcbI2MUh3Klt4tTUop667ppLK0="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 9812.67499999376,
+      "started_dateTime": "2026-05-15T05:53:58.154Z",
+      "ws_message_count": 54,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824438.17938,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824438.194026,
+          "opcode": 1,
+          "dataLength": 3
+        },
+        {
+          "type": "send",
+          "time": 1778824438.1947129,
+          "opcode": 1,
+          "dataLength": 11
+        },
+        {
+          "type": "send",
+          "time": 1778824438.208309,
+          "opcode": 1,
+          "dataLength": 2866
+        },
+        {
+          "type": "receive",
+          "time": 1778824438.3462188,
+          "opcode": 1,
+          "dataLength": 267
+        },
+        {
+          "type": "receive",
+          "time": 1778824440.475088,
+          "opcode": 1,
+          "dataLength": 627
+        },
+        {
+          "type": "receive",
+          "time": 1778824440.539284,
+          "opcode": 1,
+          "dataLength": 100
+        },
+        {
+          "type": "receive",
+          "time": 1778824440.668117,
+          "opcode": 1,
+          "dataLength": 105
+        },
+        {
+          "type": "receive",
+          "time": 1778824440.829887,
+          "opcode": 1,
+          "dataLength": 100
+        },
+        {
+          "type": "receive",
+          "time": 1778824440.930105,
+          "opcode": 1,
+          "dataLength": 107
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.0643408,
+          "opcode": 1,
+          "dataLength": 103
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.1940649,
+          "opcode": 1,
+          "dataLength": 110
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.323762,
+          "opcode": 1,
+          "dataLength": 108
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.461876,
+          "opcode": 1,
+          "dataLength": 104
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.56893,
+          "opcode": 1,
+          "dataLength": 110
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.6953359,
+          "opcode": 1,
+          "dataLength": 106
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.8238158,
+          "opcode": 1,
+          "dataLength": 106
+        },
+        {
+          "type": "receive",
+          "time": 1778824441.930809,
+          "opcode": 1,
+          "dataLength": 106
+        },
+        {
+          "type": "receive",
+          "time": 1778824442.036274,
+          "opcode": 1,
+          "dataLength": 104
+        },
+        {
+          "type": "receive",
+          "time": 1778824442.166929,
+          "opcode": 1,
+          "dataLength": 104
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "0DA8aWnnIvAYha8MDvTlAQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0119"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "u4Q18R4Ifzt41VW+jx3xoA.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "f13584bb-081e-3b7f-78d5-55be8f1df1a0"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=52"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:07 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "M3plB64Lzcck+8BcSSPTXsGAqiQ="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 90.46800000942312,
+      "started_dateTime": "2026-05-15T05:54:08.001Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824448.0840719,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824448.08552,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "0YZ0s3NEb83cg/dxf07tpQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0120"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "flkuxHB6DZAKTAhliCoLlw.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "c42e597e-7a70-900d-0a4c-0865882a0b97"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=53"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:08 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "fEwSFOP/BJ11RkrAaUtb5ioLjE0="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 92.48700001626275,
+      "started_dateTime": "2026-05-15T05:54:08.626Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824448.7115989,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824448.713268,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "cVYt4A9ju8DKZQwCuFvolQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0126"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "GP4pBLdOx/02J2bH62U+ag.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "0429fe18-4eb7-fdc7-3627-66c7eb653e6a"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=54"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:08 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "9iXlxyNervtsPR2n5eY/aohXRa0="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 94.77500000502914,
+      "started_dateTime": "2026-05-15T05:54:09.250Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824449.335945,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824449.337471,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "OTbo90NNQXTWenSeVaNeDw=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0117"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "sFaiV8/pXDQXI+wQHP1hwA.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "57a256b0-e9cf-345c-1723-ec101cfd61c0"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=54"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:09 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "5EWrMslxlhLmiJ7kU8AfVHPy1Vo="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 105.53699999582022,
+      "started_dateTime": "2026-05-15T05:54:09.887Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824449.972052,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824449.9737992,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "1PZrO3sLUevPMOjPs+VGJg=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0124"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "5F2R27JsrkZTctaif93rKw.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "db915de4-6cb2-46ae-5372-d6a27fddeb2b"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=80"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:10 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "J+SYOBvS7E9Thnrz7LkxWEhXnkE="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 116.28899999777786,
+      "started_dateTime": "2026-05-15T05:54:10.034Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824450.1422598,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824450.143681,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "fDWQgNE7LychqAfFUz9V/g=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0124"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "wuGEOXmeYXuKdHJcVVEknw.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "3984e1c2-9e79-7b61-8a74-725c5551249f"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=54"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:10 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "g3/LGtiX/koMSRd8yZV043AYAG4="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 97.27299999212846,
+      "started_dateTime": "2026-05-15T05:54:10.708Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824450.7939832,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824450.801706,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "Kf+G4K3lNSYL+NpDJBRxog=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SEWP216CA0119"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "EU58LG/HG3LWujlkdbSd5g.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "2c7c4e11-c76f-721b-d6ba-396475b49de6"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=53"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:11 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "RgDPmkEasQND+hQ11eUS9sy5HAY="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 92.46399998664856,
+      "started_dateTime": "2026-05-15T05:54:11.352Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824451.436555,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824451.438057,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "QfctVxN0enDka/cEOparhQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0110"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "UeSAVJtFsLPBxZbjWIWRnQ.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "5480e451-459b-b3b0-c1c5-96e35885919d"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=55"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:11 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "VbHd3qVA9RE3cLVfzPsss0PaeAQ="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 97.84500001114793,
+      "started_dateTime": "2026-05-15T05:54:11.981Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824452.0693228,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824452.0707738,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "p4sSHVrdEPNl2WLVXdKxVQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0110"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "3L0qbxXBCVtYaAOQuWLQFw.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "6f2abddc-c115-5b09-5868-0390b962d017"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=51"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:11 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "DPrvNvxOjiVcFy+iRH4AoEGpRGw="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 88.16500002285466,
+      "started_dateTime": "2026-05-15T05:54:12.107Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824452.1880271,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824452.1897273,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "Ig5Tn58BISzw8uu0jsN9Ww=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0103"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "cxm6+u/J0waXRRl9PYtU/w.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "faba1973-c9ef-06d3-9745-197d3d8b54ff"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=60"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:12 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "2CwNCPBIa7V6CZSK6XuvewVX+bE="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 96.1550000065472,
+      "started_dateTime": "2026-05-15T05:54:12.727Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824452.816809,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824452.818342,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "xWLZ46GOKqtKUhroFQRWDg=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0103"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "EDc0+JOnzeMHSvwvvl+whw.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "f8343710-a793-e3cd-074a-fc2fbe5fb087"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=56"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:13 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "7h8+s12+0Z7UXxr0h/CKU4ABMPI="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 97.78499999083579,
+      "started_dateTime": "2026-05-15T05:54:13.357Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824453.444387,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824453.446061,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "Mr0olH4mDGMV/AEb+iLBcA=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0102"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "n7aFqW+HMPSqN3e2kxDqgw.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "a985b69f-876f-f430-aa37-77b69310ea83"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=61"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:13 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "jA4hsmYK2BQokwyRIBO2xEOKyNI="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 114.04099999344908,
+      "started_dateTime": "2026-05-15T05:54:13.998Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824454.0987399,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824454.102268,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "xNu/wtlDbQin0/H+Dw/VDQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0106"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "SgkbDHZc9R3IhGs7fTSexg.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "0c1b094a-5c76-1df5-c884-6b3b7d349ec6"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=64"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:14 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "/LNDJEum73eNczzc1BZIcvPVnEc="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 107.64299999573268,
+      "started_dateTime": "2026-05-15T05:54:14.136Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824454.230825,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824454.2322989,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "QW10v2SUrwFSqmCKNJC5/g=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0108"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "xF+ubevMOPMadluM0TsZhg.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "6dae5fc4-cceb-f338-1a76-5b8cd13b1986"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=101"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:14 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "JvzVflEfTlJChBvMlTEuMKZNygU="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 144.8789999994915,
+      "started_dateTime": "2026-05-15T05:54:14.778Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824454.913521,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824454.9153059,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "Eg4Rt4NGFoDlRNJBoCB1rQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0111"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "MVkIgzhdOmmg8vFSiDfG9g.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "83085931-5d38-693a-a0f2-f1528837c6f6"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=57"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:14 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "N3tLNVzsoRB5DfUVaGYYNIvYZqs="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 97.66699999454431,
+      "started_dateTime": "2026-05-15T05:54:15.462Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824455.550176,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824455.5519788,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "GET",
+      "host": "substrate.office.com",
+      "path": "/m365Copilot/Chathub/6f30b2b9-3b28-4bd0-8afc-ff25ff06bedd@b846c176-e75c-4b38-9b47-29e2f122b741",
+      "query_keys": [
+        "ConversationId",
+        "X-SessionId",
+        "XRoutingParameterSessionKey",
+        "access_token",
+        "agent",
+        "agentHost",
+        "chatsessionid",
+        "clientrequestid",
+        "licenseType",
+        "product",
+        "scenario",
+        "source",
+        "variants"
+      ],
+      "safe_query_summary": {
+        "chatsessionid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "XRoutingParameterSessionKey": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "clientrequestid": "d3fee61c-1b8f-4b52-81a3-bf1b3fbeb6c6",
+        "X-SessionId": "660a3c63-5bdb-77b4-e5ac-2649328b7e5b",
+        "ConversationId": "6d6262f8-282e-4666-9c28-bcd9d2235f28",
+        "access_token": "<REDACTED_JWT_LEN_3730>",
+        "source": "\"officeweb\"",
+        "product": "Office",
+        "agentHost": "Bizchat.FullScreen",
+        "licenseType": "Starter",
+        "agent": "web",
+        "scenario": "OfficeWebIncludedCopilot"
+      },
+      "response_status": 101,
+      "response_statusText": "Switching Protocols",
+      "response_httpVersion": "HTTP/1.1",
+      "request_headers_sanitized": [
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        },
+        {
+          "name": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "Sec-WebSocket-Key",
+          "value": "/ETO4tWUeyUQ3IfzKTTNSQ=="
+        },
+        {
+          "name": "Accept-Encoding",
+          "value": "gzip, deflate, br, zstd"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+        },
+        {
+          "name": "Sec-WebSocket-Version",
+          "value": "13"
+        },
+        {
+          "name": "Host",
+          "value": "substrate.office.com"
+        },
+        {
+          "name": "Sec-WebSocket-Extensions",
+          "value": "permessage-deflate; client_max_window_bits"
+        }
+      ],
+      "response_headers_sanitized": [
+        {
+          "name": "X-FEServer",
+          "value": "SE2P216CA0105"
+        },
+        {
+          "name": "X-FirstHopCafeEFZ",
+          "value": "ICN"
+        },
+        {
+          "name": "access-control-expose-headers",
+          "value": "Server-Timing,X-Envoy-Upstream-Service-Time,Mise-Correlation-Id"
+        },
+        {
+          "name": "x-envoy-upstream",
+          "value": "10.128.39.79:44344"
+        },
+        {
+          "name": "X-NanoProxy",
+          "value": "1"
+        },
+        {
+          "name": "MS-CV",
+          "value": "hZUKkQBSDWMXNVNoybQg5g.1"
+        },
+        {
+          "name": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "name": "Request-Id",
+          "value": "910a9585-5200-630d-1735-5368c9b420e6"
+        },
+        {
+          "name": "server-timing",
+          "value": "reqlatency;dur=65"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 15 May 2026 05:54:15 GMT"
+        },
+        {
+          "name": "Vary",
+          "value": "Origin"
+        },
+        {
+          "name": "X-Proxy-RoutingCorrectness",
+          "value": "1"
+        },
+        {
+          "name": "x-envoy-loadbalancerpolicy",
+          "value": "RequestHash-Query"
+        },
+        {
+          "name": "Upgrade",
+          "value": "websocket"
+        },
+        {
+          "name": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "name": "Access-Control-Allow-Headers",
+          "value": "Request-Id,X-BEPartition,X-FEServer"
+        },
+        {
+          "name": "content-security-policy",
+          "value": "default-src 'none'; base-uri 'none'; sandbox"
+        },
+        {
+          "name": "timing-allow-origin",
+          "value": "*"
+        },
+        {
+          "name": "Connection",
+          "value": "Upgrade"
+        },
+        {
+          "name": "access-control-allow-origin",
+          "value": "https://m365.cloud.microsoft"
+        },
+        {
+          "name": "X-BackEndHttpStatus",
+          "value": "101,101"
+        },
+        {
+          "name": "X-Proxy-BackendServerStatus",
+          "value": "101"
+        },
+        {
+          "name": "X-CalculatedBETarget",
+          "value": "PROD-S01-002-APAC-KOREACENTRAL.SUBSTRATE.COSMIC.OFFICE.NET"
+        },
+        {
+          "name": "Sec-WebSocket-Accept",
+          "value": "rXZNKzcRmkxAaYS1tD+PGtQmDjo="
+        },
+        {
+          "name": "Server",
+          "value": "Microsoft-HTTPAPI/2.0"
+        },
+        {
+          "name": "X-BEPartition",
+          "value": "ICN\\WW"
+        }
+      ],
+      "time_ms": 260.0150000071153,
+      "started_dateTime": "2026-05-15T05:54:16.104Z",
+      "ws_message_count": 2,
+      "ws_messages_meta": [
+        {
+          "type": "send",
+          "time": 1778824456.196775,
+          "opcode": 1,
+          "dataLength": 32
+        },
+        {
+          "type": "receive",
+          "time": 1778824456.1985328,
+          "opcode": 1,
+          "dataLength": 691
+        }
+      ]
+    }
+  ],
+  "substrate_other_endpoints_count": 12,
+  "substrate_other_endpoints_sample": [
+    {
+      "method": "POST",
+      "host": "substrate.office.com",
+      "path": "/search/api/v1/suggestions",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "host": "substrate.office.com",
+      "path": "/search/api/v1/suggestions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "host": "substrate.office.com",
+      "path": "/pacman/api/clientevents",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "host": "substrate.office.com",
+      "path": "/pacman/api/clientevents",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "host": "substrate.office.com",
+      "path": "/search/api/v1/events",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "host": "substrate.office.com",
+      "path": "/search/api/v1/events",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "host": "substrate.office.com",
+      "path": "/pacman/api/clientevents",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "host": "substrate.office.com",
+      "path": "/pacman/api/clientevents",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "host": "substrate.office.com",
+      "path": "/pacman/api/clientevents",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "host": "substrate.office.com",
+      "path": "/pacman/api/clientevents",
+      "status": 204
+    }
+  ]
+}
