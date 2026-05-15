@@ -1,0 +1,116 @@
+{
+  "captured_at": "2026-05-15T10:38+09:00",
+  "service": "wrtn",
+  "chat_url": "https://wrtn.ai/c/6a06753e3853cbb594752387",
+  "navigation_id_example": "6a06753e3853cbb594752387",
+  "agent_id_example": "69e1e5cdad56b6bc8d0a4112",
+  "transport_findings": {
+    "socket_io_used": false,
+    "raw_websocket_used": false,
+    "event_source_sse_used": false,
+    "service_worker_active": false,
+    "actual_transport": "HTTPS XHR + fetch (mixed). Streaming reply for AI text NOT captured by window.fetch / XHR.prototype monkey-patches — strongly suggests bundled SDK uses fetch reference captured at module-init time before any user-land hook can intercept.",
+    "filter_socket_io_match_count": 0,
+    "filter_socket_io_total_requests_observed": 104,
+    "fetch_hook_captured_chat_calls": 0,
+    "websocket_hook_captured_opens": 0,
+    "eventsource_hook_captured_opens": 0,
+    "xhr_hook_captured_chat_calls": 4
+  },
+  "endpoint_observations": [
+    {
+      "url_pattern": "https://api.wrtn.ai/wrtn/v1/chat-agent",
+      "method": "GET",
+      "transport": "xmlhttprequest",
+      "duration_ms_observed": [72, 75, 76],
+      "transferSize": 0,
+      "content_type": "application/json; charset=utf-8",
+      "purpose": "Fetch agent (서포터 / supporter character) configuration; returned len 466 sample below",
+      "response_sample_decoded": {
+        "id": "69e1e5cdad56b6bc8d0a4112",
+        "name": "서포터",
+        "speechStyle": "polite",
+        "skin": {
+          "alias": "fox",
+          "originFileExtension": null,
+          "originFileUuid": null,
+          "source": {
+            "thumbnail": "https://cdn-wrtn-api.wrtn.ai/chat-agent-skin-assets/fox.webp",
+            "origin": "https://cdn-wrtn-api.wrtn.ai/chat-agent-skin-assets/fox.png"
+          }
+        },
+        "theme": {
+          "alias": "red",
+          "gradient": ["#F72F08", "#E78D43"],
+          "colors": ["#D33717"]
+        },
+        "face": null,
+        "createdAt": "2026-04-17T07:48:29.628Z",
+        "updatedAt": "2026-04-17T07:48:29.628Z"
+      }
+    },
+    {
+      "url_pattern": "https://api.wrtn.ai/wrtn/v1/chat-agent/messages?navigationId={chatId}",
+      "method": "POST(presumed)",
+      "transport": "xmlhttprequest (per first observation in performance buffer)",
+      "duration_ms_observed": [105],
+      "purpose": "User-message dispatch endpoint (sends prompt). Triggered exactly once per user prompt. NOT a long-lived stream — too short.",
+      "stream_payload_NOT_captured": "Hook bypass — see transport_findings"
+    },
+    {
+      "url_pattern": "https://api.wrtn.ai/wrtn/v1/chats/{chatId}/attachments",
+      "method": "GET",
+      "transport": "xmlhttprequest",
+      "duration_ms_observed": [18, 73, 76, 114],
+      "content_type": "application/json; charset=utf-8",
+      "response_sample": {"attachments": []},
+      "purpose": "Polled — reads files attached to the conversation"
+    },
+    {
+      "url_pattern": "https://api.wrtn.ai/wrtn/v1/chats/{chatId}",
+      "method": "GET",
+      "transport": "fetch (NOT xhr)",
+      "duration_ms_observed": [70, 72, 80, 85],
+      "purpose": "Polled at end of stream — retrieves the COMPLETED assistant message after the streaming reply finishes. This is where Phase 6 could read the final text."
+    },
+    {
+      "url_pattern": "https://api.wrtn.ai/wrtn/v1/dialogs",
+      "method": "GET",
+      "transport": "xmlhttprequest",
+      "purpose": "Conversation list / metadata"
+    },
+    {
+      "url_pattern": "https://api.wrtn.ai/wrtn/v1/chat-setting",
+      "method": "GET",
+      "transport": "xmlhttprequest",
+      "purpose": "User chat preferences"
+    },
+    {
+      "url_pattern": "https://api.wrtn.ai/auth-v2/v2/token/refresh",
+      "method": "POST",
+      "transport": "xmlhttprequest",
+      "purpose": "JWT refresh"
+    }
+  ],
+  "captured_xhr_hook_log": [
+    {"k": "xhr_p",     "u": "https://api.wrtn.ai/wrtn/v1/chats/6a06753.../attachments", "len": 18,  "head": "{\"attachments\":[]}"},
+    {"k": "xhr_load",  "u": "https://api.wrtn.ai/wrtn/v1/chats/6a06753.../attachments", "status": 200, "ct": "application/json; charset=utf-8", "len": 18, "tail": "{\"attachments\":[]}"},
+    {"k": "xhr_p",     "u": "https://api.wrtn.ai/wrtn/v1/chat-agent",                    "len": 466, "head": "{...skin/theme/agent fields...}"},
+    {"k": "xhr_load",  "u": "https://api.wrtn.ai/wrtn/v1/chat-agent",                    "status": 200, "ct": "application/json; charset=utf-8", "len": 466}
+  ],
+  "ai_replies_received": [
+    "오늘의 날씨 정보를 알려면 현재 위치가 필요하거나, 사용자가 원하시는 지역을 알려주시면 더욱 정확한 정보를 드릴 수 있습니다. 어느 지역의 날씨를 알고 싶으신가요?",
+    "서울은 대한민국의 수도이자 정치, 경제, 문화의 중심지인 매우 중요한 도시입니다. (...)",
+    "한국 음식 중에서는 김치, 비빔밥, 불고기, 잡채, 떡볶이 등이 특히 인기 있고, 저마다 고유한 맛과 특징이 있습니다. (...)"
+  ],
+  "phase6_implications": {
+    "socket_io_frame_injection_NOT_VIABLE": "wrtn does not use Socket.IO at all on this build (web2/prod main-arm64-b1245225). Phase 6 frame manipulation strategy needs to be revised.",
+    "alternative_injection_strategies": [
+      "DOM mutation: hook MutationObserver on chat scroll container, replace newly added '서포터' bubble text — this is what #964 already noted",
+      "fetch monkey-patch BEFORE wrtn bundle init: inject content-script at document_start that wraps fetch & reader.read() so chunked SSE-style chat-agent/messages response can be intercepted",
+      "intercept the GET /wrtn/v1/chats/{chatId} call (it's plain fetch, observed 70–80ms) — this returns the completed message JSON after stream end; mutating its response body would replace the rendered text",
+      "Capture from response of POST /wrtn/v1/chat-agent/messages — inspect Content-Type header to confirm SSE / NDJSON / chunked-JSON; then mirror that protocol when injecting"
+    ],
+    "next_step_phase4_recommendation": "Re-capture by patching fetch from a content-script (document_start run_at) instead of console-injected hook; OR use chrome://inspect Network sniffing to read raw response bytes of the chat-agent/messages call which is the actual streaming endpoint."
+  }
+}

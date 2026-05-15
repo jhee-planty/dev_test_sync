@@ -1,0 +1,38 @@
+{
+  "id": 965,
+  "command": "check-warning",
+  "service": "wrtn",
+  "verdict": "FAIL_NO_FRAMES",
+  "verdict_reason": "Target hypothesis (wss://api.wrtn.ai/wrtn.socket.io/) is wrong for this build. wrtn.ai web2/prod main-arm64-b1245225 does NOT use Socket.IO, raw WebSocket, EventSource (SSE), or a Service Worker. Filter 'socket.io' matched 0 of 104 network requests during a fresh load + 3 prompt cycles. WebSocket prototype hook captured 0 opens. Therefore no s2c Socket.IO frames exist to capture.",
+  "notes": "PHASE 4 FRONTEND-INSPECT — wrtn Socket.IO frame capture attempt. Logged in as 'jhee', used new chat session wrtn.ai/c/6a06753e3853cbb594752387. Sent 3 NON-PII prompts (날씨/서울/한국음식), all received normal AI replies from agent '서포터' (supporter). Captured at 2026-05-15 10:21–10:38 KST.\n\nKEY FINDINGS:\n1. NO Socket.IO — DevTools Network filter 'socket.io' across All requests = 0 matches.\n2. NO raw WebSocket — window.WebSocket prototype patched, captured 0 opens during 3 reply streams.\n3. NO EventSource — EventSource hook captured 0 opens.\n4. NO Service Worker — navigator.serviceWorker.getRegistrations() returned 0.\n5. Chat traffic uses HTTPS XHR + fetch to api.wrtn.ai. XHR hook caught chat-agent config GET (200, application/json, len 466) and chats/{id}/attachments GET (200, application/json, len 18 = '{\"attachments\":[]}').\n6. POST /wrtn/v1/chat-agent/messages?navigationId={chatId} appears in performance buffer once at session start (xmlhttprequest, 105ms) — too short for streaming. Subsequent prompt sends do NOT generate visible new entries in performance buffer (likely overwritten by tracking-pixel calls or filtered out).\n7. Bundled wrtn SDK appears to capture window.fetch reference at module-init time, BEFORE any user-land console hook can wrap it — this is why fetch hook saw 0 chat calls but fetch IS used (per perf buffer initiatorType='fetch' for /chats/{id} polling).\n\nSCHEMA CAPTURED (chat-agent config, NOT s2c chat frame):\n  GET https://api.wrtn.ai/wrtn/v1/chat-agent → 200 application/json\n  { id, name '서포터', speechStyle 'polite', skin{alias 'fox', source.thumbnail/origin urls}, theme{alias 'red', gradient[#F72F08,#E78D43], colors[#D33717]}, face null, createdAt, updatedAt }\n\nSCHEMA CAPTURED (attachments poll):\n  GET https://api.wrtn.ai/wrtn/v1/chats/{chatId}/attachments → 200 application/json\n  { 'attachments': [] }\n\nSEE files/965/frame_samples.json for full endpoint inventory + Phase 6 implications.\nSEE files/965/hook_install_script.js for the JS hook source used in the browser console.\n\nPHASE 6 IMPLICATION: socket.io frame manipulation strategy is NOT viable for wrtn — no socket.io connection exists. Recommended alternative paths: (a) DOM-mutation hook on '서포터' bubble container, (b) content-script fetch monkey-patch at document_start to wrap streaming chat-agent/messages POST response, (c) intercept GET /wrtn/v1/chats/{chatId} (plain fetch, easy to wrap) which is called at end-of-stream and contains the full assistant message JSON.",
+  "frame_schema": {
+    "engine_io_packet_type": "N/A — no engine.io / socket.io in use",
+    "socket_io_packet_type": "N/A — no socket.io in use",
+    "event_names_observed": [],
+    "payload_path_for_assistant_text": "N/A — actual assistant text streaming endpoint NOT captured by user-land hooks. Likely candidate: response body chunks of POST /wrtn/v1/chat-agent/messages?navigationId={chatId} (xmlhttprequest → ReadableStream / SSE-formatted chunks), but this requires a content-script-level intercept to confirm."
+  },
+  "endpoints": [
+    "https://api.wrtn.ai/wrtn/v1/chat-agent (GET, xhr, returns agent config — schema captured)",
+    "https://api.wrtn.ai/wrtn/v1/chat-agent/messages?navigationId={chatId} (POST presumed, xhr, presumed streaming — body NOT captured)",
+    "https://api.wrtn.ai/wrtn/v1/chats/{chatId} (GET, fetch, end-of-stream poll — payload likely contains full assistant text)",
+    "https://api.wrtn.ai/wrtn/v1/chats/{chatId}/attachments (GET, xhr, returns {attachments:[]})",
+    "https://api.wrtn.ai/wrtn/v1/dialogs (GET, xhr)",
+    "https://api.wrtn.ai/wrtn/v1/chat-setting (GET, xhr)",
+    "https://api.wrtn.ai/wrtn/v1/chats/count?action=unread (GET, xhr)",
+    "https://api.wrtn.ai/wrtn/v1/news-letter/count?action=unread (GET, xhr)",
+    "https://api.wrtn.ai/wrtn/v1/alarm/check (GET, xhr)",
+    "https://api.wrtn.ai/wrtn/v1/gmail-briefings/connection/status (GET, fetch)",
+    "https://api.wrtn.ai/auth-v2/v2/token/refresh (POST, xhr)",
+    "https://api.wrtn.ai/auto-gen/v2/ai-protect/fields (GET, fetch)"
+  ],
+  "evidence": {
+    "screenshots_dir": "results/965_screenshots/",
+    "frame_samples": "files/965/frame_samples.json",
+    "hook_install_script": "files/965/hook_install_script.js"
+  },
+  "timestamp": "2026-05-15T10:38:00+09:00",
+  "target_pc": "pc1",
+  "user_logged_in_as": "jhee",
+  "chrome_build": "Google Chrome (latest stable as of 2026-05-15)",
+  "wrtn_build": "web2/prod main-arm64-b1245225"
+}
