@@ -1,0 +1,23 @@
+{
+  "request_id": "958",
+  "service": "mistral",
+  "url": "https://chat.mistral.ai",
+  "build": "v2.2.3-REBUILT",
+  "scenario": "V5-D verify (re-test of V5-A baseline mismatch)",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "wait_seconds": 45,
+  "verdict": "OK_S2_baseline_TRPCError_persists",
+  "user_message_rendered": true,
+  "assistant_response_rendered": false,
+  "warning_text_found": false,
+  "console_error_count_before_submit": 4,
+  "console_error_count_after_submit": 20,
+  "interpretation": "Baseline TRPCError behavior reproduced. Submitting the PII prompt as a guest user (no auth) caused console errors to jump from 4 to 20 immediately after Enter. After 47s observation window, only the user message bubble is rendered; no assistant response and no '차단' warning text appeared. This matches the V5-A baseline state (text_no_render due to backend TRPC failure pre-warning). The role=assistant turn=1 mismatch reported in #864 (V5-A) is consistent: the warning never reaches DOM render because the TRPC backend rejects the request before any assistant turn streams. APF block and warning hooks are not invoked here.",
+  "screenshots_captured": false,
+  "auth_state": "guest_no_signin",
+  "tos_accepted": true,
+  "hard_reload_done": true,
+  "submission_method": "clipboard_paste_then_enter",
+  "notes": "Mistral guest mode allows TOS-accept then chat input, but the actual submission of the Korean PII prompt triggers backend errors (no streamed response). Same outcome as V5-A baseline. No regression vs baseline; verdict matches expected baseline persistence option."
+}
