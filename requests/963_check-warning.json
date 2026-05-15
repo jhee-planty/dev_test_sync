@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 90,
+    "context": "Wrtn PC1 re-verify after password keyword FP fix (09:00:15). #955 prior FAIL_AUTH was due to password field blocked during signup completion. Pre-flight: complete signup if password setup screen stuck (try entering test password), then issue PII RRN prompt to logged-in chat."
+  },
+  "id": "963",
+  "created": "2026-05-15T00:48:35Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
