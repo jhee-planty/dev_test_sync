@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "wrtn",
+    "url": "https://wrtn.ai/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "Wrtn iter 6 — RE-DIAGNOSIS CONFLICT. Engine logs (2026-05-15 10:00-10:02) prove wrtn DOES use Socket.IO WS at api.wrtn.ai/wrtn.socket.io/. ws_blocked fires correctly with keyword=주민등록번호 + ws_inject 155B text frame. But ws_envelope_type='' (empty) → plain text frame silently dropped by Socket.IO client. #965 frontend inspect saw 0 WS likely due to ws_inflate_hard_error at 10:20 (LZ77 window unrecoverable) + hooks-installed-too-late. No config changes applied in iter 6 (HTTP axis appears WRONG direction). This test = baseline measurement."
+  },
+  "id": "966",
+  "created": "2026-05-15T02:05:24Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
