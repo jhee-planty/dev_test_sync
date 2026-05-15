@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-15T05:43:16Z",
+  "last_updated": "2026-05-15T05:43:31Z",
   "tasks": [
     {
       "id": "531",
@@ -4481,6 +4481,22 @@
       "created": "2026-05-15T05:43:16Z",
       "updated": "2026-05-15T05:43:16Z",
       "summary": "har-capture request",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "978",
+      "command": "frontend-inspect",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-15T05:43:31Z",
+      "updated": "2026-05-15T05:43:31Z",
+      "summary": "frontend-inspect request",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",

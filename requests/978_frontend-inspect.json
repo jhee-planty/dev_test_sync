@@ -1,0 +1,16 @@
+{
+  "command": "frontend-inspect",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "capture_duration_s": 90,
+    "context": "ChatGLM Phase 4 deep inspect — React state machine think→text transition diagnosis. PRIOR ITER 7/8 stuck at think_only. Investigate via DevTools React tab: (1) Identify React state values for chat-bubble state machine during think phase. (2) Document state transitions expected for think→text per HAR (compare to current stuck state). (3) Check React Query / fetcher state for any pending text request. (4) Console: try manually dispatch a text-state-completion event to see if text bubble mounts (rule out engine emission issue). (5) Network: inspect SSE chunks (data: events) received during the test — confirm engine emits both think:init + think:finished + text:finished frames at the EXACT format. Save React state snapshots + network frame samples to results/files/{id}/."
+  },
+  "id": "978",
+  "created": "2026-05-15T05:43:31Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
