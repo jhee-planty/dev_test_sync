@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "m365_copilot",
+    "url": "https://m365.cloud.microsoft/chat",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "m365_copilot iter 1 — handshake gate (ws_signalr_handshake_completed flag) + cursor field per HAR analysis a7aa8ab12694cfd24. Fixes 'Error parsing handshake response' + adds React DOM patch keying."
+  },
+  "id": "985",
+  "created": "2026-05-15T08:10:11Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
