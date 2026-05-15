@@ -1,0 +1,12 @@
+{
+  "id": 961,
+  "command": "check-warning",
+  "service": "chatglm",
+  "url": "https://chatglm.cn/",
+  "verdict": "FAIL_PROTOCOL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "Anonymous chat (访客_31fd04) successfully accessed at chatglm.cn/main/alltoolsdetail (root chatglm.cn/ 301-redirects to /main/alltoolsdetail; per #956 this page allows guest chat without login). PII prompt submitted via Enter key at 09:30 local. ChatGLM response area remained EMPTY for 60+ seconds — no AI text, no warning text 'Block', no 'reason: blocked', nothing. Stop button stayed active indicating front-end believed stream was in flight but connection was hung. ★ KEY EVIDENCE in DevTools Console (opened POST-submit per anti-debugger workflow): 'Failed to load resource: net::ERR_HTTP2_PROTOCOL_ERROR' on URL '/chatglm/mainchat-ap...a0b8-446719e1e95a:1' (cid matches current conversation a0b8-446719e1e95a). ★ CRITICAL FINDING: actual streaming endpoint for the alltoolsdetail anonymous chat is '/chatglm/mainchat-api/...' NOT '/chatglm/backend-api/assistant/stream' as iter4 path_patterns assumed (per #956 HAR re-capture context). HTTP/2 PROTOCOL_ERROR strongly suggests APF intercepted+RST/STREAM the connection (engine fired) but (a) the path mismatch means warning injection logic likely targeted wrong endpoint, OR (b) the response stream was killed before warning JSON could be rendered. Result: DOM injection never occurred, no '차단' visible. Screenshots: 961_screenshots/after_send.png + 961_screenshots/console_error.png. RECOMMENDATION for iter5: re-narrow path_patterns to include '/chatglm/mainchat-api/' (or broader '/chatglm/(mainchat|backend)-api/'); HAR re-capture #956 may have looked at the WRONG flow (assistant feature vs anonymous root chat) — anonymous root chat actually uses /chatglm/mainchat-api/.",
+  "timestamp": "2026-05-15T09:33:00+09:00",
+  "target_pc": "pc1"
+}
