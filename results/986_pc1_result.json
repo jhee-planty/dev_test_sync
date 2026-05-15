@@ -1,0 +1,35 @@
+{
+  "id": "986",
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "iter": 2,
+  "fix_under_test": "handshake detector relaxed substring scan (looser detection allowing larger TCP-coalesced bufs to count vs. iter1 strict 5-byte payload_len)",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "expected_text": "차단",
+  "expected_text_found": true,
+  "page_state": "BLOCK PAGE — title='보안 정책 - 접근 차단', body shows full security warning with both Korean and English text",
+  "page_url_after": "https://m365.cloud.microsoft/chat/conversation/ace0086a-1cb0-4396-b199-2d5952935c9b?fromcode=cmmyr718qsb&refOrigin=Google",
+  "warning_text_observed": "⚠️ 보안 경고\n민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n(This request was blocked due to sensitive information.)",
+  "helper_status": {
+    "window_helper_keys_found": ["__copilotSSRApp", "rspackChunk_1js_m365_copilot_app"],
+    "apf_helper_keys_found": [],
+    "interpretation": "Same as iter1 — no APF helper keys in window scope, NO renderer-side helper. Warning render achieved purely through engine-side WSS frame injection (iter2 relaxed handshake detector finally allowed engine to identify completion of SignalR handshake on TCP-coalesced bufs and inject the SignalR-format chat frame containing the 차단 text)."
+  },
+  "wss_observations": {
+    "endpoint": "wss://substrate.office.com/m365Copilot/Chathub/{user_oid}@{tenant_id}",
+    "post_handshake_action": "Engine successfully detected SignalR handshake completion (relaxed substring scan) and injected warning frame into client-bound stream — instead of close-1006 fallback observed in iter1",
+    "handshake_detector_relaxed_worked": true
+  },
+  "screenshot": "results/986_screenshots/after_send.png",
+  "console_errors": [],
+  "diagnosis": {
+    "iter2_handshake_relaxed_assessment": "BREAKTHROUGH — relaxed substring scan resolved the iter1 root cause where strict 5-byte payload_len framing missed all TCP-coalesced bufs. Engine now correctly identifies 'handshake_completed' on larger TCP buffers, after which the warning-frame injection path executes successfully. WSS no longer closed with 1006; instead a SignalR-format frame containing the 차단 message reaches the client and the React app renders the security block page.",
+    "comparison_to_985": "#985 FAIL_NOT_RENDERED: handshake parse OK (status 101), but engine could not detect handshake-complete on coalesced bufs → fell back to forced close (code 1006) → 'Something went wrong' generic error. #986 OK: relaxed detector recognizes handshake-complete → warning frame injected → React renders proper 차단 block page with security warning Korean+English text. **Same architectural pattern as wrtn but solved without needing renderer-side helper** — pure network-layer SignalR frame synthesis.",
+    "helper_irrelevant": "Initial concern that m365_copilot helper might be undefined (analogous to wrtn) turned out to be moot for the OK case: warning rendering does NOT require a renderer-side helper because the engine injects a fully-formed SignalR chat completion frame which the React app processes through its normal message-rendering pipeline."
+  },
+  "notes": "iter2 handshake-relaxed fix is a clean BREAKTHROUGH. Page transitioned to dedicated block conversation URL with title '보안 정책 - 접근 차단'. Body content confirms: '⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. / (This request was blocked due to sensitive information.)'. No console errors. Engine intercept fired AND DOM render succeeded — full E2E success vs. iter1 partial (intercept fired, render failed). Mission achieved.",
+  "timestamp": "2026-05-15T08:55:00Z",
+  "target_pc": "pc1"
+}
