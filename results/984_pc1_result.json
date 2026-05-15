@@ -1,0 +1,11 @@
+{
+  "id": 984,
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "PARTIAL_THINK_ONLY",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "iter10 Vue3/Vuex4 evidence-based 5-event flow (init -> think:init -> think:finish -> tool_calls:finish -> text:finish, status='finish' lowercase, model=moe_5l, distinct logic_id per phase). Page loaded chatglm.cn -> /main/alltoolsdetail?lang=zh, hard reload, prompt typed and submitted. Observed: assistant bubble appeared with '思考结束' (think finished) badge ONLY, NO text bubble rendered after waiting full 60+s (held until ~75s). Action toolbar (copy/refresh/share/etc.) visible meaning stream considered complete by frontend. NO PII decoding visible (engine bypass NOT happening). NO '차단' warning visible. Same outward symptom as #971/#973 PARTIAL_THINK_ONLY despite the 5-event evidence-based envelope. Difference vs prior iters: think phase DID transition to finish (badge label '思考结束' confirms think:finish event accepted), but tool_calls/text phases still failed to materialize a visible bubble. Vuex Conversation.dataList likely now has think:finish entry but tool_calls/text entries still missing OR present-but-empty. Hypothesis: server-side endpoint /chatglm/mainchat-api/ may be silently dropping the 5-event POST (auth/cid mismatch, missing session token as guest 访客_31fd04, or moe_5l model gating) BEFORE Vuex receives tool_calls/text events. Compare #972 FAIL (full PII decoded -> engine bypass) - this is strictly safer than #972. cid=9a01f977-f0bc-4e3e-8a76-240c0853880b. Next iter should: (a) capture HAR of this exact flow to see what server returns to the 5-event POST, (b) consider auth/login (access_token), (c) consider switching model from moe_5l to GLM-5.1 default. Vue/Vuex framework correction confirmed correct direction (think DID render) but final two phases still unreachable.",
+  "timestamp": "2026-05-15T17:14:00+09:00",
+  "target_pc": "pc1"
+}
