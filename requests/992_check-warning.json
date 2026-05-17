@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "genspark",
+    "url": "https://www.genspark.ai/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "Genspark iter 7 — minimal SSE schema (3 events: project_start + message_field_delta + project_field). Iter 6 FAIL root cause was Nuxt error boundary on deeply nested message_result event. Hypothesis: simpler schema → Nuxt parser swallows → warning surfaces via message_field_delta content. Engine code: added body diag log for genspark to identify alternative session axis (referer empty, body has no project_id but has messages[0].id). DB: envelope_template reduced 1584B→429B (3 events only)."
+  },
+  "id": "992",
+  "created": "2026-05-17T23:28:09Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
