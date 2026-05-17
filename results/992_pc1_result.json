@@ -1,0 +1,16 @@
+{
+  "id": 992,
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": "likely_true",
+  "iteration": 7,
+  "strategy": "minimal SSE schema (3 events: project_start + message_field_delta + project_field), envelope_template 1584B -> 429B",
+  "notes": "Iter7 RESULT vs iter6 (#989) FAIL_NOT_RENDERED: NO IMPROVEMENT. Minimal 3-event SSE schema did NOT bypass Nuxt error boundary. Same failure mode: 'Failed to load component / Please try refreshing the page' renders below the user PII bubble; no warning text '차단' surfaces; no model response surfaces either. URL transitioned from /agents?type=super_agent&action=init-agent to /agents?id=1402d847-498b-4c41-b058-0bdebd1f55bc (new session id minted), suggesting initial agent-create request succeeded server-side and engine intercept fired on the subsequent SSE chat call. However, even with reduced 429B envelope and only 3 simple events, Nuxt parser still rejects the response and triggers <NuxtErrorBoundary fallback>. Conclusion: Nuxt boundary is NOT triggered by message_result nesting depth alone (iter6 hypothesis falsified). Root cause is more fundamental — likely (a) missing required SSE event types Nuxt expects in lockstep (e.g. agent_status, internal_message, sub_task_start), or (b) schema validation on message_field_delta/project_field payload shape itself (missing required fields like sub_task_id, parent_id, sequence_no), or (c) response Content-Type / chunked encoding / event-id format mismatch causing parser exception before any event is handled. RECOMMEND iter8: capture real upstream SSE byte stream from a successful no-block run and diff against current envelope_template field-by-field; verify Content-Type=text/event-stream and event/data line framing; also verify body diag log fired (referer empty + messages[0].id alt-axis hypothesis) before next strategy iteration.",
+  "timestamp": "2026-05-18T08:42:00+09:00",
+  "target_pc": "pc1"
+}
