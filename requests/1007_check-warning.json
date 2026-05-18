@@ -1,0 +1,16 @@
+{
+  "id": "1007",
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "iter11 schema-drift forward-port (Axis A — no fresh HAR available; fallback rationale: single-variable delta vs iter10 by ADDING data: [DONE]\\n\\n terminator after project_field FINISHED. Hypothesis: Apr→May Nuxt SSE parser regression now requires OpenAI-compat [DONE] universal terminator; iter10 component-error after ~45s suggested parser stalls waiting for stream-end signal. Kept h2_end_stream=1 + tight /api/agent/ask_proxy path + project_start/message_field_delta/project_field FINISHED 3-event base from 2026-04-01 proven config. env_len 429→443.",
+  "iter": 11,
+  "target_pc": "pc1",
+  "created": "2026-05-18T02:20:59Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}
