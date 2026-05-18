@@ -1,0 +1,17 @@
+{
+  "id": "1013",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "Iter12 OpenAI-compat SSE pivot (data: {choices:[{delta:{content:...}}]} + [DONE]) tested. SAME failure pattern as iter7-11 (2026-04-01 project-style schema): NO '차단' warning text rendered anywhere in DOM. Engine clearly intercepts (normal LLM PII answer never appears, connection terminated), but Genspark Vue/Nuxt frontend treats the engine-injected SSE as an error condition. DOM shows generic '응답 생성 중 오류가 발생했습니다.' (Error generating response) below user bubble with '응답 다시 생성' (Regenerate) button, PLUS a 'Failed to load component / Please try refreshing the page / Refresh Page' card. URL navigated to /agents?type=super_agent&action=init-agent. CONCLUSION: OpenAI Chat Completions chunk shape hypothesis REFUTED — May Nuxt refactor did NOT converge on OpenAI-compat SSE either, or our 3-event+[DONE] sequence still mismatches frontend's expected shape. The 'Failed to load component' card is new vs iter7-11 (previously only generic error appeared) — suggests our injected chunks are now reaching a Vue async-component boundary that fails to hydrate. Next iters should explore: (a) capture a real successful genspark SSE turn HAR to see exact chunk shape, (b) try plain text/event-stream with simple {text: '...'} body, (c) investigate if the slot needs an upstream WS/websocket frame first to register the agent before any SSE content can render, (d) check if super_agent action=init-agent path needs an init handshake message before chunks are accepted.",
+  "timestamp": "2026-05-18T02:46:30Z",
+  "target_pc": "pc1",
+  "iter": 12,
+  "axis": "openai_compat_sse",
+  "observed_dom": "User bubble | '응답 생성 중 오류가 발생했습니다.' + '응답 다시 생성' button | red ! icon 'Failed to load component / Please try refreshing the page / Refresh Page'",
+  "compare_iter7_11": "Iter7-11 (2026-04-01 project-style) showed only generic '응답 생성 중 오류가 발생했습니다.' error. Iter12 (OpenAI-compat SSE) ADDITIONALLY shows a 'Failed to load component' async-hydration error card — suggests our chunks are reaching deeper into the Vue component tree but still fail to satisfy the expected slot contract. No '차단' rendered in either pattern.",
+  "url_after_submit": "genspark.ai/agents?type=super_agent&action=init-agent",
+  "logged_in": true
+}
