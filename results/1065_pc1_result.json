@@ -1,0 +1,12 @@
+{
+  "id": "1065",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "DUPLICATE_OF_1063",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "Identical params + context as #1063 (3rd copy: 1063=07:20:45Z, 1064=07:22:18Z, 1065=07:23:31Z — all within 166s). Single execution at #1063 covers all three. See #1063 FAIL_NOT_RENDERED.",
+  "timestamp": "2026-05-18T16:42:30Z",
+  "target_pc": "pc1",
+  "duplicate_of": "1063"
+}
