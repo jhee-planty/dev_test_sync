@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "chatgpt",
+  "url": "https://chatgpt.com/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "Wave 0 ROLLBACK smoke retest — verify chatgpt block restored after etapd clean restart (19:01:38) to flush visible_tls auto_bypass cache",
+  "iter": 1,
+  "target_pc": "pc1",
+  "priority": "high",
+  "attachments": [],
+  "notes": "Post-restart smoke. Engine PID 1088722 (active since 19:01:38 KST). Hypothesis: previous restart at 18:18 left chatgpt.com stuck in visible_tls auto_bypass cache (auto_bypass_duration_sec=300, but persistent SetCertificate failed errors kept reinstating it). Clean restart should clear cache. If still FAIL → root cause is per-flow leaf cert minting failing for chatgpt's TLS handshake, not config/binary.",
+  "id": "1124",
+  "created": "2026-05-18T10:02:00Z"
+}
