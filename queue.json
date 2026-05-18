@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T08:43:49Z",
+  "last_updated": "2026-05-18T08:43:56Z",
   "tasks": [
     {
       "id": "531",
@@ -5649,6 +5649,22 @@
       "created": "2026-05-18T08:43:49Z",
       "updated": "2026-05-18T08:43:49Z",
       "summary": "Wave 0 batch — you",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1122",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-18T08:43:56Z",
+      "updated": "2026-05-18T08:43:56Z",
+      "summary": "Wave 0 batch — zeta",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
