@@ -1,0 +1,23 @@
+{
+  "id": "1003",
+  "command": "check-warning",
+  "service": "chatglm",
+  "target_pc": "pc1",
+  "status": "done",
+  "verdict": "FAIL_PROTOCOL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "iter15 single-frame native SSE — assistant slot created but body empty, no 차단 text rendered",
+    "service_name": "chatglm",
+    "started_at": "2026-05-18T10:55:21Z",
+    "completed_at": "2026-05-18T10:57:33Z",
+    "duration_seconds": 132,
+    "warning_visible": false,
+    "screenshot": "files/1003/step1.png",
+    "console_errors": []
+  },
+  "notes": "iter15 single-frame SSE native shape (data: <DOUBLE-SPACE>, parts[].content[].type=text, status=finished, model=moe_51, assistant_id=65940acff94777010aa6b796, len=765 bytes). Pivot from iter11/12/13 PARTIAL (literal '200' rendering) and iter14 FAIL_NOT_INTERCEPTED (Content-Length miscalc rolled back). RESULT: ChatGLM AI assistant slot was created (differs from iter14 where no slot appeared) — engine intercept FIRED. However body rendered EMPTY: no '차단', no any text content, no thinking text. Worse than iter11-13 which at least rendered literal '200'. Single-frame native shape with status=finished parsed structurally but produced silent empty bubble. Stop button remained active suggesting client awaited more frames. Next axis: try delta/streaming with multiple SSE events keeping native shape, OR add explicit role:assistant + content_blocks.",
+  "timestamp": "2026-05-18T10:57:33Z"
+}
