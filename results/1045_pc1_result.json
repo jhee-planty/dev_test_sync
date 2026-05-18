@@ -1,0 +1,12 @@
+{
+  "id": "1045",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "DUPLICATE_OF_1043",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "Identical params + context as #1043 (created 148s apart: 1043=05:38:05Z, 1045=05:40:33Z). Third copy of iter17 HAR-capture-plain-text request. Single execution at #1043 covers all. See #1043 OK_har_captured for 6-event minimum viable envelope (project_start → message_start → field_delta* → message_result → project_field FINISHED).",
+  "timestamp": "2026-05-18T15:00:00Z",
+  "target_pc": "pc1",
+  "duplicate_of": "1043"
+}
