@@ -1,0 +1,366 @@
+{
+  "_meta": {
+    "request_id": 1031,
+    "iter": 13,
+    "mode": "HAR_CAPTURE_observation_only",
+    "service": "genspark",
+    "engine_apf_state_dev_side": "DISABLED (reload_services confirmed)",
+    "capture_purpose": "Ground-truth SSE schema for iter13 envelope design; iter7-12 envelope designs (project-style + OpenAI-compat) REFUTED",
+    "prompt_submitted": "안녕하세요. 오늘 날씨가 어떤가요?",
+    "observed_user_visible_response": "Genspark answered naturally — rendered a regional weather picker UI (\"날씨를 확인할 지역\": 현재 위치 근처 / 서울 / 부산 / 인천 / 대구 / 직접 입력) inside a project card titled \"오늘 날씨 문의\"",
+    "page_url_after_send": "https://www.genspark.ai/agents?id=5f6d0a0c-98a9-40e1-855f-5b5933fce36c (project URL)",
+    "capture_method": "windows-mcp UI automation (no CDP) — DevTools Network panel + Export HAR (sanitized) button"
+  },
+  "streaming_endpoint": {
+    "url": "https://www.genspark.ai/api/agent/ask_proxy",
+    "host": "www.genspark.ai",
+    "path": "/api/agent/ask_proxy",
+    "method": "POST",
+    "http_version": "http/2.0",
+    "status": 200,
+    "status_text": "",
+    "response_content_type": "text/event-stream",
+    "response_body_size_bytes": 29489,
+    "response_compression": null,
+    "total_elapsed_ms_observed_in_devtools": 35240
+  },
+  "request_headers_sanitized": [
+    {
+      "name": "sec-ch-ua-platform",
+      "value": "\"Windows\""
+    },
+    {
+      "name": "Referer",
+      "value": ""
+    },
+    {
+      "name": "sec-ch-ua",
+      "value": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\""
+    },
+    {
+      "name": "x-timezone",
+      "value": "Asia/Seoul"
+    },
+    {
+      "name": "sec-ch-ua-mobile",
+      "value": "?0"
+    },
+    {
+      "name": "request-id",
+      "value": "|c451aa702b72460899fae75510c8d07f.1604b856f8674b89"
+    },
+    {
+      "name": "traceparent",
+      "value": "00-c451aa702b72460899fae75510c8d07f-1604b856f8674b89-01"
+    },
+    {
+      "name": "User-Agent",
+      "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+    },
+    {
+      "name": "content-type",
+      "value": "application/json"
+    }
+  ],
+  "response_headers_sanitized": [
+    {
+      "name": "strict-transport-security",
+      "value": "max-age=2592000"
+    },
+    {
+      "name": "cf-cache-status",
+      "value": "DYNAMIC"
+    },
+    {
+      "name": "x-envoy-upstream-service-time",
+      "value": "622"
+    },
+    {
+      "name": "expect-ct",
+      "value": "max-age=86400, enforce"
+    },
+    {
+      "name": "x-content-type-options",
+      "value": "nosniff"
+    },
+    {
+      "name": "referrer-policy",
+      "value": "same-origin"
+    },
+    {
+      "name": "cf-ray",
+      "value": "9fd82fc5c95f83e5-ICN"
+    },
+    {
+      "name": "alt-svc",
+      "value": "h3=\":443\"; ma=86400"
+    },
+    {
+      "name": "date",
+      "value": "Mon, 18 May 2026 04:40:57 GMT"
+    },
+    {
+      "name": "x-xss-protection",
+      "value": "1; mode=block"
+    },
+    {
+      "name": "content-type",
+      "value": "text/event-stream; charset=utf-8"
+    },
+    {
+      "name": "vary",
+      "value": "accept-encoding"
+    },
+    {
+      "name": "server",
+      "value": "cloudflare"
+    },
+    {
+      "name": "x-frame-options",
+      "value": "SAMEORIGIN"
+    }
+  ],
+  "request_body_parsed": {
+    "models": [
+      "gpt-4.1"
+    ],
+    "run_with_another_model": false,
+    "request_web_knowledge": false,
+    "speed_mode": false,
+    "use_webpage_capture_screen": true,
+    "use_python_workspace": false,
+    "dataframe_enhanced": false,
+    "enable_jupyter": false,
+    "custom_tools": [],
+    "unselected_custom_tools": [],
+    "installed_custom_tools": [],
+    "writingContent": null,
+    "type": "super_agent",
+    "project_id": null,
+    "messages": [
+      {
+        "role": "user",
+        "id": "0f96cf97-590b-4c96-86a7-9c3e80a1d493",
+        "content": "안녕하세요. 오늘 날씨가 어떤가요?"
+      }
+    ],
+    "user_s_input": "안녕하세요. 오늘 날씨가 어떤가요?",
+    "g_recaptcha_token": "0cAFcWeA5FzQkYVdrJDbXfHcWYrEVkGSeSgOKQRgQYfi-teWOU6LvhtLP2OM8p0puw2Ez7okpnN85VE8V7aNRY-6525Z_XK5b5HB5xKn7Fv-SdwG7qQe71MoX8jrJ7hkPebSU3-Q_9ju0WBAPx3RqaI0n_sFZQIXsC7NpMVsWecnuiP4a-bSoOJQwlIr0k42WRPhZl-Rvt6NDyurgRzsXd8bauz-_vG6liVavp0ZSLYtu35htKHXsJkZUMD-3Mni8MEtiJHofU7SQGYfLoAJat0cCUJbO0IihVgTqNpnp-14SmL9WpeDBtJ5bcSHkRd0XpzGMo2zt58iAnKr8RHGgv32gGPGojpacL4RGiIy012RcpGsFaREou-9PPZytY7mdlC5pYBf0e71UU590CACnJoSXlt_Cjp88Ion5kZD1cWYGoy_MOYFOIcr9VjnrvLjBk3ZlDB81Q0tErn_Ba1L3mBlbC-1PpBCqiNNmjN9SAz-1_lCL9r11ba6r3eT8O9wcv-75nAO_Wu-heSyAZnb34R35nEkb9mcECcuv8gB9AjDOtjzhydhXoWtEs60PCQFag4HT91bCWdXMEvELj-FNBgtwo2zB7btDoW_yS8gFJy7aZIb0HZPvzS1uAMi0bqmbfB1JxSxLWRnVmKEOwF3gvITAiOuDwx5grP34R5H77dYadoMCqGO522uxdv8nnt2PMrYM9F__WtxM-HazGag4Lng0yzvDNhRS8dKQLP_001UqXsjXee4zqDZiq3Z6LZQxjDFsceWO4RbL9pv8GNjpHV4ht_u33-GclYRZcd0lsif-IB9XtK1PdP0uP-hQYOQD30Zg0_Q1eA0wWkkT442X-IulNaNpG_5_Iaf0qafduXtyg8Hr8BxS1JmKIiBmgZhHlmNRbJoTTU7YTC4W3CAv9mnxoOYIr1rBg4_ACJl-j--90soXdcO7svPpWMjrLIkRlGLUdv2TrcZy3jc78bq0t4yESgxSIRDk8uxUuR78kN_Ogo4OOYHUZmWTharEjL9kEsQO4xBRYTMbiFTrVvBNN9r9d8Q2uyAMTSMQaZ72J2U4PWjJJx4UEQVJEEcCNDcBuHms-O1AGfhe1doUjesLlIRK47M5yGYKPC3cJEi-rFDsTFIC8h4nXCBN0fQFHucdoCW1VlLE8M2I1V7STrWC0_oGOUHyxurXYzNxyuESA3qVFSmvykn7yVXg4F9bDwS9MfHgCImbXQAWugwOnccrwvW47Ebz8a2TtJe6mAek1rDIDAAyeHYXnsT-eKtgLJY7sqA3LWeDM7VF5l4FzMd7Pxh0-Cnc5wXE5-PJ8luMW-oLs76cd0aiEjvL5_fmsPKJbAGJ57hymPNPUe7T7BoQJv-wjV5O8wQyL-Ss-qv5oxO2rlb4Ak3AVyXE4gue5w3b0uy178fOx_rAPpEeRU7gEWM3NNVU0Sokzj90b9amvGedmJ7AUZcCaLmXZaX-eX0Izd2V8KDnqiDYmtPBXc2KjpHgriBHCQS4RmlEAPxKD6Dft_NG34jhnnlT5JI9KGGf4b4voPevTTKbupTKh0M8WLOEJWF6woG8bVIkHMfykYIiR3VsiYM3ZnT05uT1m1K9zFI6Hv9kfwdNGwTWRYXznatSbUNq2E30kqMq_lRIESQgS0JDGAeJdnvPPdjgSUiZMHVgHAffNcllzcEKamaxnVFGlkP0lnOVZf__G_wZBw1uxSaudUutFrR6hgY0RKstCF-QgWiEE1wgg-n-Kvot4jbSZOisyphMBo-GXu9FlTf0PyUVuyqVPDVkLdR9pgjMYAP7yPRi4FPf-5yGB_CF8vClvJQL8_OAuEPf-_ZZzLs1kCRViDr566GzCbUXaPWpR1pfdLhG9IBsAy2PjvHhJ-RtDHCZuq_vCPH5tYYnz72yTJS0yogGQ2CB8C59JlbBFEYQ5_zPGdLfq1POLbcJklIPao0S4D7NNNJk3bm_og0vWZEBR1kL2q0TFKWljRDs7cT9zEF-5lioWO71umtzmLrujTm9xpS1V8ktvrdOVbzL_i-hxWoFU8HlIeigf8JGclDQyr2Jgj5eU5rrfnkAKvOFKawLc1yhiJIgU_Du6zTdmrnfvYOrESlNTleCZnXk4d1ZBNIkOI2eYeynRxe8Nm7b99BO1UX6m-WpM85ikiyV6dEhtvcpXQZH6R3Ut2QElBj2u7mEpl0z3JNz0hFLpX-PygBMuWA6LTodk0u2Cz7pDRpE3ahL9D6D63CJve9N2eTFnKjA42EjW4J1bib0FoAJRS9h8Dtn9vQNW3pGoit2nTf0gS9MqSeCd-luQoPCl1VHzV-1oLwFsM_MXYiYNCX1Lh5zRFKgx4QgSMWQoh8WCi_ReSGJSu9hpYbkSrZGHSWitWcS3dZWPxhPWR1qv-76FBnqzWwm4CCNNhSn5guFaYoNRcdoKZQY_kSLIlWxo93El100ryVviQxOUcUcdHjmBJhwENPJ-5wWibytScaW3zH4THwoaFVjosCdWRyYhDW01rYPlTDJSS5p-tMJVqF6O_VaDR5BLeNMRyTGwFZb_vafHJq5uy0KrSDgq2GrJGI4vqFUjTxbxybRrfFFZsSB-ipfwHZZbixaPYjrTk5b9-JBF7_bkq6K4kNdhIVyG60tYtcR_cjtS",
+    "is_private": true,
+    "push_token": "",
+    "session_state": {
+      "steps": [],
+      "messages": [
+        {
+          "role": "user",
+          "id": "0f96cf97-590b-4c96-86a7-9c3e80a1d493",
+          "content": "안녕하세요. 오늘 날씨가 어떤가요?"
+        }
+      ]
+    },
+    "last_seen_event_index": -1
+  },
+  "sse_summary": {
+    "total_events_parsed": 102,
+    "event_type_counts": {
+      "project_start": 1,
+      "message_field": 10,
+      "message_start": 2,
+      "project_field": 2,
+      "message_field_delta": 84,
+      "message_result": 3
+    },
+    "unique_event_types": [
+      "message_field",
+      "message_field_delta",
+      "message_result",
+      "message_start",
+      "project_field",
+      "project_start"
+    ],
+    "last_5_event_types": [
+      "message_result",
+      "message_start",
+      "message_result",
+      "message_result",
+      "project_field"
+    ],
+    "terminator_event_detected": null,
+    "field_name_counts_top20": {
+      "tool_calls[1].function.arguments": 84,
+      "_updatetime": 7,
+      "name": 1,
+      "content": 1,
+      "reasoning_id": 1,
+      "reasoning_encrypted_content": 1,
+      "status": 1
+    }
+  },
+  "event_type_schemas": {
+    "message_field": {
+      "count": 10,
+      "observed_keys": [
+        "_event_index",
+        "field_name",
+        "field_value",
+        "message_id",
+        "project_id",
+        "type"
+      ],
+      "first_sample": {
+        "message_id": "5f6d0a0c-98a9-40e1-855f-5b5933fce36c",
+        "field_name": "_updatetime",
+        "field_value": "2026-05-18T04:40:57.451872",
+        "type": "message_field",
+        "_event_index": 1
+      }
+    },
+    "message_field_delta": {
+      "count": 84,
+      "observed_keys": [
+        "_event_index",
+        "delta",
+        "field_name",
+        "message_id",
+        "project_id",
+        "type"
+      ],
+      "first_sample": {
+        "message_id": "d11581a5-4e22-4475-b201-b790d2d7f018",
+        "field_name": "tool_calls[1].function.arguments",
+        "delta": "{\"",
+        "project_id": "5f6d0a0c-98a9-40e1-855f-5b5933fce36c",
+        "type": "message_field_delta",
+        "_event_index": 7
+      }
+    },
+    "message_result": {
+      "count": 3,
+      "observed_keys": [
+        "_event_index",
+        "message",
+        "message_id",
+        "project_id",
+        "type"
+      ],
+      "first_sample": {
+        "message_id": "d11581a5-4e22-4475-b201-b790d2d7f018",
+        "message": {
+          "id": "d11581a5-4e22-4475-b201-b790d2d7f018",
+          "role": "assistant",
+          "content": "",
+          "action": null,
+          "recommend_actions": null,
+          "is_prompt": false,
+          "render_template": null,
+          "session_state": {
+            "_llm_usage": {
+              "prompt_tokens": 22230,
+              "completion_tokens": 164,
+              "total_tokens": 22394,
+              "prompt_tokens_details": {
+                "cached_tokens": 12800
+              },
+              "reasoning_tokens": 64
+            },
+            "_finish_reason": "stop"
+          },
+          "system_reminder": null,
+          "message_type": null,
+          "tool_calls": [
+            {
+              "id": "call_uCIS0t4LAmtJIv20YCFMKM7u",
+              "type": "function",
+              "function": {
+                "name": "ask_user_questions",
+                "arguments": "{\"questions\":[{\"question\":\"날씨를 확인할 지역\",\"options\":[{\"label\":\"현재 위치 근처\",\"icon\":\"map-pin\"},{\"label\":\"서울\",\"icon\":\"cloud\"},{\"...<truncated>"
+              },
+              "provider_specific_fields": null
+            }
+          ],
+          "tool_call_id": null,
+          "project_id": null,
+          "thinking_blocks": null,
+          "response_id": null,
+          "reasoning_id": "rs_0781a715093b5364016a0a986213fc81a1bfdbe7904916615f",
+          "reasoning_encrypted_content": "gAAAAABqCph3F_7q6jj3509WBX7cv8_v4pCJVN7yHtJVbI8zZiyo-GTp8FaTBuzsnwduwUv0sOolfxByHO6dXXZSMlg3Ty7jdO7h4SdTRBYGxBDDBrBv3lMq...<truncated>",
+          "reasoning_content": null,
+          "cogen_id": null,
+          "ctime": null
+        },
+        "project_id": "5f6d0a0c-98a9-40e1-855f-5b5933fce36c",
+        "type": "message_result",
+        "_event_index": 97
+      }
+    },
+    "message_start": {
+      "count": 2,
+      "observed_keys": [
+        "_event_index",
+        "message_id",
+        "project_id",
+        "role",
+        "tool_call_id",
+        "type"
+      ],
+      "first_sample": {
+        "message_id": "d11581a5-4e22-4475-b201-b790d2d7f018",
+        "tool_call_id": null,
+        "role": "assistant",
+        "project_id": "5f6d0a0c-98a9-40e1-855f-5b5933fce36c",
+        "type": "message_start",
+        "_event_index": 2
+      }
+    },
+    "project_field": {
+      "count": 2,
+      "observed_keys": [
+        "_event_index",
+        "field_name",
+        "field_value",
+        "id",
+        "type"
+      ],
+      "first_sample": {
+        "id": "5f6d0a0c-98a9-40e1-855f-5b5933fce36c",
+        "field_name": "name",
+        "field_value": "오늘 날씨 문의",
+        "type": "project_field",
+        "_event_index": 3
+      }
+    },
+    "project_start": {
+      "count": 1,
+      "observed_keys": [
+        "_event_index",
+        "id",
+        "type"
+      ],
+      "first_sample": {
+        "id": "5f6d0a0c-98a9-40e1-855f-5b5933fce36c",
+        "type": "project_start",
+        "_event_index": 0
+      }
+    }
+  },
+  "reconstructed_delta_streams": {
+    "d11581a5|tool_calls[1].function.arguments": {
+      "message_id_prefix": "d11581a5...",
+      "field_name": "tool_calls[1].function.arguments",
+      "delta_count": 84,
+      "joined_length": 268,
+      "joined_preview": "{\"questions\":[{\"question\":\"날씨를 확인할 지역\",\"options\":[{\"label\":\"현재 위치 근처\",\"icon\":\"map-pin\"},{\"label\":\"서울\",\"icon\":\"cloud\"},{\"label\":\"부산\",\"icon\":\"cloud-rain\"},{\"label\":\"인천\",\"icon\":\"wind\"},{\"label\":\"대구\",\"icon\":\"sun\"},{\"label\":\"직접 입력\",\"icon\":\"edit-3\"}],\"multi_select\":false}]}"
+    }
+  },
+  "iter13_design_hints": {
+    "content_path_HYPOTHESIS": "message_field_delta events carry the assistant payload incrementally; field_name=\"tool_calls[1].function.arguments\" accumulates a JSON string that, once concatenated, is the structured tool-call argument the frontend uses to render the answer UI.",
+    "natural_assistant_text_path_HYPOTHESIS": "For a plain assistant text reply (not tool call), the corresponding delta field_name would likely be \"content\" or \"tool_calls[0].function.arguments\" — needs second observation capture with text-only response",
+    "discriminator_field": "\"type\" (string)",
+    "event_index_field": "\"_event_index\" (int, monotonic per stream)",
+    "message_correlation_field": "\"message_id\" (uuid)",
+    "project_correlation_field": "\"project_id\" / \"id\" (uuid; same value)",
+    "completion_signal_CANDIDATES": [],
+    "envelope_format_to_inject_INFERRED": "Emit per-line `data: {json}\\n\\n` blocks. Minimum viable sequence for warning bubble: (1) {\"id\":\"<proj-uuid>\",\"type\":\"project_start\",\"_event_index\":0}, (2) {\"message_id\":\"<msg-uuid>\",\"role\":\"assistant\",\"project_id\":\"<proj-uuid>\",\"type\":\"message_start\",\"_event_index\":1}, (3) repeated message_field_delta with field_name=\"content\" carrying chunks of warning text, (4) terminator (TBD — likely \"message_end\" + \"project_end\" but not observed in this benign capture).",
+    "CAVEAT": "This capture only shows the TOOL-CALL branch (project card UI). A second observation with a benign text-only prompt (e.g. \"1+1=?\") is recommended to confirm content path for plain text replies AND to capture the terminator events."
+  }
+}
