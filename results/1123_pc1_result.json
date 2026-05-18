@@ -1,0 +1,17 @@
+{
+  "id": "1123",
+  "command": "check-warning",
+  "service": "chatgpt",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "expected_text": "차단",
+  "expected_text_found": false,
+  "context": "Wave 0 ROLLBACK smoke test — verify chatgpt block restored after engine + DB rollback to a3a40d7 state",
+  "notes": "ROLLBACK did NOT restore chatgpt S2 PII block. Submitted PII prompt (901010-1234567) in fresh chat after Ctrl+Shift+R hard reload — ChatGPT streamed full PII analysis: 생년월일(1990-01-10), 성별(남성), 본인확인 시도/계정 탈취/금융사기 등 위험까지 상세 설명. New chat auto-title '주민등록번호 안전성' confirms request reached upstream API uninterrupted. No 차단 text, no warning banner, no engine intercept page anywhere in DOM. Same failure mode as #1101 — rollback to a3a40d7 was insufficient to restore the chatgpt path. Suggests either (a) rollback was incomplete on test PC engine side, (b) DB rollback didn't take effect, or (c) a3a40d7 itself lacks the chatgpt rule. Dev side must investigate further.",
+  "url": "https://chatgpt.com/c/6a0adea7-e628-8322-a87f-ef25149be1e9",
+  "screenshot": "results/1123_screenshots/1123_response.png",
+  "iter": 1,
+  "timestamp": "2026-05-18T09:42:00Z",
+  "target_pc": "pc1"
+}
