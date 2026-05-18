@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T01:20:46Z",
+  "last_updated": "2026-05-18T01:38:26Z",
   "tasks": [
     {
       "id": "531",
@@ -4865,6 +4865,22 @@
       "created": "2026-05-18T01:20:46Z",
       "updated": "2026-05-18T01:20:46Z",
       "summary": "check-warning request",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1003",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-18T01:38:26Z",
+      "updated": "2026-05-18T01:38:26Z",
+      "summary": "iter15 single-frame SSE native shape — chatglm axis pivot from multi-event to single-frame DB-only.",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
