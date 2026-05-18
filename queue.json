@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T04:20:23Z",
+  "last_updated": "2026-05-18T04:34:28Z",
   "tasks": [
     {
       "id": "531",
@@ -5041,6 +5041,22 @@
       "created": "2026-05-18T04:20:23Z",
       "updated": "2026-05-18T04:20:23Z",
       "summary": "check-warning request",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1031",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-18T04:34:28Z",
+      "updated": "2026-05-18T04:34:28Z",
+      "summary": "iter13 HAR capture — engine OFF for genspark, observe native SSE schema",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
