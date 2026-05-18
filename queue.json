@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T23:26:18Z",
+  "last_updated": "2026-05-18T23:26:25Z",
   "tasks": [
     {
       "id": "531",
@@ -5745,6 +5745,22 @@
       "created": "2026-05-18T23:26:18Z",
       "updated": "2026-05-18T23:26:18Z",
       "summary": "Wave 0 rollback regression batch — chatglm",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1129",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-18T23:26:25Z",
+      "updated": "2026-05-18T23:26:25Z",
+      "summary": "Wave 0 rollback regression batch — claude",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
