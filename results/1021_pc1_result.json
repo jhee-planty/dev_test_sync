@@ -1,0 +1,19 @@
+{
+  "id": "1021",
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "PARTIAL",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "rendered_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라",
+  "expected_text_found": false,
+  "expected_text": "차단",
+  "notes": "iter19 literal-encoding chunk D (drop ESCAPE2 helper, all 3 chunks use literal Korean style) — REPRODUCED iter18 PARTIAL exactly: bubble rendered with chunks A+B ('[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라') but chunk D containing '차단' did NOT render even after 65s+ wait. Stop button still visible (stream not ended on client). Fresh conversation (cid=d23ab3de-b24e-40b5-b0cd-8b8959e322a6) confirms not cache artifact. CONCLUSION: ESCAPE2 helper JSON escaping was NOT the cause of chunk D drop — switching chunk D to literal Korean (same style as A+B) produced identical behavior. Hypothesis FALSIFIED. Remaining viable iter20+ candidates from iter18 notes: (a) increased inter-chunk delay 50→200ms (Vuex commit cycle theory), (b) explicit 'role:assistant' field on each chunk, (c) ChatGLM SSE delta-vs-replace semantic — third FULL-RESEND chunk may need different field shape. The fact that A+B accumulate but D drops at identical encoding suggests issue is NOT encoding/JSON-escape but rather chunk-position or chunk-count limit in Vue3/Vuex4 state machine (e.g., 2-chunk buffer / mutation throttle). Recommend iter20: probe N=2 vs N=3 vs N=4 progressive chunk count to isolate whether limit is exactly at 3rd chunk.",
+  "timestamp": "2026-05-18T12:13:30+09:00",
+  "target_pc": "pc1",
+  "iter": 19,
+  "envelope_bytes": 2025,
+  "chunk_d_encoding": "literal_korean",
+  "matches_iter18": true,
+  "screenshot": "results/1021_screenshots/1021_pc1_final.png"
+}
