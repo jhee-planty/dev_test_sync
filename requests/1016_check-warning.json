@@ -1,0 +1,16 @@
+{
+  "id": "1016",
+  "command": "check-warning",
+  "service": "chatglm",
+  "url": "https://chatglm.cn/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "iter18 FULL-RESEND progressive text chunks (3 chunks accumulating: A->B->D-full). Per HAR: ChatGLM uses FULL-RESEND streaming (each chunk repeats full prefix). Iter15/16/17 all FAIL_PROTOCOL slot-created body-empty - single-text-frame insufficient. Hypothesis: Vue3/Vuex4 state machine requires progressive text accumulation across multiple events to bind content. Reduced from 4 to 3 events to manage envelope size (2025B vs iter14's 1747B reject point; testing engine acceptance at this size).",
+  "iter": 18,
+  "target_pc": "pc1",
+  "created": "2026-05-18T02:52:32Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}
