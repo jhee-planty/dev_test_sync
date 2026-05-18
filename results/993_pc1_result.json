@@ -1,0 +1,11 @@
+{
+  "id": 993,
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "PARTIAL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "iter12 alt-axis non-streaming JSON (HTTP/1.1 200 + Content-Type: application/json + single JSON body, no SSE framing, no data: prefix). Frontend rendered ONLY the literal string '200' in the ChatGLM assistant bubble, followed by termination indicator '本次回答已被终止' (this response has been terminated) and '重新回答' (re-answer) button. Distinct from iter11 #990 PARTIAL which produced an EMPTY assistant bubble: iter12 produced a NON-EMPTY but WRONG bubble whose content is just '200'. Interpretation: ChatGLM frontend does NOT have a non-streaming JSON fallback path that ingests the assistant parts structure. The '200' string suggests the frontend's response parser either (a) extracted the HTTP status code as text, (b) parsed only the top-level JSON key/value and surfaced one field as text, or (c) treated the entire body as opaque and rendered some preview/length token. Crucially the parser DID terminate the loading state (unlike iter11 empty bubble which arguably stuck longer), indicating the HTTP response did satisfy the request lifecycle. Hypothesis for next iter: ChatGLM requires the SSE event-stream framing AND a specific multi-event progression to populate Vuex correctly; the JSON fallback path doesn't exist, so we MUST stay on SSE axis but fix the multi-phase event sequence (think_start → think_done → answer_chunks → finish) rather than collapsing into a single event (iter11) or abandoning SSE entirely (iter12). Engine code untouched; DB id=38; backup pre_iter_chatglm12_qianwen7_genspark8_20260518_085011.sql. WITHOUT DevTools (anti-debugger). Comparison to iter11 #990: BOTH PARTIAL but different DOM failure modes — iter11=empty-bubble (SSE single-event), iter12=string-'200' (non-SSE JSON). The non-streaming JSON axis is a DEAD END for ChatGLM.",
+  "timestamp": "2026-05-18T09:00:30+09:00",
+  "target_pc": "pc1"
+}
