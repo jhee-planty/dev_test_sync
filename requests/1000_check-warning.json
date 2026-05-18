@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "qianwen",
+    "url": "https://qianwen.com/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "qianwen iter 9 — DB-only (id=53). Content-chunks-first envelope pivot. iter 8 (single-frame status:finished) confirmed engine fires fast (~12s wall-clock vs full timeout in iter6/7) but frontend still rendered native '抱歉，系统超时，请稍后重试。'. Hypothesis: qianwen_sse frontend treats finished-without-prior-content-chunks as failed/timeout stream. iter 9 envelope now emits 4 SSE events: (1) status:typing/content:'' (typing indicator on, no content) (2) status:typing/content:full warning (full text delivered while still typing) (3) status:generating/content:full (transition signal) (4) status:finished/content:full (close). envelope_template length 1388B (was 563B). response_type=qianwen_sse unchanged. reload_templates confirmed at 2026-05-18T09:54 KST."
+  },
+  "attachments": [],
+  "notes": "iter9 content-chunks-first envelope. Pivot from iter8 status-only (FAIL_TIMEOUT_SYSTEM at ~12s — engine intercept firing on id=53 but frontend wants content body chunks before finished marker, otherwise classifies as 系统超时).",
+  "id": "1000",
+  "created": "2026-05-18T01:09:37Z",
+  "target_pc": "pc1"
+}
