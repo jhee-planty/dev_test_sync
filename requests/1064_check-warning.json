@@ -1,0 +1,16 @@
+{
+  "id": "1064",
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "iter21 add project_field name event + short reasoning_encrypted_content='x' placeholder. iter19/20 both 'Failed to fetch'. Hypothesis: FE checks presence not content of reasoning_encrypted_content.",
+  "iter": 21,
+  "target_pc": "pc1",
+  "created": "2026-05-18T07:22:18Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}
