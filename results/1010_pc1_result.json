@@ -1,0 +1,15 @@
+{
+  "id": "1010",
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "FAIL_PROTOCOL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "Iter17 show_type='' (empty) axis tested. SAME pattern as iter15/16: ChatGLM slot created with status indicators ('思考中...' / '분석 중') but NO content body rendered after 95s wait. Hypothesis REFUTED: empty show_type did NOT fix the content binding issue. Engine clearly intercepts and substitutes (no normal LLM answer ever appears, no real thinking content streams in, no PII response), but the warning text body is never displayed. Slot fixates on the loading-state indicators indefinitely. The default greeting body seen in iter15/16 didn't even appear this time — the empty show_type may have made render even more stuck. Conclusion: show_type axis alone is NOT the missing piece for chatglm body rendering. Next iters should explore: (a) content field path itself (data.text vs data.content vs string vs delta), (b) message.parts[].content structure, (c) trying a known-good show_type that the chatglm frontend recognizes for plain text responses (e.g., observing what a successful unblocked text response actually uses).",
+  "timestamp": "2026-05-18T02:42:00Z",
+  "target_pc": "pc1",
+  "iter": 17,
+  "axis": "show_type_empty",
+  "observed_dom": "思考中... [dropdown] | 跳过思考 | 분석 중 [spinner]",
+  "compare_iter15_16": "Iter15/16 showed default greeting body in addition to status indicators; iter17 shows ONLY status indicators with no body text at all. Empty show_type made render strictly worse, not better."
+}
