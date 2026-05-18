@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "ChatGLM iter 13 — DB-only (id=38). Axis: OpenAI-compat JSON shape {choices:[{message:{role,content},finish_reason,index}],model,object,id,created}, response_type=chatglm_sse kept. Hypothesis: iter12 produced literal '200' string in bubble — frontend JSON parser ingested SOME top-level key but not 'parts'. Try OpenAI-compat top-level shape (choices/message/content). Engine log confirms response_type=chatglm_sse path is live (id=38 used). Pre-backup: /Users/jhee/Documents/workspace/Officeguard/EtapV3/db_backups/D32a/pre_iter_chatglm13_qianwen8_genspark9_20260518_092700.sql. WITHOUT DevTools (anti-debugger)."
+  },
+  "id": "996",
+  "created": "2026-05-18T00:25:00Z",
+  "attachments": [],
+  "notes": "",
+  "target_pc": "pc1"
+}
