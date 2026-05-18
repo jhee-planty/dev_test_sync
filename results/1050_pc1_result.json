@@ -1,0 +1,16 @@
+{
+  "id": "1050",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "expected_text": "차단",
+  "expected_text_found": false,
+  "iter": 18,
+  "timestamp": "2026-05-18T06:21:30Z",
+  "target_pc": "pc1",
+  "notes": "iter18 trimmed-5event envelope: NO HTTP 400 unlike iter17 (improvement vs renderer size=0 reject). However NO warning rendered and NO AI response either — chat region shows only user prompt for 60+s after submit. URL transitioned to /agents?type=super_agent&action=init-agent (request accepted by FE router), but response area stayed empty. Console shows only unrelated infra errors (Azure ApplicationInsights ERR_TIMED_OUT x6 + 1 GET get_notification_messages ERR_HTTP2_PROTOCOL_ERROR). No 'HTTP error! status: 400 /api/agent/ask_proxy_events' (iter17 signature) seen. iter18 protocol shape passes engine renderer but warning content not delivered to UI — likely envelope reaches backend but renderer skips or strips warning text. Need iter19 to inspect actual ask_proxy_events response body via Network panel to see what server returned.",
+  "console_errors_count": 14,
+  "iter17_compare": "iter17 produced visible HTTP 400 + retry button; iter18 produces silent no-op (no error, no response, no warning) — different failure mode, suggests backend now accepts envelope but UI consumer ignores it"
+}
