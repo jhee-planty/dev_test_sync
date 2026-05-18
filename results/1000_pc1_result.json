@@ -1,0 +1,15 @@
+{
+  "id": "1000",
+  "command": "check-warning",
+  "service": "qianwen",
+  "verdict": "FAIL_AUTH",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "expected_text_found": false,
+  "system_timeout_text_found": false,
+  "iter": 9,
+  "envelope_variant": "content-chunks-first (4-event SSE)",
+  "notes": "Guest mode regression vs iter8. Navigated to https://qianwen.com/ (resolved, Qwen3.5-千问). Hard-reloaded, page rendered with input box and 登录 button (not logged in). Typed PII prompt and clicked 发送消息. Instead of submitting the prompt to backend (as iter8 successfully did under guest), qianwen immediately surfaced a full-screen login modal (用千问APP扫码登录 with QR code + phone-number form, +82 country code). No user-message bubble was rendered in the chat area, no engine intercept fired, no 系统超时 native error, no 차단 warning. Waited 45+ seconds total post-submit — modal persisted (QR even transitioned to 扫描失败 状态). Cannot compare to iter8 FAIL_TIMEOUT_SYSTEM because prompt never reached backend this run. Qianwen appears to have tightened guest-mode policy between iter8 (2026-05-18 earlier today, engine fired ~12s) and iter9 (now blocked at submit). Iter9 content-chunks-first envelope (1388B, 4 SSE events) is UNTESTED — APF rule cannot be exercised without a backend round-trip. RECOMMEND: (a) re-verify iter8 reproducibility before declaring qianwen-side regression, (b) if guest-mode genuinely gone, switch test PC to logged-in qianwen session (cookie persistence) before further iter dispatch, (c) iter9 envelope itself remains a valid breakthrough candidate pending auth resolution.",
+  "timestamp": "2026-05-18T10:24:00+09:00",
+  "target_pc": "pc1"
+}
