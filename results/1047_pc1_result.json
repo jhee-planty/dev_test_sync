@@ -1,0 +1,51 @@
+{
+  "id": "1047",
+  "command": "check-warning",
+  "service": "genspark",
+  "iter": 17,
+  "envelope_variant": "plain-text-branch (iter17 refined: content finalizer + project_field FINISHED + full message_result shape)",
+  "verdict": "FAIL_PROTOCOL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "intercept_evidence": {
+    "ask_proxy_request": "POST https://www.genspark.ai/api/agent/ask_proxy -> net::ERR_CONNECTION_CLOSED",
+    "ask_proxy_events_request": "POST https://www.genspark.ai/api/agent/ask_proxy_events -> HTTP 400 (Bad Request)",
+    "console_errors": [
+      "fetch url error /api/agent/ask_proxy (TypeError: Failed to fetch)",
+      "fetch url error /api/agent/ask_proxy_events",
+      "Error: HTTP error! status: 400 /api/agent/ask_proxy_events"
+    ],
+    "console_error_count_at_t3": 15,
+    "console_error_count_at_t60": 21
+  },
+  "rendered_dom_text": {
+    "user_bubble": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "system_text_main": "HTTP error! status: 400 /api/agent/ask_proxy_events",
+    "system_text_secondary": "응답 생성 중 오류가 발생했습니다.",
+    "buttons_visible": ["응답 다시 생성"],
+    "blocked_text_present": false,
+    "warning_text_present": false,
+    "failed_to_load_component_present": false
+  },
+  "comparison_to_iter16": {
+    "iter16_symptom": "Failed to load component (frontend render failure on injected envelope)",
+    "iter17_symptom": "HTTP 400 from /api/agent/ask_proxy_events (backend/proxy rejected envelope BEFORE frontend rendering)",
+    "regression_or_progress": "REGRESSION_LAYER_EARLIER — iter16 reached frontend rendering then crashed; iter17 was rejected one layer earlier at the events endpoint (HTTP 400). Refined envelope changes (content finalizer + project_field FINISHED + full sidecar nulls) likely broke a strict schema validator the events endpoint enforces.",
+    "breakthrough_status": "NO — refined envelope is now invalid HTTP/protocol-wise. Need to revisit envelope structure against the actual /api/agent/ask_proxy_events 400 response body to identify which field broke validation."
+  },
+  "timing": {
+    "submit_time_kst": "2026-05-18T15:00:02+09:00",
+    "first_error_observed_kst": "2026-05-18T15:00:43+09:00",
+    "final_observation_kst": "2026-05-18T15:02:10+09:00",
+    "wait_duration_s": 60
+  },
+  "screenshots": [
+    "results/1047_screenshots/01_pre_submit_20260518_150002.png",
+    "results/1047_screenshots/02_post_submit_t3_20260518_150043.png",
+    "results/1047_screenshots/03_final_60s_20260518_150210.png",
+    "results/1047_screenshots/04_network_inspect_20260518_150304.png"
+  ],
+  "notes": "iter17 plain-text-branch envelope with refined HAR-aligned shape (8 events, content finalizer, project_field FINISHED, full message_result with null sidecar fields) FAILED at the HTTP layer: ask_proxy_events returned 400 Bad Request. iter16 failed at the frontend render layer ('Failed to load component'); iter17 failed one layer earlier at HTTP request validation. Hypothesis: one or more of the iter17 refinements (content finalizer message_field, trailing project_field(FINISHED), or full session_state/null sidecar fields) violates the schema validator at /api/agent/ask_proxy_events. Recommend iter18: capture the actual HTTP 400 response body (network panel response tab) to read the validator error, then minimize the envelope to identify the specific offending field. The fact that no '차단'/'경고' text appeared, no 'Failed to load component' UI, and the page shows the generic system error '응답 생성 중 오류가 발생했습니다.' with a '응답 다시 생성' button confirms the failure happened BEFORE any envelope-driven UI rendering.",
+  "timestamp": "2026-05-18T15:03:10+09:00",
+  "target_pc": "pc1"
+}
