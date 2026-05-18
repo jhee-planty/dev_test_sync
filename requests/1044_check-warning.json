@@ -1,0 +1,16 @@
+{
+  "id": "1044",
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "What is the result of one plus one?",
+  "expected_text": "DOES_NOT_MATTER",
+  "timeout_s": 90,
+  "context": "iter17 HAR-capture-plain-text. Engine genspark DISABLED. Capture real plain-text response message_result component shape (vs prior #1031 tool-call branch).",
+  "iter": 17,
+  "target_pc": "pc1",
+  "created": "2026-05-18T05:39:23Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}
