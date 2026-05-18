@@ -1,0 +1,12 @@
+{
+  "id": "1044",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "DUPLICATE_OF_1043",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "Identical params + context as #1043 (created 78s apart: 1043=05:38:05Z, 1044=05:39:23Z). Single execution covers both. See #1043 OK_har_captured — plain-text branch 21 events, message_result with message.content fully assembled from 12 content-delta chunks, tool_calls=null, project_field(FINISHED) terminator. Minimum viable warning envelope = 6 events: project_start → message_start → field_delta* → message_result → project_field(FINISHED).",
+  "timestamp": "2026-05-18T14:50:00Z",
+  "target_pc": "pc1",
+  "duplicate_of": "1043"
+}
