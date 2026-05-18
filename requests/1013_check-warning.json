@@ -1,0 +1,16 @@
+{
+  "id": "1013",
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "iter12 OpenAI-compat SSE pivot. Iter7-11 all FAIL_NOT_RENDERED with 2026-04-01 project-style schema. May Nuxt refactor likely converged on OpenAI Chat Completions chunk shape (data: {choices:[{delta:{content:...}}]}). 3-event progression + [DONE].",
+  "iter": 12,
+  "target_pc": "pc1",
+  "created": "2026-05-18T02:35:05Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}
