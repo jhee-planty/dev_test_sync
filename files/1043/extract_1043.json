@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "captured_for": "request #1043 — genspark plain-text branch (engine DISABLED)",
+  "comparison_target": "request #1031 — genspark tool-call branch (project card UI)",
+  "prompt_submitted": "What is the result of one plus one?",
+  "observed_user_visible_response": "1 더하기 1은 **2**입니다. ✨ (simple text bubble, NO tool-call card)",
+  "project_id_alias": "<uuid-0>",
+  "page_url_after_submit": "https://www.genspark.ai/agents?id=<uuid-0>",
+  "endpoint": {
+    "method": "POST",
+    "url": "https://www.genspark.ai/api/agent/ask_proxy",
+    "status": 200,
+    "content_type": "text/event-stream; charset=utf-8",
+    "body_size_bytes": 7555,
+    "total_time_ms": 5257.53,
+    "started": "2026-05-18T05:42:45.602Z"
+  },
+  "event_count": 21,
+  "type_counts": {
+    "message_field_delta": 12,
+    "message_field": 4,
+    "project_field": 2,
+    "project_start": 1,
+    "message_start": 1,
+    "message_result": 1
+  },
+  "first_5_types": [
+    "project_start",
+    "message_field",
+    "message_start",
+    "project_field",
+    "message_field_delta"
+  ],
+  "last_5_types": [
+    "message_field",
+    "message_field",
+    "message_field",
+    "message_result",
+    "project_field"
+  ],
+  "delta_field_counts": {
+    "content": 12
+  },
+  "delta_field_byte_totals": {
+    "content": 20
+  },
+  "assembled_content_per_field": {
+    "content": "1 더하기 1은 **2**입니다. ✨"
+  },
+  "assembled_content_full_lengths": {
+    "content": 20
+  },
+  "message_result_count": 1,
+  "message_result_terminator_info": [
+    {
+      "_event_index": 19,
+      "message_id_alias": "<uuid-1>",
+      "has_message_content": true,
+      "message_content_preview": "1 더하기 1은 **2**입니다. ✨",
+      "has_tool_calls": false,
+      "tool_calls_count": 0,
+      "session_state_finish_reason": "stop",
+      "llm_usage": null,
+      "role": "assistant"
+    }
+  ],
+  "uuid_alias_count": 2,
+  "comparison_vs_1031_tool_call_branch": {
+    "1043_plain_text": {
+      "event_count": 21,
+      "type_counts": {
+        "message_field_delta": 12,
+        "message_field": 4,
+        "project_field": 2,
+        "project_start": 1,
+        "message_start": 1,
+        "message_result": 1
+      },
+      "delta_field_counts": {
+        "content": 12
+      },
+      "body_size_bytes": 7555,
+      "total_time_ms": 5257.53,
+      "message_result_count": 1
+    },
+    "1031_tool_call": {
+      "event_count": null,
+      "type_counts": null,
+      "delta_field_counts": null,
+      "body_size_bytes": null,
+      "total_time_ms": null,
+      "message_result_count": null
+    }
+  },
+  "sanitized_events_full": [
+    {
+      "id": "<uuid-0>",
+      "type": "project_start",
+      "_event_index": 0
+    },
+    {
+      "message_id": "<uuid-0>",
+      "field_name": "_updatetime",
+      "field_value": "2026-05-18T05:42:46.943300",
+      "type": "message_field",
+      "_event_index": 1
+    },
+    {
+      "message_id": "<uuid-1>",
+      "tool_call_id": null,
+      "role": "assistant",
+      "project_id": "<uuid-0>",
+      "type": "message_start",
+      "_event_index": 2
+    },
+    {
+      "id": "<uuid-0>",
+      "field_name": "name",
+      "field_value": "Result of one plus one",
+      "type": "project_field",
+      "_event_index": 3
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "1",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 4
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": " 더",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 5
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "하기",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 6
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": " ",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 7
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "1",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 8
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "은",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 9
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": " **",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 10
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "2",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 11
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "**",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 12
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": "입니다",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 13
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": ".",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 14
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "delta": " ✨",
+      "project_id": "<uuid-0>",
+      "type": "message_field_delta",
+      "_event_index": 15
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "content",
+      "field_value": "1 더하기 1은 **2**입니다. ✨",
+      "project_id": "<uuid-0>",
+      "type": "message_field",
+      "_event_index": 16
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "reasoning_id",
+      "field_value": "rs_0abf18f8af942a6b016a0aa6d95030819eb634387b0c0c3871",
+      "project_id": "<uuid-0>",
+      "type": "message_field",
+      "_event_index": 17
+    },
+    {
+      "message_id": "<uuid-1>",
+      "field_name": "reasoning_encrypted_content",
+      "field_value": "gAAAAABqCqbak3kR2RU9KrmgIAGGl_zSp2W0XcTpJhTBVygYNWqhoMe8PeTovDXH0ibq7x0DGX5h8x4hzkpT4sTYSNHtLiJ009i-Z_DCC4kQb0cro1xQvTxhE9hHpLmhU7Gmz_3UwtfTh6yJ-6_77olvZK7if_Z-mEn6Avzavi3907E2WGs1V7dT5K4x_In39d61EU58ctLmbhW-WEQvEGjqhp_eTecAhJuAdsTquPKbUPQ8wY5zSp6ij2LLlg0KYuiJspJxzhkWNmym9wa8TpYABHVBP4v9GeDcd-QCyCuwVutfx1PjVuGVZ6x1pYi80FCOIF5aRyNoWgRd19f9X8ZE2e3oRgrTrzjehzFqdOE8B0EdTTu7g7obTaG1BZGrWbQyNVYLbI31EbEdT-EykVpwdaj9-qwxN5WmCf8aKAvUxk-mX5Zjph0WV5Vc2mLX851VMGA-0wljw-ulHetupy849bSAJ3kpn0UgF854f-z9sqk1KuoBxSAu5iC99ytaOgD0Szn_91JXeGYAdxWd4cBYyHthQiJi5f58rgH4-0nq9kXMBhTMd4mJFNjPH_9hJia04hWqDY_TteSSxsZR5W-MVnA3CMa-fyBmql4Ev824P7zJcyw6D8c1EGlG1u0yY9rBGhbMQjtn5ozmcUBi-NW3A-FBW-ldr95AY9XtzA9C1NfvlCyWposye27bzOCLtqb2UBX_1W70C2PWqZ3Tt0Ael3cz7efR33J5mtGyeZu6t5xbDAZ8KSb3EZnKUUdDm-qAlddLF5gudp2Emdg4fvSDXqeqELD9itI78Eb05xRQJI4BFjDjpARnyQPy-BPyAP0vh0-5k28_SubdbcZW6Ool-NnUPbeZVWYJq1pL4VJEhakx_IARI75o6DOhdNpWSctwFOx89q5V7SFAcjl2P_pXlYPXnRYYcXmg5t0P2QE15aXtwc8IJ8qZE7Mk3uZu1PwUvboVrtPzXQisy96K1p-JGqBriE3oIUWb_pSoXBbwVULKgxVup3-FKW7B-EaxYZX8kKQ2LOv5XevsIzrCg6EIBWhvxNMxYGJWJDV_GenLXGLuCEqxnK5arcdl6JzUWVrm2NGCZ_plLpEdvWnUi7Bhn-U8M-jWNSpu2fDg-Rg5NdZ4Dw3PnvjFf3HUfxd69v_HWNqpFSxW37V6ERh4P6VuuhK6FvLr2oYzOqEOZVBwwd90xlcqtdLrdQtRhvP_r6PUbie0NpzxipteyaQRcF7UmE0BAJVo01gQZ0edqU2auPpCxyK0I1t53sbq-vlYV1vtLqH67ucNS3VC8O98De6C2CDXz7piFg==",
+      "project_id": "<uuid-0>",
+      "type": "message_field",
+      "_event_index": 18
+    },
+    {
+      "message_id": "<uuid-1>",
+      "message": {
+        "id": "<uuid-1>",
+        "role": "assistant",
+        "content": "1 더하기 1은 **2**입니다. ✨",
+        "action": null,
+        "recommend_actions": null,
+        "is_prompt": false,
+        "render_template": null,
+        "session_state": {
+          "_llm_usage": {
+            "prompt_tokens": 22228,
+            "completion_tokens": 79,
+            "total_tokens": 22307,
+            "prompt_tokens_details": {
+              "cached_tokens": 15872
+            },
+            "reasoning_tokens": 60
+          },
+          "_finish_reason": "stop"
+        },
+        "system_reminder": null,
+        "message_type": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "project_id": null,
+        "thinking_blocks": null,
+        "response_id": null,
+        "reasoning_id": "rs_0abf18f8af942a6b016a0aa6d95030819eb634387b0c0c3871",
+        "reasoning_encrypted_content": "gAAAAABqCqbak3kR2RU9KrmgIAGGl_zSp2W0XcTpJhTBVygYNWqhoMe8PeTovDXH0ibq7x0DGX5h8x4hzkpT4sTYSNHtLiJ009i-Z_DCC4kQb0cro1xQvTxhE9hHpLmhU7Gmz_3UwtfTh6yJ-6_77olvZK7if_Z-mEn6Avzavi3907E2WGs1V7dT5K4x_In39d61EU58ctLmbhW-WEQvEGjqhp_eTecAhJuAdsTquPKbUPQ8wY5zSp6ij2LLlg0KYuiJspJxzhkWNmym9wa8TpYABHVBP4v9GeDcd-QCyCuwVutfx1PjVuGVZ6x1pYi80FCOIF5aRyNoWgRd19f9X8ZE2e3oRgrTrzjehzFqdOE8B0EdTTu7g7obTaG1BZGrWbQyNVYLbI31EbEdT-EykVpwdaj9-qwxN5WmCf8aKAvUxk-mX5Zjph0WV5Vc2mLX851VMGA-0wljw-ulHetupy849bSAJ3kpn0UgF854f-z9sqk1KuoBxSAu5iC99ytaOgD0Szn_91JXeGYAdxWd4cBYyHthQiJi5f58rgH4-0nq9kXMBhTMd4mJFNjPH_9hJia04hWqDY_TteSSxsZR5W-MVnA3CMa-fyBmql4Ev824P7zJcyw6D8c1EGlG1u0yY9rBGhbMQjtn5ozmcUBi-NW3A-FBW-ldr95AY9XtzA9C1NfvlCyWposye27bzOCLtqb2UBX_1W70C2PWqZ3Tt0Ael3cz7efR33J5mtGyeZu6t5xbDAZ8KSb3EZnKUUdDm-qAlddLF5gudp2Emdg4fvSDXqeqELD9itI78Eb05xRQJI4BFjDjpARnyQPy-BPyAP0vh0-5k28_SubdbcZW6Ool-NnUPbeZVWYJq1pL4VJEhakx_IARI75o6DOhdNpWSctwFOx89q5V7SFAcjl2P_pXlYPXnRYYcXmg5t0P2QE15aXtwc8IJ8qZE7Mk3uZu1PwUvboVrtPzXQisy96K1p-JGqBriE3oIUWb_pSoXBbwVULKgxVup3-FKW7B-EaxYZX8kKQ2LOv5XevsIzrCg6EIBWhvxNMxYGJWJDV_GenLXGLuCEqxnK5arcdl6JzUWVrm2NGCZ_plLpEdvWnUi7Bhn-U8M-jWNSpu2fDg-Rg5NdZ4Dw3PnvjFf3HUfxd69v_HWNqpFSxW37V6ERh4P6VuuhK6FvLr2oYzOqEOZVBwwd90xlcqtdLrdQtRhvP_r6PUbie0NpzxipteyaQRcF7UmE0BAJVo01gQZ0edqU2auPpCxyK0I1t53sbq-vlYV1vtLqH67ucNS3VC8O98De6C2CDXz7piFg==",
+        "reasoning_content": null,
+        "cogen_id": null,
+        "ctime": null
+      },
+      "project_id": "<uuid-0>",
+      "type": "message_result",
+      "_event_index": 19
+    },
+    {
+      "id": "<uuid-0>",
+      "field_name": "status",
+      "field_value": "FINISHED",
+      "type": "project_field",
+      "_event_index": 20
+    }
+  ]
+}
