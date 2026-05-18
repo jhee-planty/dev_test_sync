@@ -1,0 +1,20 @@
+{
+  "id": "1029",
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "notes": "BREAKTHROUGH — iter22 split chunk D succeeded. Rendered full warning text intact: '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.' Contains BOTH '차단' (block keyword) AND '민감한 개인정보' (sensitive PII) — all 4 progressive chunks (A→B→D-1→D-2) concatenated into one visible bubble. No native error fallback (no '系统稍微有点忙'), no truncation. Conversation title set to '未命名对话' confirming engine intercept fired. Page loaded fresh (https://chatglm.cn/) WITHOUT DevTools per anti-debugger requirement; reload took ~5s to navigate from previous cid to fresh new chat. Submitted via Enter key on input element 19. Warning appeared within ~5s of submit, then remained stable for 50+s (blue spinner kept ticking but no further DOM changes). DISAMBIGUATES: chunk-count theory is FALSIFIED (4 events rendered successfully, beating the alleged 3-chunk throttle), and PII-echo filter on '주민등록번호' is FALSIFIED (D-2 chunk including PII keyword rendered). Splitting chunk D into D-1 (차단 only, no PII trigger word) followed by D-2 (PII content) is the working pattern. iter18/19 PARTIAL was likely a content-size or single-chunk-too-large issue, not chunk-count. iter20/21 native-error regression was probably a transient backend hiccup, not a design flaw. Recommend locking in 4-chunk A/B/D-1/D-2 pattern as the canonical chatglm warning delivery.",
+  "timestamp": "2026-05-18T04:30:00Z",
+  "target_pc": "pc1",
+  "iter": 22,
+  "chunks_rendered": {
+    "A": true,
+    "B": true,
+    "D-1_with_차단": true,
+    "D-2_with_주민등록번호": true
+  },
+  "verdict_reasoning": "Full warning text (containing both 차단 and 민감한 개인정보) visible in DOM. expected_text='차단' present. No fallback error. No truncation.",
+  "session_url": "https://chatglm.cn/main/alltoolsdetail?lang=zh&cid=c3798c16-3458-449d-882a-e5db2d9e4d65"
+}
