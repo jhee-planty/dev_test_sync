@@ -1,0 +1,11 @@
+{
+  "id": "1059",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "iter20 (reasoning_id meta event between content finalizer and message_result + reasoning_id key inside message_result) — IDENTICAL failure mode to iter19: FE displayed 'Failed to fetch' plain-text error AND the same refresh banner ('변경 사항을 적용하려면 새로고침이 필요합니다.' / '새로고침' button). Adding the reasoning_id meta event did NOT resolve the parser rejection. Hypothesis that reasoning_id alone was the missing axis is DISPROVEN. Either (a) reasoning_encrypted_content is also mandatory (omitted here to stay under 2000B), (b) the meta event needs different shape/encoding than what was injected, (c) the parser rejection point is elsewhere in the sequence (e.g., message_result schema mismatch, missing earlier event, terminator shape, or per-field validation). Engine accepted payload (no upstream reject visible); warning text '차단' never rendered in chat bubble. Page state: user prompt bubble visible, 'Failed to fetch' label below, refresh CTA banner — same UX as iter19. Recommend next axis: re-inspect HAR for full event ordering around content finalizer, consider including reasoning_encrypted_content (raise budget) OR investigating whether message_result keys mismatch FE expectations.",
+  "timestamp": "2026-05-18T16:08:00+09:00",
+  "target_pc": "pc1"
+}
