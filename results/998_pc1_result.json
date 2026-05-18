@@ -1,0 +1,11 @@
+{
+  "id": 998,
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": "unknown",
+  "notes": "iter9 path-expand (+/api/agent/init-agent, /api/agent, /agents) — outcome IDENTICAL to iter8 (#995). Same SPA push-state to /agents?type=super_agent&action=init-agent observed; user prompt bubble rendered, but no AI response, no '차단' text, no error message, no warning UI of any kind appeared during the full 60s observation window. Page below prompt remained blank. From the browser-side alone we cannot tell whether any expanded path was intercepted by the engine — DOM gives no signal either way. Hypothesis that adding /api/agent/init-agent would surface an HTML envelope (id=12) was NOT confirmed at the DOM level; if engine did intercept it, the SPA still failed to render the Nuxt warning template (Genspark SPA likely consumes a JSON/stream response on this route, not HTML — same root cause class as iter8). Recommend: check engine-side logs for whether any of /api/agent/init-agent, /api/agent, /agents fired an intercept on this run; if engine confirms intercept on a non-XHR/ask_proxy path, root cause is response-format mismatch (HTML envelope sent into a SPA expecting JSON/SSE) rather than missing path coverage. Next iter candidate: switch warning delivery from HTML envelope to JSON/SSE-shaped payload that SPA will render, OR inject a top-level navigation redirect.",
+  "timestamp": "2026-05-18T09:49:00+09:00",
+  "target_pc": "pc1"
+}
