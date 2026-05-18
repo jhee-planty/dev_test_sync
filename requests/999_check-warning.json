@@ -1,0 +1,17 @@
+{
+  "command": "check-warning",
+  "priority": "high",
+  "params": {
+    "service": "chatglm",
+    "url": "https://chatglm.cn/",
+    "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+    "expected_text": "차단",
+    "verify_timeout_s": 60,
+    "context": "ChatGLM iter 14 — DB-only (id=38). AXIS PIVOT: JSON envelope axis EXHAUSTED (iter11 empty bubble SSE, iter12 literal '200' non-stream JSON, iter13 literal '200' OpenAI-compat). Now switching to SSE multi-event progression matching Phase 4 Vue3/Vuex4 answerArray content_type sequence. 6 events: (1) think_start parts=[think/rendering/empty] (2) think_done parts=[think/finished/empty] (3) text_render_prefix parts=[text/rendering/'[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니'] (4) text_render_full parts=[text/rendering/full warning] (5) text_finished parts=[text/finished/full warning] status=finished message_status=finished (6) data: [DONE]. SSE Content-Type=text/event-stream, X-Accel-Buffering=no, double-\\n event terminator. envelope_template length=1747 bytes. response_type=chatglm_sse unchanged. Hypothesis: ChatGLM Vue3 frontend Vuex4 store requires PROGRESSIVE answerArray content_type transitions (think→text rendering→finished) to mount/render the bubble correctly; single-event SSE (iter11) failed to populate; non-SSE JSON (iter12/13) bypassed the streaming reducer and surfaced literal status code. reload_templates confirmed at 2026-05-18T09:45 KST. WITHOUT DevTools (anti-debugger)."
+  },
+  "created": "2026-05-18T00:48:20Z",
+  "attachments": [],
+  "notes": "iter14 SSE multi-event pivot — chatglm axis cause-based shift from JSON envelope to multi-phase event progression.",
+  "id": "999",
+  "target_pc": "pc1"
+}
