@@ -1,0 +1,16 @@
+{
+  "id": "1002",
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "iter10 SSE-revert axis — Phase A confirmed engine fires intercept on /api/agent/ask_proxy (log #998 09:45:41). Root cause iter7-9: envelope regressed HTML, h2_end_stream regressed 1→2. Reverted to proven 2026-04-01 config: SSE 3-event envelope (project_start+message_field_delta+project_field FINISHED) + h2_end_stream=1 + tight /api/agent/ask_proxy path. Both reload_services + reload_templates executed.",
+  "iter": 10,
+  "target_pc": "pc1",
+  "created": "2026-05-18T01:20:46Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}

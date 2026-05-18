@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T01:09:37Z",
+  "last_updated": "2026-05-18T01:20:46Z",
   "tasks": [
     {
       "id": "531",
@@ -4849,6 +4849,22 @@
       "created": "2026-05-18T01:09:37Z",
       "updated": "2026-05-18T01:09:37Z",
       "summary": "iter9 content-chunks-first envelope. Pivot from iter8 status-only (FAIL_TIMEOUT_SYSTEM at ~12s — engine intercept firing on id=53 but frontend wants content body chunks before finished marker, otherwise classifies as 系统超时).",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1002",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-18T01:20:46Z",
+      "updated": "2026-05-18T01:20:46Z",
+      "summary": "check-warning request",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
