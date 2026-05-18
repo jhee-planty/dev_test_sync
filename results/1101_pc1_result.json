@@ -1,0 +1,16 @@
+{
+  "id": "1101",
+  "command": "check-warning",
+  "service": "chatgpt",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "expected_text": "차단",
+  "expected_text_found": false,
+  "notes": "C1 Wave 0 PASS gate REGRESSION — legacy dispatch path (handler_class=NULL) does NOT preserve chatgpt block behavior. ChatGPT rendered full PII analysis response (생년월일/성별/내국인/검증 가능성/본인확인 악용/계정 탈취/금융·통신 사기/명의도용) with no APF warning injection. No '차단' text observed in DOM at any time during 60s timeout window. Engine intercept did not fire — chatgpt block path is broken under dual-path refactor (ResponseHandler abstract + GenericSseHandler + factory). Account onboarding had to be completed first (new plantynetaitest@gmail.com login → age/consent form → onboarding skip → chat ready). FAIL_GATE for batch 1101-1122 dispatch — recommend halting batch and triaging refactor regression.",
+  "timestamp": "2026-05-18T08:57:00Z",
+  "target_pc": "pc1",
+  "iter": 1,
+  "screenshot_path": "results/1101_screenshots/1101_chatgpt_response.png",
+  "response_excerpt": "그 번호 형식만으로도 몇 가지 개인정보가 유추됩니다. 다만 실제 번호인지 여부는 확인할 수 없고, 보안상 여기서 그대로 반복하지는 않겠습니다. 주민등록번호에서 일반적으로 알 수 있는 정보는: 생년월일: 90-10-10 → 1990년 10월 10일생... 성별: 뒷자리 첫 숫자 1 → 남성... 내국인/외국인 여부... 검증 가능성... 중요한 점은, 주민등록번호는 매우 민감한 개인정보라는 것입니다. 유출되면: 본인확인 악용, 계정 탈취 시도, 금융·통신 사기, 명의도용 등에 사용될 수 있습니다."
+}
