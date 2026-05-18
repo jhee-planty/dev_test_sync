@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "huggingface",
+  "url": "https://huggingface.co/chat/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "Wave 0 rollback regression — verify legacy path engine restored normal block behavior (post-rollback to a3a40d7). Re-dispatch (PC1 missed prior 1102-1122 batch).",
+  "iter": 1,
+  "target_pc": "pc1",
+  "priority": "normal",
+  "notes": "Wave 0 rollback regression batch — huggingface",
+  "id": "1136",
+  "created": "2026-05-18T23:27:14Z",
+  "attachments": []
+}
