@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "duckduckgo",
+  "url": "https://duck.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "Phase C1 Wave 0 Foundation regression — handler_class NULL → legacy dispatch validation",
+  "iter": 1,
+  "target_pc": "pc1",
+  "priority": "normal",
+  "attachments": [],
+  "notes": "Wave 0 batch — duckduckgo",
+  "id": "1109",
+  "created": "2026-05-18T08:42:22Z"
+}
