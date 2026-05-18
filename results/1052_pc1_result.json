@@ -1,0 +1,12 @@
+{
+  "id": "1052",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "DUPLICATE_OF_1050",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "Identical params + context as #1050/#1051 (3rd copy: 1050=06:15:01Z, 1051=06:16:34Z, 1052=06:17:47Z — all within 166s). Single execution at #1050 covers all three. See #1050 FAIL_NOT_RENDERED — iter18 trimmed-5event eliminated iter17 HTTP 400 but UI consumer silently ignores warning payload.",
+  "timestamp": "2026-05-18T15:32:00Z",
+  "target_pc": "pc1",
+  "duplicate_of": "1050"
+}
