@@ -1,0 +1,25 @@
+{
+  "id": "1005",
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "FAIL_PROTOCOL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "iter16 2-event SSE progression (think_init then text_finished, same FULL-RESEND IDs) did NOT render bubble content. DOM extraction shows assistant slot created with name 'ChatGLM' but body shows default greeting '和我聊聊天吧' (empty state) — identical pattern to iter15 FAIL_PROTOCOL. No '차단' text anywhere on page. Submit succeeded (user prompt appears twice in DOM: input echo + history). Confirms iter15 hypothesis is incomplete: state machine awaits more than just multi-frame progression — likely needs additional event types or specific field markers within events to commit body content. Engine intercept fired (size=957 accepted per request context) but frontend state transition from slot-creation to content-render not triggered.",
+  "timestamp": "2026-05-18T02:18:30Z",
+  "target_pc": "pc1",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "iter16 2-event SSE progression — slot created, body empty (same as iter15)",
+    "service_name": "chatglm",
+    "started_at": "2026-05-18T02:14:30Z",
+    "completed_at": "2026-05-18T02:18:30Z",
+    "duration_seconds": 240,
+    "warning_visible": false,
+    "screenshot": "files/1005/step1_after_60s.png",
+    "console_errors": [],
+    "failure_category": "PROTOCOL_MISMATCH"
+  },
+  "iter": 16
+}
