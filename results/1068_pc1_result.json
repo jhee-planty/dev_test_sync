@@ -1,0 +1,11 @@
+{
+  "id": "1068",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "iter22 base64-valid 48-char fernet-like placeholder for reasoning_encrypted_content. DOM after submit shows: (1) user prompt rendered, (2) 'Failed to load component / Please try refreshing the page' with Refresh Page button, (3) '변경 사항을 적용하려면 새로고침이 필요합니다.' with 새로고침 button. No '차단' text rendered anywhere. Compared to iter21 1-char placeholder which also FAIL_NOT_RENDERED, iter22's 48-char base64-valid placeholder produced the IDENTICAL FE failure mode — 'Failed to load component'. This conclusively rules out the FE base64-format-validation hypothesis: simply matching the base64 character set + 48-char length is not sufficient. The FE either (a) decrypts the field and validates the inner structure, (b) checks a checksum/MAC, or (c) the missing axes are not in this envelope at all. This is the final envelope-layer probe — dev side should pivot to architectural classification (different event shape, project_field reshape, or HAR full-replay).",
+  "timestamp": "2026-05-18T16:45:00+09:00",
+  "target_pc": "pc1"
+}
