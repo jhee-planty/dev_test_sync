@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T23:27:35Z",
+  "last_updated": "2026-05-18T23:27:41Z",
   "tasks": [
     {
       "id": "531",
@@ -5921,6 +5921,22 @@
       "created": "2026-05-18T23:27:35Z",
       "updated": "2026-05-18T23:27:35Z",
       "summary": "Wave 0 rollback regression batch — notion",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1140",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-18T23:27:41Z",
+      "updated": "2026-05-18T23:27:41Z",
+      "summary": "Wave 0 rollback regression batch — perplexity",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
