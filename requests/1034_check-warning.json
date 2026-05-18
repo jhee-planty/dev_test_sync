@@ -1,0 +1,16 @@
+{
+  "id": "1034",
+  "command": "check-warning",
+  "service": "genspark",
+  "url": "https://www.genspark.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "iter14 HAR-driven schema. 4 events: project_start → message_start → message_field_delta(content) → message_result. Per real HAR #1031 capture. Refutes iter7-11 (project-style nested choices) + iter12 (OpenAI-compat).",
+  "iter": 14,
+  "target_pc": "pc1",
+  "created": "2026-05-18T04:52:09Z",
+  "priority": "normal",
+  "attachments": [],
+  "notes": ""
+}
