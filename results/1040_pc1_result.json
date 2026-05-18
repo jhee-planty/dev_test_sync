@@ -1,0 +1,11 @@
+{
+  "id": "1040",
+  "command": "check-warning",
+  "service": "genspark",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "iter16 HAR-detailed schema with session_state + full project_start/message_start/message_result payload shapes from HAR #1031 STILL fails to render '차단', BUT failure mode is THIRD-DISTINCT — meaningful new signal again. Progression: iter14 (4-event) failed at SSE line parser 'Unexpected token d, data: [DONE] is not valid JSON' → generic error UI '응답 생성 중 오류'. iter15 (2-event) passed line parsing but hit deeper callback 'processLineCallback error TypeError: Cannot read properties of null (reading session_state)' → NO assistant bubble at all (only user prompt echo). iter16 (HAR-detailed w/ session_state) PROGRESSES PAST the session_state null read AND past prior crash points, finally reaching the COMPONENT RENDERING layer — but the rendered component itself errors out with genspark's standard component-failure UI: 'Failed to load component / Please try refreshing the page' with red error icon and Refresh Page button (NOT '응답 생성 중 오류', NOT empty bubble). So iter16 confirms: (a) session_state shape was correct — past the TypeError, (b) message_start payload accepted — engine moved into component instantiation, (c) message_result payload is being PARSED and dispatched to a renderer, but the renderer's required fields (likely content_type / component_type / data_schema_version / page_content) are still mismatched OR missing — component can't mount. This is BREAKTHROUGH-adjacent: we are now ONE layer away from the warning render path. URL shows /agents?id=ffa4f815-d384-4c08-9682-1f0fcf9c181f confirming an agent session was created (engine accepted handshake fully). Next iter17 axis: re-inspect HAR #1031 message_result innermost component payload (component_type, content schema, page_content structure) — compare exact field set with what APF is currently emitting; specifically check if message_result.data contains a nested 'component' / 'tool_result' / 'page' object that APF is collapsing to a single string. Screenshot saved to results/1040_screenshots/step1.png.",
+  "timestamp": "2026-05-18T14:20:30+09:00",
+  "target_pc": "pc1"
+}
