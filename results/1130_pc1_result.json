@@ -1,0 +1,14 @@
+{
+  "id": 1130,
+  "command": "check-warning",
+  "service": "cohere",
+  "url": "https://coral.cohere.com/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "verdict": "FAIL_AUTH",
+  "warning_rendered": false,
+  "engine_intercept_fired": null,
+  "notes": "coral.cohere.com redirects to dashboard.cohere.com/welcome/login (Log in page). Not logged in / no guest mode available. Cannot submit PII prompt without authentication credentials. Login methods offered: Continue with Google, Continue with Github, email/password. Hard reload (Ctrl+Shift+R) confirmed same login redirect — no chat surface reachable. Wave 0 rollback regression cannot be exercised on this service without stored session cookies. Screenshot: login_required.png.",
+  "timestamp": "2026-05-19T09:07:00+09:00",
+  "target_pc": "pc1"
+}
