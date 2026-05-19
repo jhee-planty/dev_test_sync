@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T06:48:30Z",
+  "last_updated": "2026-05-19T07:29:27Z",
   "tasks": [
     {
       "id": "531",
@@ -6481,6 +6481,22 @@
       "created": "2026-05-19T06:48:30Z",
       "updated": "2026-05-19T06:48:30Z",
       "summary": "Migration smoke: verify M365SignalrHandler activation doesn't regress m365_copilot. handler dispatch line expected in etap.log: [APF:dispatch] service=m365_copilot handler_class=M365SignalrHandler rendered via factory.",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1176",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T07:29:27Z",
+      "updated": "2026-05-19T07:29:27Z",
+      "summary": "Engine OFF diagnostic — natural response expected (no block). Capture full WS frame sequence. Save HAR if possible. Focus: server-to-client (s2c) frames containing LLM response chunks. After capture, m365 engine will be re-enabled.",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",

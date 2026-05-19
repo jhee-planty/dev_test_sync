@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "prompt": "1+1=?",
+  "expected_text": "DOES_NOT_MATTER",
+  "timeout_s": 90,
+  "context": "Task #8 m365 WS frame capture (engine OFF for diagnostic) — record real SignalR frame sequence for handshake/content/completion. APF rule disabled (enabled=false) at server. Submit benign prompt, capture WS frames during response from substrate.office.com WebSocket via DevTools Network → WS tab. Goal: extract frame schema (handshake, requestId/correlationId field placement, content chunk format, completion frame) to design evidence-based fix iteration 5 for build_m365_signalr_envelope(). HAR or frame export preferred.",
+  "iter": 1,
+  "target_pc": "pc1",
+  "priority": "high",
+  "attachments": [],
+  "notes": "Engine OFF diagnostic — natural response expected (no block). Capture full WS frame sequence. Save HAR if possible. Focus: server-to-client (s2c) frames containing LLM response chunks. After capture, m365 engine will be re-enabled.",
+  "id": "1176",
+  "created": "2026-05-19T07:29:27Z"
+}
