@@ -1,0 +1,16 @@
+{
+  "id": 1160,
+  "command": "check-warning",
+  "service": "github_copilot",
+  "target_pc": "pc1",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "url": "https://github.com/copilot",
+  "model_label": "Claude Haiku 4.5",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "expected_text_found": true,
+  "notes": "W0e Full 22 regression smoke. Logged in as plantynetaitest-ship-it (Copilot Free, model=Claude Haiku 4.5). Hard reload (Ctrl+Shift+R) + paste via clipboard + Enter. Warning rendered as inline assistant message: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' verified by clicking Copy-to-clipboard button and reading clipboard content. PII prompt with RRN (901010-1234567) intercepted by APF and replaced with block warning. Response complete within 60s. Matches #1134 baseline behavior — handler_class=NULL → 0 behavior delta confirmed for github_copilot (warning continues to fire via legacy path under W0e pluggable dispatch wiring).",
+  "timestamp": "2026-05-19T13:13:00+09:00"
+}
