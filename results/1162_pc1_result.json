@@ -1,0 +1,16 @@
+{
+  "id": "1162",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PII block warning rendered: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' + EN sibling",
+    "service_name": "huggingface",
+    "started_at": "2026-05-19T13:17:31Z",
+    "completed_at": "2026-05-19T13:21:30Z",
+    "duration_seconds": 239,
+    "warning_visible": true,
+    "screenshot": "files/1162/step1.png",
+    "console_errors": []
+  },
+  "notes": "W0e Full 22 regression — huggingface check-warning OK. Matches #1147 post-recovery baseline. Korean warning text contains '차단' as expected; English fallback 'This request has been blocked due to sensitive information detected.' also rendered."
+}
