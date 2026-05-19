@@ -1,0 +1,16 @@
+{
+  "id": 1174,
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "observed_response": "Copilot returned generic English error: 'Something went wrong. Please try again later.' with [다시 시도] [피드백 보내기] buttons (DOM ids 54/55). No 보안 경고 / 차단 / PII warning text anywhere in the DOM tree post-submit (full UI snapshot scanned, only English fallback message + retry/feedback buttons present).",
+  "notes": "Task #8 H2 correlation_id capture-at-register_domain_block + WS-inject-fallback (build+deploy 8/8 PASS) did NOT recover m365_copilot warning bubble rendering. Reproduces identical failure mode of #1138 / #1146 / #1164: user bubble (PII prompt) rendered at top of conversation pane, Copilot response bubble rendered with English 'Something went wrong. Please try again later.' + 다시 시도/피드백 보내기 buttons, NO Korean '차단' substring anywhere. Engine_intercept_fired=true (M365 fallback message is the typical upstream-stream-cut indicator — same signal as #1138 root analysis). Cross-connection correlation_id fallback path did not result in a successful warning frame being delivered to the WebSocket the client is reading from, OR the warning frame was delivered but M365 frontend rejected/swallowed it in favor of the generic error fallback. Suggests deeper issue: either (a) correlation_id captured at register_domain_block does not match the WS connection the c2s scan is monitoring (cached id is from a different/earlier H2 stream), (b) WS inject fallback is dispatching to wrong connection, or (c) frame payload format is still not what M365 client expects when injected via fallback path. Hard reload completed (fresh session, '안녕하세요. 무엇을 도와드릴까요?' greeting confirmed), no PIN modal, prompt entered into contenteditable (id=53) successfully via windows-mcp Type, 보내기 button (id=56, coords 1543,556) clicked. 90s observation window confirmed no further DOM change beyond the error fallback. Logged in as 최장희 / M365 Copilot(기본) model. Next investigation: capture WS frames during submit window to verify inject reached correct connection.",
+  "screenshot": "results/1174_screenshots/post_submit.png",
+  "timestamp": "2026-05-19T15:16:00+09:00",
+  "target_pc": "pc1"
+}
