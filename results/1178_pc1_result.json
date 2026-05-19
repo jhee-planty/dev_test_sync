@@ -1,0 +1,119 @@
+{
+  "id": 1178,
+  "command": "check-warning",
+  "service": "notion",
+  "service_url": "https://www.notion.com/chat",
+  "actual_url_after_redirect": "https://www.notion.so/chat",
+  "verdict": "OK_har_captured",
+  "engine_state": "OFF (task #9 diagnostic — notion service DISABLED)",
+  "prompt_sent": "1+1=?",
+  "response_received": "1 + 1 = 2",
+  "warning_observed": false,
+  "warning_observed_note": "engine OFF — no APF intervention; chat completed naturally with answer rendered",
+  "target_pc": "pc1",
+  "timestamp": "2026-05-19T17:13:00+09:00",
+  "notes": {
+    "summary_3_lines": [
+      "c2s: POST https://www.notion.so/api/v3/runInferenceTranscript, body=application/json with keys [traceId, spaceId, threadId, transcript[list], threadParentPointer, createThread, debugOverrides, generateTitle, saveAllThreadOperations, setUnreadState, createdSource, threadType, isPartialTranscript, asPatchResponse, hasHeartbeat]",
+      "s2c: Content-Type=application/x-ndjson, framing=newline-delimited JSON (NDJSON, one JSON object per line, NOT SSE, NOT WSS for inference), 20 frames total for 1+1=?, content path = type==patch with v[].o=='a' / v[].p path operations applying to thread record (patch-start opens, patch frames stream updates, terminal frame type=='record-map' commits)",
+      "termination: terminal frame {type:'record-map', recordMap:{...thread/<threadId>:{...}}} — request stream completes by simple HTTP body close after record-map frame; no DONE sentinel, no [DONE] marker. Correlation IDs: traceId (UUID v4), threadId (UUID, persists in URL ?t=<threadId no hyphens>), spaceId (UUID). Same threadId used in subsequent markInferenceTranscriptSeen."
+    ],
+    "c2s_request": {
+      "method": "POST",
+      "endpoint": "https://www.notion.so/api/v3/runInferenceTranscript",
+      "request_content_type": "application/json",
+      "key_request_headers": {
+        "x-notion-active-user-header": "<UUID present>",
+        "origin": "https://www.notion.so",
+        "referer": "https://www.notion.so/chat"
+      },
+      "auth": "cookie-based (notion_user_id, token_v2, notion_browser_id, etc. via Cookie header)",
+      "body_top_level_keys": [
+        "traceId", "spaceId", "transcript", "threadId", "threadParentPointer",
+        "createThread", "debugOverrides", "generateTitle", "saveAllThreadOperations",
+        "setUnreadState", "createdSource", "threadType", "isPartialTranscript",
+        "asPatchResponse", "hasHeartbeat", "isUserInAnySalesAssistedSpace", "isSpaceSalesAssisted"
+      ],
+      "body_key_values_sample": {
+        "traceId": "8c5052be-8c06-4094-bccb-e0618430411d (UUID v4 per request)",
+        "spaceId": "b939aa2d-8bdd-815a-9c5d-0003822e6bee (UUID v7-like, space-scoped)",
+        "threadId": "3659aa2d-8bdd-80e6-b9e9-00a92e2d4b3a (UUID, persists across turns, mirrored to URL ?t=...)",
+        "transcript": "[list len=3]  — likely [system?, user_msg, assistant_placeholder]",
+        "threadType": "workflow",
+        "createThread": true,
+        "generateTitle": true,
+        "asPatchResponse": true,
+        "createdSource": "full_page_chat",
+        "isPartialTranscript": false,
+        "hasHeartbeat": false
+      },
+      "user_prompt_location": "body.transcript[*] (likely user message embedded in transcript list)"
+    },
+    "s2c_response": {
+      "status": 200,
+      "content_type": "application/x-ndjson",
+      "framing": "NDJSON — one complete JSON object per line, separated by \\n",
+      "transport": "HTTP/2 streaming response (chunked or unbounded body, single request/response, NOT WSS, NOT SSE)",
+      "total_frames_for_simple_query": 20,
+      "size_bytes": 34729,
+      "frame_schema_taxonomy": {
+        "type=patch-start": {
+          "purpose": "opens the streaming patch session, declares initial agent-instruction-state",
+          "shape": "{type:'patch-start', data:{s:[{id, type:'agent-instruction-state', owner, root, sources, selectedSkillPageIds, trackedInstructionTreePages}]}, version:1}"
+        },
+        "type=patch": {
+          "purpose": "incremental updates — each frame contains an array of JSON-Patch-like ops applied to the agent state slot tree",
+          "shape": "{type:'patch', v:[{o:'a'|'r'|'u', p:'/s/-' or '/s/<idx>/<field>', v:<value>}]}",
+          "common_subtypes_in_v[].v.type": [
+            "agent-turn-full-record-map",
+            "agent-tool-result (toolName=callFunction, toolType=callFunction, with input/output)",
+            "title (the auto-generated chat title)"
+          ],
+          "ops": {
+            "o=a": "append to array path",
+            "o=r": "replace",
+            "o=u": "update (per observed payloads)"
+          }
+        },
+        "type=record-map": {
+          "purpose": "TERMINAL FRAME — commits final thread/recordMap to client store; signals end of stream",
+          "shape": "{type:'record-map', recordMap:{__version__:3, thread:{<threadId>:{spaceId, value:{value:{id, version, space_id, messages, ...}}}}}}"
+        }
+      },
+      "content_text_location_for_assistant_answer": "buried inside patch frames where v[].v.type indicates message/agent-turn record; assistant text content streams progressively inside agent-turn / tool-result subtree (need to walk patch ops to /s/<idx>/messages to reconstruct visible text)",
+      "termination_signal": {
+        "mechanism": "presence of a frame with type='record-map' followed by HTTP body close (no [DONE] sentinel, no event:end)",
+        "no_keepalive_observed_for_short_query": true,
+        "heartbeat_field_in_c2s": "hasHeartbeat:false — server omits keepalive frames for this request"
+      }
+    },
+    "correlation_ids": {
+      "traceId": "per-request UUID v4 in c2s body, also embedded in agent-tool-result frames in s2c (visible at frames[2].v[0].v.traceId == c2s.traceId)",
+      "threadId": "stable across turns; same value in c2s.threadId, URL query ?t=<threadId stripped of hyphens>, s2c record-map.recordMap.thread key, markInferenceTranscriptSeen.threadId",
+      "spaceId": "tenant/workspace UUID, present in c2s.spaceId, s2c record-map.recordMap.thread[].spaceId, markInferenceTranscriptSeen.spaceId",
+      "additional_per-frame_ids": "each patch.v[].v carries its own UUID id (record IDs for tools/messages/titles)"
+    },
+    "ancillary_endpoints_observed": {
+      "POST https://www.notion.so/api/v3/markInferenceTranscriptSeen": "after stream completes, body={spaceId, threadId} — marks turn as read",
+      "POST https://www.notion.so/api/v3/getInferenceTranscriptsForUser": "list transcript history, polled periodically",
+      "POST https://www.notion.so/api/v3/getInferenceTranscriptsUnreadCount": "unread badge polling",
+      "POST https://www.notion.so/api/v3/etClient": "telemetry/event-tracking client (NOT inference — used for product analytics)",
+      "POST https://http-inputs-notion.splunkcloud.com/services/collector/raw": "Splunk HEC raw telemetry",
+      "POST https://exp.notion.so/v1/rgstr": "Notion exp(eriment) registrar — feature flag / sampling",
+      "WSS wss://msgstore-001.www.notion.so/primus-v8/?sessionId=...&EIO=4&transport=websocket&sid=...&b64=1": "Primus / Engine.IO v4 WebSocket — used for collaborative realtime sync (block updates, presence), NOT for chat inference streaming. 145 ws frames observed during the whole session — these are heartbeats and realtime block sync, not the assistant answer."
+    },
+    "key_finding_vs_hypothesis": "Task brief referenced 'response_type=notion_ndjson_v6b_identity'. CONFIRMED: response IS NDJSON (application/x-ndjson) over HTTP/2 POST response body — the v6b/identity naming is internal but the wire format is plain NDJSON. NOT WebSocket for inference. Primus WSS exists but is for realtime collaboration sync, orthogonal to the inference channel.",
+    "block_strategy_implications": "APF can intercept the c2s POST to https://www.notion.so/api/v3/runInferenceTranscript and either (a) block at request (return 403) — would surface as HTTP error in browser, or (b) replace the NDJSON response body with a single record-map frame containing a synthetic 'agent-tool-result' or 'message' record carrying the warning text. Option (b) is cleaner because UI is designed to render whatever record-map says. The body.transcript field carries the user prompt for content inspection."
+  },
+  "artifacts": {
+    "har_file": "files/1178/notion_natural_1178.har (gitignored, ~80MB, full session)",
+    "extract_file": "files/1178/extract_1178.json (sanitized c2s/s2c schema + samples)",
+    "screenshots": [
+      "results/1178_screenshots/00_initial.png",
+      "results/1178_screenshots/01_before_send.png",
+      "results/1178_screenshots/02_after_send.png",
+      "results/1178_screenshots/03_devtools_network.png",
+      "results/1178_screenshots/04_etClient_detail.png"
+    ]
+  }
+}
