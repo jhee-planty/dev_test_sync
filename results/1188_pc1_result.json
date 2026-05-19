@@ -1,0 +1,39 @@
+{
+  "id": 1188,
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "phase": "C5.2",
+  "url": "https://m365.cloud.microsoft/chat/?auth=2",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "observed_response": "Copilot chat bubble rendered Korean warning with full sentence: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)' Contains exact '차단' substring. NO 'Something went wrong' English fallback. Bubble appears under standard 'Copilot' bot header. Conversation URL advanced to /chat/conversation/55d40c88-e6ea-47f0-8d63-9def7d4def3e?auth=2 (real persisted conversation, not error state). Composer 'Copilot에 메시지 보내기' re-enabled (focused, value empty). Single [피드백 보내기] action button rendered below the warning (no [다시 시도] retry button — matches PASS signature, distinct from FAIL pattern that always showed retry+feedback pair).",
+  "screenshot": "results/1188_screenshots/02_post_submit_warning.png",
+  "timestamp": "2026-05-20T08:39:43+09:00",
+  "target_pc": "pc1",
+  "handler_class": "M365SignalrHandler",
+  "handler_strategy": "DB-activated M365SignalrHandler (Phase C5.2). Transparent passthrough via ctx.legacy_render (same architecture as wrtn C5.1). WS frame interception build_m365_copilot_signalr_envelope (iter5 3-frame burst, dc5ab63 BREAKTHROUGH) unchanged. Handler migration is a no-op refactor that delegates to legacy render_envelope, preserving the iter5 envelope contract that previously achieved PASS in #1177.",
+  "dom_evidence": {
+    "warning_element_ids": [30, 31],
+    "warning_element_control_types": ["목록 항목", "단추"],
+    "warning_text_full": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+    "contains_chadan": true,
+    "no_something_went_wrong": true,
+    "no_retry_button": true,
+    "composer_re_enabled": true,
+    "composer_element_id": 38,
+    "feedback_button_present": true,
+    "feedback_button_element_id": 37,
+    "conversation_url_advanced": true,
+    "conversation_id": "55d40c88-e6ea-47f0-8d63-9def7d4def3e",
+    "page_title": "M365 Copilot"
+  },
+  "comparison_to_1177_baseline": {
+    "1177_iter5_pass": "PASS — handler_class=legacy (pre-C5.2). Korean '차단' bubble rendered via iter5 3-frame burst envelope. Conversation id: dc46ca03-c461-4da8-95a5-f9424e01f7b3.",
+    "1188_phaseC5_2_pass": "PASS — handler_class='M365SignalrHandler' (DB-activated, transparent passthrough). Identical Korean '차단' bubble rendered with same exact text. Conversation id: 55d40c88-e6ea-47f0-8d63-9def7d4def3e. Confirms M365SignalrHandler migration preserves the iter5 envelope contract end-to-end — handler is a thin delegating wrapper that does not alter the WS frame interception/injection behavior. Same DOM signature (목록 항목 + 단추 with warning text, [피드백 보내기] only, no [다시 시도], composer re-enabled, URL advanced to /chat/conversation/<uuid>).",
+    "wrtn_C5_1_parity": "Mirrors #1187 wrtn C5.1 smoke pattern — DB-activated dedicated handler class with ctx.legacy_render passthrough; behavior bit-for-bit identical to pre-migration baseline."
+  },
+  "notes": "Phase C5.2 M365SignalrHandler smoke PASS. Test PC: 최장희 / M365 Copilot(기본) on m365.cloud.microsoft/chat/?auth=2. Flow: navigate → hard reload (Ctrl+Shift+R) → 8s settle → composer focus (id=35) → clipboard paste of '내 주민등록번호는 901010-1234567' → Enter submit at 08:38:00 → ~100s observation → DOM verified at 08:39:43. The M365SignalrHandler migration successfully delegates to the iter5 envelope (build_m365_copilot_signalr_envelope dc5ab63 3-frame burst: type:1+isLastUpdate:true → type:2 Completion → type:3 ACK) via ctx.legacy_render, producing the exact PASS signature observed in #1177. NO regression from handler refactor. C5.2 phase smoke validates handler_class DB activation pattern works for m365_copilot identically to wrtn (C5.1)."
+}
