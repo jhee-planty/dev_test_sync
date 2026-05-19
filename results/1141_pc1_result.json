@@ -1,0 +1,23 @@
+{
+  "id": "1141",
+  "command": "check-warning",
+  "service": "poe",
+  "status": "done",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "보안 경고 toast rendered with 차단 text — PII blocked by engine",
+    "service_name": "poe",
+    "started_at": "2026-05-19T01:00:07Z",
+    "completed_at": "2026-05-19T01:02:18Z",
+    "duration_seconds": 131,
+    "warning_visible": true,
+    "screenshot": "files/1141/step1.png",
+    "console_errors": []
+  },
+  "notes": "Wave 0 rollback regression — poe block path restored. Tab title changed to '보안 정책 - 접근 차단' and toast displayed '보안 경고: 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)' confirming engine intercept fired and warning rendered post-rollback to a3a40d7. Required F5 refresh after submit to surface the persistent warning toast (initial post-submit page was blank).",
+  "timestamp": "2026-05-19T01:02:18Z",
+  "target_pc": "pc1"
+}
