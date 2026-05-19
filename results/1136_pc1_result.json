@@ -1,0 +1,14 @@
+{
+  "id": 1136,
+  "command": "check-warning",
+  "service": "huggingface",
+  "url": "https://huggingface.co/chat/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": null,
+  "notes": "Logged in as plantynetaitest1. New Chat opened, PII prompt pasted into 'Ask anything' input field, Enter submitted. URL transitioned to /chat/conversation/6a0baf4f56164d96008a85be but the conversation pane remained completely blank for the full 60s observation window — no user message echo, no assistant response, no '차단' warning rendered. Same FAIL_NOT_RENDERED pattern seen across the rollback regression wave (1128–1135). Screenshots: 01_pre_submit (prompt in input), 02_post_submit_30s (empty conv pane), 03_post_submit_60s (still empty).",
+  "timestamp": "2026-05-19T09:33:00+09:00",
+  "target_pc": "pc1"
+}
