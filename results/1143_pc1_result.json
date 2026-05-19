@@ -1,0 +1,11 @@
+﻿{
+    "id":  1143,
+    "verdict":  "FAIL_AUTH",
+    "timestamp":  "2026-05-19T10:11:06+09:00",
+    "command":  "check-warning",
+    "engine_intercept_fired":  false,
+    "warning_rendered":  false,
+    "service":  "wrtn",
+    "target_pc":  "pc1",
+    "notes":  "Pre-flight detected 로그인 button visible in top-right corner (alongside 무료로 회원가입). User session not authenticated on wrtn.ai. Cannot proceed to helper-check or PII submission. Wave 0 rollback regression: session expired (deviation from prior INCONCLUSIVE_no_helper). Hard reload completed before check."
+}
