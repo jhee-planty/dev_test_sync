@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T10:12:48Z",
+  "last_updated": "2026-05-19T23:17:19Z",
   "tasks": [
     {
       "id": "531",
@@ -6561,6 +6561,22 @@
       "created": "2026-05-19T10:12:48Z",
       "updated": "2026-05-19T10:12:48Z",
       "summary": "PASS criteria: chat bubble renders '차단' Korean warning text. No engine behavior should differ from previous chatglm runs — refactor is design-debt removal only (friend class → std::function), legacy render path is byte-identical.",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1187",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T23:17:19Z",
+      "updated": "2026-05-19T23:17:19Z",
+      "summary": "PASS criteria (primary): chat bubble renders '차단' Korean warning text. ACCEPTABLE secondary: FAIL_AUTH if login wall reached — engine log evidence sufficient. FAIL criteria: engine crashes, no dispatch log for wrtn, or regression on other services.",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",

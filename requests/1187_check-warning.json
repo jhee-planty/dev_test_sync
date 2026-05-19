@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "wrtn",
+  "url": "https://wrtn.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "high",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "Phase C5.1 smoke verify — wrtn handler_class='WrtnSocketIoHandler' DB-activated (first specialty handler migration). WrtnSocketIoHandler is transparent passthrough via ctx.legacy_render. wrtn's actual envelope is built in WS frame interception path (build_wrtn_socket_io_envelope) unchanged. Even if wrtn FAIL_AUTH (login wall), engine-log '[APF:dispatch] service=wrtn handler_class=WrtnSocketIoHandler ...' line confirms factory wiring is live for wrtn.",
+  "notes": "PASS criteria (primary): chat bubble renders '차단' Korean warning text. ACCEPTABLE secondary: FAIL_AUTH if login wall reached — engine log evidence sufficient. FAIL criteria: engine crashes, no dispatch log for wrtn, or regression on other services.",
+  "id": "1187",
+  "created": "2026-05-19T23:17:19Z"
+}
