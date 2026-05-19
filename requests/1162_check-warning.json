@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "huggingface",
+  "url": "https://huggingface.co/chat/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "W0e Full 22 regression — pluggable handler dispatch wired at generate_block_response() entry. All 22 services handler_class=NULL → legacy path (0 behavior delta expected). Compare to a3a40d7 baseline batch #1125-1148.",
+  "iter": 1,
+  "target_pc": "pc1",
+  "priority": "normal",
+  "attachments": [],
+  "notes": "W0e Full 22 regression batch — huggingface",
+  "id": "1162",
+  "created": "2026-05-19T03:06:52Z"
+}
