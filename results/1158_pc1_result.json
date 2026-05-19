@@ -1,0 +1,15 @@
+{
+  "id": 1158,
+  "command": "check-warning",
+  "service": "duckduckgo",
+  "url": "https://duck.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "notes": "Regression from #1132 (W0e smoke). After hard-reload + prompt submit + 60s wait, Duck.ai page replaced with generic error overlay: '이런! 문제가 생겼습니다. 정말 죄송하지만 Duck.ai를 불러오는 중 문제가 생긴 것 같습니다. 페이지를 새로고침해 보세요.' with single 'Duck.ai를 다시 불러오기' button. DOM contains only the reload button — expected warning bubble (이 요청은 보안 정책에 의해 차단되었습니다...) was NOT rendered. Engine likely intercepted the SSE response but the page error-handler crashed instead of injecting our warning. Expected '차단' substring absent.",
+  "screenshot": "results/1158_screenshots/1158_error_page.png",
+  "timestamp": "2026-05-19T13:03:00+09:00",
+  "target_pc": "pc1"
+}
