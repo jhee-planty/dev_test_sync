@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-18T23:28:17Z",
+  "last_updated": "2026-05-19T01:12:31Z",
   "tasks": [
     {
       "id": "531",
@@ -6017,6 +6017,22 @@
       "created": "2026-05-18T23:28:17Z",
       "updated": "2026-05-18T23:28:17Z",
       "summary": "Wave 0 rollback regression batch — zeta",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1146",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T01:12:31Z",
+      "updated": "2026-05-19T01:12:31Z",
+      "summary": "Smoke test after Phase 6 stash recovery (2026-05-19 selective restore)",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
