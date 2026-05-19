@@ -1,0 +1,10 @@
+{
+  "id": 1156,
+  "service": "cohere",
+  "verdict": "FAIL_AUTH",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "coral.cohere.com redirects to dashboard.cohere.com/welcome/login — login wall persists (same as #1130). No submit attempted. W0e smoke confirms continued auth-gated state.",
+  "timestamp": "2026-05-19T12:50:00+09:00",
+  "target_pc": "pc1"
+}
