@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T08:07:35Z",
+  "last_updated": "2026-05-19T09:34:00Z",
   "tasks": [
     {
       "id": "531",
@@ -6529,6 +6529,22 @@
       "created": "2026-05-19T08:07:35Z",
       "updated": "2026-05-19T08:07:35Z",
       "summary": "Capture goal: notion chat protocol shape — request shape (c2s), response shape (s2c), stream termination signal, any correlation IDs. PC1 worker: navigate notion.com/chat, login state may be required, submit benign '1+1=?' prompt, record DevTools Network HAR including all WS or HTTP/2 streams used for the chat send/receive. Verdict criteria: ANY response captured (PASS regardless of warning render — we're collecting protocol evidence, not testing block). Save HAR-equivalent frame log to result.",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1184",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T09:34:00Z",
+      "updated": "2026-05-19T09:34:00Z",
+      "summary": "Task #9 iter 2 smoke — notion engine-side multi-frame NDJSON envelope. Iter 1 DB-only single record-map FAIL (#1183). New build_notion_ndjson_envelope() emits 3-frame minimum viable sequence (patch-start + patch agent-inference + record-map) with trace_id/thread_id/space_id extracted from c2s POST body. Pattern mirrors m365 iter 5 HAR-driven engine builder approach. PASS: chat bubble renders '차단'. Engine log [APF:notion_iter2_inject] shows trace_len/thread_len/space_len > 0.",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
