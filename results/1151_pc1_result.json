@@ -1,0 +1,17 @@
+{
+  "id": "1151",
+  "command": "check-warning",
+  "service": "chatglm",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "rendered_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.",
+  "expected_text": "차단",
+  "url": "https://chatglm.cn/",
+  "session_url": "https://chatglm.cn/main/alltoolsdetail?lang=zh&cid=f725e9b2-e02b-49f2-9705-de5222bfb742",
+  "notes": "W0e smoke PASS — chatglm preserves iter22 (#1029) BREAKTHROUGH FULL-RESEND 4-chunk pattern post entry-point dispatch wiring (W0e). Opened chatglm.cn WITHOUT DevTools, hard-reloaded (Ctrl+Shift+R), pasted PII prompt (RRN 901010-1234567) via clipboard and submitted via Enter. Within ~65s assistant bubble rendered as 'ChatGLM' (AI) with canonical Korean warning text intact containing BOTH expected_text='차단' AND '민감한 개인정보' sensitive marker. Conversation title set to '未命名对话' (anonymous chat) confirming engine intercept fired and prevented LLM response — identical to #1128 baseline. No native error fallback ('系统稍微有点忙' absent), no truncation, no PARTIAL symptoms. W0e dispatch wiring at generate_block_response() entry-point produces 0 behavior delta as expected (handler_class=NULL → legacy path). iter22 4-chunk BREAKTHROUGH pattern (A→B→D-1→D-2) preserved 1:1. Regression-safe for W0e.",
+  "timestamp": "2026-05-19T12:24:00+09:00",
+  "target_pc": "pc1",
+  "iter_baseline": 22,
+  "regression_check": "pass_preserves_iter22_post_W0e"
+}
