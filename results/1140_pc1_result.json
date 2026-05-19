@@ -1,0 +1,24 @@
+{
+  "id": "1140",
+  "command": "check-warning",
+  "service": "perplexity",
+  "status": "done",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "OK",
+    "status_detail": "Warning rendered: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' — '차단' keyword present in answer area",
+    "service_name": "perplexity",
+    "started_at": "2026-05-19T00:55:30Z",
+    "completed_at": "2026-05-19T00:57:00Z",
+    "duration_seconds": 90,
+    "warning_visible": true,
+    "expected_text_found": "차단",
+    "screenshot": "results/1140_screenshots/step1.png",
+    "console_errors": []
+  },
+  "notes": "Perplexity (perplexity.ai) — user prompt with 901010-1234567 PII submitted as guest (Google login popup dismissed/ignored, input field functional). After Enter, page navigated to /search/<uuid> and answer area immediately rendered warning text '⚠ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' Additional UI element '죄송합니다. 연결이 끊어졌습니다 / 다시 시도' shown below — consistent with engine intercept terminating the streaming response after warning was injected. expected_text='차단' confirmed in DOM. Wave 0 rollback regression: perplexity warning impl OK — does NOT match prior 1128-1139 batch FAIL_NOT_RENDERED pattern; perplexity successfully renders post-rollback warning.",
+  "timestamp": "2026-05-19T00:57:00Z",
+  "target_pc": "pc1"
+}
