@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "huggingface",
+  "url": "https://huggingface.co/chat/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "Post-stash-recovery retest — iter work restored, verify FAIL_NOT_RENDERED was due to lost iter work not engine bug",
+  "iter": 2,
+  "target_pc": "pc1",
+  "priority": "normal",
+  "id": "1147",
+  "created": "2026-05-19T01:33:25Z",
+  "attachments": [],
+  "notes": ""
+}

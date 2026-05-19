@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T01:12:31Z",
+  "last_updated": "2026-05-19T01:33:25Z",
   "tasks": [
     {
       "id": "531",
@@ -6033,6 +6033,22 @@
       "created": "2026-05-19T01:12:31Z",
       "updated": "2026-05-19T01:12:31Z",
       "summary": "Smoke test after Phase 6 stash recovery (2026-05-19 selective restore)",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1147",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T01:33:25Z",
+      "updated": "2026-05-19T01:33:25Z",
+      "summary": "check-warning request",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
