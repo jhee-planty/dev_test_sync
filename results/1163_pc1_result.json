@@ -1,0 +1,19 @@
+{
+  "id": 1163,
+  "service": "kimi",
+  "url": "https://www.kimi.com/",
+  "scenario": "W0e-smoke",
+  "verdict": "INCONCLUSIVE_submit_failed",
+  "summary": "Enter keypress did not trigger submission; prompt text remained in input box, no response rendered, no '차단' text present. Matches expected React isTrusted guard pattern (same as #1137).",
+  "logged_in": true,
+  "account": "최장희",
+  "model": "K2.6 Instant",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "submit_method": "Enter key (via windows-mcp Shortcut)",
+  "wait_seconds": 62,
+  "dom_block_text_found": false,
+  "response_rendered": false,
+  "notes": "Kimi (K2.6) input is a contenteditable controlled by React; synthetic Enter keypress lacks isTrusted=true so submit handler ignores it. Input box retained typed prompt after 60s wait. Expected behaviour per task brief.",
+  "pc": "pc1",
+  "timestamp": "2026-05-19T13:26+09:00"
+}
