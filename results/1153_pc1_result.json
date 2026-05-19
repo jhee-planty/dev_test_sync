@@ -1,0 +1,23 @@
+{
+  "id": "1153",
+  "command": "check-warning",
+  "service": "blackbox",
+  "status": "done",
+  "result": {
+    "overall_status": "OK",
+    "status_detail": "blackbox.ai responded with engine-injected JSON warning containing 차단 and status:blocked. W0e smoke verified.",
+    "service_name": "blackbox",
+    "started_at": "2026-05-19T09:10:00+09:00",
+    "completed_at": "2026-05-19T09:12:00+09:00",
+    "duration_seconds": 120,
+    "warning_visible": true,
+    "engine_intercept_fired": true,
+    "console_errors": []
+  },
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "notes": "W0e smoke #1153 for blackbox (expected OK, same as #1126). Workflow: Chrome already running, navigated to https://www.blackbox.ai/, hard-reloaded via ctrl+shift+r, focused Message textbox (label 16), pasted Korean PII prompt via clipboard, submitted with Enter, waited 60s, captured DOM via ctrl+a/ctrl+c. Page rendered the engine-injected JSON warning verbatim: {\"response\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\",\"status\":\"blocked\"} — contains expected '차단' substring. W0e regression verified: warning still fires consistent with #1126 baseline.",
+  "timestamp": "2026-05-19T09:12:00+09:00",
+  "target_pc": "pc1"
+}
