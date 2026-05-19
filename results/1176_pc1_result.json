@@ -1,0 +1,53 @@
+{
+  "id": 1176,
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "target_pc": "pc1",
+  "verdict": "OK_har_captured",
+  "timestamp": "2026-05-19T16:41:00+09:00",
+  "engine_state": "OFF (APF rule disabled — natural response baseline)",
+  "prompt_sent": "1+1=?",
+  "response_rendered": "1 + 1 = 2",
+  "har_path": "files/1176/m365_natural_1176.har",
+  "har_bytes": 64379,
+  "har_mode": "DevTools Export HAR (sanitized) — strips request/response bodies but PRESERVES _webSocketMessages frames",
+  "extract_path": "files/1176/extract_1176.json",
+  "screenshots": [
+    "results/1176_screenshots/before_send.png",
+    "results/1176_screenshots/after_send.png",
+    "results/1176_screenshots/devtools_ws_frames.png"
+  ],
+  "ws_url_template": "wss://substrate.office.com/m365Copilot/Chathub/{userOid}@{tenantId}?ConversationId={convId}&access_token=<JWT>&...",
+  "conversation_id": "79e37d9f-9179-477c-b170-b3d7b6e0c8c4",
+  "ws_frame_total": 16,
+  "ws_frame_c2s": 5,
+  "ws_frame_s2c": 11,
+  "subprotocol": "SignalR JSON Hub Protocol v1 — frames separated by 0x1e (record separator)",
+  "frame_sequence_summary": [
+    "0 c2s HANDSHAKE {\"protocol\":\"json\",\"version\":1}\\x1e (31 bytes)",
+    "1 s2c HANDSHAKE-ACK {}\\x1e (2 bytes)",
+    "2 c2s PING type:6",
+    "3 c2s CHAT INVOCATION type:4 target:chat invocationId:\"0\" (StreamInvocation, 2580 bytes)",
+    "3 c2s METRICS type:1 target:Metrics (telemetry fire-and-forget)",
+    "4 s2c type:1 target:update {nonce, requestId, throttling}  (init frame)",
+    "5 s2c type:1 target:update {cursor, messages, nonce, requestId} (full text snapshot)",
+    "6-9 s2c type:1 target:update {writeAtCursor, nonce} (4 delta chunks)",
+    "10 s2c type:1 target:update {messages, nonce, isLastUpdate:true, requestId}",
+    "11 s2c type:1 target:update {messages, nonce} (post-stream metadata)",
+    "12 s2c COMPLETION type:2 invocationId:\"0\" item:{messages, conversationId, requestId, telemetry, result, ...}",
+    "12 s2c COMPLETION-ACK type:3 invocationId:\"0\"",
+    "13+ c2s METRICS type:1 target:Metrics (post-completion telemetry)"
+  ],
+  "iter5_critical_fixes": {
+    "handshake_format": "Send {\"protocol\":\"json\",\"version\":1} + 0x1e BEFORE any typed envelope. Wait for {} + 0x1e ack from server.",
+    "frame_separator": "0x1e (chr(30)), append after EVERY JSON object (handshake AND every typed frame)",
+    "chat_envelope_type": "type:4 (StreamInvocation), NOT type:1. target:\"chat\", invocationId:\"0\" (string literal '0' for first invocation)",
+    "content_chunk_path": "s2c type:1 target:\"update\" → arguments[0].messages[*].text (full snapshot or final) OR arguments[0].writeAtCursor.text (incremental delta — append at cursor position)",
+    "correlation_id_field": "invocationId at TOP LEVEL of both c2s (type:4) and s2c (type:2, type:3) envelopes. First chat invocation always uses invocationId:\"0\"",
+    "completion_marker": "type:2 with invocationId matching c2s. Final bot answer at item.messages[?author=\"bot\"].text",
+    "stop_condition": "Watch for arguments[0].isLastUpdate==true on type:1 update frame, OR arrival of type:2 completion",
+    "prior_iter4_root_cause": "Frame format mismatch — likely sent type:1 invocation instead of type:4, or used wrong frame separator, causing M365SignalrHandler dispatch to fail silently (server closes WS or sends 'Something went wrong')."
+  },
+  "notes": "Engine OFF baseline successfully captured. Page rendered natural answer '1 + 1 = 2' (verified in screenshot). DevTools Network 'Save all as HAR with content' was unavailable in context menu, but DevTools toolbar 'Export HAR (sanitized)' DID preserve _webSocketMessages arrays (sanitized strips HTTP request/response bodies only, not WS frames). 14 WS messages captured from substrate.office.com hub (handshake → invocation → 7 stream chunks → completion → ack → telemetry). JWT access_token in URL redacted in extract_1176.json. iter5 build_m365_signalr_envelope() must use type:4 StreamInvocation with target:'chat' invocationId:'0', 0x1e frame separator, and preceding handshake exchange."
+}
