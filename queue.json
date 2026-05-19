@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T05:13:04Z",
+  "last_updated": "2026-05-19T05:53:15Z",
   "tasks": [
     {
       "id": "531",
@@ -6449,6 +6449,22 @@
       "created": "2026-05-19T05:13:04Z",
       "updated": "2026-05-19T05:13:04Z",
       "summary": "check-warning request",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1174",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T05:53:15Z",
+      "updated": "2026-05-19T05:53:15Z",
+      "summary": "Expect: warning rendered via cached correlation_id instead of 'Something went wrong'. Engine log should show [APF:correlation_cache] at H2 block + [APF:correlation_fallback] at WS inject.",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
