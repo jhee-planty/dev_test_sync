@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T07:55:08Z",
+  "last_updated": "2026-05-19T08:07:35Z",
   "tasks": [
     {
       "id": "531",
@@ -6513,6 +6513,22 @@
       "created": "2026-05-19T07:55:08Z",
       "updated": "2026-05-19T07:55:08Z",
       "summary": "PASS criteria: warning bubble renders with '차단' substring (no 'Something went wrong'). Network tab shows 3-frame burst (type:1+isLastUpdate, type:2, type:3) in WS s2c. Chat input re-enables.",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1178",
+      "command": "check-warning",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T08:07:35Z",
+      "updated": "2026-05-19T08:07:35Z",
+      "summary": "Capture goal: notion chat protocol shape — request shape (c2s), response shape (s2c), stream termination signal, any correlation IDs. PC1 worker: navigate notion.com/chat, login state may be required, submit benign '1+1=?' prompt, record DevTools Network HAR including all WS or HTTP/2 streams used for the chat send/receive. Verdict criteria: ANY response captured (PASS regardless of warning render — we're collecting protocol evidence, not testing block). Save HAR-equivalent frame log to result.",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
