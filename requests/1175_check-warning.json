@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 90,
+  "context": "Hybrid C5 Task #10: M365SignalrHandler migration smoke. handler_class=M365SignalrHandler activated via DB. Build+deploy 8/8 PASS. WS hot paths unchanged (still ws_envelope_type-keyed); H2 block path now dispatched via M365SignalrHandler.render_envelope (delegates to legacy render_envelope_template). Expected: zero behavior delta vs baseline — same warning emit characteristics as wave 0.",
+  "iter": 1,
+  "target_pc": "pc1",
+  "priority": "normal",
+  "attachments": [],
+  "notes": "Migration smoke: verify M365SignalrHandler activation doesn't regress m365_copilot. handler dispatch line expected in etap.log: [APF:dispatch] service=m365_copilot handler_class=M365SignalrHandler rendered via factory.",
+  "id": "1175",
+  "created": "2026-05-19T06:48:30Z"
+}
