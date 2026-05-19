@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "high",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "Task #8 iter 5 smoke test — m365 envelope rewrite to 3-frame burst based on #1176 HAR evidence. Old envelope emitted single mid-stream type:1 with adaptiveCards/cursor (wrong render path) and no isLastUpdate / type:2 / type:3, so React fell back to 'Something went wrong'. New build_m365_copilot_signalr_envelope() emits: (A) type:1 update with messages[].text + isLastUpdate:true, (B) type:2 Completion echoing invocationId from c2s type:4 ('0' fallback), (C) type:3 Completion-ACK. invocation_id parsed from ws_c2s_accumulated_buffer; conversation_id parsed from URL ?ConversationId=. Expect chat bubble to show '차단' Korean warning text (not generic error).",
+  "notes": "PASS criteria: warning bubble renders with '차단' substring (no 'Something went wrong'). Network tab shows 3-frame burst (type:1+isLastUpdate, type:2, type:3) in WS s2c. Chat input re-enables.",
+  "id": "1177",
+  "created": "2026-05-19T07:55:08Z"
+}
