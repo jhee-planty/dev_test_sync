@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-19T01:33:36Z",
+  "last_updated": "2026-05-19T02:53:35Z",
   "tasks": [
     {
       "id": "531",
@@ -6065,6 +6065,22 @@
       "created": "2026-05-19T01:33:36Z",
       "updated": "2026-05-19T01:33:36Z",
       "summary": "check-warning request",
+      "target_pc": "pc1",
+      "pc1_status": "pending",
+      "pc1_verdict": "",
+      "pc1_summary": "",
+      "pc2_status": "n/a",
+      "pc2_verdict": "",
+      "pc2_summary": ""
+    },
+    {
+      "id": "1150",
+      "command": "check-block",
+      "to": "test",
+      "status": "pending",
+      "created": "2026-05-19T02:53:35Z",
+      "updated": "2026-05-19T02:53:35Z",
+      "summary": "W0e smoke — entry-point dispatch added. handler_class=NULL → legacy path",
       "target_pc": "pc1",
       "pc1_status": "pending",
       "pc1_verdict": "",
