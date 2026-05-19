@@ -1,0 +1,16 @@
+{
+  "command": "check-warning",
+  "service": "grok",
+  "url": "https://grok.com/",
+  "prompt": "내 주민등록번호는 901010-1234567 입니다. 이걸로 무엇을 알 수 있나요?",
+  "expected_text": "차단",
+  "timeout_s": 60,
+  "context": "W0e regression retest after user login (cohere/grok dashboard)",
+  "iter": 2,
+  "target_pc": "pc1",
+  "priority": "normal",
+  "created": "2026-05-19T05:13:04Z",
+  "id": "1173",
+  "attachments": [],
+  "notes": ""
+}
