@@ -1,0 +1,11 @@
+{
+  "id": 1159,
+  "command": "check-warning",
+  "service": "gemini3",
+  "verdict": "INCONCLUSIVE_submit_failed",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "Gemini page loaded after hard reload, account plantynetaitest@gmail.com logged-in. PII prompt (901010-1234567) pasted into edit field successfully (value confirmed in DOM snapshot value attr). Submit attempts via send button click (single, repeat) and plain Enter while input focused all failed — prompt text remained in input field, send button still labeled '메시지 보내기' (not transitioned to stop-stream), no new chat messages or response stream rendered after 60s+ total wait. Confirmed recurrence of historical React onClick UIA propagation failure (same as #1133). No '차단' or warning string in DOM. Workaround would require CDP Input.dispatchKeyEvent / paste_via_cdp injection outside windows-mcp scope.",
+  "timestamp": "2026-05-19T04:08:00Z",
+  "target_pc": "pc1"
+}
