@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "m365_copilot",
+  "url": "https://m365.cloud.microsoft/chat/?auth=2",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 180,
+  "priority": "high",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "Phase C5.2 smoke verify — m365_copilot handler_class='M365SignalrHandler' DB-activated. M365SignalrHandler is transparent passthrough via ctx.legacy_render (same pattern as WrtnSocketIoHandler). m365's actual envelope build happens in WS frame interception path (build_m365_copilot_signalr_envelope, iter 5 3-frame burst from commit dc5ab63) — unchanged by this handler activation. This C5.2 commit validates factory dispatch wiring for m365_copilot; the iter 5 fix continues to work via the c2s inject site.",
+  "notes": "PASS criteria (primary): chat bubble renders Korean warning text (차단). ACCEPTABLE secondary: if FE rendering still requires extra fix beyond iter 5, dispatch log line confirms handler wiring. FAIL criteria: engine crashes, regression compared to dc5ab63 baseline, or no warning render at all.",
+  "id": "1188",
+  "created": "2026-05-20T08:35:00Z"
+}
