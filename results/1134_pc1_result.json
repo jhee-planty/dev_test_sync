@@ -1,0 +1,12 @@
+{
+  "id": 1134,
+  "command": "check-warning",
+  "service": "github_copilot",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "notes": "Warning rendered as inline assistant message: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' PII prompt with RRN (901010-1234567) was intercepted by APF and replaced with block warning. Logged in as plantynetaitest-ship-it (Copilot Free, model=Claude Haiku 4.5). Hard reload + paste via clipboard + Enter. Response complete within 60s.",
+  "timestamp": "2026-05-19T09:20:00+09:00",
+  "target_pc": "pc1",
+  "screenshot": "results/1134_screenshots/step1.png"
+}
