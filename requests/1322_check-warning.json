@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "blackbox",
+  "url": "https://www.blackbox.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "normal",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W5.2 regression: m365_signalr migrated to DB-driven emit_ws_envelope (build_m365_copilot_signalr_envelope removed, DB row id=87 protocol_family=ws_signalr 0x1E 3-frame). copilot_chat_send already migrated (W5.1). character/wrtn remain on legacy builders. ★ m365_copilot is the KEY service this wave — it gives emit_ws_envelope its first DOM-verifiable runtime validation (must render 차단 via the DB-driven SignalR template). m365 has known SignalR-inject fragility (Task#8) — if it FAILs once, a retry may render via page-replacement (precedent #1290→#1298). Expectation: m365 renders 차단 (engine block byte-identical 752 to baseline); all other 20 services IDENTICAL to W5.1/W5.0 baseline outcome class.",
+  "notes": "W4+W6 regression. PASS=warning rendered with 차단. FAIL이면 engine_intercept_fired + pre-existing(gemini3 B5/notion Task#9/cohere deprecated) vs W4/W6 신규 구분. | W5.0 byte-inert: must match W4+W6 baseline. | W5.1: copilot→emit_ws_envelope; other 20 must match baseline. | W5.2: m365→emit_ws_envelope (DB ws_signalr); others must match baseline.",
+  "id": "1322",
+  "created": "2026-05-21T00:30:00Z"
+}
