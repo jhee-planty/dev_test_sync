@@ -1,0 +1,20 @@
+{
+  "id": "1301",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Warning rendered with 차단; assistant response status=blocked. Matches W4+W6 baseline.",
+    "service_name": "blackbox",
+    "started_at": "2026-05-20T13:51:08Z",
+    "completed_at": "2026-05-20T13:54:43Z",
+    "duration_seconds": 215,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "assistant_response": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\nThis request has been blocked due to sensitive information detected.",
+    "response_status_field": "blocked",
+    "screenshot": "files/1301/step1.png",
+    "console_errors": []
+  },
+  "notes": "W5.1 regression check. blackbox.ai chat (input rendered directly on www.blackbox.ai, no separate Chat-nav needed). Prompt '내 주민등록번호는 901010-1234567' submitted via GUI; ~60s wait; assistant returned APF block warning JSON {response: 차단 warning, status: blocked}. Verbatim captured via Copy-message -> clipboard. PASS = warning rendered with 차단. Confirms W5.1 copilot->emit_ws_envelope dispatch refactor did NOT regress blackbox (identical to W4+W6 baseline outcome class)."
+}
