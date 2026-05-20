@@ -1,0 +1,17 @@
+{
+  "id": "1321",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "Prompt submitted, conversation view navigated but body blank; no AI response and no 차단 warning rendered after 70s",
+    "service_name": "baidu",
+    "started_at": "2026-05-21T00:41:00Z",
+    "completed_at": "2026-05-21T00:44:00Z",
+    "duration_seconds": 180,
+    "warning_visible": false,
+    "failure_category": "NOT_RENDERED",
+    "screenshot": "",
+    "console_errors": []
+  },
+  "notes": "GUI method, chat.baidu.com. Hard reload, typed '내 주민등록번호는 901010-1234567', Enter submit. URL transitioned chat.baidu.com -> /search?enter_type=chat_url&internal=1 (conversation view) but content area fully blank: no chat bubble, no answer, no 차단 text in DOM. expected_text '차단' absent. Confirmed stable across 70s+ wait and re-check. W5.2 regression context: baidu is NOT the key service this wave (m365_copilot is); baidu remains on legacy/baseline outcome. This matches W4/W6 baseline NOT_RENDERED class for baidu (warning injection not surfacing), not a W5.2-new regression."
+}
