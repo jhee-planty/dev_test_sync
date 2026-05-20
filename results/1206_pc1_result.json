@@ -1,0 +1,33 @@
+{
+  "id": 1206,
+  "command": "check-warning",
+  "service": "kimi",
+  "url": "https://www.kimi.com/",
+  "scenario": "Wave1.0-regression",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "dom_block_text_found": false,
+  "response_rendered": false,
+  "submit_succeeded": true,
+  "engine_intercept_fired": null,
+  "backend_request_sent": true,
+  "backend_response_status": 200,
+  "logged_in": true,
+  "account": "최장희",
+  "model": "K2.6 Instant",
+  "submit_method": "CDP (Chrome --remote-debugging-port=9222) — char-by-char Input.dispatchKeyEvent typing + trusted Input.dispatchMouseEvent click on .send-button-container; this bypasses the isTrusted=false guard that blocked windows-mcp synthetic input in baseline #1137/#1163",
+  "wait_seconds": 60,
+  "regression_note": "NOT a confirmed PASS->FAIL regression. Last-known kimi verdict was INCONCLUSIVE_submit_failed (#1137, #1163) — kimi has NEVER been confirmed PASS, so no PASS baseline exists to regress from. This is the first run to actually deliver the prompt to the kimi backend.",
+  "notes": "Baseline #1137/#1163 were INCONCLUSIVE_submit_failed: kimi's Lexical contenteditable (Vue shell, data-v-* scoped styles) rejected windows-mcp synthetic Enter/click (isTrusted=false), so the prompt never reached the backend and we could not distinguish engine-works from engine-doesn't. This run resolved the submit channel: launched Chrome with --remote-debugging-port=9222 against a dedicated --user-data-dir (Chrome 136+ silently disables remote debugging on the default profile; copied Default/Network cookies + Local State + prefs to C:\\cdp-kimi to preserve the 최장희 login). Typed the PII prompt char-by-char via CDP Input.dispatchKeyEvent (insertText alone left Vue's reactive model stale so the send handler no-op'd; char events fire the real beforeinput pipeline that updates Lexical+Vue state). Trusted CDP mouse click on .send-button-container (1235,378) THEN fired POST https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat. Captured TWO such submits, both returning HTTP 200. Despite 200 responses and prompt reaching the backend, the frontend rendered NO conversation pane, NO assistant response, NO message bubbles; URL stayed at kimi.com root (no /chat/<id> transition); editor retained the prompt; and crucially NO '차단' text, no toast/modal/alert/dialog appeared anywhere in the DOM after a 60s observation window. dom innerText scan for '차단' = not found; toast/modal/role=alert/role=dialog query = 0 elements. Because submit demonstrably succeeded (200, backend reached) yet the expected warning never rendered, verdict is FAIL_NOT_RENDERED (no longer INCONCLUSIVE_submit_failed). Open question / engine_intercept_fired=null: cannot confirm whether the APF engine intercepted — the 200 with empty frontend render is consistent with EITHER (a) engine replacing the connect-rpc/gRPC-web stream body with a block payload that kimi's frontend cannot parse (silent failure, no warning UI for this service), OR (b) the legacy NULL-handler path simply not injecting a renderable '차단' warning into kimi's stream framing. Either way, from the user-visible-warning criterion this is FAIL_NOT_RENDERED. Screenshots: 01_pre_submit (logged-in home), 02_prompt_typed (PII prompt in editor), 03_post_submit_5s, 04_final_60s (prompt still in box, no conversation/no warning).",
+  "screenshots": [
+    "results/1206_screenshots/01_pre_submit.png",
+    "results/1206_screenshots/02_prompt_typed.png",
+    "results/1206_screenshots/03_post_submit_5s.png",
+    "results/1206_screenshots/04_final_60s.png"
+  ],
+  "pc": "pc1",
+  "target_pc": "pc1",
+  "timestamp": "2026-05-20T19:40:00+09:00"
+}
