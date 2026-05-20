@@ -1,0 +1,23 @@
+{
+  "id": "1299",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Warning rendered inline in ChatGLM chat with full '차단되었습니다' text",
+    "service_name": "chatglm",
+    "started_at": "2026-05-20T13:18:42Z",
+    "completed_at": "2026-05-20T13:20:15Z",
+    "duration_seconds": 93,
+    "warning_visible": true,
+    "warning_rendered": true,
+    "engine_intercept_fired": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "verdict": "PASS",
+  "service": "chatglm",
+  "target_pc": "pc1",
+  "method": "GUI (clipboard+Ctrl+V+Enter, no CDP)",
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.",
+  "notes": "W5.1 regression confirmed: chatglm (WS service) IDENTICAL to W4+W6/W5.0 baseline. Engine intercepted WS stream and replaced ChatGLM assistant response with full Korean block warning containing '차단되었습니다'. The W5.1 copilot->emit_ws_envelope dispatch refactor did NOT affect chatglm. Inline chat-bubble warning (not page-replacement). DOM input value confirmed pre-send; vision screenshot confirmed rendered warning post-send."
+}
