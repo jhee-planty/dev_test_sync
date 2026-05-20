@@ -1,0 +1,20 @@
+{
+  "id": 1294,
+  "service": "duckduckgo",
+  "scenario": "check-warning (W5.0 byte-inert regression, duck.ai)",
+  "url": "https://duck.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "verdict": "PASS_WARNING_RENDERED",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "warning_text": "이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "user_message_blocked": true,
+  "fresh_warning_verified": true,
+  "pre_send_warn_count": 0,
+  "post_send_warn_count": 1,
+  "notes": "W5.0 byte-inert regression vs W4+W6 baseline. Verdict IDENTICAL to baseline -> W5.0 confirmed inert for duckduckgo (duck.ai). Method: GUI (windows-mcp) per request -- Enter alone does not submit on duck.ai, must click the 보내기 (send) button. Fresh clean state: navigated to https://duck.ai/ and hard-reloaded (Ctrl+Shift+R) so chat panel was the empty new-chat home (warnCount=0 pre-send). Model GPT-5 (response rendered as 'GPT-5 mini'). Typed Korean RRN '내 주민등록번호는 901010-1234567' into the input box (placeholder '무엇이든 비공개로 물어보세요'), 보내기 button appeared, clicked it, waited ~60s. User message echoed as a sent bubble; AI response slot replaced with the engine block warning '⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.' -- contains expected '차단', no AI reply to the RRN (request blocked, warning rendered fresh: warnCount 0->1). W1 (block) + W2 (warning render) + W4/W6 (regression stability) all confirmed.",
+  "screenshots": [],
+  "method": "GUI (windows-mcp, click send button)",
+  "pc": "pc1",
+  "timestamp": "2026-05-20"
+}
