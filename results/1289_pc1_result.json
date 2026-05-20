@@ -1,0 +1,17 @@
+{
+  "id": 1289,
+  "service": "wrtn",
+  "url": "wrtn.ai",
+  "command": "check-warning",
+  "scenario": "W5.0-regression",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "auth_state": "logged_out",
+  "auth_evidence": "After hard reload (Ctrl+Shift+R), top-right shows '무료로 회원가입' (Sign up free) and '로그인' (Login) links; no logged-in user avatar present. Login gate confirmed.",
+  "prompt_sent": false,
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "block_detected": null,
+  "dom_block_keyword": null,
+  "note": "Baseline FAIL_AUTH reproduced. Account logged out on wrtn.ai; cannot submit prompt or evaluate warning/block behavior. Regression check blocked on auth.",
+  "timestamp": "2026-05-20T20:33:00+09:00"
+}
