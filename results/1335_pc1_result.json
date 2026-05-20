@@ -1,0 +1,33 @@
+{
+  "id": 1335,
+  "command": "check-warning",
+  "service": "gemini3",
+  "url": "https://gemini.google.com/app",
+  "verdict": "WARNING_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "rendered_text": null,
+  "expected_text": "차단",
+  "expected_text_found": true,
+  "engine_response_body": "{\"error\":\"blocked\",\"message\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"}",
+  "engine_intercept_endpoint": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+  "engine_intercept_http_status": 200,
+  "engine_response_body_len": 141,
+  "login_state": "logged_in_avatar_present",
+  "submit_method": "fresh_navigate+overlay_dismiss+cdp_trusted_click+enter+jsclick (StreamGenerate dispatched cleanly)",
+  "prompt_chars": 24,
+  "screenshot": "results/1335_screenshots/01_final.png",
+  "context": "W5.2 regression batch — verify PII warning rendering on gemini3 unchanged after m365_signalr migrated to DB-driven emit_ws_envelope. gemini3 is NOT touched by W5.x (uses StreamGenerate JSON-block intercept, not the SignalR ws path). Baseline = #1207/#1228/#1249/#1271/#1314, all WARNING_NOT_RENDERED (engine block JSON contains '차단' but Gemini BardChatUi FE cannot parse the JSON block body as a protobuf StreamGenerate frame, so no chat bubble renders). #1292 was BLOCKED_INFRA (cdk-overlay promo modal gated CDP submit, resolved by fresh navigate).",
+  "notes": "W5.2 REGRESSION CHECK: PASS-FOR-ENGINE / RENDER-GAP-UNCHANGED — pre-existing gemini3 B5 design gap, NOT a W5.2 regression. Driven via CDP Chrome (port 9222, Chrome 148.0.7778.168, tab 9DF0DDC038FC752E85DD8C644C6C4C84, gemini.google.com/app). Per task directive, did fresh Page.navigate to https://gemini.google.com/app FIRST to clear any cdk-overlay promo modal (state_after_nav: hasBackdrop=false, hasDialog=false, editor present 'ql-editor ql-blank textarea new-input-ui' — clean load, no promo modal this session), then 3-pass overlay-dismiss guard (no overlays found, actions=[]). Login phase: hasLogin=false, hasAvatar=true → logged-in/avatar view (same env as #1271/#1314); engine intercept is proxy-layer so verdict holds regardless of login. PROMPT INSERT: built Korean literal from Unicode codepoints (avoid console cp949 mojibake) and inserted via CDP Input.insertText over a UTF-8 websocket. Editor held the EXACT 24-char prompt '내 주민등록번호는 901010-1234567' — codepoints [45236,32,51452,48124,46321,47197,48264,54840,45716,32,57,48,49,48,49,48,45,49,50,51,52,53,54,55], BYTE-IDENTICAL to #1271/#1314. SUBMIT: send button by aria-label '메시지 보내기' (center ~1088,365, 32x32, enabled, topIsBtn=true unobstructed); fired trusted Input.dispatchMouseEvent left-click, then trusted Input.dispatchKeyEvent Enter on focused editor, then synthetic JS PointerEvent+MouseEvent+click fallback. StreamGenerate POST fired this run, HTTP 200, requestId 15324.15066, mime application/json, bl=boq_assistant-bard-web-server_20260511.16_p18. ENGINE INTERCEPT FIRED: StreamGenerate response body (Network.getResponseBody, base64Encoded=false, 141 bytes) was the APF block payload {\"error\":\"blocked\",\"message\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"} — contains expected_text '차단' (HAS_CHADAN=true) plus '민감정보' and '보안 정책'. BYTE-IDENTICAL to #1207/#1228/#1249/#1271/#1314 engine_response_body (141 bytes) — W5.2 changes (m365 emit_ws_envelope migration, DB ws_signalr id=87) did NOT touch the gemini3 StreamGenerate intercept dispatch or block payload. HOWEVER warning_rendered=false (unchanged from all 5 baselines): Gemini frontend (BardChatUi expects protobuf StreamGenerate frames) cannot parse the JSON {\"error\":\"blocked\"} body → NO chat bubble rendered. DOM after submit: hasBlock=false, hasSensitive=false, hasPolicy=false, convoCount=0; .ql-editor still held the 24-char prompt post-submit (UNCONSUMED). Screenshot results/1335_screenshots/01_final.png (387944 bytes) shows logged-in landing view with prompt still in box and NO warning bubble. CONCLUSION: W5.2 caused NO regression to gemini3 (proxy-layer intercept + block payload byte-identical to baseline across 6 runs now: #1207/#1228/#1249/#1271/#1314/#1335). The no-render is the SAME pre-existing warning-design gap (gemini3 B5), NOT a W5.2 regression. gemini3 matches W5.1/W5.0 baseline outcome class exactly as the request expected.",
+  "timestamp": "2026-05-21T10:15:00+09:00",
+  "target_pc": "pc1",
+  "transient_or_regression": "no_regression",
+  "baseline_comparison": {
+    "1314": "WARNING_NOT_RENDERED (W5.1 regression check). #1335 reproduces IDENTICALLY: SAME verdict, SAME BYTE-IDENTICAL 141-byte engine block payload w/ '차단', SAME no-render gap, SAME logged-in/avatar env, SAME 24-char prompt codepoints, SAME send-button (메시지 보내기 ~1088,365). W5.2 caused NO regression to the gemini3 intercept/block path.",
+    "1271": "WARNING_NOT_RENDERED (W4+W6 regression check). engine_response_body byte-identical to #1335.",
+    "1292": "BLOCKED_INFRA (CDP submit never dispatched StreamGenerate; cdk-overlay promo modal blocked clicks). #1335 used fresh Page.navigate first per task directive — no promo modal present this session, submit dispatched StreamGenerate cleanly.",
+    "1249": "WARNING_NOT_RENDERED (W3 config-snapshot check). engine_response_body byte-identical to #1335.",
+    "1228": "WARNING_NOT_RENDERED (W1+W2 struct-collapse check). engine block payload byte-identical to #1335.",
+    "1207": "WARNING_NOT_RENDERED (original baseline). engine_response_body byte-identical to #1335."
+  }
+}
