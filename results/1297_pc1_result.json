@@ -1,0 +1,21 @@
+{
+  "id": "1297",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL_NOT_RENDERED",
+    "status_detail": "notion.com/chat (->notion.so/chat) loaded as a NORMAL Notion AI chat page; NO '보안 정책 - 접근 차단' page-replacement, no 차단 text. Regression vs #1276 baseline.",
+    "service_name": "notion",
+    "started_at": "2026-05-20T12:48:00Z",
+    "completed_at": "2026-05-20T12:49:30Z",
+    "duration_seconds": 90,
+    "warning_visible": false,
+    "warning_rendered": false,
+    "engine_intercept_fired": false,
+    "screenshot": "files/1297/step1_notion_normal_page.png",
+    "console_errors": []
+  },
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "notes": "W5.0 REGRESSION. Opened fresh chrome --new-window https://www.notion.com/chat -> redirected to notion.so/chat, then hard reload (Ctrl+Shift+R, cache-bypass). Page rendered as a fully-functional normal Notion AI chat: window title 'Notion AI | Notion', sidebar (홈/채팅/회의/수신함 + chat history), and an active empty chat input editbox ('AI로 무엇이든 시도해 보세요...'). DOM extraction confirms NO 차단 / warning content anywhere; chat input renders and is focusable. The page-LOAD block did NOT fire. Behavioral DIFFERENCE from #1276 baseline (PASS), which deterministically page-replaced notion.com/chat with the Option C build_warning_page_response page ('보안 정책 - 접근 차단', title contains 차단) so the chat input never rendered. The 4 pre-existing '보안 정책 - 접근 차단' Chrome windows in the desktop window list are STALE from earlier tests and did not change on this reload (not this test's tab). W5.0 was expected to be byte-inert (additive-dormant WS-codec; only behavioral touch = pinned-id in render_envelope_v3, used solely by copilot_chat_send). notion verdict flipped PASS(#1276)->FAIL_NOT_RENDERED(#1297) => NON-INERT regression to investigate. This is NOT a pre-existing notion-known-issue: #1276 baseline was a clean PASS. engine_intercept_fired=no (page NOT replaced)."
+}
