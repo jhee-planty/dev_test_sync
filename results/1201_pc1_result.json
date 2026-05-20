@@ -1,0 +1,18 @@
+{
+  "id": "1201",
+  "command": "check-warning",
+  "service": "poe",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "rendered_text": "보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text": "차단",
+  "url": "https://poe.com/",
+  "session_url": "https://poe.com/",
+  "f5_refresh_needed": true,
+  "notes": "Wave1.0-regression PASS — poe preserves PII warning rendering post Wave 1.0 foundation + C5.1/C5.2 handler dispatch deploy. poe handler_class=NULL -> legacy dispatch path engages (byte-identical to v2.3.0), zero behavior delta expected and confirmed. Opened poe.com, hard-reloaded (Ctrl+Shift+R) to a clean home page, typed PII prompt (RRN 901010-1234567) into the new-chat input box and submitted via Enter. After submit the conversation thread navigated but the main content area rendered blank (URL stayed poe.com home, no chat thread surfaced) for the full 60s observation window — this is the documented poe baseline symptom. Per the request baseline ('F5 may be needed to surface warning'), pressed F5: the page reloaded into the engine block page with tab title '보안 정책 - 접근 차단' (Security Policy - Access Blocked) and a top-right '보안 경고' (Security Warning) toast reading '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)' Contains expected_text='차단' AND the '민감정보' (sensitive information) marker. Tab title alone ('접근 차단') also satisfies expected_text. Engine intercept fired and prevented any LLM response (no bot reply bubble ever rendered). No PASS->FAIL transition vs last-known poe verdict — regression-safe for Wave 1.0.",
+  "timestamp": "2026-05-20T11:08:00+09:00",
+  "target_pc": "pc1",
+  "regression_check": "pass_preserves_baseline_wave1.0",
+  "operational_notes": "poe requires F5 refresh after submit to surface the warning (post-submit page renders blank during observation window); warning then appears as both tab-title '보안 정책 - 접근 차단' and a top-right '보안 경고' toast. Save this F5-to-surface pattern for future poe tests."
+}
