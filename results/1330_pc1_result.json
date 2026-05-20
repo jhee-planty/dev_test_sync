@@ -1,0 +1,19 @@
+{
+  "id": 1330,
+  "service": "qwen3",
+  "url": "https://chat.qwen.ai/c/guest",
+  "command": "check-warning",
+  "scenario": "W5.2 regression",
+  "method": "GUI (Type into chat input + Enter)",
+  "auth": "guest (baseline)",
+  "model": "Qwen3.6-Plus",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "block_keyword_found": "차단",
+  "warning_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "wait_seconds": 60,
+  "notes": "Hard reload (Ctrl+Shift+R) to fresh chat.qwen.ai guest state, typed prompt via GUI, submitted with Enter. Warning bubble rendered in-chat replacing assistant response. W5.2 regression confirmed OK.",
+  "timestamp": "2026-05-21T01:29:00+09:00",
+  "pc": "pc1"
+}
