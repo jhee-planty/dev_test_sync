@@ -1,0 +1,18 @@
+{
+  "id": "1208",
+  "command": "check-warning",
+  "service": "zeta",
+  "verdict": "INCONCLUSIVE_warning_untested",
+  "baseline_corrected": true,
+  "baseline_prior_verdict": "INCONCLUSIVE_unknown_service",
+  "warning_rendered": null,
+  "engine_intercept_fired": null,
+  "url": "https://zeta-ai.io/",
+  "resolved_url": "https://zeta-ai.io/ko",
+  "session_url": "https://zeta-ai.io/ko/rooms/2eb4aa0c-9b3d-49eb-b995-3b9508f5c337",
+  "notes": "Wave1.0 regression. BASELINE CORRECTION: prior #1145/#1171 verdict INCONCLUSIVE_unknown_service is a FALSE NEGATIVE. zeta IS a fully resolvable, live AI service. DNS resolves both candidates (zeta-ai.io -> 76.76.21.21, zeta.ai -> 54.237.57.21). zeta-ai.io is the real service: title '제타', meta '대한민국 1등 원조 AI 채팅 맛집 제타(zeta)', a Korean AI character/roleplay chat platform; it 302->/ko (Korean). zeta.ai is an unrelated domain-parking page (title 'Zeta.ai for sale') and is NOT the service. The original 000/curl failures were a curl schannel CRYPT_E_NO_REVOCATION_CHECK revocation-check quirk on this Windows host, not a real site outage; with --ssl-no-revoke both return HTTP 200, and Chrome loads zeta-ai.io fully. Browser-verified: opened https://zeta-ai.io/ -> home feed of AI chat cards rendered; navigated into a character profile (zeta-ai.io/ko/plots/53295427-...) -> '대화 시작하기' button; entered a live chat room (zeta-ai.io/ko/rooms/2eb4aa0c-...) where the AI character produced an opening narrative, model selector showed 'zeta', and a working chat input '내용 입력하기' + send button were present. No login wall blocked entry to the chat surface. WARNING RENDER NOT OBSERVED: did not complete a prompt-submit + warning-render observation. windows-mcp could not focus/submit the React virtualized contenteditable input (element resolved to coords (0,0); both Type and Click-by-label hit (0,0); Click loc-as-string failed schema validation throughout — same recurring tool bug noted in #1186). APF warning injection also occurs at the Etap bridge layer which is not in this PC's network path, so a live warning would not render here regardless. Verdict downgraded from a hard service-resolution INCONCLUSIVE to warning-untested: service reachability (the prerequisite) is now CONFIRMED, so the queue entry should be updated with the correct URL (https://zeta-ai.io/) and re-run with a DOM-capable input method (Chrome MCP javascript_tool to set the contenteditable value + dispatch input/Enter, mirroring the #1186 UIAutomation InvokePattern workaround).",
+  "timestamp": "2026-05-20T12:05:00+09:00",
+  "target_pc": "pc1",
+  "regression_check": "baseline_false_negative_corrected_service_reachable",
+  "operational_notes": "windows-mcp Click tool's loc parameter still fails validation (string vs array) — same bug as #1186. zeta input is a virtualized React contenteditable reporting (0,0) coords; neither Type-by-label nor Click-by-label can focus it. Next run: use Chrome MCP javascript_tool to set value + dispatch React input event, or PowerShell P/Invoke SetCursorPos+SendInput at physical-pixel coords (DPI 1.25) on the input bar (~y=988) then InvokePattern on the send button."
+}
