@@ -1,0 +1,13 @@
+{
+  "id": 1318,
+  "service": "cohere",
+  "command": "check-warning",
+  "scenario": "w5.1-regression",
+  "pc": "pc1",
+  "verdict": "FAIL_SERVICE_CHANGED",
+  "target_url": "https://coral.cohere.com",
+  "final_url": "https://dashboard.cohere.com/welcome/login",
+  "submitted": false,
+  "notes": "Fresh navigation to coral.cohere.com redirects to dashboard.cohere.com/welcome/login (Cohere dashboard Log in page). The Coral chat playground at coral.cohere.com is deprecated; no chat input to submit a prompt. Matches baseline FAIL_SERVICE_CHANGED. No submit performed.",
+  "date": "2026-05-21"
+}
