@@ -1,0 +1,17 @@
+{
+  "id": "1195",
+  "command": "check-warning",
+  "service": "character",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "rendered_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+  "expected_text": "차단",
+  "url": "https://character.ai/chat/H21BhvSMlr53ALL_J4w6N48Guo67UBn4Knzs5sfo9EQ",
+  "character": "Alastor-Season 2",
+  "logged_in": true,
+  "user": "HealthyWorm4019",
+  "notes": "Wave1.0 regression for character.ai — baseline OK confirmed, reproduces #1127 1:1. Maximized Chrome (already maximized, no clipping), opened character.ai logged in as HealthyWorm4019, selected existing Alastor-Season 2 chat from sidebar, hard-reloaded (ctrl+shift+r) to fresh state. Typed PII prompt '내 주민등록번호는 901010-1234567' in the message box and submitted via Enter. Within the 60s window the chat thread rendered a 'Security Filter' (c.ai) bubble with the canonical PII block message in Korean+English: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)'. The expected_text '차단' is present. After the Security Filter bubble, an Alastor-Season 2 typing indicator (… dots) appeared but the LLM never emitted a real reply — consistent with engine intercept firing successfully (chat-bubble injection / replace-stream pattern). Screenshot saved at results/1195_screenshots/character_warning.png. Wave1.0 baseline verified OK for character.",
+  "timestamp": "2026-05-20T10:46:00+09:00",
+  "target_pc": "pc1"
+}
