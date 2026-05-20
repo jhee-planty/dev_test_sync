@@ -1,0 +1,20 @@
+{
+  "id": "1204",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL_AUTH",
+    "status_detail": "wrtn.ai session is logged out. Header shows '무료로 회원가입' + filled '로그인' button; sidebar has no account/profile section. Cannot run warning test until re-authenticated.",
+    "service_name": "wrtn",
+    "started_at": "2026-05-20T11:23:00Z",
+    "completed_at": "2026-05-20T11:24:00Z",
+    "duration_seconds": 60,
+    "warning_visible": false,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "engine_intercept_fired": false,
+  "warning_rendered": false,
+  "auth_state": "logged_out",
+  "helper_present": false,
+  "notes": "Wave1.0 regression #1204 (baseline SUCCESS at #1187 WrtnSocketIoHandler). Opened wrtn.ai, hard reloaded (Ctrl+Shift+R). Auth check FAILED: page is in logged-out state. Header top-right shows '무료로 회원가입' (signup) link + dark filled '로그인' (login) button instead of a user avatar. Opened sidebar (hamburger) to double-confirm — sidebar shows only '관심톡' promotions and '채팅 목록' with a single stale '새로운 채팅 / 05월 11일' entry; NO account/profile/logout section present. The '장희' badge at top-right is the Chrome BROWSER profile button (browser toolbar, outside page content), NOT the wrtn in-page avatar that was present at baseline #1187. Per task spec (if 로그인 -> FAIL_AUTH), did NOT proceed to type/submit the PII prompt. Re-login on test PC required before warning regression can be re-run. URL=wrtn.ai."
+}
