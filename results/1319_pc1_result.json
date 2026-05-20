@@ -1,0 +1,21 @@
+{
+  "id": 1319,
+  "service": "notion",
+  "command": "check-warning",
+  "url": "https://www.notion.com/chat",
+  "scenario": "w5.1-regression",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "submitted": false,
+  "pc": "pc1",
+  "executed_at": "2026-05-21T00:30:00Z",
+  "screenshots": [
+    "results/1319_screenshots/01_after_reload.png",
+    "results/1319_screenshots/02_hydrated.png",
+    "results/1319_screenshots/03_after_reload2.png"
+  ],
+  "notes": "W5.1 regression check. Fresh CDP tab opened to https://www.notion.com/chat -> redirected to https://www.notion.so/chat. Cache-bypass hard reload (Page.reload ignoreCache=true), then a SECOND cache-bypass reload, with hydration waits (8s/12s/20s). All three loads landed on a NORMAL Notion page: window <title> = 'Notion AI | Notion' (NOT '보안 정책 - 접근 차단'), no 차단 text, no '보안 정책' warning anywhere in rendered DOM. The page-LOAD whole-page block did NOT fire. DOM probe across all 3 loads byte-identical: bodyHasBlock=false, bodyHasWarn=false, bodyLen=27093, bodySnippet='콘텐츠로 건너뛰기' (skip-to-content). The Notion app shell renders only the left-sidebar skeleton (gray placeholder bars in screenshots) and the chat composer NEVER hydrated: editorCount=0 (no contenteditable/textarea/[role=textbox]) on every probe. Because the composer never rendered, the PII prompt could NOT be typed or submitted (submitted=false); no user-message bubble, no AI/engine response, and no '차단' warning text appeared. This matches the TRUE notion baseline FAIL_NOT_RENDERED — the long-standing record-map-injection / FE-hydration-stall failure family (#1139/#1148/#1165/#1183/#1184/#1212/#1233/#1254/#1297). It also reproduces the #1297 W5.0 behavior (normal page, no page-replacement). It is explicitly NOT a regression against the #1276 PASS, which was a transient stale-block anomaly (page-replacement that #1297 already reverted). So W5.1 introduces NO observable change vs the true baseline on notion: still FAIL_NOT_RENDERED. engine_intercept_fired=no (page NOT replaced; no engine response surfaced in DOM). Note: notion is NOT a high-signal W5.1 validator due to the chronic hydration stall — WS-dispatch services remain better indicators."
+}
