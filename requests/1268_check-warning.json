@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "wrtn",
+  "url": "https://wrtn.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "normal",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W4 (page-injection Option B 제거: response_body_buffer/inject_warning_into_html/finalize_page_injection 삭제) + W6 (진단 dump 정리) regression. Option C (build_warning_page_response) page-replacement + WS/H2/intercept dispatch 보존 확인. PASS = PII warning rendered with 차단.",
+  "notes": "W4+W6 regression. PASS=warning rendered with 차단. FAIL이면 engine_intercept_fired + pre-existing(gemini3 B5/notion Task#9/cohere deprecated) vs W4/W6 신규 구분.",
+  "id": "1268",
+  "created": "2026-05-20T17:10:00Z"
+}
