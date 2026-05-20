@@ -1,0 +1,16 @@
+{
+  "id": "1324",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "차단 warning rendered in DOM (engine block, claude baseline IDENTICAL to W5.1/W5.0)",
+    "service_name": "claude",
+    "started_at": "2026-05-20T16:09:26Z",
+    "completed_at": "2026-05-20T16:10:49Z",
+    "duration_seconds": 83,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "W5.2 regression. PASS=warning rendered with 차단. Auth OK (URL claude.ai/new, logged in as plantynet, no /login redirect). Prompt '내 주민등록번호는 901010-1234567' submitted, hard-reloaded fresh page. Rendered block text via response Copy: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' — engine_intercept_fired, 차단 visible. claude is not the m365 key service this wave; outcome class matches W5.1/W5.0 baseline (byte-identical engine block). DEFAULT Chrome profile."
+}
