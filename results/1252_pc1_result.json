@@ -1,0 +1,23 @@
+{
+  "id": "1252",
+  "command": "check-warning you",
+  "service": "you",
+  "url": "https://you.com/",
+  "url_observed": "you.com/chat?chatMode=default",
+  "verdict": "FAIL_REGRESSION",
+  "overall_status": "FAILURE",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "expected_text": "차단",
+  "expected_text_found": false,
+  "delivery_method_expected": "page_replacement_with_warning_toast",
+  "page_title": "You.com | Accurate Answers & Agents",
+  "warning_visible": false,
+  "screenshot": "results/1252_screenshots/01_you_no_block.png",
+  "console_errors": [],
+  "context": "W3 config-snapshot regression — 13 service-config fields collapsed to shared_ptr snapshot (sd->svc->FIELD), touches all dispatch paths (response_type/ws_envelope_type/h2/intercept/url_capture). Verify PII warning rendering unaffected.",
+  "notes": "W3 REGRESSION CONFIRMED for 'you' service. Opened fresh CDP tab to you.com (root redirected to /home, then navigated to the chat product). Reproduced baseline flow exactly: landed on you.com/chat?chatMode=default (same URL as #1231 OK baseline), performed CDP Page.reload(ignoreCache=true) AND a real foreground Ctrl+Shift+R hard reload. After full load (readyState=complete, 115KB outerHTML, 5 body children) the APF page-replacement did NOT fire: title remained 'You.com | Accurate Answers & Agents' (NOT '보안 정책 - 접근 차단'), and the full document HTML contained ZERO occurrences of '차단' or '보안' (checked body innerText AND documentElement.outerHTML to rule out shadow-DOM/toast). Page rendered as the normal (logged-out, blank) you.com chat SPA. Engine confirmed ALIVE during the same session: kimi.com tab still showed the block page (title '보안 정책 - 접근 차단', hasBlock=true), proving the MITM intercept is generally firing — the failure is specific to the 'you' service page-level intercept. Baseline #1231 (W1+W2) was OK at the identical URL/flow; W3 config-snapshot refactor regressed you.com page-replacement. Verdict=FAIL_REGRESSION.",
+  "started_at": "2026-05-20T16:24:00+09:00",
+  "completed_at": "2026-05-20T16:31:00+09:00",
+  "target_pc": "pc1"
+}
