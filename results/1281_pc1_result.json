@@ -1,0 +1,18 @@
+{
+  "id": 1281,
+  "service": "claude",
+  "command": "check-warning",
+  "url": "https://claude.ai",
+  "verdict": "FAIL_AUTH",
+  "scenario": "w5.0-regression",
+  "auth_state": "logged_out",
+  "final_url": "claude.ai/login?from=logout",
+  "prompt_submitted": false,
+  "warning_detected": false,
+  "dom_keyword_check": "not_performed_blocked_by_auth",
+  "note": "Navigated to claude.ai/new and hard-reloaded (Ctrl+Shift+R); page redirected to claude.ai/login?from=logout showing Google/email sign-in. Not logged in, cannot run prompt. Matches baseline #1260 BLOCKED_AUTH (claude.ai logged out). #1238 PASS predates logout.",
+  "baseline_ref": "#1260 BLOCKED_AUTH, #1238 PASS",
+  "browser": "default Chrome",
+  "timestamp": "2026-05-20T19:59:00+09:00",
+  "pc": "pc1"
+}
