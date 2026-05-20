@@ -1,0 +1,16 @@
+{
+  "id": "1258",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PASS: PII warning rendered with 차단 (status:blocked) at www.blackbox.ai chat",
+    "service_name": "blackbox",
+    "started_at": "2026-05-20T08:36:54Z",
+    "completed_at": "2026-05-20T08:38:43Z",
+    "duration_seconds": 109,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "W4+W6 regression PASS. GUI method: Chrome -> www.blackbox.ai -> Chat -> hard reload -> clipboard paste prompt -> Send -> wait ~75s. Assistant chat bubble rendered the APF page-replacement (Option C) warning body verbatim: {\"response\":\"\\u26a0\\ufe0f \\ubbfc\\uac10\\uc815\\ubcf4\\uac00 \\ud3ec\\ud568\\ub41c \\uc694\\uccad\\uc740 \\ubcf4\\uc548 \\uc815\\ucc45\\uc5d0 \\uc758\\ud574 \\ucc28\\ub2e8\\ub418\\uc5c8\\uc2b5\\ub2c8\\ub2e4...\",\"status\":\"blocked\"}. Contains expected '차단' + status:blocked. Option C page-replacement + dispatch path confirmed preserved after W4 (page-injection Option B removal) + W6 (diag dump cleanup). No engine_intercept-only failure; warning fully rendered. Minor observation (non-blocking): warning shown as raw JSON string in bubble rather than parsed/styled, but 차단 text is visible per PASS criterion. Text read via UIAutomation (Scrape DOM tool errored: ScrollElementNode.vertical_scroll_percent bug); no screenshot saved."
+}
