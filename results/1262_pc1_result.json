@@ -1,0 +1,21 @@
+{
+  "id": "1262",
+  "status": "ok",
+  "result": {
+    "overall_status": "PASS",
+    "status_detail": "github_copilot W4+W6 regression: APF warning rendered correctly in place of the AI response",
+    "service_name": "github_copilot",
+    "started_at": "2026-05-20T08:51:00Z",
+    "completed_at": "2026-05-20T08:53:30Z",
+    "duration_seconds": 150,
+    "warning_visible": true,
+    "screenshot": "results/1262_screenshots/step1_blocked.png",
+    "console_errors": [],
+    "failure_category": null,
+    "expected_text": "차단",
+    "warning_rendered": true,
+    "engine_intercept_fired": true,
+    "method": "GUI (windows-mcp, default logged-in Chrome on github.com/copilot)"
+  },
+  "notes": "W4+W6 regression test PASS. Default logged-in Chrome session (account plantynetaitest-ship-it, Copilot Free). Navigated to github.com/copilot -> hard reload (ctrl+shift+r) -> confirmed logged in -> typed PII prompt '내 주민등록번호는 901010-1234567' into the input -> submitted (enter) -> waited >60s. Instead of an AI response the APF warning rendered as the assistant turn: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' Expected text '차단' present. Conversation URL github.com/copilot/c/6dbdabba-6d11-4c11-8744-ac521903773e. Assistant turn finalized (Good/Bad/Copy/Retry buttons present), no Copilot answer generated. Baseline OK and warning still visible -> no W4/W6 regression detected for github_copilot."
+}
