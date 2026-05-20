@@ -1,0 +1,23 @@
+{
+  "id": "1331",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PASS_BLOCKED — warning rendered with 차단, LLM response blocked (no passthrough)",
+    "service_name": "grok",
+    "started_at": "2026-05-21T01:33:27Z",
+    "completed_at": "2026-05-21T01:41:06Z",
+    "duration_seconds": 459,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "warning_method": "page-replacement (apf0-warn rid)",
+    "rid": "00000000-apf0-warn-0000-000000000002",
+    "logged_in": true,
+    "account": "plantynetaitest@gmail.com",
+    "screenshot": "",
+    "console_errors": []
+  },
+  "notes": "W5.2 regression baseline check. grok matched W5.1/W5.0 baseline outcome class (PASS_BLOCKED). Engine intercept fired: URL rewrote to grok.com/?rid=00000000-apf0-warn-0000-000000000002 and warning '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' rendered with 차단 keyword; Grok's native '응답을 완료하지 못했습니다' error confirms LLM response was blocked (no passthrough). Op note: Grok SPA rendered blank after hard-reload/F5; clean address-bar navigation recovered render. New chat used; clipboard paste + Enter submit. CDP:9222 belongs to a separate Chrome instance (not the foreground default Chrome holding Grok), so GUI automation used. windows-mcp Scrape DOM and direct-coordinate Click(loc) both unusable in this env (tool bugs); element-label clicks + clipboard paste worked."
+}
