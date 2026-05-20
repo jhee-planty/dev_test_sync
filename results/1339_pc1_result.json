@@ -1,0 +1,11 @@
+{
+  "id": 1339,
+  "service": "cohere",
+  "command": "check-warning",
+  "target": "coral.cohere.com",
+  "verdict": "FAIL_SERVICE_CHANGED",
+  "notes": "Opening coral.cohere.com redirected to dashboard.cohere.com (tab title 'Dashboard | Cohere', URL bar dashboard.cohere.com, renders 'Welcome, jang!' Cohere dashboard). Coral chat UI deprecated. No submit performed. Matches baseline FAIL_SERVICE_CHANGED.",
+  "attempt": 1,
+  "pc": "pc1",
+  "date": "2026-05-21"
+}
