@@ -1,0 +1,55 @@
+{
+  "id": "1191",
+  "command": "check-warning",
+  "service": "copilot",
+  "phase": "Wave1.1-B2_v3",
+  "url": "https://copilot.microsoft.com/",
+  "session_url": "https://copilot.microsoft.com/chats/v6XjnnNLdTVd4yJVW6ak8",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "FAIL_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "expected_text_found": false,
+  "observed_response": "Copilot rendered a model-generated soft privacy advisory (no APF intercept): '주민등록번호와 같은 민감한 개인정보는 안전을 위해 공유하지 않는 것이 좋아요. 온라인 대화에서 노출될 경우 악용될 위험이 크기 때문에, 지금 말씀해주신 번호는 삭제하거나 보호하는 것이 가장 안전합니다. 혹시 주민등록번호와 관련해 개인정보 보호, 주민등록번호 사용처, 또는 안전한 온라인 활동에 대해 더 알고 싶으신가요?' This is the upstream LLM's natural PII-safety advice, NOT the canonical APF block warning. NO '차단' substring anywhere in DOM. NO APF Security Filter bubble. NO envelope_v3 warning injection visible. Conversation URL persisted to /chats/v6XjnnNLdTVd4yJVW6ak8 (real conversation, not error state) — prompt reached the upstream model unchanged. Standard message-action toolbar rendered (좋은 응답 / 나쁜 응답 / 메시지 복사 / 다시 생성 / 페이지에서 편집), composer re-enabled empty. No retry button, no '이전 응답이 차단' notice. Three suggestion chips offered (개인정보 보호 / 주민등록번호 사용처 / 안전한 온라인 활동).",
+  "screenshot": "results/1191_screenshots/post_submit.png",
+  "timestamp": "2026-05-20T09:49:00+09:00",
+  "target_pc": "pc1",
+  "browser_mode": "Chrome maximized (not incognito), guest mode (게스트 tab visible, 로그인 button top-right), DevTools NOT opened (per task spec).",
+  "dom_evidence": {
+    "contains_chadan": false,
+    "contains_canonical_warning_text": false,
+    "model_soft_advisory_present": true,
+    "soft_advisory_text_excerpt": "주민등록번호와 같은 민감한 개인정보는 안전을 위해 공유하지 않는 것이 좋아요...",
+    "no_retry_button": true,
+    "no_error_fallback": true,
+    "composer_re_enabled": true,
+    "conversation_url_advanced": true,
+    "conversation_id": "v6XjnnNLdTVd4yJVW6ak8",
+    "page_title": "Microsoft Copilot: AI 컴패니언",
+    "captcha_blocked": false,
+    "hcaptcha_observed": false,
+    "suggestion_chips": ["개인정보 보호", "주민등록번호 사용처", "안전한 온라인 활동"]
+  },
+  "wave1_1_diagnosis": {
+    "expected_path": "DB row id=85 (response_type=copilot_chat_send, envelope_template ws_json with conversationId/message_id macros, extraction_rules ws_c2s_json $.conversationId, protocol_family=ws_json) → engine should intercept c2s prompt frame containing PII RRN → generate envelope from template → emit s2c frame with '차단' warning text → render as Copilot assistant bubble. Engine log [APF:envelope_v3] service=copilot rendered via DB expected.",
+    "observed_path": "Prompt forwarded unchanged to upstream copilot.microsoft.com model. Model produced its own natural PII-safety advisory in Korean. No APF intercept signal in DOM. Model response is markedly DIFFERENT from canonical APF warning text — the APF warning starts with '⚠️ 민감정보가 포함된' or similar fixed string and ends with '차단되었습니다', whereas this response is fluid, conversational, and offers follow-up suggestions.",
+    "likely_root_causes": [
+      "DB row id=85 inserted but engine did not match the c2s prompt frame to the row's extraction_rules (json_path $.conversationId may not map to the actual copilot.microsoft.com WS c2s envelope schema — copilot.microsoft.com WebSocket protocol may use a different field name or be plaintext-not-JSON).",
+      "PII detector (RRN 901010-1234567) may not have fired at the engine layer for this c2s frame — copilot.microsoft.com may wrap the prompt inside a binary/encoded envelope that the detector does not parse.",
+      "envelope_v3 dual-path may have ranked legacy first or matched neither path (handler_class mapping for service=copilot not activated for v3 dispatch).",
+      "WebSocket frame may be sent over a non-intercepted endpoint (copilot.microsoft.com sometimes uses HTTP/3+QUIC or fetch streaming instead of standard WS — engine MITM may not see the c2s prompt at all)."
+    ],
+    "recommended_followup": "On engine side: tail logs for service=copilot AND search for both [APF:envelope_v3] (new v3 path) and [APF:copilot_inject_diag] (legacy path) lines during the test window (2026-05-20T09:43-09:49 KST). Absence of BOTH lines confirms the engine never saw a copilot c2s prompt frame at all → MITM/intercept layer issue, not template issue. Presence of legacy [APF:copilot_inject_diag] without [APF:envelope_v3] confirms dual-path ranking issue. Presence of [APF:envelope_v3] without bubble rendering confirms envelope schema mismatch with the actual copilot.microsoft.com WS protocol. Per task spec: FAIL ⇒ rollback DELETE FROM ai_prompt_response_templates WHERE id=85 + reload_templates."
+  },
+  "comparison_to_896_baseline": {
+    "896_status": "FAIL_NOT_RENDERED (2026-05-13). Same site (copilot.microsoft.com guest mode), same PII prompt pattern. Model echoed/parsed the literal RRN with breakdown (출생 연도/월일/성별). No APF bubble.",
+    "1191_status": "FAIL_NOT_RENDERED (2026-05-20, post Wave1.1 B2_v3 DB-driven path). Site behavior changed at the model layer — Copilot now refuses to parse the RRN and instead emits a soft privacy advisory (model self-censors). APF still does NOT intercept. Behavior delta is in the upstream LLM, NOT in the APF stack. The Wave1.1 B2_v3 DB-driven path did NOT produce a visible warning for copilot.microsoft.com in this test."
+  },
+  "comparison_to_other_copilot_variants": {
+    "github_copilot_1160": "PASS — handler_class=NULL, legacy path. Inline assistant message with full '⚠️ 민감정보…차단되었습니다' text rendered. Distinct service/handler from copilot.microsoft.com.",
+    "m365_copilot_1177_1188": "PASS — iter5 3-frame burst envelope (type:1 isLastUpdate:true + type:2 Completion + type:3 ACK) on substrate.office.com SignalR hub. m365_copilot uses a different host (m365.cloud.microsoft/chat) and a different WS protocol (SignalR) than copilot.microsoft.com.",
+    "copilot_microsoft_com_history": "Both 896 (pre-v3) and 1191 (post-v3) show FAIL_NOT_RENDERED on the consumer copilot.microsoft.com guest endpoint. This indicates the engine has not yet successfully wired a working envelope path for this specific service variant. The B2_v3 DB row addresses the template/extraction side but does not yet appear to be reaching the wire."
+  },
+  "notes": "Wave 1.1 B2_v3 DB-driven smoke FAIL. Test flow: hard-reload copilot.microsoft.com → guest mode confirmed (게스트 tab + 로그인 button top-right) → composer focus → clipboard paste '내 주민등록번호는 901010-1234567' → Enter submit at 09:43:00 KST → observed for ~6 minutes (well beyond 180s timeout) → DOM stable from t+15s onward → no '차단' text, no APF bubble, no error/retry, just model's soft advisory. NO hCaptcha encountered. Per task spec PASS criteria (warning visible '차단' + Engine log [APF:envelope_v3]) — fully unmet. Recommend engine-side rollback per task: DELETE FROM ai_prompt_response_templates WHERE id=85 + reload_templates, then investigate whether (a) engine sees the copilot.microsoft.com c2s WS frame at all, (b) the conversationId extraction_rules json_path matches the actual envelope schema, (c) PII detector fires before envelope dispatch."
+}
