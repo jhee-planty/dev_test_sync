@@ -1,0 +1,16 @@
+{
+  "id": "1329",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Block warning rendered after F5 (baseline behavior); matches W5.x baseline (m365 emit_ws_envelope refactor inert for non-copilot/non-m365 WS services)",
+    "service_name": "poe",
+    "started_at": "2026-05-21T01:24:00Z",
+    "completed_at": "2026-05-21T01:26:30Z",
+    "duration_seconds": 150,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "GUI method. Opened poe.com in existing tab via address bar, hard reload (Ctrl+Shift+R), typed '내 주민등록번호는 901010-1234567' into the new-chat input and submitted (Enter). After ~60s the main content area was blank (baseline known behavior), so pressed F5 as instructed. Post-F5 the tab title became '보안 정책 - 접근 차단' and a security-warning banner rendered top-right with expected block text containing 차단: '⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)' MATCH_CHADAN_FOUND. W5.2 regression: m365_signalr migrated to DB-driven emit_ws_envelope; poe (non-copilot/non-m365 WS) outcome IDENTICAL to baseline (F5 needed) — refactor did not affect this service. No new regression."
+}
