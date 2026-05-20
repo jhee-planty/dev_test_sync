@@ -1,0 +1,37 @@
+{
+  "id": "1256",
+  "service": "chatglm",
+  "command": "check-warning",
+  "target_pc": "pc1",
+  "status": "done",
+  "verdict": "FAIL",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "Engine intercept fired (warning bubble injected) but warning TRUNCATED mid-stream; 차단 never rendered",
+    "service_name": "chatglm",
+    "started_at": "2026-05-20T08:19:55Z",
+    "completed_at": "2026-05-20T08:24:52Z",
+    "duration_seconds": 297,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "warning_text_rendered": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 ",
+    "warning_text_baseline_1234": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.",
+    "warning_delivery_pattern": "ai_chat_bubble_injection",
+    "model": "GLM-5.1",
+    "anti_debugger_devtools_avoided": true,
+    "regression": true,
+    "regression_class": "W4_W6_NEW",
+    "failure_category": "NOT_RENDERED",
+    "stream_progress_samples": [
+      {"t_approx_s": 75, "bodylen": 395, "tail": "...메시지가 감지되었습니다. 보안 정"},
+      {"t_approx_s": 165, "bodylen": 396, "tail": "...보안 정책에 따라 "},
+      {"t_approx_s": 185, "bodylen": 402, "tail": "...보안 정책에 따라 "},
+      {"t_approx_s": 225, "bodylen": 408, "tail": "...보안 정책에 따라 "}
+    ],
+    "console_errors": []
+  },
+  "notes": "W4 (page-injection Option B removal: response_body_buffer/inject_warning_into_html/finalize_page_injection deleted) + W6 (diag dump cleanup) regression check on chatglm. METHOD: anti-debugger respected — NO DevTools/F12 at all; drove entirely via CDP Runtime.evaluate + synthetic Enter KeyboardEvent on textarea (.enter.is-main-chat .click() did NOT submit; CDP Input.dispatchKeyEvent Enter also did NOT submit; synthetic keydown/keypress/keyup on the focused textarea preventDefaulted keydown and cleared the field = real submit). Guest mode (访客_fbfb46, not logged in), fresh nav to https://chatglm.cn/, prompt '내 주민등록번호는 901010-1234567' submitted. RESULT: engine_intercept_fired=TRUE — APF injected a ChatGLM assistant chat-bubble starting with the canonical '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다.' so WS/H2/intercept dispatch + Option C (build_warning_page_response) page-replacement is still WIRED. BUT the warning body is TRUNCATED and stream-stalled: over 225s (well past the 120s window and baseline #1234's 150s) it crept 395->396->402->408 chars, freezing at '...보안 정책에 따라 ' and NEVER reaching the tail '...해당 요청이 차단되었습니다.' that carries expected_text 차단. has_blocked=false at every sample; '停止对话' (stop) button stayed visible = stream hung, not merely slow. CONTRAST: baseline #1234 (W3 regression, same prompt/method) rendered the FULL warning incl 차단 = PASS. CONCLUSION: this is a NEW W4/W6 regression (NOT pre-existing gemini3 B5 / notion Task#9 / cohere deprecated). The Option B page-injection removal appears to have broken complete delivery of the warning payload through the surviving Option C path — only the leading fragment streams before the response stalls. DEV ACTION: inspect build_warning_page_response / the W4 commit that deleted finalize_page_injection — the warning body is being cut off (likely content-length / chunked-transfer / buffer-flush left dangling after Option B removal). VERDICT FAIL = warning not fully rendered (차단 absent)."
+}
