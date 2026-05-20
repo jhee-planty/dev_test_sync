@@ -1,0 +1,40 @@
+{
+  "id": "1292",
+  "status": "error",
+  "service": "gemini3",
+  "url": "https://gemini.google.com/app",
+  "verdict": "BLOCKED_SUBMIT_NOT_DISPATCHED",
+  "warning_rendered": false,
+  "engine_intercept_fired": false,
+  "rendered_text": null,
+  "expected_text": "차단",
+  "engine_response_body": null,
+  "engine_intercept_endpoint": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+  "login_state": "logged_in_avatar_present",
+  "submit_method": "cdp_trusted_click+enter+jsclick (8 attempts, none dispatched StreamGenerate)",
+  "prompt_chars": 24,
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "Submit could not be dispatched via CDP — no StreamGenerate POST fired across 8 attempts, so engine intercept was unobservable. NOT a verdict on warning rendering.",
+    "service_name": "gemini3",
+    "started_at": "2026-05-20T20:05:00Z",
+    "completed_at": "2026-05-20T20:24:00Z",
+    "duration_seconds": 1140,
+    "warning_visible": false,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "failure_category": "INFRASTRUCTURE",
+    "screenshot": null,
+    "console_errors": [],
+    "target_pc": "pc1"
+  },
+  "notes": "INFRASTRUCTURE BLOCKER — could not drive Gemini submit via CDP. Tab 9DF0DDC038FC752E85DD8C644C6C4C84 (same as #1271), gemini.google.com/app, Chrome 148, CDP port 9222. WHAT WORKED (matches #1271 baseline): login_state=logged_in_avatar_present (hasLogin=false, hasAvatar=true, identical to #1271/#1249); prompt built from codepoints [45236,32,51452,48124,46321,47197,48264,54840,45716,32,57,48,49,48,49,48,45,49,50,51,52,53,54,55] and inserted via CDP Input.insertText — editor (.ql-editor) held the EXACT byte-identical 24-char '내 주민등록번호는 901010-1234567' (verified codepoints == #1271); send button found by aria-label '메시지 보내기', enabled (disabled=false), unobstructed after dialog dismiss (topIsBtn=true). WHAT FAILED: across 8 submit attempts (CDP Input.dispatchMouseEvent trusted click at button center; JS synthetic PointerEvent+MouseEvent full sequence; CDP Input.dispatchKeyEvent Enter; synthetic KeyboardEvent keydown/keypress/keyup keyCode13; per-char keytype; btn.click() JS fallback; tab Page.bringToFront before clicking; fresh Page.navigate clean-load then click) NONE dispatched a StreamGenerate POST (Network.requestWillBeSent never saw StreamGenerate). After every attempt the prompt stayed UNCONSUMED in the editor (editorLen=24, convoCount=0). ROOT CAUSE PARTIALLY IDENTIFIED: a modal dialog overlay was covering the composer on first load — cdk-overlay-backdrop (z=1000) + mat-dialog-container '업데이트 이메일 구독' (Gemini email-subscription promo). elementFromPoint at the button center returned the backdrop DIV, not the button, so early trusted clicks landed on the backdrop. Dismissed it via the dialog's '나중에/탐색 카드 확인하고 닫기' button (backdrop=false, dialog=false confirmed after). BUT even fully unobstructed (topIsBtn=true, button enabled), submit STILL would not fire — so the overlay was a contributing factor, not the sole cause. Likely Gemini's gem-icon-button send handler gates on a fully-trusted compositor-level pointer gesture that CDP Input.* on this build/foreground state does not satisfy. STALE-ARTIFACT NOTE (important, do NOT misread): during one dirty Page.reload(ignoreCache) the page momentarily showed a FULL-PAGE HTML block ('보안 정책 - 접근 차단', '⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.') — this was a TRANSIENT/STALE proxy block-page artifact from a prior blocked navigation, NOT a response to this test's PII prompt (the prompt never submitted). A subsequent clean Page.navigate to gemini.google.com/app loaded the NORMAL Gemini app (title 'Google Gemini', greeting '장희님, 지금 어떤 생각을 하고 계시나요?', editor present, NO 차단/⚠ text, document response = normal bscframe shell, hasChadan=false) — confirming the block page was an artifact and is NOT reproducible on clean navigation. CONCLUSION vs #1271: This run is INCONCLUSIVE for the W5.0 byte-inert regression check because the engine intercept layer (StreamGenerate proxy block) could NOT be exercised — submit was never dispatched. The observable layers (login/avatar state, byte-identical prompt, send-button identity) are consistent with the #1271/#1249/#1228/#1207 baseline and show NO regression, but I cannot confirm engine_intercept_fired or warning_rendered this run. RECOMMEND: re-run with a real OS-level click (windows-mcp foreground click on the send button) or a manual submit, since CDP-only submit is unreliable on this Gemini build. This is NOT a W5.0 regression signal — it is a test-harness submit-dispatch limitation.",
+  "baseline_comparison": {
+    "1271": "WARNING_NOT_RENDERED (W4+W6, engine_intercept_fired=true, 141-byte block JSON w/ 차단, FE no-render). #1292 could NOT reach the engine layer (StreamGenerate never dispatched via CDP), so engine_intercept_fired is unobservable=false here. Observable layers (login state, byte-identical 24-char prompt, send button 메시지 보내기) match #1271 — no regression detected in what was reachable.",
+    "1249": "WARNING_NOT_RENDERED baseline. Not reproducible/contradicted this run because submit blocked.",
+    "harness_note": "#1271 successfully dispatched StreamGenerate via cdp_trusted_click_then_jsclick on the SAME tab; this run's identical method did not fire it — difference is the email-subscription modal overlay present this session (absent/already-dismissed in #1271) plus a residual submit-gate that persisted after dismissal."
+  },
+  "timestamp": "2026-05-20T20:24:00+09:00",
+  "target_pc": "pc1",
+  "transient_or_regression": "infrastructure_inconclusive"
+}
