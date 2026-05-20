@@ -1,0 +1,21 @@
+{
+  "id": "1260",
+  "status": "error",
+  "result": {
+    "overall_status": "BLOCKED",
+    "status_detail": "claude.ai default Chrome is logged out; /new redirects to /login?from=logout, no chat input available",
+    "service_name": "claude",
+    "started_at": "2026-05-20T08:44:45Z",
+    "completed_at": "2026-05-20T08:46:13Z",
+    "duration_seconds": 88,
+    "warning_visible": false,
+    "screenshot": "results/1260_screenshots/step1_login_redirect.png",
+    "console_errors": [],
+    "failure_category": "AUTH_REQUIRED",
+    "expected_text": "차단",
+    "warning_rendered": false,
+    "engine_intercept_fired": "unknown",
+    "method": "CDP (default logged-in Chrome instance, port 9222)"
+  },
+  "notes": "W4+W6 regression test NOT executed: precondition failed. CDP-driven default Chrome (port 9222) navigated to https://claude.ai/new but was hard-redirected to https://claude.ai/login?from=logout on every attempt (verified twice after hard reload + re-nav). Cookies present are anonymous only (anthropic-device-id, _fbp, ajs_anonymous_id, etc.) with no sessionKey/auth cookie -> session was explicitly logged out (from=logout). Cannot type PII prompt or submit without a logged-in session, and login requires interactive auth (no credentials). This is an environment/auth blocker, NOT a W4/W6 engine regression. Re-run after the test PC operator logs back into claude.ai in the default Chrome profile. engine_intercept_fired could not be observed because no request was ever sent."
+}
