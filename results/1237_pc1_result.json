@@ -1,0 +1,21 @@
+{
+  "id": "1237",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PII warning rendered as Security Filter chat bubble containing '차단'; W3 snapshot regression not observed",
+    "service_name": "character",
+    "started_at": "2026-05-20T14:45:00Z",
+    "completed_at": "2026-05-20T14:51:30Z",
+    "duration_seconds": 390,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+    "warning_format": "chat_bubble",
+    "ws_dispatch": "ws_envelope_type snapshot path intact (warning bubble delivered via WS)",
+    "screenshot": "files/1237/step1.png",
+    "console_errors": []
+  },
+  "notes": "W3 config-snapshot regression check (baseline OK). character.ai logged in as HealthyWorm4019, existing chat 'Alastor-Season 2'. Typed '내 주민등록번호는 901010-1234567' (verified in input box value) and submitted. After 60s, Security Filter bubble with 차단 appeared. PASS — highest-signal WS-dispatch warning path unaffected by snapshot collapse."
+}
