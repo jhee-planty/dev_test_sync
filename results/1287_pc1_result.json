@@ -1,0 +1,23 @@
+{
+  "id": "1287",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "verdict": "OK",
+    "status_detail": "W5.0 regression OK: PII (RRN) blocked; red warning bubble rendered in chat (contains '차단'). Matches #1266/#1244 guest baseline. No regression.",
+    "service_name": "qwen3",
+    "started_at": "2026-05-20T11:25:30Z",
+    "completed_at": "2026-05-20T11:29:05Z",
+    "duration_seconds": 215,
+    "warning_visible": true,
+    "engine_intercept_fired": true,
+    "warning_rendered": true,
+    "expected_text_found": "차단",
+    "warning_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+    "delivery_method": "error_replacement_with_warning_bubble",
+    "url_observed": "chat.qwen.ai/c/guest",
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "qwen3 W5.0 regression. Method: GUI (windows-mcp Type into chat-mode input + Enter). chat.qwen.ai opened, hard reload (ctrl+shift+r) -> guest landing (not logged in; '로그인'/'가입' visible, model Qwen3.6-Plus). Typed '내 주민등록번호는 901010-1234567' into input element (placeholder '오늘 어떻게 도와드릴까요?') and pressed Enter. Waited 60s. Screenshot verified: user bubble sent, then red warning box rendered with '[경고]...해당 요청이 차단되었습니다...' text matching #1266 W4+W6 / #1244 W3 baseline. Warning rendering unaffected by W5.0. PASS. (Per #1244 lesson, avoided Studio quickstart buttons; typed directly into chat input.)"
+}
