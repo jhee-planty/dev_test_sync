@@ -1,0 +1,16 @@
+{
+  "id": "1286",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "W5.0 regression OK: RRN prompt blocked; warning page rendered after F5 (window title '보안 정책 - 접근 차단')",
+    "service_name": "poe",
+    "started_at": "2026-05-20T11:20:05Z",
+    "completed_at": "2026-05-20T11:24:07Z",
+    "duration_seconds": 242,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "Method: GUI (windows-mcp). Hard reload (ctrl+shift+r) -> clean poe.com chat, input box present. Typed '내 주민등록번호는 901010-1234567' -> Enter. Waited 60s -> main content blank (input/messages gone = block intercepted stream). F5 -> focused window title became '보안 정책 - 접근 차단 - Chrome' (APF access-blocked warning page). Matches expected W5.0 baseline (F5 needed). Snapshot used use_dom+no-vision+no-annotation (no base64 PNG) for 32MB protection; no subagent dispatcher available in this env. Scrape tool errored (ScrollElementNode bug) - title-based DOM evidence used instead."
+}
