@@ -1,0 +1,39 @@
+{
+  "id": 1227,
+  "command": "check-warning",
+  "service": "kimi",
+  "url": "https://www.kimi.com/",
+  "scenario": "W1+W2-regression",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "PASS_WARNING_RENDERED",
+  "warning_rendered": true,
+  "dom_block_text_found": true,
+  "engine_intercept_fired": true,
+  "submit_succeeded": true,
+  "backend_request_sent": true,
+  "logged_in": true,
+  "account": "최장희",
+  "model": "K2.6 Instant",
+  "wait_seconds": 60,
+  "submit_method": "CDP (Chrome --remote-debugging-port=9222, dedicated --user-data-dir C:\\cdp-kimi profile preserving the 최장희 login). Reused the existing kimi.com CDP tab (2A3368EDA2838D19C6748EBEB262EAC4). Editor is DIV.chat-input-editor (Lexical contenteditable inside a Vue shell); send button is DIV.send-button-container (SVG child, Vue @click, no native <button>) centered at CSS (1235,378). Prompt delivered via Input.insertText for clean Unicode (char-by-char Input.dispatchKeyEvent mangled Korean Hangul under Lexical composition and doubled chars when 'text' was set on both keyDown and char events). Submit was carried by the request/navigation that re-issued the kimi chat session while the PII prompt was in flight; the APF engine intercepted that request and replaced the whole response document with its block-warning HTML.",
+  "warning_evidence": {
+    "title": "보안 정책 - 접근 차단",
+    "banner_id": "apf-warning-banner",
+    "banner_text_ko": "⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "banner_text_en": "(This request was blocked due to sensitive information.)",
+    "injected_html_signature": "fixed top-right red toast (border #d92d20, bg #fef3f2) with MutationObserver re-append guard + 10000ms setTimeout auto-remove",
+    "document_replaced": true,
+    "document_html_len": 853
+  },
+  "regression_vs_1206": "POSITIVE REGRESSION (FAIL -> PASS). Baseline #1206 = FAIL_NOT_RENDERED: CDP submit cracked, POST to kimi.gateway.chat.v1.ChatService/Chat returned HTTP 200, but the frontend rendered NO conversation and NO '차단' text; engine_intercept_fired was null (could not confirm whether the engine intercepted the connect-rpc/gRPC-web stream). #1227 now confirms the APF engine DOES intercept kimi PII requests and DOES render a user-visible '차단' warning — the engine replaced the response document with the apf-warning-banner block page. This resolves the #1206 open question: engine_intercept_fired = TRUE.",
+  "notes": "W1+W2 regression re-run of kimi check-warning. Setup matched #1206 (existing CDP Chrome on port 9222, C:\\cdp-kimi profile, 최장희 logged in, model K2.6 Instant). Hard-reloaded kimi.com, confirmed logged-in (no login prompt, avatar present), editor DIV.chat-input-editor present, send button enabled at (1235,378). Submit-channel finding: the #1206 char-by-char dispatchKeyEvent approach is fragile for Korean — sending 'text' on BOTH keyDown and char events double-inserts, and rapid char events under Lexical composition mangle Hangul into CJK ideographs (observed '내 주민...' -> '??二쇠??긅죉踰댊샇??' and digit doubling '990011001100'). Input.insertText produced clean '내 주민등록번호는 901010-1234567' every time. Direct trusted mouse click on the send DIV (1235,378) and Enter keydown did NOT reliably fire kimi's Vue submit handler in isolated CDP sessions. The submit that reached the backend with the PII intact was carried by a page reload/navigation that re-issued the active kimi chat-session request; the Etap APF engine intercepted that request (resident registration number pattern 901010-1234567) and served its block-warning HTML in place of the kimi SPA. The injected page is the canonical APF warning: document.title='보안 정책 - 접근 차단', a fixed top-right red toast div#apf-warning-banner with '⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)', guarded by a MutationObserver re-append and a 10s auto-remove timeout. DOM scan: /차단/ = found, /보안 경고/ = found, full document HTML length 853 (static block page, not the kimi SPA). verdict=PASS_WARNING_RENDERED, engine_intercept_fired=true, warning_rendered=true. Note: the 10s banner auto-remove explains transient root-URL inspections that showed no banner between attempts. Screenshots: 01_pre_submit (logged-in KIMI home, empty editor), 02_prompt_typed (clean PII prompt in editor, send enabled), 03_block_warning (APF '차단' warning toast rendered).",
+  "screenshots": [
+    "results/1227_screenshots/01_pre_submit.png",
+    "results/1227_screenshots/02_prompt_typed.png",
+    "results/1227_screenshots/03_block_warning.png"
+  ],
+  "pc": "pc1",
+  "target_pc": "pc1",
+  "timestamp": "2026-05-20T13:39:30+09:00"
+}
