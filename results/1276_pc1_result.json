@@ -1,0 +1,16 @@
+{
+  "id": "1276",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "notion.com/chat page-replaced with APF warning page '보안 정책 - 접근 차단' (contains 차단) on load",
+    "service_name": "notion",
+    "started_at": "2026-05-20T09:47:14Z",
+    "completed_at": "2026-05-20T09:53:39Z",
+    "duration_seconds": 386,
+    "warning_visible": true,
+    "screenshot": "files/1276/step1_notion_block.png",
+    "console_errors": []
+  },
+  "notes": "W4+W6 regression PASS. notion.com/chat (->notion.so/chat) is page-replaced with the Option C build_warning_page_response block page; window/<title> = '보안 정책 - 접근 차단' so DOM contains 차단. Reproduced deterministically in BOTH normal session and fresh incognito (not session-sticky). Block fires at page-LOAD (whole-page replacement) so the chat input never renders and the PII prompt could not be typed/submitted; the warning page itself is the delivered warning. Behavioral change from prior FAIL_NOT_RENDERED baseline (record-map injection): warning now renders via page-replacement. Note: plain Invoke-WebRequest of notion.so/chat returns a normal 200 Notion page (no 차단) — block only triggers on the live Chrome browser request, consistent with APF traffic inspection. engine_intercept_fired=yes (page replaced)."
+}
