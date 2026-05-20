@@ -1,0 +1,25 @@
+{
+  "id": 1293,
+  "service": "zeta",
+  "scenario": "check-warning (W5.0 byte-inert regression)",
+  "url": "https://zeta-ai.io/ko/rooms/4f62a385-9043-4a34-aa43-486f8e637612",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "verdict": "PASS_WARNING_RENDERED",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "user_message_blocked": true,
+  "fresh_warning_verified": true,
+  "pre_send_warn_count": 0,
+  "post_send_warn_count": 1,
+  "notes": "W5.0 byte-inert regression vs W4+W6 baselines #1250 (W3 PASS) and #1272 (W4+W6 PASS). Verdict IDENTICAL to baseline -> W5.0 confirmed inert for zeta (no behavioral drift; zeta is a legacy-WS-dispatch service untouched by the additive dormant WS-codec machinery, and pinned-id in render_envelope_v3 is used only by copilot_chat_send). Same method: CDP-over-WebSocket (Chrome 148, port 9222), reused #1272 room https://zeta-ai.io/ko/rooms/4f62a385-9043-4a34-aa43-486f8e637612 (already logged in, no login hint). Real React-controlled <textarea> (placeholder '내용 입력하기'). REGRESSION GUARD: tab carried #1272 residue (warnCount=1, blockCount=1) on first inspect; re-navigated to the room for a clean baseline (warnCount=0, blockCount=0 confirmed) so the rendered warning is provably NEW. Submit via reused cdp_typesend2_1229.ps1: clear+focus textarea via Input.dispatchMouseEvent, Input.insertText (Korean RRN from UTF-8 file, 24 chars intact), Input.dispatchKeyEvent Enter (trusted keydown). No transient error dialog this run. Textarea cleared to '' on Enter (send fired). Warning rendered as a fresh assistant bubble (warnCount 0->1, blockCount 0->1); warning text byte-identical to #1250/#1272 and contains expected '차단'. RRN user message NOT echoed in DOM this run (rrnEchoed=false) and request still blocked (no AI roleplay reply; warning shown instead). W1 (block) + W2 (warning render) + W4/W6 (regression stability) all confirmed.",
+  "screenshots": [
+    "results/1293_screenshots/00_inspect.png",
+    "results/1293_screenshots/01_before_send.png",
+    "results/1293_screenshots/02_after_send.png",
+    "results/1293_screenshots/03_warning_rendered.png"
+  ],
+  "method": "CDP-over-WebSocket (Chrome 148, port 9222)",
+  "pc": "pc1",
+  "timestamp": "2026-05-20"
+}
