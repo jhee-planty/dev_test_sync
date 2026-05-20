@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "github_copilot",
+  "url": "https://github.com/copilot",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "normal",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W5.3 regression: wrtn_socket_io migrated to DB-driven emit_ws_envelope (build_wrtn_socket_io_envelope removed; DB row id=88, protocol_family=ws_socketio, newline-split 3 separately-wrapped frames via ws_emit_split_wrap). copilot(W5.1)/m365(W5.2) already migrated; only character remains on a legacy builder. ★ wrtn is the KEY service this wave — first DOM validation of the ws_socketio split-wrap codec. #1332(W5.2) showed wrtn's LEGACY single-frame inject did NOT render on the logged-in client (engine injected frame_total=1593 but the Vue UI showed nothing); the new 3-frame separate-wrap (43 ACK + 42 generateMessage + 42 endChat) should render the 차단 bubble when wrtn is logged in. Expectation: all 20 non-wrtn services IDENTICAL to W5.2 baseline outcome class; wrtn renders 차단 (improvement) OR engine injects 3 frames byte-equiv.",
+  "notes": "W5.3 wrtn migration regression. PASS=warning rendered with 차단. wrtn: if logged-in, expect engine [APF:ws_inject] to now emit 3 frames (legacy was 1); if logged-out=FAIL_AUTH (engine not exercised, NOT a regression). Any FAIL → verify via engine log before calling it a regression (you #1252; wrtn #1332/duckduckgo #1337 were worker-mislabeled). m365(DB ws_signalr)/character(still legacy) WS must stay intact. | W4+W6 regression. PASS=warning rendered with 차단. FAIL이면 engine_intercept_fired + pre-existing(gemini3 B5/notion Task#9/cohere deprecated) vs W4/W6 신규 구분. | W5.0 byte-inert: must match W4+W6 baseline. | W5.1: copilot→emit_ws_envelope; other 20 must match baseline. | W5.2: m365→emit_ws_envelope (DB ws_signalr); others must match baseline.",
+  "id": "1349",
+  "created": "2026-05-21T03:00:00Z"
+}
