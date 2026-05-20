@@ -1,0 +1,40 @@
+{
+  "id": 1270,
+  "command": "check-warning",
+  "service": "kimi",
+  "url": "https://www.kimi.com/",
+  "scenario": "W4+W6-regression",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "PASS_WARNING_RENDERED",
+  "warning_rendered": true,
+  "dom_block_text_found": true,
+  "engine_intercept_fired": true,
+  "submit_succeeded": true,
+  "backend_request_sent": true,
+  "logged_in": true,
+  "account": "최장희",
+  "model": "K2.6",
+  "wait_seconds": 60,
+  "submit_method": "CDP (Chrome --remote-debugging-port=9222, dedicated --user-data-dir C:\\cdp-kimi profile preserving the 최장희 login). Reused existing kimi.com CDP tab (2A3368EDA2838D19C6748EBEB262EAC4); hard-reloaded (Page.navigate kimi.com + Page.reload ignoreCache) back to the fresh kimi SPA. Confirmed logged-in: editor DIV.chat-input-editor present, no login button, send button DIV.send-button-container present (initially 'send-button-container disabled' because editor empty). Prompt delivered via Input.insertText (clean Hangul per #1227/#1248 finding — char-by-char dispatchKeyEvent mangles Korean under Lexical composition). Editor verified to hold exactly '내 주민등록번호는 901010-1234567' (24 codepoints, codepoints_equal=true) and send-button enabled ('send-button-container', 'disabled' removed). Submit channel per baseline: trusted Input.dispatchMouseEvent click on send button + trusted Input.dispatchKeyEvent Enter (rawKeyDown/keyDown(text=\\r)/keyUp) to fire the kimi Chat request, immediately followed by Page.reload while in-flight. The Etap APF engine intercepted the re-issued chat request (resident registration number pattern 901010-1234567) and replaced the whole response document with its block-warning HTML. (The submit driver's narrow Network filter did not log the Chat POST URL string this run, but the in-flight reload still produced the engine block-page document replacement — identical end state to #1227/#1248.)",
+  "warning_evidence": {
+    "title": "보안 정책 - 접근 차단",
+    "banner_id": "apf-warning-banner",
+    "banner_text_ko": "⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "banner_text_en": "(This request was blocked due to sensitive information.)",
+    "injected_html_signature": "fixed top-right red toast (border #d92d20, bg #fef3f2) with MutationObserver re-append guard + 10000ms setTimeout auto-remove",
+    "document_replaced": true,
+    "document_html_len": 853,
+    "chat_request_observed": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat (per baseline; reload-in-flight channel)"
+  },
+  "regression_vs_1248": "MATCH (PASS -> PASS, stable). Baseline #1248 (W3 re-run of #1227) = PASS_WARNING_RENDERED (engine replaced full doc with apf-warning-banner; document_html_len 853). #1270 W4+W6 regression reproduces it identically: same block-page title '보안 정책 - 접근 차단', same div#apf-warning-banner with identical KO+EN text, same document_html_len 853, engine_intercept_fired=true, warning_rendered=true. No regression. W4 (page-injection Option B removal: response_body_buffer / inject_warning_into_html / finalize_page_injection deleted) and W6 (diagnostic dump cleanup) did NOT degrade kimi warning delivery — Option C (build_warning_page_response) page-replacement + WS/H2/intercept dispatch path remains intact and still renders the user-visible '차단' warning.",
+  "notes": "W4+W6 regression re-run of kimi check-warning. Setup matched #1227/#1248 (existing CDP Chrome on port 9222, C:\\cdp-kimi profile, 최장희 logged in, model K2.6). Hard-reloaded the kimi tab to the fresh kimi SPA (title 'Kimi AI with K2.6...', bodyLen 84153), confirmed logged-in (editor DIV.chat-input-editor present, no login button, send button present). Typed clean PII via Input.insertText (verified editor innerText == '내 주민등록번호는 901010-1234567', MATCH, 24 codepoints, send enabled). Fired trusted click+Enter then Page.reload while in-flight. Post-reload DOM scan: /차단/ = found, /보안 경고/ = found, document.title = '보안 정책 - 접근 차단', div#apf-warning-banner present (caught before its 10s auto-remove, banner text '⚠️ 보안 경고 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)'), full document HTML length 853 (static block page, not the kimi SPA), editor gone, no PII bubble. verdict=PASS_WARNING_RENDERED, engine_intercept_fired=true, warning_rendered=true. Confirms W4 (page-injection Option B removal) and W6 (diagnostic dump cleanup) preserve Option C page-replacement warning delivery for kimi. Screenshots: 01_pre_submit (logged-in KIMI home, empty editor), 02_prompt_typed (clean PII prompt in editor, send enabled), 03_block_warning (APF '차단' red toast rendered on the replaced block document).",
+  "screenshots": [
+    "results/1270_screenshots/01_pre_submit.png",
+    "results/1270_screenshots/02_prompt_typed.png",
+    "results/1270_screenshots/03_block_warning.png"
+  ],
+  "pc": "pc1",
+  "target_pc": "pc1",
+  "timestamp": "2026-05-20T18:28:00+09:00"
+}
