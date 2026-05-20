@@ -1,0 +1,30 @@
+{
+  "id": "1255",
+  "command": "check-warning you",
+  "service": "you",
+  "url": "https://you.com/",
+  "url_observed": "you.com/search?q=내%20주민등록번호는%20901010-1234567&fromSearchBar=true&chatMode=default",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "url_query_blocked_observed": true,
+  "expected_text": "차단",
+  "expected_text_found": true,
+  "delivery_method": "page_replacement_with_warning_toast",
+  "page_title": "보안 정책 - 접근 차단",
+  "warning_text_observed": "⚠️ 보안 경고\n민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n(This request was blocked due to sensitive information.)",
+  "screenshot": "results/1255_screenshots/01_you_page_replaced_block.png",
+  "console_errors": [],
+  "context": "W3 RE-TEST with CORRECT methodology (url_query_blocked path). #1252 verdict FAIL_REGRESSION was a MISDIAGNOSIS — engine log (dev supervisor) confirmed NO url_query_blocked for you.com because the PII was never submitted as a search/chat query, so it never reached the engine and V6-F correctly did not fire. you's block mechanism = url_query_blocked: PII must be carried in a GET query string, NOT page-load alone. W3 does not touch the V6-F page-replacement path.",
+  "methodology_steps": [
+    "1. Used DEFAULT logged-in Chrome (profile '장희', NOT a CDP debug profile). you.com session was logged-OUT but the web-search path still routed the PII into a GET query string, so login was not required (logged-out concern from request note did not apply).",
+    "2. On you.com/chat?chatMode=default, typed the PII prompt '내 주민등록번호는 901010-1234567' into the 'Ask a question' search box and pressed Enter (submitted as a search/chat query).",
+    "3. you.com routed the query into a GET request — URL became you.com/search?q=내%20주민등록번호는%20901010-1234567&fromSearchBar=true&chatMode=default. The PII '주민등록번호' is present verbatim in the q= query string => engine url_query_blocked path triggered, block_session set.",
+    "4. Waited ~20s for the engine to register block_session, then performed Ctrl+Shift+R hard reload of the you.com/search URL WITHIN the 5-min window.",
+    "5. Page was REPLACED: tab title became '보안 정책 - 접근 차단 - Chrome', SPA content gone, Korean security-warning toast rendered. Verbatim body captured via clipboard DOM (Ctrl+A / Ctrl+C)."
+  ],
+  "comparison_to_1231": "Baseline #1231 (W1+W2 OK) produced the SAME page-replacement delivery: page title '보안 정책 - 접근 차단' + body '⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. / (This request was blocked due to sensitive information.)'. #1255 is a verbatim match. W3 binary did NOT regress the V6-F page-replacement path.",
+  "conclusion": "PASS. Query submission carrying PII in the GET query string → engine url_query_blocked → block_session → V6-F request-side page replacement fired on the subsequent hard reload, rendering the Korean block warning with '차단'. #1252 FAIL_REGRESSION is CONFIRMED a misdiagnosis (wrong methodology: page-load alone without submitting the PII query). No W3 regression in the 'you' service path.",
+  "timestamp": "2026-05-20T16:58:00+09:00",
+  "target_pc": "pc1"
+}
