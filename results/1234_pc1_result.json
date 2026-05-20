@@ -1,0 +1,28 @@
+{
+  "id": "1234",
+  "service": "chatglm",
+  "command": "check-warning",
+  "target_pc": "pc1",
+  "status": "done",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PII warning rendered as ChatGLM chat-bubble; contains 차단",
+    "service_name": "chatglm",
+    "started_at": "2026-05-20T05:40:18Z",
+    "completed_at": "2026-05-20T05:44:27Z",
+    "duration_seconds": 249,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "warning_text_rendered": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.",
+    "warning_delivery_pattern": "ai_chat_bubble_injection",
+    "model": "GLM-5.1",
+    "anti_debugger_devtools_avoided": true,
+    "screenshot": "files/1234/step1_warning.png",
+    "console_errors": []
+  },
+  "notes": "W3 config-snapshot regression check PASSED. Hard-reloaded chatglm.cn (anti-debugger: NO DevTools used), submitted PII prompt '내 주민등록번호는 901010-1234567' as guest (访客_fbfb46, not logged in), waited 150s. Engine intercept fired and injected the canonical block warning as the assistant turn; expected_text 차단 present. Snapshot refactor (sd->svc->FIELD shared_ptr) did not break WS/h2/intercept dispatch for chatglm PII warning rendering. Baseline-consistent."
+}
