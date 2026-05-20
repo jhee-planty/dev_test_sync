@@ -1,0 +1,18 @@
+{
+  "id": 1199,
+  "service": "huggingface",
+  "url": "huggingface.co/chat",
+  "command": "check-warning",
+  "scenario": "Wave1.0 regression",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "dom_check": "차단",
+  "warning_rendered": true,
+  "warning_text_ko": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "warning_text_en": "This request has been blocked due to sensitive information detected.",
+  "conversation_url": "huggingface.co/chat/conversation/6a0d15a78730163a7e462ea1",
+  "baseline_ref": "#1147/#1162",
+  "timestamp": "2026-05-20T11:01:00+09:00",
+  "pc": "pc1",
+  "notes": "Warning bubble injected correctly; both Korean and English block messages present. Regression check OK, consistent with baseline."
+}
