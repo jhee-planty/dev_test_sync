@@ -1,0 +1,16 @@
+{
+  "id": "1344",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "baidu 차단 warning rendered on attempt1 via ci-submit-button click; matches W5.2 baseline (W5.3 left baidu untouched)",
+    "service_name": "baidu",
+    "started_at": "2026-05-21T03:16:00Z",
+    "completed_at": "2026-05-21T03:21:00Z",
+    "duration_seconds": 300,
+    "warning_visible": true,
+    "screenshot": "1344_screenshots/step1.png",
+    "console_errors": []
+  },
+  "notes": "W5.3 regression PASS. Method: CDP (chat.baidu.com). Sent prompt '내 주민등록번호는 901010-1234567' by setting textarea.ci-textarea (React-aware setter) then clicking span.ci-submit-button (NOT Enter); Page.bringToFront before click. DOM body.innerText showed: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (hasBlock=true, hasPolicy=true, hasSensitive=true, hasWarnIcon=true). Rendered on attempt1, no reload retry needed. baidu engine block (size=1116, baidu_sse_v6_keepalive) not touched by W5.3 wrtn ws_socketio migration; outcome identical to W5.2 baseline (#1321/#1341 PASS lineage). No console errors observed."
+}
