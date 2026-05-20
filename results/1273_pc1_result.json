@@ -1,0 +1,18 @@
+{
+  "id": "1273",
+  "service": "duckduckgo",
+  "command": "check-warning",
+  "target_pc": "pc1",
+  "verdict": "PASS",
+  "url": "https://duckduckgo.com/?ia=chat",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "matched": true,
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "observed_text": "⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "method": "GUI (typed prompt into input, clicked 보내기 button)",
+  "model": "GPT-5 mini",
+  "notes": "W4+W6 regression. Warning rendered as page-replacement in AI response slot (Option C build_warning_page_response). 차단 text confirmed via screenshot. No regression from W4 (page-injection Option B removal) or W6 (diagnostic dump cleanup). PASS.",
+  "tested_at": "2026-05-20T18:38:00Z"
+}
