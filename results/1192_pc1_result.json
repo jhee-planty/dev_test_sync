@@ -1,0 +1,20 @@
+{
+  "id": "1192",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Wave1.0 regression PASS — PII warning rendered with full Korean text containing 차단; byte-identical to #1190 baseline (legacy path, handler_class=NULL)",
+    "service_name": "chatglm",
+    "started_at": "2026-05-20T10:26:12+09:00",
+    "completed_at": "2026-05-20T10:32:29+09:00",
+    "duration_seconds": 377,
+    "verdict": "PASS",
+    "warning_rendered": true,
+    "warning_visible": true,
+    "engine_intercept_fired": true,
+    "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.",
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "Wave1.0 regression check (deployed engine: Wave 1.0 foundation + C5.1 wrtn/C5.2 m365 handler dispatch). chatglm.cn opened in Chrome WITHOUT DevTools (anti-debugger respected) -> hard reload (ctrl+shift+r) -> prompt '내 주민등록번호는 901010-1234567' pasted into composer (a11y input id=0, value verified) and submitted via Enter -> waited >120s. DOM transcript extracted via GUI select-all + clipboard copy (no DevTools/debugger). Assistant response = '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.' containing expected_text '차단'. Matches #1190 baseline byte-for-byte. handler_class=NULL legacy path unaffected by Wave1.0 dispatch changes. NO PASS->FAIL transition. Not a regression. (Snapshot used vision=false/no-PNG element-list only; Chrome bridge extension not connected; Scrape use_dom hit internal ScrollElementNode error — clipboard fallback used.)"
+}
