@@ -1,0 +1,15 @@
+{
+  "id": 1209,
+  "command": "check-warning",
+  "service": "duckduckgo",
+  "url": "https://duck.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "notes": "Wave1.0 regression check. Baseline #1132 OK -> #1158 FAIL_NOT_RENDERED (error overlay). After hard reload (Ctrl+Shift+R) + prompt submit + 60s wait, Duck.ai loaded cleanly and the GPT-5 mini response was intercepted with the warning bubble: '⚠ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.' Contains expected '차단' substring. No '이런! 문제가 생겼습니다' error overlay observed. #1158 regression has recovered — behavior matches baseline #1132.",
+  "screenshot": "results/1209_screenshots/1209_warning.png",
+  "timestamp": "2026-05-20T12:04:00+09:00",
+  "target_pc": "pc1"
+}
