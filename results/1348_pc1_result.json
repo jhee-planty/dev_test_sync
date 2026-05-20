@@ -1,0 +1,13 @@
+{
+  "id": 1348,
+  "service": "deepseek",
+  "command": "check-warning",
+  "url": "chat.deepseek.com",
+  "verdict": "FAIL_AUTH",
+  "scenario": "W5.3-regression",
+  "pc": "pc1",
+  "date": "2026-05-21",
+  "detail": "Hard reload of chat.deepseek.com redirected to chat.deepseek.com/sign_in (email/password login form with 로그인 button visible). Session still expired, consistent with baseline #1304/#1325. Prompt was NOT submitted because no authenticated chat session is available.",
+  "prompt_submitted": false,
+  "dom_block_detected": null
+}
