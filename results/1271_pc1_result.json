@@ -1,0 +1,27 @@
+{
+  "id": 1271,
+  "command": "check-warning",
+  "service": "gemini3",
+  "url": "https://gemini.google.com/app",
+  "verdict": "WARNING_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "rendered_text": null,
+  "expected_text": "차단",
+  "engine_response_body": "{\"error\":\"blocked\",\"message\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"}",
+  "engine_intercept_endpoint": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+  "engine_intercept_http_status": 200,
+  "engine_response_body_len": 141,
+  "login_state": "logged_in_avatar_present",
+  "submit_method": "cdp_trusted_click_then_jsclick",
+  "prompt_chars": 24,
+  "context": "W4+W6 regression batch — verify PII warning rendering on gemini3 unaffected. Baseline = #1249 (and #1228/#1207), all WARNING_NOT_RENDERED (engine block JSON contains '차단' but Gemini BardChatUi FE cannot parse the JSON block body as a protobuf StreamGenerate frame, so no chat bubble renders).",
+  "notes": "W4+W6 REGRESSION CHECK: PASS-FOR-ENGINE / RENDER-GAP-UNCHANGED. Driven via CDP Chrome (port 9222, tab 9DF0DDC038FC752E85DD8C644C6C4C84, gemini.google.com/app). Hard-reloaded via Page.reload(ignoreCache). Login phase: NO '로그인' button (hasLogin=false, hasAvatar=true → logged-in/avatar view, identical to #1249) — engine intercept is proxy-layer so verdict holds regardless of login state. PROMPT INSERT: built the Korean literal from Unicode codepoints (the #1249 lesson to avoid PowerShell/console cp949 mojibake) and inserted via CDP Input.insertText over a UTF-8 websocket. Editor (.ql-editor) held the EXACT 24-char prompt '내 주민등록번호는 901010-1234567' — codepoints [45236,32,51452,48124,46321,47197,48264,54840,45716,32,57,48,49,48,49,48,45,49,50,51,52,53,54,55], BYTE-IDENTICAL prompt to #1249/#1228/#1207. SUBMIT: located send button by aria-label '메시지 보내기' (getBoundingClientRect center 1088,364.8, 32x32, enabled); fired trusted Input.dispatchMouseEvent left-click (mousePressed+mouseReleased) PLUS a btn.click() belt-and-suspenders. StreamGenerate POST fired this run (NO flake, unlike #1228), HTTP 200, requestId 15324.12537, mime application/json. ENGINE INTERCEPT FIRED: StreamGenerate response body (captured via Network.getResponseBody, base64Encoded=false, 141 bytes) was the APF block payload {\"error\":\"blocked\",\"message\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"} — contains expected_text '차단' (HAS_CHADAN=true) plus '민감정보' and '보안 정책'. BYTE-IDENTICAL to #1249, #1228 and #1207 engine_response_body — W4+W6 changes did NOT alter the gemini3 intercept dispatch or block payload on the H2/StreamGenerate intercept path it exercises. HOWEVER warning_rendered=false (unchanged from #1249/#1228/#1207): Gemini frontend (BardChatUi expects protobuf StreamGenerate frames) cannot parse the JSON {\"error\":\"blocked\"} body → NO chat bubble rendered. DOM after submit: hasBlock=false, hasSensitive=false, hasPolicy=false, convoCount=0, body innerText 85 chars (just the landing greeting '장희님, 안녕하세요...' + the still-unconsumed prompt); .ql-editor innerText still held the 24-char prompt post-submit (UNCONSUMED). Screenshot results/1271_screenshots/01_final.png (392686 bytes) shows the logged-in landing view with the prompt still in the box and NO warning bubble. CONCLUSION: W4+W6 did NOT regress the gemini3 engine block (proxy-layer intercept + payload byte-identical to baseline across 4 runs now: #1207/#1228/#1249/#1271). The no-render is the SAME pre-existing warning-design gap (BardChatUi cannot parse the JSON block body as a protobuf stream frame), NOT a W4/W6 regression.",
+  "timestamp": "2026-05-20T16:20:00+09:00",
+  "target_pc": "pc1",
+  "baseline_comparison": {
+    "1249": "WARNING_NOT_RENDERED (W3 config-snapshot regression check, logged-in/avatar view, CDP trusted-click+jsclick, engine intercept fired w/ block JSON, FE no-render). #1271 reproduces IDENTICALLY for the engine layer: SAME verdict, SAME BYTE-IDENTICAL 141-byte engine block payload, SAME no-render gap, SAME logged-in/avatar environment, SAME 24-char prompt codepoints, SAME send-button (메시지 보내기 ~1088,365). Only diff: #1271 trusted mouse click DID fire StreamGenerate cleanly (no flake; #1228 had needed the JS fallback). W4+W6 caused NO regression to the gemini3 intercept/block path.",
+    "1228": "WARNING_NOT_RENDERED (W1+W2 struct-collapse regression check, guest mode). Engine block payload byte-identical to #1271.",
+    "1207": "WARNING_NOT_RENDERED (original baseline, guest). #1271 engine_response_body byte-identical to #1207."
+  }
+}
