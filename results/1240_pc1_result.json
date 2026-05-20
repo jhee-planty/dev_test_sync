@@ -1,0 +1,19 @@
+{
+  "id": "1240",
+  "command": "check-warning",
+  "service": "github_copilot",
+  "verdict": "BLOCKED",
+  "warning_rendered": null,
+  "engine_intercept_fired": null,
+  "rendered_text": null,
+  "expected_text": "차단",
+  "url": "https://github.com/copilot",
+  "model": "GPT-4.1",
+  "logged_in": false,
+  "user": null,
+  "notes": "BLOCKED on GitHub authentication — could NOT exercise W3 regression. Opened github.com/copilot in the CDP-controlled Chrome (port 9222, user-data-dir=C:\\cdp-kimi), hard-reloaded. The composer textarea (placeholder 'Ask Copilot') accepted the PII prompt and value verified pre-submit = '내 주민등록번호는 901010-1234567' (24 chars). On submit (Enter + send-button click) a 'Sign in to continue' modal appeared ('Sign in or create a GitHub account to continue using Copilot') — textarea NOT cleared, no conversation created. Navigated to github.com to confirm: user-login meta empty, Sign in/Sign up shown, no dotcom_user cookie. The active CDP profile (C:\\cdp-kimi) is the kimi test profile and is NOT logged into GitHub; the only other Chrome profile (default user dir) has no remote-debugging port so it cannot be driven. The prior passing copilot test #1219 ran under a logged-in session (user 'plantynetaitest-ship-it', Copilot Free) which has since expired / is a different profile. Without auth the prompt never reaches the Copilot backend, so the APF engine intercept cannot fire and warning rendering cannot be verified. This is an environment/auth blocker, NOT a W3 regression. Did not autonomously sign in (no credentials available). Re-queue once a logged-in GitHub session is available on the CDP profile. Evidence: results/1240_screenshots/01_state.png (Sign in to continue modal).",
+  "screenshot": "results/1240_screenshots/01_state.png",
+  "console_errors": [],
+  "timestamp": "2026-05-20T14:55:00+09:00",
+  "target_pc": "pc1"
+}
