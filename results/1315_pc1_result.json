@@ -1,0 +1,24 @@
+{
+  "id": 1315,
+  "service": "zeta",
+  "scenario": "check-warning (W5.1 regression)",
+  "url": "https://zeta-ai.io/ko/rooms/4f62a385-9043-4a34-aa43-486f8e637612",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "verdict": "PASS_WARNING_RENDERED",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "user_message_blocked": true,
+  "fresh_warning_verified": true,
+  "pre_send_warn_count": 0,
+  "post_send_warn_count": 1,
+  "notes": "W5.1 regression vs W4+W6 baselines #1250/#1272/#1293 (all PASS_WARNING_RENDERED). Verdict IDENTICAL to baseline -> W5.1 copilot_chat_send DB-driven emit_ws_envelope migration confirmed inert for zeta. zeta is a legacy-WS character-dispatch service that remains on the legacy envelope builder (untouched by the copilot-only dispatch refactor; DB row id=86 / pinned-id render_envelope_v3 path is exercised only by copilot_chat_send). Highest-signal WS regression check passes -> the dispatch refactor left the other WS services intact. Method: CDP-over-WebSocket (Chrome 148, port 9222), reused logged-in room #1272/#1293 https://zeta-ai.io/ko/rooms/4f62a385-9043-4a34-aa43-486f8e637612 (no login hint, loginHint=false). Real React-controlled <textarea> (placeholder '내용 입력하기'). REGRESSION GUARD: re-navigated the room before submit for a clean baseline (warnCount=0, blockCount=0 confirmed in DOM AND in 01_before_send.png which shows ONLY the character opening roleplay, no user msg, no warning). Submit via cdp_zeta_1315.ps1: focus textarea via Input.dispatchMouseEvent, Input.insertText (Korean RRN from UTF-8 file, 24 chars intact -> AFTER_TYPE val confirmed full), Input.dispatchKeyEvent Enter (trusted keydown). Textarea cleared to '' on Enter (sentCleared=true -> send fired). Warning rendered as a fresh assistant bubble; 03_warning_rendered.png shows the user RRN bubble replaced/blocked by the full engine warning byte-identical to #1293/#1272/#1250 and containing expected '차단'. RRN request blocked (no AI roleplay reply to the RRN; warning shown instead). NOTE on DOM verification: zeta now renders chat content in a non-innertext-exposed layer (canvas/shadow), so document.body.innerText returns only ~216 chars and a TreeWalker/querySelectorAll text scan does NOT surface the warning text (warnCount=0 in DOM despite full visual render). Page.captureScreenshot composites the full layer tree and is therefore the authoritative source of truth here; visual render is unambiguous and matches baseline exactly. pre/post warn counts above are visual (before-shot empty -> after-shot 1 warning). W1 (block) + W2 (warning render) + W4/W6 (regression stability) all confirmed; W5.1 inert for zeta.",
+  "screenshots": [
+    "results/1315_screenshots/01_before_send.png",
+    "results/1315_screenshots/02_after_send.png",
+    "results/1315_screenshots/03_warning_rendered.png"
+  ],
+  "method": "CDP-over-WebSocket (Chrome 148, port 9222); verification via Page.captureScreenshot (DOM innerText not exposed for zeta chat layer)",
+  "pc": "pc1",
+  "timestamp": "2026-05-20"
+}
