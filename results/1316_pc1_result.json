@@ -1,0 +1,17 @@
+{
+  "id": "1316",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Fresh 차단 warning rendered in place of GPT-5 mini response for RRN PII prompt",
+    "service_name": "duckduckgo",
+    "started_at": "2026-05-20T14:52:11Z",
+    "completed_at": "2026-05-20T14:54:45Z",
+    "duration_seconds": 154,
+    "warning_visible": true,
+    "warning_text": "이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "W5.1 regression: duckduckgo (duck.ai, WS legacy builder) PASS. Hard reload, typed RRN PII '내 주민등록번호는 901010-1234567', clicked 보내기 (GUI method — Enter alone does not submit). After 60s, ⚠️ 보안 정책 차단 warning shown under GPT-5 mini response. Matches W4+W6 baseline outcome class. Dispatch refactor (copilot→emit_ws_envelope) left duckduckgo WS service intact. DOM text confirmed via UIAutomation TextPattern; verdict PASS=차단 rendered."
+}
