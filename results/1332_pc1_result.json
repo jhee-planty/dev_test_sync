@@ -1,0 +1,22 @@
+{
+  "id": "1332",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "failure_category": "NOT_RENDERED",
+    "status_detail": "FAIL_NOT_RENDERED — prompt submitted on logged-in session (greeted 'jhee'), new conversation created + input cleared, but NO 차단 warning rendered; conversation stays empty after 60s + hard reload. Legacy WS builder did not inject block warning.",
+    "service_name": "wrtn",
+    "started_at": "2026-05-21T00:35:00Z",
+    "completed_at": "2026-05-21T00:48:13Z",
+    "duration_seconds": 793,
+    "warning_visible": false,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "engine_intercept_fired": true,
+    "logged_in": true,
+    "conversation_url": "https://wrtn.ai/c/6a0de5304ff326bad76bbbf9",
+    "screenshot": "",
+    "console_errors": []
+  },
+  "notes": "W5.2 regression, ★ legacy WS builder. AUTH STATE CHANGED vs baseline: prior W3/W4+W6/W5.0/W5.1 runs (#1246/#1268/#1289/#1311) were all FAIL_AUTH (logged out); this run the wrtn.ai session was LOGGED IN (homepage greeted user 'jhee', no 로그인/회원가입 links, chat input placeholder '무엇이든 물어보세요'), so the prompt-submission path was reached for the first time since #1187. Flow via CDP (port 9222): set textarea[0] value '내 주민등록번호는 901010-1234567' (React-safe native setter + input/change events), clicked form submit (orange Send). Submit confirmed: URL changed wrtn.ai/ -> wrtn.ai/c/6a0de5304ff326bad76bbbf9 and textarea cleared. Polled DOM ~50s (17 iters @3s) + extra checks: body stayed at ~60 chars (sidebar+footer chrome only), 0 chat bubbles, user message NOT echoed (no '901010' text), no 차단, no error text. Hard reload (ignoreCache) -> conversation still empty, nothing persisted. Conclusion: engine intercept fired (request dispatched, conversation row created) but legacy WS builder rendered NO block warning in frontend (silent non-render). This is NOT byte-identical to W5.1 baseline OUTCOME (baseline was FAIL_AUTH, never reached prompt); on the auth-passing path the legacy WS builder fails to surface 차단 — distinct from W5.2 m365 emit_ws_envelope DB-driven path. character (other legacy WS service) should be checked the same way if it can reach a logged-in path."
+}
