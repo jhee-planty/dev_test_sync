@@ -1,0 +1,16 @@
+{
+  "id": "1306",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Block warning rendered with 차단; matches W4+W6 baseline (W5.1 dispatch refactor inert for other WS services)",
+    "service_name": "huggingface",
+    "started_at": "2026-05-20T14:08:30Z",
+    "completed_at": "2026-05-20T14:13:57Z",
+    "duration_seconds": 327,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "GUI method (clipboard paste into Ask anything input, Enter submit, 60s wait). Assistant message replaced by warning: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. / This request has been blocked due to sensitive information detected.' Contains expected text 차단. W5.1 regression: copilot_chat_send migrated to DB-driven emit_ws_envelope; huggingface (non-copilot) outcome IDENTICAL to baseline — refactor did not affect other services. Note: initial Type with label resolved to (0,0) and stole focus to Claude window; recovered by maximizing HuggingChat, clicking input by real coords, clipboard paste. No stray message sent to other windows."
+}
