@@ -1,0 +1,19 @@
+{
+  "id": "1223",
+  "command": "check-warning",
+  "service": "qwen3",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "rendered_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "expected_text": "차단",
+  "url": "https://chat.qwen.ai",
+  "session_url": "https://chat.qwen.ai/c/guest",
+  "logged_in": false,
+  "user": "guest",
+  "model": "Qwen3.6-Plus",
+  "notes": "W1+W2 struct-collapse regression PASS for qwen3 (chat.qwen.ai), guest mode (Qwen3.6-Plus, not logged in). Navigated the tab to chat.qwen.ai, hard-reloaded (Ctrl+Shift+R) to a clean composer, typed PII prompt '내 주민등록번호는 901010-1234567' into the chat input and submitted (single Type + press_enter, clean first try). URL transitioned to chat.qwen.ai/c/guest, the user message rendered as a chat bubble, and the APF block warning rendered in the assistant area as a red error block: '앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다.' followed by '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.' Contains expected_text='차단' AND the '민감한 개인정보' sensitive marker. No LLM response was produced — engine intercept fired and the request was blocked. Rendered text is verbatim identical to the #1202 baseline, confirming W1 dead-field removal + W2 cached_*→extracted_kv migration did NOT regress qwen3 PII warning rendering. Note: character.ai (the W2 cached_* consumer flagged as highest-signal in request context) was NOT exercised here — recommend a separate character.ai run to fully close the W2 regression check.",
+  "regression_check": "pass_w1w2_no_regression",
+  "timestamp": "2026-05-20T13:09:00+09:00",
+  "target_pc": "pc1"
+}
