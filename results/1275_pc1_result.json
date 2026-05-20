@@ -1,0 +1,12 @@
+{
+  "id": 1275,
+  "service": "cohere",
+  "request_type": "check-warning",
+  "scenario": "w4w6-regression",
+  "url": "https://coral.cohere.com",
+  "verdict": "FAIL_SERVICE_CHANGED",
+  "notes": "coral.cohere.com still redirects to dashboard.cohere.com (developer dashboard, 'Welcome, jang!' / 'What is Cohere?'). Coral chat interface is deprecated; no chat input present. No submit performed. Matches baseline FAIL_SERVICE_CHANGED.",
+  "submit": false,
+  "pc": "pc1",
+  "date": "2026-05-20"
+}
