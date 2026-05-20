@@ -1,0 +1,19 @@
+{
+  "id": 1347,
+  "service": "claude",
+  "command": "check-warning",
+  "url": "https://claude.ai",
+  "test": "w5.3-regression",
+  "attempt": 1,
+  "pc": "pc1",
+  "verdict": "PASS",
+  "auth": "logged_in",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "warning_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "dom_contains_block": true,
+  "chat_url": "https://claude.ai/chat/d91f27c9-a860-4c45-bafe-f1ad3bd32b39",
+  "wait_seconds": 60,
+  "timestamp": "2026-05-21T03:34:00+09:00",
+  "note": "Hard reload OK, auth confirmed (plantynet, not /login). Warning bubble rendered with '차단' text after submit."
+}
