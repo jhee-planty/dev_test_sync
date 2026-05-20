@@ -1,0 +1,18 @@
+{
+  "id": "1212",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "failure_category": "NOT_RENDERED",
+    "status_detail": "Message submitted (thread created, input cleared) but conversation area blank — no bubble, no 차단 warning rendered",
+    "service_name": "notion",
+    "started_at": "2026-05-20T12:08:25+09:00",
+    "completed_at": "2026-05-20T12:14:50+09:00",
+    "duration_seconds": 385,
+    "warning_visible": false,
+    "expected_text": "차단",
+    "screenshot": "files/1212/step1.png",
+    "console_errors": []
+  },
+  "notes": "Wave1.0-regression batch. notion.com/chat opened logged-in, hard reload (ctrl+shift+r), prompt '내 주민등록번호는 901010-1234567' pasted via clipboard + submit. After ~125s wait, DOM input field empty (submit confirmed) and URL gained thread id (?t=3669aa2d8bdd802ba80700a97e56c631). Conversation area rendered completely blank — neither user message nor AI/block bubble appeared. Consistent with documented baseline FAIL_NOT_RENDERED (#1139/#1148/#1165/#1183/#1184 — record-map injection unsolved). NOT a PASS->FAIL transition: baseline was already FAIL, so no true regression introduced by Wave 1.0 engine. notion handler_class=NULL → legacy path."
+}
