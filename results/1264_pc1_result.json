@@ -1,0 +1,15 @@
+{
+  "id": 1264,
+  "service": "perplexity",
+  "url": "perplexity.ai",
+  "test_type": "check-warning",
+  "scenario": "w4w6-regression",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "verdict": "PASS",
+  "dom_check": "차단",
+  "warning_text_ko": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "warning_text_en": "This request has been blocked due to sensitive information detected.",
+  "method": "GUI",
+  "timestamp": "2026-05-20T17:59:30+09:00",
+  "pc": "pc1"
+}
