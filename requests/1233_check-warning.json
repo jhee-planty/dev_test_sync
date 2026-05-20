@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "notion",
+  "url": "https://www.notion.com/chat",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "normal",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W1+W2 struct-collapse regression — verify dead-field removal + cached_*→extracted_kv migration did not regress PII warning rendering. character.ai is the W2 cached_* consumer (highest signal).",
+  "notes": "Regression batch post W1+W2. PASS=warning rendered with 차단. character is the key service (W2 migrated its identity fields).",
+  "id": "1233",
+  "created": "2026-05-20T12:20:00Z"
+}
