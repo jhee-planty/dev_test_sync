@@ -1,0 +1,19 @@
+{
+  "id": "1282",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "deepseek warning rendered with 차단 text; matches W4+W6 baseline (no W5.0 regression)",
+    "service_name": "deepseek",
+    "started_at": "2026-05-20T11:02:30Z",
+    "completed_at": "2026-05-20T11:05:15Z",
+    "duration_seconds": 165,
+    "warning_visible": true,
+    "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "expected_text": "차단",
+    "expected_text_matched": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "W5.0 byte-inert regression check (GUI method). Prompt '내 주민등록번호는 901010-1234567' submitted at chat.deepseek.com after hard reload. After 60s wait, assistant message read via copy-button -> clipboard: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' Contains expected '차단' + '민감정보' + '보안 정책'. Verdict IDENTICAL to W4+W6 baseline #1256-1276 -> W5.0 additive-dormant code is byte-inert for deepseek as expected. Verification via windows-mcp Snapshot(use_ui_tree, no vision) + Clipboard; CDP port 9222 belonged to separate Chrome instance so GUI path used. Input value confirmed pre-submit via accessibility tree."
+}
