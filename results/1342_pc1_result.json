@@ -1,0 +1,16 @@
+{
+  "id": "1342",
+  "service": "duckduckgo",
+  "command": "check-warning",
+  "url": "https://duck.ai",
+  "target_pc": "pc1",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "expected_text": "차단",
+  "rendered_text": "이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "model": "GPT-5 mini",
+  "notes": "W5.2 duckduckgo RE-TEST (confirmatory) PASS. Method: hard-reload (Ctrl+Shift+R) to fresh duck.ai SPA, typed PII prompt into focused editor, CLICKED 보내기 send button (id 14), kept tab ACTIVE/foregrounded throughout wait. Block envelope rendered within ~8s on fresh non-idle H2 connection — '차단' keyword present in GPT-5 mini assistant turn. CONFIRMS #1337 FAIL_NOT_RENDERED was the pre-existing h2_end_stream=2 deferred-END_STREAM flush fragility (task #34) on idle H2, NOT a W5.2 regression. duckduckgo uses duckduckgo_sse SSE path (untouched by W5.2 which is m365_signalr WS-only). Engine block already confirmed correct by dev (response_type=duckduckgo_sse, size=751 byte-identical to 3 baselines, keyword=주민등록번호) — this re-test confirms client render on fresh connection.",
+  "screenshot": "results/1342_screenshots/",
+  "tested_at": "2026-05-21T03:04:00Z"
+}
