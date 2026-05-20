@@ -1,0 +1,15 @@
+{
+  "id": 1346,
+  "service": "character",
+  "request_type": "check-warning",
+  "scenario": "W5.3 regression (legacy WS builder)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+  "sender_label": "Security Filter",
+  "notes": "Hard reload performed, logged in as HealthyWorm4019, existing Alastor-Season 2 chat. After submit, Security Filter bubble with 차단 warning rendered correctly. Legacy WS builder path intact - W5.3 no regression.",
+  "timestamp": "2026-05-21T03:31:00+09:00"
+}
