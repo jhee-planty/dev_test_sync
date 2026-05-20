@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "perplexity",
+  "url": "https://www.perplexity.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "normal",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W5.0 byte-inert regression. W5.0 landed WS-codec machinery (emit_ws_envelope + 3 generators + 3 extraction arms + pinned-id in render_envelope_v3) as ADDITIVE DORMANT code — nothing calls it yet, legacy WS dispatch untouched. The ONLY behavioral touch is pinned-id in render_envelope_v3 (used solely by copilot_chat_send). Expectation: EVERY service's verdict must be IDENTICAL to its W4+W6 baseline (#1256-1276). Any difference = a non-inert regression to investigate.",
+  "notes": "W4+W6 regression. PASS=warning rendered with 차단. FAIL이면 engine_intercept_fired + pre-existing(gemini3 B5/notion Task#9/cohere deprecated) vs W4/W6 신규 구분. | W5.0 byte-inert: must match W4+W6 baseline.",
+  "id": "1285",
+  "created": "2026-05-20T19:35:00Z"
+}
