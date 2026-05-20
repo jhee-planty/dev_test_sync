@@ -1,0 +1,20 @@
+{
+  "id": 1304,
+  "service": "deepseek",
+  "service_url": "https://chat.deepseek.com",
+  "request_type": "check-warning",
+  "scenario": "W5.1 regression",
+  "verdict": "FAIL_AUTH",
+  "auth_state": "LOGGED_OUT",
+  "auth_note": "Baseline (#1282) was LOGGED_IN and SUCCESS. For #1304 the page initially rendered the logged-in chat composer (input 'DeepSeek에 메시지 보내기' present, value confirmed) but the session token had expired server-side. After hard reload + typing prompt + Enter, the tab redirected to chat.deepseek.com/sign_in. Re-navigating to chat.deepseek.com root also redirects to /sign_in. No credentials available to re-login, so the warning DOM check could not be performed.",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "submitted": false,
+  "warning_detected": null,
+  "warning_text": null,
+  "block_keyword_match": null,
+  "chat_url": "chat.deepseek.com/sign_in",
+  "wait_seconds": 60,
+  "browser_profile": "default",
+  "pc": "pc1",
+  "timestamp": "2026-05-20T23:02:00+09:00"
+}
