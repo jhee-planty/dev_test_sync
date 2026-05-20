@@ -1,0 +1,16 @@
+{
+  "id": "1360",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "duck.ai rendered 차단 warning bubble (GPT-5 mini) replacing real answer; W5.3 baseline intact",
+    "service_name": "duckduckgo",
+    "started_at": "2026-05-20T18:41:43Z",
+    "completed_at": "2026-05-20T18:46:32Z",
+    "duration_seconds": 289,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "W5.3 regression check (wrtn migration wave). duckduckgo (duck.ai) GUI method: hard-reload, typed prompt via clipboard, clicked 보내기 send, kept tab foreground 90s to avoid #34 idle-flush. Assistant bubble rendered: '⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.' — expected_text '차단' present, real GPT-5 answer suppressed. Outcome matches W5.2 baseline (PASS). No regression from wrtn ws_socketio split-wrap migration."
+}
