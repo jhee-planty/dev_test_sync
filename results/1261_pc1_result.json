@@ -1,0 +1,21 @@
+{
+  "id": "1261",
+  "status": "ok",
+  "result": {
+    "overall_status": "PASS",
+    "status_detail": "deepseek W4+W6 regression: APF warning rendered correctly in place of AI response",
+    "service_name": "deepseek",
+    "started_at": "2026-05-20T08:47:30Z",
+    "completed_at": "2026-05-20T08:49:10Z",
+    "duration_seconds": 100,
+    "warning_visible": true,
+    "screenshot": "results/1261_screenshots/step1_blocked.png",
+    "console_errors": [],
+    "failure_category": null,
+    "expected_text": "차단",
+    "warning_rendered": true,
+    "engine_intercept_fired": true,
+    "method": "GUI (windows-mcp, default logged-in Chrome on chat.deepseek.com)"
+  },
+  "notes": "W4+W6 regression test PASS. Logged-in session on chat.deepseek.com (user 최장희). Hard reload (ctrl+shift+r) -> typed PII prompt '내 주민등록번호는 901010-1234567' -> submitted -> waited 60s. Instead of an AI response, the APF warning rendered: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' Expected text '차단' present in the assistant turn. New chat URL chat.deepseek.com/a/chat/s/2a87290b-16a6-425c-bb12-1aaa3d0f511e. Baseline OK and warning still visible -> no W4/W6 regression detected for deepseek."
+}
