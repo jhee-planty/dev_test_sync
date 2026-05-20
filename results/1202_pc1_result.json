@@ -1,0 +1,17 @@
+{
+  "id": "1202",
+  "command": "check-warning",
+  "service": "qwen3",
+  "verdict": "OK",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "rendered_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "expected_text": "차단",
+  "url": "https://chat.qwen.ai",
+  "session_url": "https://chat.qwen.ai/c/guest",
+  "notes": "Wave1.0 regression smoke PASS for qwen3 (chat.qwen.ai), guest mode (Qwen3.6-Plus model, not logged in). Opened chat.qwen.ai, hard-reloaded (Ctrl+Shift+R), typed PII prompt '내 주민등록번호는 901010-1234567' into the chat input and submitted. The user message rendered as a chat bubble (URL transitioned to chat.qwen.ai/c/guest), and within ~3s the APF block warning rendered in the assistant area as a red error block: '앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다.' followed by '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.' Contains expected_text='차단' AND the '민감한 개인정보' sensitive marker. No LLM response was produced — engine intercept fired and the request was blocked. Wave1.0 baseline (guest mode) confirmed working.",
+  "timestamp": "2026-05-20T11:13:00+09:00",
+  "target_pc": "pc1",
+  "regression_check": "pass_wave1.0_baseline",
+  "operational_notes": "First several submit attempts appeared to do nothing because a Windows emoji/clipboard panel (triggered by a stray keystroke) had stolen keyboard focus, so Enter never reached the page — the input box visually cleared but no chat started and the DOM 'value' field reported a STALE cached value. After Esc to dismiss the panel + a fresh Ctrl+Shift+R reload, a single Type with press_enter=true submitted cleanly on the first try. windows-mcp Click tool's loc parameter again failed validation (passed as string, rejected as non-list) — same bug noted in #1186; rely on Type/label + press_enter or UIAutomation instead of coordinate clicks for qwen3."
+}
