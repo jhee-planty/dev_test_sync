@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "zeta",
+  "url": "https://zeta-ai.io/ja/character/01j4mz7smtfp3v9gz9b39h2ndv",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "normal",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W5.4 regression: character_add_turn migrated to DB-driven emit_ws_envelope (build_character_add_turn_envelope removed; DB id=31 protocol_family=ws_json; identity-extraction stays C++; req_id/chat_id/parent_candidate_id now written to extracted_kv). copilot(W5.1)/m365(W5.2)/wrtn(W5.3) already migrated — character is the LAST WS builder. ★ character is the KEY validator (logged-in #1346 rendered 차단 via legacy builder). DB template byte-equiv to builder EXCEPT request_id/parent_candidate_id empty-case (empty→\"\" vs builder omits) — watch parent_candidate_id empty-session render. Binary=…+W5.3+W5.4 (08:39). Expectation: 20 non-character IDENTICAL to W5.2/W5.3 baseline; character renders 차단.",
+  "notes": "W5.4 character migration regression. PASS=warning rendered with 차단. ★character: DB add_turn frame must render 차단 (was legacy builder); no render→engine log [APF:ws_inject] + parent_candidate_id empty-case check. deepseek/m365/wrtn(auth-fragile,batch-last): FAIL_AUTH=engine 미실행 NOT regression. Any engine-exercised FAIL→engine log verify BEFORE regression (you #1252). | W4+W6 regression. PASS=warning rendered with 차단. FAIL이면 engine_intercept_fired + pre-existing(gemini3 B5/notion Task#9/cohere deprecated) vs W4/W6 신규 구분. | W5.0 byte-inert: must match W4+W6 baseline. | W5.1: copilot→emit_ws_envelope; other 20 must match baseline. | W5.2: m365→emit_ws_envelope (DB ws",
+  "id": "1377",
+  "created": "2026-05-21T08:45:00Z"
+}
