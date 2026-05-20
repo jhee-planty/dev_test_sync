@@ -1,0 +1,16 @@
+{
+  "id": "1200",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "차단 warning rendered: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다' — RRN blocked",
+    "service_name": "perplexity",
+    "started_at": "2026-05-20T02:02:20Z",
+    "completed_at": "2026-05-20T02:05:11Z",
+    "duration_seconds": 171,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "Wave1.0 regression. perplexity.ai hard-reloaded, typed '내 주민등록번호는 901010-1234567', submitted, waited 60s. Answer body replaced with APF block warning '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (verified via Copy button -> clipboard read). Baseline OK. Login overlay present but did not block the prompt flow. Screenshot omitted: subagent-dispatch (Agent tool) unavailable in this env; verdict confirmed via DOM element snapshot + copied answer text."
+}
