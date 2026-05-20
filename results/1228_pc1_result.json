@@ -1,0 +1,23 @@
+{
+  "id": 1228,
+  "command": "check-warning",
+  "service": "gemini3",
+  "url": "https://gemini.google.com/app",
+  "verdict": "WARNING_NOT_RENDERED",
+  "warning_rendered": false,
+  "engine_intercept_fired": true,
+  "rendered_text": null,
+  "expected_text": "차단",
+  "engine_response_body": "{\"error\":\"blocked\",\"message\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"}",
+  "engine_intercept_endpoint": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+  "engine_intercept_http_status": 200,
+  "login_state": "logged_out_guest",
+  "submit_method": "cdp_js_button_click_fallback",
+  "context": "W1+W2 struct-collapse regression batch — verify dead-field removal + cached_*→extracted_kv migration did not regress PII warning. Baseline = #1207 (also WARNING_NOT_RENDERED).",
+  "notes": "W1+W2 REGRESSION CHECK PASS-FOR-ENGINE / RENDER-GAP-UNCHANGED. Driven via CDP Chrome (port 9222, profile cdp-kimi, tab 9DF0DDC0..., LOGGED-OUT guest — '로그인' button present, same condition as #1207). Hard-reloaded via Page.reload(ignoreCache); login phase confirmed editor present + 로그인 button (guest). Inserted PII prompt '내 주민등록번호는 901010-1234567' (24 chars, confirmed in .ql-editor innerText, identical to #1207). SUBMIT: the #1207 trusted Input.dispatchMouseEvent left-click (mousePressed+mouseReleased at send-button getBoundingClientRect center 1150,389; dpr=1.25, viewport 1536x730; elementFromPoint confirmed the coords land on the send-button mat-icon, hitIsBtnOrChild=true) did NOT fire StreamGenerate this run (NO_STREAM_REQ_SEEN on two attempts) — a submit-mechanism flake vs #1207. FALLBACK btn.click() via Runtime.evaluate DID submit: StreamGenerate POST fired (HTTP 200). ENGINE INTERCEPT FIRED: StreamGenerate response body was replaced by the APF block payload {\"error\":\"blocked\",\"message\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\"} — contains expected_text '차단' plus '민감정보' and '보안 정책'. Captured directly via Network.getResponseBody on the StreamGenerate requestId. BYTE-IDENTICAL to #1207 engine_response_body — W1 dead-field removal + W2 cached_*→extracted_kv migration did NOT alter the gemini3 block payload. HOWEVER warning_rendered=false (unchanged from #1207): Gemini frontend (BardChatUi expects protobuf StreamGenerate frames) cannot parse the JSON {\"error\":\"blocked\"} body, so NO chat bubble rendered — page stayed on landing view, prompt text remained in input box (.ql-editor innerText still '내 주민등록번호는 901010-1234567'), DOM body had no '차단'/'민감'/'보안 정책' (hasBlock/hasSensitive/hasPolicy all false, convoCount=0, bodyLen stable 295). Confirmed stable across +4s and +34s post-submit polls. Screenshot results/1228_screenshots/01_final.png shows guest landing + unconsumed prompt + no warning. CONCLUSION: W1+W2 did NOT regress the gemini3 engine block (proxy-layer intercept + payload identical to baseline). The no-render is the SAME pre-existing warning-design gap as #1207 (client-parse incompatibility), NOT a W1/W2 regression. Note request context says character.ai is the highest-signal W2 cached_* consumer; gemini3 here exercises the generic block path. Caveat: guest mode (not logged-in baseline), but engine intercept is proxy-layer so verdict holds.",
+  "timestamp": "2026-05-20T13:50:00+09:00",
+  "target_pc": "pc1",
+  "baseline_comparison": {
+    "1207": "WARNING_NOT_RENDERED (guest, CDP trusted-click submit, engine intercept fired w/ block JSON, FE no-render). #1228 reproduces identically: SAME verdict, SAME byte-identical engine block payload, SAME no-render. W1+W2 caused NO regression to gemini3 block. Only diff: #1228 trusted mouse click did not fire StreamGenerate (flake) — JS btn.click() fallback submitted successfully."
+  }
+}
