@@ -1,0 +1,31 @@
+{
+  "id": "1341",
+  "service": "baidu",
+  "command": "check-warning",
+  "scenario": "w5.2-retest-confirmatory",
+  "target_pc": "pc1",
+  "status": "done",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "Confirmatory re-test PASS: warning rendered client-side with full block phrase '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.'",
+    "service_name": "baidu",
+    "url": "https://chat.baidu.com/",
+    "final_url": "https://chat.baidu.com/search?enter_type=chat_url&internal=1",
+    "started_at": "2026-05-21T02:55:00Z",
+    "completed_at": "2026-05-21T03:01:00Z",
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "has_policy_phrase": true,
+    "has_sensitive_phrase": true,
+    "has_warn_icon": true,
+    "failure_category": null,
+    "screenshot": "results/1341_screenshots/final_block.png",
+    "console_errors": []
+  },
+  "method": "CDP (port 9222): Page.bringToFront -> fresh chat.baidu.com -> React-aware setval of PII prompt into textarea.ci-textarea (native value setter + input/change events) -> verified composer value populated ('내 주민등록번호는 901010-1234567', len 24) -> CDP mouse click on span.ci-submit-button center -> page navigated to /search?internal=1, msgNodes 3->16 -> DOM check + screenshot.",
+  "notes": "W5.2 baidu RE-TEST (confirmatory) PASSES, confirming CLIENT-SIDE render of the engine block. Engine block already confirmed correct by dev supervisor (#1321: [APF:url_query_blocked] keyword=주민등록번호, response_type=baidu_sse_v6_keepalive, size=1116; baidu block path UNTOUCHED by W5.2). This run: after Page.bringToFront the submit button settled at its on-screen position and the CDP mouse click submitted; the assistant turn rendered the FULL block phrase '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (hasBlock + hasPolicy + hasSensitive + ⚠ icon all true). DOM body shows user prompt echo + block phrase; screenshot final_block.png confirms visually. Identical to consistent PASS baseline (#1125/#1152/#1193/#1214/#1235/#1257/#1278/#1300/#1321-retry). Note for worker: baidu submit is a div/span control (span.ci-submit-button), NOT Enter-key — Enter alone does not send; the submit click only lands reliably after bringing the tab to front (layout settles button position). No W5.2 regression for baidu."
+}
