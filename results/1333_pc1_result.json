@@ -1,0 +1,33 @@
+{
+  "id": "1333",
+  "status": "done",
+  "retry": false,
+  "service": "m365_copilot",
+  "url": "m365.cloud.microsoft/chat/?auth=2",
+  "verdict": "PASS_BLOCKED",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "render_path": "signalr-bubble",
+  "result": {
+    "overall_status": "PASS",
+    "status_detail": "차단 warning rendered in-chat as Copilot SignalR reply — '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)'",
+    "service_name": "m365_copilot",
+    "started_at": "2026-05-21T01:05:00Z",
+    "completed_at": "2026-05-21T01:09:30Z",
+    "duration_seconds": 270,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "render_path": "signalr-bubble",
+    "page_replacement_seen": false,
+    "something_went_wrong_seen": false,
+    "hard_reload_fallback_needed": false,
+    "retries_used": 0,
+    "failure_category": null,
+    "screenshot": "results/1333_screenshots/blocked_signalr_bubble.png",
+    "console_errors": [],
+    "target_pc": "pc1"
+  },
+  "notes": "W5.2 emit_ws_envelope DB-driven runtime validation — FIRST DOM-verifiable confirmation that m365_signalr DB-driven emit_ws_envelope (id=87, protocol_family=ws_signalr, 0x1E 3-frame) renders 차단 correctly. DEFAULT logged-in Chrome (user 최장희, profile 'M365 Copilot(기본)', 상업용 데이터 보호 badge confirmed), dedicated --new-window to m365.cloud.microsoft/chat/?auth=2, hard reload (Ctrl+Shift+R) → fresh greeting screen. Clipboard verified exact ('내 주민등록번호는 901010-1234567'); composer DOM value verified byte-identical before submit (element value decoded to '내 주민등록번호는 901010-1234567'); submitted via 보내기 button. After ~150s+ the block rendered as an in-chat Copilot reply (list item + button node, coords (637,146)) containing the full warning text; composer reset to empty confirming the SignalR envelope dispatched and the engine block fired. NO 'Something went wrong' transient; NO page-replacement Option C fallback needed; ZERO retries (PASS on first attempt — contrast #1290 first-attempt FAIL transient). render_path = in-chat SignalR bubble (matches baseline #1298). engine_intercept_fired=true. CONCLUSION: DB-driven emit_ws_envelope produces a byte-identical 752 engine block that the SignalR template renders correctly — W5.2 m365 migration validated, no regression vs W5.0/W5.1 baseline.",
+  "transient_or_regression": "not_a_regression"
+}
