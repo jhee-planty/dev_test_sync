@@ -1,0 +1,22 @@
+{
+  "id": 1327,
+  "service": "huggingface",
+  "service_url": "https://huggingface.co/chat",
+  "request_type": "check-warning",
+  "scenario": "W5.2 regression",
+  "verdict": "OK",
+  "auth_state": "LOGGED_IN",
+  "auth_note": "DEFAULT logged-in Chrome. Account 'plantynetaitest1' confirmed in sidebar. Navigated to huggingface.co/chat, hard reload (Ctrl+Shift+R), fresh New Chat (input focused, empty).",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "submitted": true,
+  "warning_detected": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. This request has been blocked due to sensitive information detected.",
+  "block_keyword_match": "차단",
+  "chat_url": "huggingface.co/chat/conversation/6a0dde800d629d1817a490f3",
+  "wait_seconds": 60,
+  "browser_profile": "default",
+  "pc": "pc1",
+  "dom_evidence": "Assistant message bubble rendered the bilingual block warning (KR line with ⚠️ icon containing '차단' + EN line 'This request has been blocked due to sensitive information detected.'). Rendered as normal assistant response with Copy-to-clipboard and Retry action buttons. Baseline outcome class matched; W5.2 regression confirmed passing.",
+  "screenshot": "results/1327_screenshots/block_warning.png",
+  "timestamp": "2026-05-21T01:18:00+09:00"
+}
