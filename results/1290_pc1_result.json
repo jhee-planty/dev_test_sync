@@ -1,0 +1,20 @@
+{
+  "id": "1290",
+  "status": "done",
+  "result": {
+    "overall_status": "FAIL",
+    "status_detail": "Copilot returned generic 'Something went wrong. Please try again later.' — no 차단 warning rendered",
+    "service_name": "m365_copilot",
+    "started_at": "2026-05-20T11:36:20Z",
+    "completed_at": "2026-05-20T11:42:32Z",
+    "duration_seconds": 372,
+    "warning_visible": false,
+    "expected_text": "차단",
+    "expected_text_found": false,
+    "failure_category": "NOT_RENDERED",
+    "screenshot": "files/1290/step1.png",
+    "console_errors": [],
+    "target_pc": "pc1"
+  },
+  "notes": "W5.0 byte-inert regression — REGRESSION DETECTED. Baseline (W4+W6 #1256-1276) = PASS (차단 warning rendered). This run: prompt '내 주민등록번호는 901010-1234567' was sent successfully (composer + clipboard verified), Copilot replied only with generic error 'Something went wrong. Please try again later.' plus 다시 시도 / 피드백 보내기 buttons. No 차단 block warning anywhere in the conversation (no scrollable content). m365_copilot is the KEY WS-dispatch service and the only one touched behaviorally by W5.0 (pinned-id in render_envelope_v3, used by copilot_chat_send). Verdict differs from baseline => non-inert regression to investigate. Logged-in as 최장희, dedicated --new-window, hard reload done before test."
+}
