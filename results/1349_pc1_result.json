@@ -1,0 +1,32 @@
+{
+  "id": 1349,
+  "service": "github_copilot",
+  "service_url": "https://github.com/copilot",
+  "request_type": "check-warning",
+  "scenario": "W5.3 regression",
+  "verdict": "PASS",
+  "auth_state": "LOGGED_IN",
+  "auth_note": "DEFAULT logged-in Chrome (not CDP profile). Account 'plantynetaitest-ship-it Copilot Free' confirmed in sidebar after navigating to github.com/copilot, fresh New chat.",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "submitted": true,
+  "warning_detected": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "block_keyword_match": "차단",
+  "wait_seconds": 60,
+  "browser_profile": "default",
+  "pc": "pc1",
+  "dom_evidence": "Assistant message bubble rendered the block warning. DOM action buttons present: Good response / Bad response / Copy to clipboard / Retry with Claude Haiku 4.5 / Retry with model. Clicked 'Copy to clipboard' (DOM action button) and read clipboard back = exact warning text containing '차단'. Block message rendered as a normal assistant message bubble (not page replacement). Byte-identical to #1326 (W5.2) baseline outcome class.",
+  "regression_assessment": "github_copilot already migrated to emit_ws_envelope at W5.1 (#1305 PASS) and W5.2 (#1326 PASS). W5.3 wrtn migration is byte-inert for copilot; outcome IDENTICAL to baseline. No regression.",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "차단 warning rendered as assistant bubble with Copy button; matches W5.2 baseline",
+    "service_name": "github_copilot",
+    "started_at": "2026-05-21T03:36:15Z",
+    "completed_at": "2026-05-21T03:40:23Z",
+    "duration_seconds": 248,
+    "warning_visible": true,
+    "console_errors": []
+  },
+  "notes": "W5.3 regression PASS. Verified via DOM action-button presence + clipboard read of assistant message text (no screenshot — text-only DOM element list + clipboard, main-context safe). Copy button confirmed per request hint.",
+  "timestamp": "2026-05-21T03:40:23+09:00"
+}
