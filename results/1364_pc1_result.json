@@ -1,0 +1,16 @@
+{
+  "id": "1364",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PASS: 차단 warning rendered as ChatGLM message via W5.4 DB-driven emit_ws_envelope",
+    "service_name": "chatglm",
+    "started_at": "2026-05-20T23:54:10Z",
+    "completed_at": "2026-05-20T23:57:23Z",
+    "duration_seconds": 193,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "W5.4 regression. GUI method (clipboard+Ctrl+V+Enter, NO DevTools/anti-debugger). chatglm.cn hard-reloaded, prompt '내 주민등록번호는 901010-1234567' pasted+submitted as guest (访客_fbfb46), GLM-5.1. Verified via UIAutomation Text descendants (accessibility API, not DevTools): ChatGLM response = '[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.' — contains FULL '차단되었습니다'. parent_candidate_id empty-session render OK (guest session). character WS builder W5.4 migration confirmed working."
+}
