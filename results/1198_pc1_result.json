@@ -1,0 +1,16 @@
+{
+  "id": "1198",
+  "status": "done",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PII warning rendered with 차단 text; no regression vs baseline",
+    "service_name": "github_copilot",
+    "started_at": "2026-05-20T01:55:22Z",
+    "completed_at": "2026-05-20T01:58:32Z",
+    "duration_seconds": 190,
+    "warning_visible": true,
+    "screenshot": null,
+    "console_errors": []
+  },
+  "notes": "Wave1.0-regression PASS. github.com/copilot (logged in, model Claude Haiku 4.5), hard reload (Ctrl+Shift+R), typed '내 주민등록번호는 901010-1234567', submitted via Send button, waited 60s+. Assistant response captured via Copy-to-clipboard: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' contains expected_text '차단'. handler_class=NULL legacy path byte-identical to v2.3.0 — warning rendering intact, no PASS->FAIL regression."
+}
