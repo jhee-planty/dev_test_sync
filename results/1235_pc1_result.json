@@ -1,0 +1,28 @@
+{
+  "id": "1235",
+  "service": "baidu",
+  "command": "check-warning",
+  "target_pc": "pc1",
+  "status": "done",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PII warning rendered as baidu Wenxin assistant turn; contains 차단. W3 config-snapshot regression NOT observed.",
+    "service_name": "baidu",
+    "url": "https://chat.baidu.com/",
+    "started_at": "2026-05-20T05:59:00Z",
+    "completed_at": "2026-05-20T06:00:40Z",
+    "duration_seconds": 100,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "warning_text_rendered": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "warning_delivery_pattern": "ai_chat_bubble_injection",
+    "logged_in": false,
+    "screenshot": "results/1235_screenshots/01_warning.png",
+    "console_errors": []
+  },
+  "notes": "W3 config-snapshot regression check (baseline OK) PASSED. Opened chat.baidu.com fresh --new-window (百度文心助手 / Wenxin, DS-V4 Pro model, guest / 请登录 not logged in), hard reload (ctrl+shift+r). Composer DOM value verified pre-submit = '내 주민등록번호는 901010-1234567' (unicode-escaped in snapshot value field). Submitted via Enter; URL advanced to chat.baidu.com/search?enter_type=chat_url&internal=1. Engine intercept fired immediately and injected canonical block warning as the assistant turn: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' containing expected '차단'. Warning stable after 10s+ (no streaming overwrite). W3 = 13 service-config fields collapsed to shared_ptr snapshot (sd->svc->FIELD), touches response_type/ws_envelope_type/h2/intercept/url_capture dispatch paths. baidu uses HTTP/intercept dispatch path; snapshot refactor did not break PII warning rendering. Baseline-consistent PASS."
+}
