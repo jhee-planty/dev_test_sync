@@ -1,0 +1,18 @@
+{
+  "id": 1224,
+  "service": "grok",
+  "url": "grok.com",
+  "command": "check-warning",
+  "scenario": "W1+W2 regression",
+  "verdict": "PASS_BLOCKED",
+  "pc": "pc1",
+  "logged_in": true,
+  "account": "plantynetaitest@gmail.com",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "block_marker_url": "grok.com/?rid=00000000-apf0-warn-0000-000000000002",
+  "dom_contains_차단": true,
+  "wait_seconds": 60,
+  "timestamp": "2026-05-20T13:13:00+09:00",
+  "note": "W1+W2 regression confirmed: sensitive-info warning rendered, request blocked, no model response."
+}
