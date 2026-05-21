@@ -1,0 +1,18 @@
+{
+  "id": 1398,
+  "service": "zeta",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (zeta room submit PII, observe block-warning render)",
+  "method": "CDP+GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "sender_label": "[경고] system message in chat room",
+  "conversation_url": "https://zeta-ai.io/ko/rooms/39eca83c-bd5c-466d-afd4-b53a6808a043",
+  "auth_state": "logged-in as 최장희 (entered room without login wall)",
+  "notes": "Logged in. Opened a character plot, clicked '대화 시작하기' to enter a room. Targeted the '내용 입력하기' chat textarea, CDP insertText then Enter submitted. Engine intercepted and the block warning rendered as a [경고] chat message containing 차단. W7+keyword-fix behavior preserved. PASS.",
+  "timestamp": "2026-05-21T12:53:00+09:00"
+}

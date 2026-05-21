@@ -1,0 +1,18 @@
+{
+  "id": 1403,
+  "service": "deepseek",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (deepseek submit PII, observe block-warning render)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "sender_label": "DeepSeek assistant response",
+  "conversation_url": "https://chat.deepseek.com/a/chat/s/30aa2401-b67d-4352-b723-6534b3bc97f0",
+  "auth_state": "logged-in as 최장희",
+  "notes": "Unexpectedly logged in (brief showed likely sign-in wall, but session active - body shows user name 최장희). CDP insertText into textarea then Enter submitted. Engine intercepted and block warning rendered as the assistant response: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (contains 차단). W7+keyword-fix behavior preserved. PASS.",
+  "timestamp": "2026-05-21T12:54:00+09:00"
+}

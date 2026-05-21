@@ -1,0 +1,18 @@
+{
+  "id": 1388,
+  "service": "claude",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (claude.ai submit PII, observe block-warning render)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "sender_label": "Claude 응답 (assistant message)",
+  "conversation_url": "https://claude.ai/chat/5cf4b96a-7931-4a70-b889-0b98e5153c64",
+  "auth_state": "logged-in as 최장희 (plantynet 무료 요금제)",
+  "notes": "Logged in. CDP insertText then Enter submitted cleanly (box cleared). Engine intercepted and the block warning rendered as the Claude assistant response: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' (contains 차단). W7+keyword-fix behavior preserved. PASS.",
+  "timestamp": "2026-05-21T12:46:00+09:00"
+}
