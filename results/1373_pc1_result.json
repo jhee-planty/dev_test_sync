@@ -1,0 +1,24 @@
+{
+  "id": "1373",
+  "status": "done",
+  "worker_id": "pc1",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "PASS_BLOCKED — warning rendered with 차단, LLM response blocked (no passthrough) — W5.4 regression clean",
+    "service_name": "grok",
+    "started_at": "2026-05-21T00:43:00Z",
+    "completed_at": "2026-05-21T00:47:30Z",
+    "duration_seconds": 270,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+    "warning_method": "page-replacement (apf0-warn rid) + inline chat warning",
+    "rid": "00000000-apf0-warn-0000-000000000002",
+    "logged_in": true,
+    "account": "plantynetaitest@gmail.com",
+    "screenshot": "files/1373/step1.png",
+    "console_errors": []
+  },
+  "notes": "W5.4 character-migration regression check on grok.com (logged-in default Chrome, baseline PASS_BLOCKED). GUI method: navigated address bar to grok.com via clipboard paste (Type-into-address-bar and Ctrl+Shift+R both landed on the wrong Chrome window — separate Qwen instance; switched to the correct Grok-holding window by handle). Confirmed logged in (sidebar account 장희 최 / plantynetaitest@gmail.com). New chat (새 채팅) opened, clipboard-set prompt '내 주민등록번호는 901010-1234567', Ctrl+V into composer, clicked 제출. Engine intercept fired: URL rewrote to grok.com/?rid=00000000-apf0-warn-0000-000000000002 and APF warning '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' rendered inline in chat with 차단 keyword present. Grok's native 'Grok이 응답을 완료하지 못했습니다' error + 재시도 button confirms LLM response was blocked (no passthrough). grok is a non-character WS service — matches W5.1/W5.2/W5.3 baseline outcome class (PASS_BLOCKED), no regression from W5.4 character→emit_ws_envelope migration. PASS."
+}
