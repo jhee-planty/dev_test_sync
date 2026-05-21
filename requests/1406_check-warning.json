@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "chatgpt",
+  "url": "https://chatgpt.com/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 150,
+  "priority": "high",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "chatgpt 경고 미렌더 진단(Task#4) + W8-A(is_prepare_api 일반화 선행조사). chatgpt는 2단계 플로우: /backend-anon|api/f/conversation/prepare (prepare phase, response_type=chatgpt_prepare) → /conversation (chatgpt_sse). 엔진은 PII 차단할 것으로 예상되나 경고문구가 화면에 표시 안 됨이 known issue.",
+  "notes": "진단 목적. PII 프롬프트 제출 후: (1) 엔진 차단 여부 = network에서 conversation/prepare 응답이 차단 응답으로 바뀌는지(차단 텍스트/SSE event 캡처), (2) DOM에 경고문구('차단') 렌더되는지 + 안 되면 왜(SSE 파싱 실패? prepare phase 응답 무시? assistant bubble 미생성?), (3) 어느 endpoint가 intercept되는지(/prepare vs /conversation), (4) 가능하면 차단 응답 본문(SSE chunk) 캡처. logged-in 상태 명시. 경고 안 떠도 engine이 쳤는지 network로 판단(gemini3 류 FE-parse 한계인지 확인).",
+  "id": "1406",
+  "created": "2026-05-21T13:50:00Z"
+}
