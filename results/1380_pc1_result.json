@@ -1,0 +1,11 @@
+{
+  "id": 1380,
+  "service": "cohere",
+  "command": "check-warning",
+  "url": "https://coral.cohere.com",
+  "verdict": "FAIL_SERVICE_CHANGED",
+  "notes": "coral.cohere.com redirects to dashboard.cohere.com/welcome/login (title 'Login | Cohere'). The coral chat interface is deprecated/removed - no chat composer available. No submit performed. Matches W5.4 regression baseline (same as #1362 W5.3).",
+  "submit_performed": false,
+  "test_pc": "pc1",
+  "date": "2026-05-21"
+}
