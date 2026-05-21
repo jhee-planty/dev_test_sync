@@ -1,0 +1,18 @@
+{
+  "id": 1384,
+  "service": "wrtn",
+  "request_type": "check-warning",
+  "scenario": "W5.4 regression (wrtn emit_ws_envelope, migrated W5.3)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+  "sender_label": "뤼튼",
+  "conversation_url": "https://wrtn.ai/c/6a0e62bf4f84487e357ef9bb",
+  "auth_state": "anonymous (wrtn allows anonymous chat; top-nav login/signup links are persistent, NOT a gate)",
+  "notes": "Hard reload performed. Page showed persistent 로그인/회원가입 nav links (false-positive auth gate), but wrtn permits anonymous submission. Typed PII prompt via CDP, clicked orange Send. Conversation created (engine_intercept fired); user prompt shown as [PII content redacted by security policy]; assistant (뤼튼) rendered 차단 warning in <P> bubble. W5.4 emit_ws_envelope migration renders 차단 correctly - no regression. Baseline #1332/#1133 prior FAIL/no-render did NOT reproduce; engine exercised end-to-end this run.",
+  "timestamp": "2026-05-21T10:40:00+09:00"
+}
