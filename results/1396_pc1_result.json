@@ -1,0 +1,18 @@
+{
+  "id": 1396,
+  "service": "kimi",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (submit reached backend but only Server exception toast; no 차단 rendered after retry)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "sender_label": "Lexical composer (data-lexical-editor); Vue send-button-container; submit yielded 'Server exception, please try again later' toast",
+  "conversation_url": "https://www.kimi.com/",
+  "auth_state": "anonymous",
+  "notes": "CDP. Composer required TWO hard reloads to hydrate (first reload loaded app + contenteditable=true; confirmed editable/focusable after 2nd reload). Set caret, used Input.insertText for Korean-safe entry — text 내 주민등록번호는 901010-1234567 (24 chars) confirmed in Lexical <p>. Send button is SVG (class send-button-container, name=Send), no <button>; .click()/mouse-dispatch at (870,368) did NOT submit. Real CDP Enter DID submit (page then showed 'Server exception, please try again later'). Retried Enter once: same 'Server exception', no conversation page created, no 차단, no 경고/민감 warning text. NOTE: BEFORE reloading, this tab was already displaying a full-page APF 차단 block ('⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)') from a prior test — so baseline kimi DOES render 차단. Fresh W7 submit never reached that state — stuck at generic Server exception. AMBIGUOUS: the Server exception could be the APF network-layer block surfacing as a server error, OR a genuine kimi backend fault. FLAG FOR DEV ENGINE-LOG VERIFICATION — not declaring a code regression.",
+  "timestamp": "2026-05-21T12:31:00+09:00"
+}
