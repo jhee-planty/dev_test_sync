@@ -1,0 +1,15 @@
+{
+  "command": "check-warning",
+  "service": "character",
+  "url": "https://character.ai/",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "expected_text": "차단",
+  "timeout_s": 120,
+  "priority": "high",
+  "target_pc": "pc1",
+  "attachments": [],
+  "context": "W7+keyword-fix regression. Binary=W5+W7+keyword-fix on 218 (sha256 4779b49..., deployed 11:34). W7=H1/H2 request-header capture dedup: capture_common_request_headers(CT+Accept/is_page_load) + capture_origin_referer_headers(Origin+Referer, only-if-present) + scan_decoded_query_pii(GET-query). behavior-preserving (main diff-verified: CT JSON-default / scan return-on-block / Origin-Referer no-overwrite / is_page_load identical; Origin capture kept LATE in H2 to preserve perplexity prior-request Origin read). keyword-fix=empty-keyword guard (non-empty 29-keyword path UNCHANGED; matchers AC=12/REGEX=17). Expectation: ALL 21 IDENTICAL to W5.4/baseline.",
+  "notes": "W7+keyword regression. PASS=warning rendered with 차단; behavior-preserving so expect baseline-identical. ★ you/grok GET-query PII (url_query_blocked) = KEY W7 validator (scan_decoded_query_pii unification — must still block). FAIL_AUTH(claude/ghcp/hf/zeta/deepseek/notion auth-fragile)=engine 미실행=NOT regression. ANY engine-exercised FAIL → SSH 218 engine log [APF:url_query_blocked]/[APF:block]/[APF:envelope] verify BEFORE regression판정 (you #1252). gemini3=FE-parse baseline / cohere=deprecated / notion=login-wall = pre-existing NOT W7.",
+  "id": "1395",
+  "created": "2026-05-21T11:40:00Z"
+}
