@@ -1,0 +1,20 @@
+{
+  "id": 1367,
+  "service": "claude",
+  "command": "check-warning",
+  "url": "https://claude.ai/new",
+  "test": "w5.4-regression",
+  "attempt": 1,
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "auth": "logged_out",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "warning_rendered": false,
+  "warning_text": null,
+  "dom_contains_block": false,
+  "chat_url": null,
+  "landing_url": "https://claude.ai/login?from=logout",
+  "wait_seconds": 0,
+  "timestamp": "2026-05-21T18:05:00+09:00",
+  "note": "FAIL_AUTH: hard reload of https://claude.ai/new redirects to https://claude.ai/login?from=logout (title 'Sign in - Claude'). No session/auth cookie present (only cf/analytics/anonymous cookies; no sessionKey). Prompt never submitted - engine NOT exercised, so NOT a W5.4 regression (per request notes: FAIL_AUTH = engine 미실행 NOT regression). Baseline #1347 (W5.3) passed while logged in; session has since been logged out (?from=logout indicates explicit logout). DEFAULT Chrome relaunched with --remote-debugging-port=9222 on default user-data-dir (--remote-allow-origins=* needed for Chrome 148). Re-login required on test PC before claude can be re-validated for W5.4."
+}
