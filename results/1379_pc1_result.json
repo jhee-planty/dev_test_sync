@@ -1,0 +1,12 @@
+{
+  "id": 1379,
+  "service": "you",
+  "verdict": "PASS",
+  "warning_rendered": true,
+  "engine_intercept_fired": true,
+  "url_query_blocked_observed": true,
+  "notes": "W5.4 regression PASS, matches baseline (#1361/#1338/#1317/#1295/#1255). Fresh submission: opened you.com/search?q=<PII>&fromSearchBar=true with PII '내 주민등록번호는 901010-1234567' routed into GET query string (search-bar path). Engine url_query_blocked fired immediately on submit - page replaced with APF '보안 경고 - APF' (⚠️ 민감정보 차단 / [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다). Hard-reload (Page.reload ignoreCache via CDP = ctrl+shift+r) confirmed page STILL REPLACED: window title '보안 정책 - 접근 차단', body keyword '차단' + '보안 정책' present, PII (901010) still in URL query string. Option C V6-F page-replacement preserved (W4 removed Option B, Option C intact). W5.4 character_add_turn DB migration (emit_ws_envelope) did NOT affect you.com url_query_blocked path - W5.0 byte-inert, you uses url_query not WS builder. Verified via CDP Runtime.evaluate (no screenshots).",
+  "method": "url_query_blocked",
+  "worker_id": "pc1",
+  "tested_at": "2026-05-21T09:52:00+09:00"
+}
