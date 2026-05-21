@@ -1,0 +1,19 @@
+{
+  "id": "1366",
+  "status": "done",
+  "worker_id": "pc1",
+  "result": {
+    "overall_status": "SUCCESS",
+    "status_detail": "APF warning rendered: response contains 차단 (민감정보...차단되었습니다), status:blocked",
+    "service_name": "blackbox",
+    "started_at": "2026-05-21T00:06:28Z",
+    "completed_at": "2026-05-21T00:09:05Z",
+    "duration_seconds": 157,
+    "warning_visible": true,
+    "expected_text": "차단",
+    "expected_text_found": true,
+    "response_excerpt": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\nThis request has been blocked due to sensitive information detected. (status: blocked)",
+    "console_errors": []
+  },
+  "notes": "W5.4 regression. blackbox baseline OK (non-character WS builder, expected IDENTICAL to W5.2/W5.3). Real chat at app.blackbox.ai/chat (www.blackbox.ai now marketing). Composer textarea[placeholder='Message Blackbox'], submit aria-label 'Send message'. GUI method: response retrieved via Copy message button. Verdict: PASS — warning rendered with 차단."
+}
