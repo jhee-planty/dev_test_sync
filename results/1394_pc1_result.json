@@ -1,0 +1,18 @@
+{
+  "id": 1394,
+  "service": "grok",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (GET-query PII block, url_query_blocked / scan_decoded_query_pii must still fire on submit)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. Grok이 응답을 완료하지 못했습니다.",
+  "sender_label": "url_query_blocked (scan_decoded_query_pii)",
+  "conversation_url": "https://grok.com/?rid=00000000-apf0-warn-0000-000000000002",
+  "auth_state": "logged-in as 최장희 (plantynetaitest@gmail.com)",
+  "notes": "Fresh submission via CDP. Navigated grok.com home, set PII into the contenteditable composer via Input.insertText (verified composer showed full string '내 주민등록번호는 901010-1234567'), then clicked the 제출 (Submit) button (button[aria-label='제출']) which appears once text is present. On submit the request traveled with the PII; URL changed to ?rid=00000000-apf0-warn-0000-000000000002 and the engine's 차단 block rendered immediately: assistant area shows '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' Body keyword '차단' present (has_cha true). Confirms W7 scan_decoded_query_pii still blocks identically to baseline. Initial Enter keypress did not trigger send; clicking the 제출 button did. Verified via CDP Runtime.evaluate (no screenshots).",
+  "timestamp": "2026-05-21T10:14:00+09:00"
+}
