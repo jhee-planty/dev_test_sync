@@ -1,0 +1,18 @@
+{
+  "id": 1391,
+  "service": "perplexity",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (Origin header ordering preserved; block warning rendered identical to baseline)",
+  "method": "CDP+GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "sender_label": "답변 (Perplexity answer area)",
+  "conversation_url": "https://www.perplexity.ai/search/87c8deb8-817a-45b6-9625-5f859d689432",
+  "auth_state": "anonymous (로그인 button present, not logged in)",
+  "notes": "Lexical Ask box rejected CDP execCommand insert (caused doubled text). Recovered via GUI: Ctrl+A + Delete to clear, clipboard paste (Ctrl+V), verified editor held exactly 내 주민등록번호는 901010-1234567, then GUI Enter. Answer area rendered block warning containing 차단 on first submit. W7 Origin-header ordering preservation confirmed - blocks identically to baseline.",
+  "timestamp": "2026-05-21T15:44:20+09:00"
+}

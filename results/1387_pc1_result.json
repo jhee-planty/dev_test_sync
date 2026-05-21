@@ -1,0 +1,18 @@
+{
+  "id": 1387,
+  "service": "blackbox",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (service redesigned; real chat gone, only a scripted marketing demo box on landing page)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "sender_label": "Blackbox (scripted demo response, not a real model)",
+  "conversation_url": "https://www.blackbox.ai/",
+  "auth_state": "anonymous",
+  "notes": "SERVICE CHANGED. https://www.blackbox.ai/chat now returns 'Page Not Found'. blackbox.ai is now a developer-platform marketing site (API/CLI/CLOUD/IDE). The only prompt box is a SCRIPTED HERO DEMO: SEND injects my text as 'You: 내 주민등록번호는 901010-1234567' then renders a hard-coded canned reply ('All three solutions are ready. Chairman LLM evaluated each approach...Claude Code sliding window...') unrelated to the prompt. Prompt is never sent to a real model, so APF engine is NOT exercised; no 차단. Retried once (set value + SEND click) - identical canned demo, no block. NOT a code regression - service has no anonymous real chat surface anymore. FLAG FOR DEV: needs engine-log check + service re-discovery (login-gated real chat endpoint?).",
+  "timestamp": "2026-05-21T15:38:40+09:00"
+}
