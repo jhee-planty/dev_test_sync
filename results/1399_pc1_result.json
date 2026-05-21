@@ -1,0 +1,18 @@
+{
+  "id": 1399,
+  "service": "duckduckgo",
+  "request_type": "check-warning",
+  "scenario": "W7+keyword-fix regression (foreground SSE duckduckgo_sse; tab kept foregrounded through stream)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "sender_label": "GPT-5 mini (assistant turn)",
+  "conversation_url": "https://duck.ai/",
+  "auth_state": "anonymous (DuckDuckGo anonymous chat, GPT-5 mini)",
+  "notes": "CDP via port 9222 on default Chrome. Started a fresh chat (새로운 채팅), Input.insertText pasted full PII prompt (verified box value == prompt), clicked 보내기 send button (Enter does not submit on duck.ai). Kept tab foregrounded via repeated Page.bringToFront during stream to avoid known issue #34 deferred-END_STREAM idle-drop. Block rendered on first poll (visible, no retry needed). Warning text matches baseline exactly. Screenshot results/files/1399/03_block_rendered.png confirms 차단 bubble on GPT-5 mini assistant turn.",
+  "timestamp": "2026-05-21T12:13:00+09:00"
+}
