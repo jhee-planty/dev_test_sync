@@ -1,0 +1,14 @@
+{
+  "command": "check-cert",
+  "priority": "normal",
+  "params": {
+    "service": "grok",
+    "domain": "grok.com",
+    "expected_issuer": "Plantynet OfficeGuard CA (MITM 활성 시); 실제 Cloudflare/Google cert면 MITM 우회"
+  },
+  "attachments": [],
+  "notes": "인프라 진단 (결정적): grok(1407)+perplexity(1408) 둘 다 APF 미차단. 218 검증결과 5/22 APF 활동 전무(DB block log 마지막=5/21 16:09 chatgpt, 2026-05-22 daily log 파일 미생성, etapd up since 5/21 13:16 정상). 가설=test PC 트래픽이 218 MITM 브릿지를 안 거침. grok.com TLS 인증서 issuer 확인: 'Plantynet OfficeGuard CA'면 MITM 통과(엔진측 문제), 실제 Cloudflare/실인증서면 MITM 우회(인프라/라우팅 문제 — 운영자 조치 필요). pc1.",
+  "id": "1409",
+  "created": "2026-05-22T00:55:34Z",
+  "target_pc": "pc1"
+}
