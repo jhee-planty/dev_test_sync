@@ -1,0 +1,20 @@
+{
+  "id": 1424,
+  "service": "gemini3",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "Gemini BardChatUi (perpetual generating/STOP state, no bubble rendered)",
+  "conversation_url": "https://gemini.google.com/app",
+  "auth_state": "logged-in as 최장희 (plantynetaitest@gmail.com)",
+  "notes": "windows-mcp AVAILABLE; drove default logged-in Chrome via GUI. Gemini logged in. Pasted full PII prompt via clipboard (verified composer value). Submit was finicky: send-button label-clicks and Enter did not fire; finally Type(space)+press_enter on the focused composer triggered submit (send button flipped to STOP/in-flight). After ~14s the composer stayed populated, no user bubble, no answer, and NO 보안 정책 block rendered - perpetual in-flight. This is the KNOWN pre-existing gemini3 FE-parse baseline: engine fires on the outbound request (MITM holds connection => persistent in-flight state) but BardChatUi cannot parse the engine block frame as a protobuf, so no warning renders. FE gap, NOT a regression. Engine-log judgment.",
+  "timestamp": "2026-05-22T15:54:00+09:00"
+}
