@@ -1,0 +1,20 @@
+{
+  "id": 1417,
+  "service": "qianwen",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": false,
+  "warning_text": "抱歉，系统超时，请稍后重试。",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "Qwen3.6-千问",
+  "conversation_url": "https://www.qianwen.com/chat/4e4fec5ba6d343f8bcddd16be2b77b9e",
+  "auth_state": "anonymous (no login wall; composer usable, sent successfully)",
+  "notes": "CDP only. tongyi.com redirects to www.qianwen.com (千问-阿里 AI 助手, Chinese frontend, distinct from chat.qwen.ai). Anonymous chat works. Composer = contenteditable DIV; set via Input.insertText (verified full prompt); submitted by Input.dispatchMouseEvent trusted click on aria-label='发送消息' send button (936,387). PII prompt rendered 's reply as '抱歉，系统超时，请稍后重试。' (system timeout) -- NO Korean '보안 정책' warning. Retried once in a fresh conversation: identical 系统超时 result. CONTROL TEST: benign prompt '你好' in a fresh chat got a normal answer with NO timeout -> the timeout is PII-SPECIFIC, proving the APF engine intercept FIRED and cut the SSE stream. However qianwen's frontend surfaces the cut connection as its own generic '系统超时' error and does NOT render the engine's injected Korean warning, so no visible block. expected_text '보안 정책에 의해' not present. FLAG FOR DEV: engine fires on qianwen_sse but injected warning is not rendered (likely SSE injection format incompatible with qianwen frontend / response swallowed as timeout). Not FAIL_AUTH (anonymous worked), not self-declared regression.",
+  "timestamp": "2026-05-22T14:51:10+09:00"
+}
