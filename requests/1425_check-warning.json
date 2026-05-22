@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "poe",
+    "expected_text": "보안 정책",
+    "expected_format": "차단 warning visible in chat"
+  },
+  "attachments": [],
+  "notes": "전수 회귀(배포엔진 4779b49). poe PII→차단경고. gemini3=FE no-render 가능(engine log로 판정), poe=WS hard-reload. pc1.",
+  "id": "1425",
+  "created": "2026-05-22T06:44:40Z",
+  "target_pc": "pc1"
+}
