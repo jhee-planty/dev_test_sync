@@ -1,0 +1,23 @@
+{
+  "id": 1409,
+  "service": "grok",
+  "request_type": "check-cert",
+  "scenario": "infra diagnostic (decisive): MITM bridge active vs bypassed — explains grok 1407 + perplexity 1408 APF no-fire",
+  "method": "PowerShell .NET SslStream TLS certificate inspection (no browser)",
+  "pc": "pc1",
+  "verdict": "MITM_BYPASSED",
+  "domain": "grok.com",
+  "mitm_active": false,
+  "observed_issuer": "CN=WE1, O=Google Trust Services, C=US",
+  "expected_issuer_if_mitm": "Plantynet OfficeGuard CA",
+  "cert_subject": "CN=grok.com",
+  "cert_serial": "7603B10EDA6C1257135A3D8324E7D33D",
+  "cert_thumbprint": "F031554B32A141A984D0BE6984706CAB3A05BB38",
+  "cert_valid_from": "2026-05-20T05:13:56Z",
+  "cert_valid_to": "2026-08-18T06:13:41Z",
+  "corroboration": "Same bypass on all tested domains (real public certs, NO OfficeGuard CA): www.perplexity.ai=Let's Encrypt (E7); chatgpt.com=Google Trust Services (WE1); chatglm.cn=DigiCert. => systemic, not grok-specific.",
+  "conclusion": "MITM bridge is BYPASSED for test-PC traffic. grok.com presents the genuine Google Trust Services cert, not 'Plantynet OfficeGuard CA'. test-PC TLS traffic is NOT traversing the 218 Etap MITM bridge, so the APF engine never sees any request -> zero interception -> no PII blocking on ANY service. This is an INFRASTRUCTURE/ROUTING problem requiring OPERATOR action (restore inline bridge / re-route test-PC traffic through 218), NOT an engine code defect. Consistent with 218 evidence: no 5/22 APF activity, no 2026-05-22 daily log, last DB block 5/21 16:09 chatgpt — i.e. interception stopped sometime after 5/21 W7 batch (when grok #1394 + perplexity #1391 still PASSed through the bridge).",
+  "auth_state": "n/a (TLS cert check, no login)",
+  "notes": "Decisive triangulation closure for grok 1407 / perplexity 1408. Cert issuer test as specified in request. DEV/OPERATOR ACTION: verify why test-PC egress no longer routes through the 218 MITM bridge (bridge inline status, VLAN/route, gateway, proxy/PAC, OfficeGuard agent on the PC). Once routing is restored, re-run grok/perplexity canaries to confirm 차단 renders again. No engine rebuild needed for this symptom.",
+  "timestamp": "2026-05-22T09:58:00+09:00"
+}
