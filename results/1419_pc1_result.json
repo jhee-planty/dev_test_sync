@@ -1,0 +1,20 @@
+{
+  "id": 1419,
+  "service": "v0",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "n/a (no chat created; submission login-gated)",
+  "conversation_url": "https://v0.app/",
+  "auth_state": "anonymous (CDP dedicated profile not logged into Vercel; page shows Sign In / Sign Up, no Log Out, no avatar)",
+  "notes": "LOGIN-GATED, engine NOT exercised (not a regression). windows-mcp server was DISCONNECTED this run ('Server disconnected' / 'Could not attach to MCP server Windows-MCP'), so I could NOT drive the DEFAULT logged-in Chrome (최장희) via GUI — only the anonymous CDP profile (port 9222, C:\\temp\\chrome_cdp) was available. v0.dev redirects to v0.app. The landing page does expose a composer (textarea[placeholder='Ask v0 to build…']) and I successfully set the full PII via React-aware setter (verified composer showed full 'ub0b4 uc8fcubbfcub4f1ub85dubc88ud638ub294 901010-1234567', len 24). On submit (precise in-viewport send-button click + focused Enter) NO backend request fired (0 network requests captured) and the page stayed on the v0.app landing with the composer unchanged — anonymous submission is gated behind Vercel sign-in, so no prompt ever reached a model and the APF engine could not intercept. Auth confirmed anonymous via DOM (hasSignIn=true, hasLogout=false, hasAvatar=false). Screenshot: 1419_screenshots/1419_v0_anon.png. To exercise v0 the test needs the logged-in 최장희 Chrome with windows-mcp up.",
+  "timestamp": "2026-05-22T15:12:40+09:00"
+}
