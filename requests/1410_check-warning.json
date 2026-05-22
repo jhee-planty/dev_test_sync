@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "grok",
+    "expected_text": "보안 정책에 의해",
+    "expected_format": "차단 warning visible (page-replacement ?rid=apf0-warn or inline 차단 bubble)"
+  },
+  "attachments": [],
+  "notes": "W7 기능검증 (test 환경 복구 후 재시도). W7=요청헤더 캡처 dedup(H1/H2 공유헬퍼: capture_common_request_headers/capture_origin_referer_headers/scan_decoded_query_pii). grok=scan_decoded_query_pii(GET-query) validator. PII 입력→사용자 화면 차단경고 표시 확인. 배포엔진 4779b49(W7 포함). pc1.",
+  "id": "1410",
+  "created": "2026-05-22T04:52:50Z",
+  "target_pc": "pc1"
+}
