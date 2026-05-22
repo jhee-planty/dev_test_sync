@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "copilot",
+    "expected_text": "보안 정책",
+    "expected_format": "차단 warning visible in chat"
+  },
+  "attachments": [],
+  "notes": "전수 회귀(배포엔진 4779b49). copilot PII→차단경고. copilot=ws copilot_chat_send/SSE, wrtn=ws wrtn_socket_io/openai_compat_sse. pc1.",
+  "id": "1426",
+  "created": "2026-05-22T07:00:31Z",
+  "target_pc": "pc1"
+}
