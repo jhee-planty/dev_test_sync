@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatglm",
+    "expected_text": "보안 정책에 의해",
+    "expected_format": "차단 warning visible in chat"
+  },
+  "attachments": [],
+  "notes": "전수 회귀(배포엔진 4779b49). chatglm PII→차단경고. pc1.",
+  "id": "1416",
+  "created": "2026-05-22T05:46:02Z",
+  "target_pc": "pc1"
+}
