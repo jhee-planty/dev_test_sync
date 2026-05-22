@@ -1,0 +1,20 @@
+{
+  "id": 1420,
+  "service": "genspark",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "none",
+  "conversation_url": "https://www.genspark.ai/",
+  "auth_state": "login-wall",
+  "notes": "windows-mcp AVAILABLE; drove default logged-in Chrome via GUI. Loaded genspark.ai (showed 로그인/가입하기, anonymous). Composer accepted clipboard-pasted PII prompt (verified full Korean text in DOM value). Pressed Enter to submit -> Genspark popped a hard '로그인 또는 회원가입' modal (Google/Apple SSO required to unlock workspace); prompt was NOT sent to backend, engine not exercised. Tried 'Google로 계속하기' -> fresh accounts.google.com email entry page, no logged-in Google session available on default profile. Submission blocked end-to-end by login wall. FAIL_AUTH (no usable auth path), not a regression.",
+  "timestamp": "2026-05-22T15:22:30+09:00"
+}

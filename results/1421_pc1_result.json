@@ -1,0 +1,20 @@
+{
+  "id": 1421,
+  "service": "gamma",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "none",
+  "conversation_url": "https://gamma.app/signup",
+  "auth_state": "login-wall",
+  "notes": "windows-mcp AVAILABLE; drove default logged-in Chrome via GUI. Loaded gamma.app/ko marketing landing (showed 로그인/무료로 시작, anonymous). No prompt/chat input exists on the public site; AI deck-generation surface is entirely behind auth. '무료로 시작' -> gamma.app/signup wall (가입하기: Google SSO + email + SSO + reCAPTCHA). Tried 'Google로 계속하기' -> fresh accounts.google.com email entry popup, no logged-in Google session on default profile. PII prompt could never be submitted; engine not exercised. FAIL_AUTH (no usable auth path), not a regression.",
+  "timestamp": "2026-05-22T15:24:10+09:00"
+}
