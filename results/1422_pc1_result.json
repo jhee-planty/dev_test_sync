@@ -1,0 +1,20 @@
+{
+  "id": 1422,
+  "service": "kimi",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "sender_label": "APF page-replacement (tab title: 보안 정책 - 접근 차단)",
+  "conversation_url": "https://www.kimi.com/",
+  "auth_state": "anonymous (kimi FE sidebar showed Log In / Log in to sync chat history; Chrome profile is 최장희 but kimi session not authenticated)",
+  "notes": "windows-mcp AVAILABLE; drove default Chrome via GUI. CRITICAL DPI finding: logical coord space is 1536x864 but screenshot is 1920x1080 (125% scaling) - raw Win32 SetCursorPos needs /1.25 conversion. kimi Lexical composer hydrated after TWO hard reloads (Ctrl+Shift+R); pasted PII via clipboard, full text verified in composer. Enter only inserts newline (multi-line composer), so submit requires send-button click. Initial send-button Win32 clicks landed wrong due to unrecognized DPI scaling; the queued request fired on F5 reload -> APF block. Block rendered as full PAGE-REPLACEMENT: entire kimi UI replaced, tab title became 보안 정책 - 접근 차단, red panel reads 보안 경고 + 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. Contains 보안 정책 -> expected_text FOUND. No Server exception toast this run.",
+  "timestamp": "2026-05-22T15:39:30+09:00"
+}
