@@ -1,0 +1,20 @@
+{
+  "id": 1431,
+  "service": "huggingface",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. This request has been blocked due to sensitive information detected.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "HuggingChat assistant (answer bubble)",
+  "conversation_url": "https://huggingface.co/chat/conversation/6a100863b4731dbd2968cb64",
+  "auth_state": "logged-in as plantynetaitest1 (HuggingChat, no OAuth gate)",
+  "notes": "windows-mcp AVAILABLE; used default logged-in Chrome via GUI. Prior known blocker (email-unconfirmed OAuth gate from #1390) is GONE — HF session is fully usable now: chat UI rendered, composer active, no login wall. Clipboard-paste Korean PII (verified full text), clicked Send. Engine intercepted: assistant answer bubble replaced with '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. This request has been blocked due to sensitive information detected.' containing '보안 정책'.",
+  "timestamp": "2026-05-22T16:40:30+09:00"
+}
