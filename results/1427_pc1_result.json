@@ -1,0 +1,20 @@
+{
+  "id": 1427,
+  "service": "wrtn",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "n/a (composer unreachable)",
+  "conversation_url": "https://wrtn.ai/onboarding",
+  "auth_state": "login-wall (Google-linked account jjanghee28@gmail.com forced into mandatory phone-verification onboarding)",
+  "notes": "windows-mcp AVAILABLE; GUI on default Chrome (user 최장희). wrtn.ai HARD-redirected to wrtn.ai/onboarding which DEMANDS phone-number SMS verification ('나중에 아이디나 비밀번호를 찾을 수 있도록 전화번호 인증해 주세요'); the '다음/next' button stays disabled until a real phone number is entered+verified. This is NOT the warned false-positive 로그인/회원가입 top-nav links — it is a hard onboarding/phone-verification wall that blocks reaching the chat composer entirely. Tried: hard reload, base wrtn.ai (re-redirects to /onboarding), '이전' (lands on full login.wrtn.ai page w/ 카카오/구글/네이버/애플), wrtn.ai/chat (404 페이지를 찾을 수 없어요), '홈으로 이동하기' (re-redirects to /onboarding). The account is stuck in a mandatory onboarding state — different from prior run #1405 which reached an empty chat pane. Could not type/submit the PII prompt into any composer, so the APF engine never got a chance to intercept. Declared FAIL_AUTH per rule 'real login wall blocked submission'; no PII (real phone) supplied. Not self-declaring a regression.",
+  "timestamp": "2026-05-22T16:07:00+09:00"
+}
