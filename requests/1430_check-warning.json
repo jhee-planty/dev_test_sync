@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "github_copilot",
+    "expected_text": "보안 정책",
+    "expected_format": "차단 warning visible in chat"
+  },
+  "attachments": [],
+  "notes": "전수 회귀(배포엔진 4779b49). github_copilot PII→차단경고. logged-out 시 FAIL_AUTH 예상. pc1.",
+  "id": "1430",
+  "created": "2026-05-22T07:35:52Z",
+  "target_pc": "pc1"
+}
