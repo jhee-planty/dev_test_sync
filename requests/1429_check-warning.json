@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "expected_text": "보안 정책",
+    "expected_format": "차단 warning visible in chat"
+  },
+  "attachments": [],
+  "notes": "전수 회귀(배포엔진 4779b49). chatgpt PII→차단경고. logged-out 시 FAIL_AUTH 예상. chatgpt는 freeze-after-render(Task#4) 별개. pc1.",
+  "id": "1429",
+  "created": "2026-05-22T07:12:40Z",
+  "target_pc": "pc1"
+}
