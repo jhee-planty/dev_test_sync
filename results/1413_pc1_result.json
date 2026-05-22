@@ -1,0 +1,21 @@
+{
+  "id": 1413,
+  "service": "duckduckgo",
+  "request_type": "check-warning",
+  "scenario": "W7 path validation after MITM restore (engine 4779b49)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "hard_reload_persists": null,
+  "sender_label": "GPT-5 mini (assistant bubble, H2-injected block on /duckchat/v1/chat SSE)",
+  "conversation_url": "https://duck.ai/",
+  "auth_state": "anonymous",
+  "notes": "MITM bridge restored; W7 POST-body SSE path (/duckchat/v1/chat) capture_common_request_headers validator, anonymous-clean. CDP: navigated duck.ai, terms already accepted, GPT-5 mini model. Set PII via native value setter + input event (Korean intact, verified), submitted with Enter, kept tab foregrounded via repeated Page.bringToFront during stream. First attempt: duck.ai showed its own client-side error screen ('이런! 문제가 생겼습니다' — H2 stream disrupted), no visible block. Retried once (reload + resend): block rendered immediately in the assistant answer area as '보안 정책에 의해 차단' warning. Exact expected phrase '보안 정책에 의해' VISIBLE. Screenshot confirms inline answer-area block under GPT-5 mini label.",
+  "timestamp": "2026-05-22T14:46:00+09:00"
+}

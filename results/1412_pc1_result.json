@@ -1,0 +1,21 @@
+{
+  "id": 1412,
+  "service": "you",
+  "request_type": "check-warning",
+  "scenario": "W7 path validation after MITM restore (engine 4779b49)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "초기 로드: ⚠️ 민감정보 차단 — [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요. / 하드 리로드 후: ⚠️ 보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "hard_reload_persists": true,
+  "sender_label": "url_query_blocked",
+  "conversation_url": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20901010-1234567&fromSearchBar=true",
+  "auth_state": "anonymous",
+  "notes": "MITM bridge restored; W7 scan_decoded_query_pii GET-query (url_query_blocked) 2nd validator. CDP Page.navigate direct to you.com/search with PII in q= param. Engine intercepted at page-load with page-replacement block (title '보안 경고 - APF', body '민감정보 차단', text '보안 정책에 따라'). Hard reload (Ctrl+Shift+R / ignoreCache) re-rendered an alternate block variant (title '보안 정책 - 접근 차단', body '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다') — block PERSISTED, never reverted to normal you.com. Exact expected phrase '보안 정책에 의해' is visible in the hard-reload variant; initial variant uses the synonym '보안 정책에 따라'. Both screenshots confirm visible block.",
+  "timestamp": "2026-05-22T14:38:00+09:00"
+}
