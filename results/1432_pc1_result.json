@@ -1,0 +1,20 @@
+{
+  "id": 1432,
+  "service": "zeta",
+  "request_type": "check-warning",
+  "scenario": "post-recovery full regression (engine 4779b49, W7)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "assistant/character message slot (김예빈 chat room, WS character_add_turn replaced with warning)",
+  "conversation_url": "https://zeta-ai.io/ko/rooms/a6cbd4b4-edcd-4b90-b187-3c5116bf25a6",
+  "auth_state": "logged-in as 최장희 (plantynetaitest@gmail.com via Google)",
+  "notes": "windows-mcp AVAILABLE and used (GUI on default logged-in Chrome). Entered 김예빈 character chat room, submitted PII prompt. Engine returned the 차단 warning rendered in the answer area as an assistant-side message containing 보안 정책. Korean input via windows-mcp Type label (UIA SetValue) verified full text in composer before submit; raw Win32 clicks were unusable (Claude harness window kept stealing foreground) and windows-mcp loc-coord clicks hit a harness serialization bug, so label-based Type was the working path.",
+  "timestamp": "2026-05-22T16:59:00+09:00"
+}
