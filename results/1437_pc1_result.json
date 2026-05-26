@@ -1,0 +1,20 @@
+{
+  "id": 1437,
+  "service": "character",
+  "request_type": "check-warning",
+  "scenario": "new-engine WS validation (540b4d8+W8+W34+W8-E, #34 deferred-ES + decode_and_scan)",
+  "method": "GUI+CDP",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "Doom Slayer (c.ai) reply bubble stuck on '...' typing indicator (add_turn response frame blocked)",
+  "conversation_url": "https://character.ai/chat/8V_yAB0BSw2hX-i27ymqetwfCt3UkgjQdzT_3tN8xno",
+  "auth_state": "logged-in (current session authenticated; hasLoginWords=false, personalized 맞춤추천 feed, cookieLen 1555) — differs from prior #1395 logged-out",
+  "notes": "windows-mcp AVAILABLE; drove default logged-in Chrome via GUI. character.ai LOGGED IN this run (contrast #1395 FAIL_AUTH) — opened Doom Slayer (@Dondo2) character chat. Process DPI-unaware so SetCursorPos clamps to logical 1536x864; used logical coords (=physical/1.25) for all real OS clicks. Composer filled via DevTools Console JS (TEXTAREA native setter + input/change) — verified composer showed full Korean PII; SEND via real OS click on send button (logical 1325,750). Send SUCCEEDED: user bubble '내 주민등록번호는 901010-1234567' rendered (sender HealthyWorm4019), composer cleared. Doom Slayer reply bubble then stuck on '...' typing indicator for 15s+ and never streamed any text => character WS add_turn RESPONSE frame intercepted/blocked by APF/MITM engine (engine fired). BUT no visible block: body.innerText has neither '보안 정책' nor '정책' (block=false,policy=false); tail elements are only UI labels (음성기본값/사용자지정/PipSqueak). No chat bubble warning, no error/toast. Matches FAIL_NOT_RENDERED (engine fired, FE didn't render — consistent with past character parent_candidate_id empty-case). Did NOT create account or log in. Not self-declaring regression.",
+  "timestamp": "2026-05-26T11:34:30+09:00"
+}
