@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "zeta",
+    "expected_text": "보안 정책",
+    "expected_format": "차단경고"
+  },
+  "attachments": [],
+  "notes": "max_age dead-code 제거(코드리뷰 R1, behavior-neutral) 후 deferred-ES(h2_end_stream=2) 재검증. PII(주민등록번호 901010-1234567)→차단경고. 218 DB ai_prompt_block_log 교차 + ERR_HTTP2_PROTOCOL_ERROR 부재 확인. pc1.",
+  "target_pc": "pc1",
+  "id": "1464",
+  "created": "2026-05-26T07:49:31Z"
+}
