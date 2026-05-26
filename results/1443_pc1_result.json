@@ -1,0 +1,20 @@
+{
+  "id": 1443,
+  "service": "grok",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 보안 경고\n민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n(This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "sender_label": "page-replacement (engine-served block page, tab title 보안 정책 - 접근 차단)",
+  "conversation_url": "https://grok.com/",
+  "auth_state": "anonymous (CDP dedicated profile C:\\temp\\chrome_cdp; logged-out; grok allows anonymous composer, optional 로그인/가입하기)",
+  "notes": "windows-mcp DOWN — used CDP on anonymous dedicated profile (python3.14+websocket-client). Dismissed cookie banner, inserted PII via Input.insertText (composer verified exact match), submitted via Enter. First submit: PII reached the engine but grok showed an anonymous 'Sign up to continue' interstitial rather than a thread (no inline render). Hard-reloaded grok.com once -> engine intercepted the connection and served a full page-replacement block: '보안 정책 - 접근 차단' tab title + orange warning box. expected_text 보안 정책 present. Confirmed via DOM (body len collapsed to 98) AND screenshot. No regression — engine fired and block visible end-to-end.",
+  "timestamp": "2026-05-26T13:51:10+09:00"
+}
