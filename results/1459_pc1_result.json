@@ -1,0 +1,20 @@
+{
+  "id": 1459,
+  "service": "notion",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "inline-bubble",
+  "sender_label": "engine apf-warning-banner (floating top-right banner overlay; tab title became '보안 정책 - 접근 차단')",
+  "conversation_url": "https://www.notion.so/chat?t=36c9aa2d8bdd8082bdc700a9ac69db2d",
+  "auth_state": "logged-in as 최장희's Space (Notion AI workspace) in GUI default Chrome",
+  "notes": "windows-mcp AVAILABLE and used (GUI default Chrome, logged in). Opened Notion AI (notion.so/ai), pasted PII prompt via clipboard (verified full text in composer), clicked 'AI 메시지 제출하기' submit button. Submission succeeded — URL changed to notion.so/chat?t=... chat session. Immediately after submit the chat content area rendered BLANK (known Notion record-map quirk — no message echo / no response visible). On F5 reload the engine APF warning banner rendered clearly in the top-right corner: '⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)' and the tab title became '보안 정책 - 접근 차단'. expected_text '보안 정책' VISIBLE end-to-end => PASS. Engine intercept fired and block delivered as the standard apf-warning-banner overlay. Note: prior run #1402 hit a login wall, but this run the GUI Chrome had an active Notion session. Reload was needed to surface the banner past the record-map blank render.",
+  "timestamp": "2026-05-26T15:37:30+09:00"
+}
