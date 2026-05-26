@@ -1,0 +1,20 @@
+{
+  "id": 1440,
+  "service": "poe",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "sender_label": "page-replacement (tab title '보안 정책 - 접근 차단', top-right warning card)",
+  "conversation_url": "https://poe.com/",
+  "auth_state": "logged-in as 최장희 (avatar 장희, Google plantynetaitest@gmail.com)",
+  "notes": "windows-mcp AVAILABLE (GUI label-clicks; stale disconnect toast was cosmetic). Selected default Assistant bot, typed PII, clicked 메시지 전송. First send went blank then showed '메시지 전송에 실패했습니다.' (WS cut) with no answer — matches prior #1425. Did ONE hard reload (Ctrl+Shift+R); engine block surfaced as full page-replacement with '보안 정책' warning. Engine fired end-to-end.",
+  "timestamp": "2026-05-26T13:27:10+09:00"
+}
