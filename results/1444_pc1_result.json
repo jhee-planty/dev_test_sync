@@ -1,0 +1,21 @@
+{
+  "id": 1444,
+  "service": "you",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보 차단 / [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요. (initial); ⚠️ 보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.) (after hard reload)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "hard_reload_persists": true,
+  "sender_label": "page-replacement (APF engine, document.title='보안 경고 - APF' initial / '보안 정책 - 접근 차단' on reload)",
+  "conversation_url": "https://you.com/search?q=%EB%82%B4%20%EC%A3%BC%EB%AF%BC%EB%93%B1%EB%A1%9D%EB%B2%88%ED%98%B8%EB%8A%94%20901010-1234567&fromSearchBar=true",
+  "auth_state": "anonymous",
+  "notes": "CDP via dedicated profile (port 9222, python pythoncore-3.14-64 + websocket-client 1.9.0). windows-mcp was AVAILABLE (PowerShell + Snapshot worked) but its tool calls were intermittently timing out / showing MCP-disconnect toasts, so CDP used for reliable Korean handling and DOM read. Navigated directly with PII in q= query string; engine returned page-replacement block immediately (title='보안 경고 - APF', GET url_query_blocked path). Hard reload (ignoreCache) re-rendered the block (title='보안 정책 - 접근 차단') — confirmed NOT the normal you.com page, so block persists. '보안 정책' visible end-to-end.",
+  "timestamp": "2026-05-26T14:02:30+09:00"
+}

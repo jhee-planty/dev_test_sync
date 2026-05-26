@@ -1,0 +1,21 @@
+{
+  "id": 1445,
+  "service": "duckduckgo",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "CDP+GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "expected_text_found": true,
+  "warning_format": "inline-bubble",
+  "hard_reload_persists": null,
+  "sender_label": "GPT-5 mini · 아무도 모르게 (assistant answer area)",
+  "conversation_url": "https://duck.ai/chat?ia=chat",
+  "auth_state": "anonymous",
+  "notes": "CDP for input/DOM (port 9222, python pythoncore-3.14-64 + websocket-client 1.9.0) + windows-mcp App switch to physically FOREGROUND the Chrome window before submit (deferred-END_STREAM/#34 path needs a foregrounded H2 connection). windows-mcp PowerShell/Snapshot/App worked but its calls intermittently timed out, so CDP did the heavy lifting. Anonymous, no terms wall, GPT-5 mini model auto-selected. Started fresh chat, focused textarea, inserted Korean via Input.insertText (box verified == exact prompt), submitted via Enter, kept tab foregrounded (Page.bringToFront each poll). Assistant bubble rendered the 차단 warning within the stream — NO empty-pane hang, no retry needed. deferred-ES fix validated. '보안 정책' visible.",
+  "timestamp": "2026-05-26T14:06:10+09:00"
+}
