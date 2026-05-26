@@ -1,0 +1,20 @@
+{
+  "id": 1455,
+  "service": "genspark",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "sender_label": "block page (tab title '보안 정책 - 접근 차단') with top-right 보안 경고 toast box",
+  "conversation_url": "https://www.genspark.ai/agents?type=super_agent&action=init-agent",
+  "auth_state": "logged-in as Google account 장희 (no SSO wall this round)",
+  "notes": "windows-mcp AVAILABLE (GUI; DOM-snapshot labels + clipboard paste). Prior FAIL_AUTH (Google/Apple SSO modal) did NOT reproduce: page was usable while signed in. Pasted PII, verified full composer text, pressed Enter -> super_agent page first showed 'Failed to fetch' + a stale-frontend 'refresh required' banner (genspark detected a new frontend version). Reloaded (Ctrl+R); the request re-fired through the fresh frontend and the APF engine intercepted it, replacing the page (tab title '보안 정책 - 접근 차단') with a 보안 경고 block box containing '보안 정책'. Visible end-to-end.",
+  "timestamp": "2026-05-26T14:57:20+09:00"
+}

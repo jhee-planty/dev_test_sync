@@ -1,0 +1,20 @@
+{
+  "id": 1454,
+  "service": "qwen3",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다. [경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "Qwen3.6-Plus connection-error bubble (engine-injected)",
+  "conversation_url": "https://chat.qwen.ai/c/guest",
+  "auth_state": "anonymous (guest)",
+  "notes": "windows-mcp AVAILABLE (used GUI; DOM-snapshot for labels + clipboard paste for Korean). Prior FAIL_AUTH (anonymous send disabled) no longer reproduces: composer was editable and send button enabled in guest mode. Pasted PII, verified full text in composer, pressed Enter. Block rendered as a red Qwen connection-error styled bubble in the answer area containing [경고]...보안 정책... warning. expected_text '보안 정책' present and visible end-to-end.",
+  "timestamp": "2026-05-26T14:55:30+09:00"
+}
