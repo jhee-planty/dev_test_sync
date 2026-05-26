@@ -1,0 +1,20 @@
+{
+  "id": 1453,
+  "service": "huggingface",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. This request has been blocked due to sensitive information detected.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "HuggingChat assistant (answer area / streamed response slot)",
+  "conversation_url": "https://huggingface.co/chat/conversation/6a15332800d697a6780c7a10",
+  "auth_state": "logged-in as plantynetaitest1",
+  "notes": "windows-mcp AVAILABLE (GUI automation on default logged-in Chrome). Navigated current tab to huggingface.co/chat/, already logged in as plantynetaitest1 (no login wall / no email-confirm gate). Pasted PII prompt via clipboard Ctrl+V (composer verified showing full Korean text before submit). Clicked Send message. Engine intercepted: assistant answer bubble rendered the 차단 warning with both Korean ('보안 정책') and English block lines.",
+  "timestamp": "2026-05-26T14:44:20+09:00"
+}
