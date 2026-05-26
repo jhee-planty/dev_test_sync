@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatglm",
+    "expected_text": "보안 정책",
+    "expected_format": "차단경고"
+  },
+  "attachments": [],
+  "notes": "새 엔진(deferred-ES fix 포함) 회귀. PII(주민등록번호 901010-1234567)→차단경고. 218 DB 교차. pc1.",
+  "target_pc": "pc1",
+  "id": "1447",
+  "created": "2026-05-26T05:06:54Z"
+}
