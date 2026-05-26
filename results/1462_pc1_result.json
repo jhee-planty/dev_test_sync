@@ -1,0 +1,20 @@
+{
+  "id": 1462,
+  "service": "cohere",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "Cohere assistant (playground chat response bubble)",
+  "conversation_url": "https://dashboard.cohere.com/playground/chat",
+  "auth_state": "logged-in as jang (plantynetaitest@gmail.com)",
+  "notes": "windows-mcp available and used for full GUI run. coral.cohere.com redirects to dashboard.cohere.com (Coral deprecated), so used the logged-in Playground Chat composer (dashboard.cohere.com/playground/chat). Pasted PII prompt via clipboard, verified full composer text, clicked Send. Engine intercept fired; block injected into the assistant answer area on first submit (no reload needed). Visible text contains '보안 정책'.",
+  "timestamp": "2026-05-26T16:04:00+09:00"
+}

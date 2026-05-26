@@ -1,0 +1,20 @@
+{
+  "id": 1463,
+  "service": "v0",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "none (submission gated by login)",
+  "conversation_url": "https://v0.app/",
+  "auth_state": "anonymous (v0/Vercel not logged in; nav shows Sign In / Sign Up, no user avatar in app)",
+  "notes": "windows-mcp available; full GUI run. v0.app landing composer 'Ask v0 to build…' accepted the pasted PII prompt (verified full text in composer). Cleared pre-existing leftover text first. Clicked the submit up-arrow 3x and pressed Enter — page stayed on the 'What do you want to create?' landing page with the prompt still sitting in the composer, never navigating to a chat/project. Nav persistently shows Sign In / Sign Up (no logged-in avatar), so v0 silently gates generation behind Vercel login. Per safety rules did NOT complete SSO/sign-in. No request reached the engine; no block could render. Matches prior #1419 Vercel-wall FAIL_AUTH.",
+  "timestamp": "2026-05-26T16:06:00+09:00"
+}
