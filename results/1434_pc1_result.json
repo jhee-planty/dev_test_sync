@@ -1,0 +1,20 @@
+{
+  "id": 1434,
+  "service": "perplexity",
+  "request_type": "check-warning",
+  "scenario": "new-engine validation (540b4d8+W8+W34+W8-E)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "답변 (Perplexity answer area, SSE-rendered from DB template)",
+  "conversation_url": "https://www.perplexity.ai/search/102e4807-b19c-43b0-9c45-df74090f7358",
+  "auth_state": "anonymous",
+  "notes": "windows-mcp available and used (GUI path, default logged-in Chrome). Closed login popup, pasted PII via clipboard (composer verified showing full prompt), clicked 제출. Answer area rendered the W8-E DB-template block: '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' containing '보안 정책'. A '연결이 끊어졌습니다' (connection dropped) error box also appeared below, consistent with engine injecting block then terminating SSE stream. Warning fully visible end-to-end. No reload/retry needed.",
+  "timestamp": "2026-05-26T10:53:30+09:00"
+}
