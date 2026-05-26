@@ -1,0 +1,20 @@
+﻿{
+  "id": 1448,
+  "service": "blackbox",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "{\"response\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\",\"status\":\"blocked\"}",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "Blackbox assistant answer (JSON response payload, status:blocked)",
+  "conversation_url": "https://app.blackbox.ai/chat",
+  "auth_state": "anonymous",
+  "notes": "windows-mcp AVAILABLE; used GUI (windows-mcp clipboard paste of Korean PII into composer, verified full text, clicked Send). Engine intercepted the anonymous POST /api/chat; assistant answer area rendered JSON {response: '...보안 정책에 의해 차단되었습니다...', status:blocked} on first submit, no reload needed. '보안 정책' visible end-to-end.",
+  "timestamp": "2026-05-26T14:23:30+09:00"
+}

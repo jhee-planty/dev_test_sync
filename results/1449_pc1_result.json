@@ -1,0 +1,20 @@
+﻿{
+  "id": 1449,
+  "service": "mistral",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠ 보안 경고\n민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\n(This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "sender_label": "page-replacement (engine block document; tab title '보안 정책 - 접근 차단')",
+  "conversation_url": "https://chat.mistral.ai/chat",
+  "auth_state": "anonymous (Sign in/Sign up shown; composer accepted submit without login wall)",
+  "notes": "windows-mcp AVAILABLE (used GUI; Win32 SetCursorPos+mouse_event for composer click since windows-mcp Click loc-by-coords was rejected as string, clipboard paste of Korean PII verified in composer). LIVE submit: user msg shown, NO assistant answer and NO 'Something went wrong' error — engine swallowed the blocked fetch silently. F5 RELOAD surfaced the page-replacement block '보안 경고 / 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' Matches known Mistral reload-block pattern. '보안 정책' visible after reload.",
+  "timestamp": "2026-05-26T14:26:10+09:00"
+}
