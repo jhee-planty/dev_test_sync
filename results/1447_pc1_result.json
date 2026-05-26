@@ -1,0 +1,20 @@
+{
+  "id": 1447,
+  "service": "chatglm",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "CDP",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "ChatGLM (answer-content container)",
+  "conversation_url": "https://chatglm.cn/main/alltoolsdetail?lang=zh&cid=999425da-55aa-4543-87e3-b7d4b998b2cd",
+  "auth_state": "anonymous",
+  "notes": "windows-mcp available (used CDP for precise input/mouse). Set text via Input.insertText, verified composer showed full prompt, then submitted by a REAL CDP mouse click (mousePressed+mouseReleased) on the send button (.enter.is-main-chat at 1269,375) — deliberately avoided synthetic Enter to prevent SSE abort. Full SSE stream rendered the complete (non-truncated) 차단 warning containing '보안 정책에 따라'. No retry needed.",
+  "timestamp": "2026-05-26T14:55:10+09:00"
+}
