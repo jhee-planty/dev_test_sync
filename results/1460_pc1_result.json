@@ -1,0 +1,20 @@
+{
+  "id": 1460,
+  "service": "copilot",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "Copilot assistant (normal model answer, generic privacy advice)",
+  "conversation_url": "https://copilot.microsoft.com/chats/5V3KWpUEQa58tPtw8NPaQ",
+  "auth_state": "anonymous (guest mode; 로그인 button present, chat usable without login)",
+  "notes": "windows-mcp AVAILABLE; drove default logged-in Chrome via GUI label-clicks + clipboard paste. Composer verified full Korean PII before submit. Copilot answered NORMALLY with its own model output advising not to share resident-reg numbers; NO 보안 정책 차단 block rendered. Confirms domain-level MITM bypass (copilot.microsoft.com presents real Microsoft/Azure cert, NOT Plantynet OfficeGuard MITM cert), so APF engine never saw the traffic. engine_intercept_fired=false. This is INFRA bypass, NOT an engine regression.",
+  "timestamp": "2026-05-26T15:54:30+09:00"
+}
