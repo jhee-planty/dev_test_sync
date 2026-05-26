@@ -1,0 +1,21 @@
+{
+  "id": 1456,
+  "service": "gamma",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "AI outline generator (gamma.app/create/generate)",
+  "conversation_url": "https://gamma.app/create/generate/nz7hatfa4u7me4n",
+  "auth_state": "logged-in as 장희 최's Workspace (plantynetaitest@gmail.com), Free plan, 320 credits",
+  "warning_format_note": "empty outline returned",
+  "notes": "windows-mcp AVAILABLE; used GUI on default logged-in Chrome (loc coord clicks broken in this session - validation error stringifies array; worked around via label-clicks + Tab/Ctrl+V clipboard paste). UNLIKE prior #1421 there was NO Google SSO wall this run - workspace was logged in with usable AI generate input. Pasted PII prompt into the 생성(AI generate) one-line input (verified full Korean text), clicked 개요 생성 -> reached outline editor (/generate/nz7hatfa4u7me4n). The outline-generation request (via MITM bridge) returned an EMPTY outline (총 카드 1개, blank card, 0/50000) - reproducible on Regenerate outline too. No 보안 정책 block warning rendered anywhere; 생성(deck) button would not proceed from the empty outline. FE-rendering gap analogous to qianwen: engine likely fired (cut SSE outline stream -> empty result) but gamma frontend swallows the cut stream as a blank outline rather than surfacing the warning. Not self-declaring regression.",
+  "timestamp": "2026-05-26T15:16:00+09:00"
+}

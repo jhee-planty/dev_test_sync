@@ -1,0 +1,20 @@
+{
+  "id": 1457,
+  "service": "qianwen",
+  "request_type": "check-warning",
+  "scenario": "fixed-engine regression (deferred-ES fix included)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "n/a (message never sent - login wall)",
+  "conversation_url": "https://www.qianwen.com/?ch=tongyi_redirect",
+  "auth_state": "anonymous (login-wall on send)",
+  "notes": "windows-mcp AVAILABLE; GUI on default Chrome. tongyi.com redirected to qianwen.com (Qwen3.6-千问), anonymous. Pasted PII prompt via clipboard into composer (verified full Korean text in input value). Clicked 发送消息 (send) -> a mandatory LOGIN modal appeared (phone+SMS / QR scan / Taobao / Alipay). This DIFFERS from prior #1417 where anonymous chat worked; qianwen now login-gates message submission. Per safety I did NOT enter phone number or complete SSO. Dismissed modal (Esc) -> sidebar showed 网络异常,请稍后重试 (network error, retry) with 重试 button; message never sent, no chat bubble, NO 系统超시 timeout this run, NO 보안 정책 warning. Because submission was blocked by the login wall, the engine was never exercised (engine_intercept_fired=false). Verdict FAIL_AUTH (login wall blocked submission), not a FE-render gap this time. Not self-declaring regression.",
+  "timestamp": "2026-05-26T15:18:00+09:00"
+}
