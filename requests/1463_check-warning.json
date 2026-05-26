@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "v0",
+    "expected_text": "보안 정책",
+    "expected_format": "차단경고"
+  },
+  "attachments": [],
+  "notes": "새 엔진(deferred-ES fix) 회귀. PII(주민등록번호 901010-1234567)→차단경고. 218 DB 교차. pc1. v0=cohere는 로그인 완료 상태 재테스트 / v0=h2_es=2 마지막 deferred-ES.",
+  "target_pc": "pc1",
+  "id": "1463",
+  "created": "2026-05-26T06:59:49Z"
+}
