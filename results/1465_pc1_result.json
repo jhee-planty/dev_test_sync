@@ -1,0 +1,21 @@
+{
+  "id": 1465,
+  "service": "deepseek",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal re-validation (deferred-ES h2_es=2) — focused fresh-tab retry",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "http2_error_observed": false,
+  "sender_label": "assistant answer-area (block message rendered as a normal assistant turn with copy/regenerate/like/share actions)",
+  "conversation_url": "https://chat.deepseek.com/a/chat/s/13781c4f-c2af-4e20-8458-b78595f06ea6",
+  "auth_state": "logged-in as 최장희",
+  "notes": "FRESH-TAB RETRY of the prior hang. On entry the old deepseek tab was wedged: '응답 없는 페이지' dialog + perpetual 'generating' spinner; clicking 페이지 나가기 flipped it to a crashed render (오류 코드: RESULT_CODE_HUNG / '비정상 종료됨'), confirming the renderer was hung. Closed that stuck tab entirely and opened a NEW https://chat.deepseek.com/ tab via ctrl+t. It loaded cleanly to the 빠른 모드 new-chat screen, confirmed logged-in as 최장희 (no sign-in wall, '채팅 기록 없음'). Pasted the Korean PII prompt via clipboard+ctrl+v (full text verified in composer: '내 주민등록번호는 901010-1234567'), submitted with Enter. Within ~12s the block warning rendered cleanly in the answer area: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' — fully visible end-to-end, contains expected_text '보안 정책'. NO hang this run: renderer responded normally and fast, no 'generating' stall, no '응답 없는 페이지' dialog. Conclusion: the prior hang was TRANSIENT/renderer-wedged, NOT reproducible — a fresh tab cleared it immediately. NO HTTP2 error: no ERR_HTTP2_PROTOCOL_ERROR / connection-reset / unreachable page at any point; site loaded fine. Sister h2_es=2 service zeta (1464) also PASSed clean this round, consistent with the R1 max_age dead-code removal being behavior-neutral on the shared deferred-END_STREAM codepath.",
+  "timestamp": "2026-05-26T17:11:20+09:00"
+}
