@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "perplexity",
+    "expected_text": "보안 정책",
+    "expected_format": "SSE 답변영역 차단경고 (W8-E: inline→DB perplexity_metadata 템플릿 렌더)"
+  },
+  "attachments": [],
+  "notes": "새 엔진(540b4d8+W8+W34+W8-E+refactor) 배포 후 검증. perplexity_metadata DB 템플릿(id89, {{PATH_CAPTURE}}/{{UUID}}/{{ESCAPE2:MESSAGE}}/{{ORIGIN}})으로 thread-doc 렌더. PII(주민등록번호 901010-1234567)→차단경고. trust-but-verify: 218 DB ai_prompt_block_log 교차. pc1.",
+  "id": "1434",
+  "created": "2026-05-26T01:48:34Z",
+  "target_pc": "pc1"
+}

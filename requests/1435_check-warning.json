@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "kimi",
+    "expected_text": "보안 정책",
+    "expected_format": "WS connect_rpc 차단경고"
+  },
+  "attachments": [],
+  "notes": "새 엔진 배포 후 WS(#34 deferred-ES + decode_and_scan refactor) 검증. PII→차단경고. 218 DB 교차. pc1.",
+  "id": "1435",
+  "created": "2026-05-26T01:48:41Z",
+  "target_pc": "pc1"
+}
