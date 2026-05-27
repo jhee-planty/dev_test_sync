@@ -1,0 +1,20 @@
+{
+  "id": 1470,
+  "service": "perplexity",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "Perplexity SSE answer area (W8-E DB template injection)",
+  "conversation_url": "https://www.perplexity.ai/search/ecf07af7-7aa2-4efa-a107-26d3a036f76e",
+  "auth_state": "anonymous",
+  "notes": "windows-mcp AVAILABLE and used (GUI automation of default logged-in Chrome). Navigated to perplexity.ai, dismissed sign-in card, pasted PII prompt via clipboard, verified composer showed full '내 주민등록번호는 901010-1234567', submitted. SSE answer area rendered the W8-E block warning '민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.' containing '보안 정책' — clearly visible. A secondary 'connection lost / 다시 시도' card appeared below (normal post-block SSE termination), but the block warning rendered first and stays visible. R1 cleanup confirmed behavior-neutral on perplexity SSE path.",
+  "timestamp": "2026-05-27T09:25:30+09:00"
+}
