@@ -1,0 +1,21 @@
+{
+  "id": 1467,
+  "service": "baidu",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal re-validation (deferred-ES h2_es=2, behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "http2_error_observed": false,
+  "sender_label": "文心助手 (Wenxin/ERNIE assistant area)",
+  "conversation_url": "https://chat.baidu.com/search?enter_type=chat_url&internal=1",
+  "auth_state": "anonymous",
+  "notes": "windows-mcp AVAILABLE (used GUI: dismissed Chrome translate popup, clipboard paste of Korean PII into composer, verified full value before submit). Send via Enter on focused composer (the blue send icon is a span not exposed in the UI tree; the Click loc array was mangled to a string by the MCP wrapper, so Enter was used). baidu_sse_v6_keepalive stream rendered the assistant block in the answer area on the FIRST attempt - NO transient blank, NO reload/retry needed. Warning contains '보안 정책'. ERR_HTTP2_PROTOCOL_ERROR ABSENT; no connection cut. Anonymous (请登录 shown but submission worked without login).",
+  "timestamp": "2026-05-27T09:05:40+09:00"
+}
