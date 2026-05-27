@@ -2,13 +2,13 @@
   "command": "check-warning",
   "priority": "normal",
   "params": {
-    "service": "kimi",
+    "service": "claude",
     "expected_text": "보안 정책",
     "expected_format": "차단경고"
   },
   "attachments": [],
   "notes": "max_age dead-code 제거(R1) 후 회귀. PII(주민등록번호 901010-1234567)→차단경고. 218 DB 교차. pc1.",
   "target_pc": "pc1",
-  "id": "1469",
-  "created": "2026-05-27T00:08:04Z"
+  "id": "1471",
+  "created": "2026-05-27T00:22:39Z"
 }
