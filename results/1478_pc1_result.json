@@ -1,0 +1,20 @@
+{
+  "id": 1478,
+  "service": "chatgpt",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (bulk, behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "ChatGPT (assistant answer area)",
+  "conversation_url": "https://chatgpt.com/c/6a16483a-7234-8324-abe7-b3716390a8ee",
+  "auth_state": "logged-in as 최장희 Free (plantynetaitest@gmail.com)",
+  "notes": "windows-mcp available; drove default logged-in Chrome via GUI. Pasted PII prompt via clipboard, composer showed full text, submitted. ChatGPT answered NORMALLY (real GPT response about resident-reg-number risks, bullet list, recommended actions) with NO 보안 정책 block. Matches known logged-in /backend-api no-intercept gap: when logged-in the engine does not intercept ChatGPT traffic. Anonymous mode reportedly renders the block but logged-in does not.",
+  "timestamp": "2026-05-27T10:26:30+09:00"
+}

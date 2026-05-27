@@ -1,0 +1,20 @@
+{
+  "id": 1480,
+  "service": "copilot",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (bulk, behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "Microsoft Copilot (assistant answer area)",
+  "conversation_url": "https://copilot.microsoft.com/chats/3QzLD151iE6JnaqcvJTKX",
+  "auth_state": "anonymous (guest mode, not logged in)",
+  "notes": "windows-mcp available; GUI on default Chrome. copilot.microsoft.com loaded in guest mode (no login wall). Pasted PII prompt via clipboard, submitted. Copilot answered NORMALLY ('개인정보(예: 주민등록번호)는 안전을 위해 공유하지 않는 것이 좋아요...') with NO 보안 정책 block. Microsoft-domain MITM bypass (infra, not engine): copilot.microsoft.com presents a real Microsoft Azure cert so the MITM bridge cannot see its traffic and the engine never intercepts.",
+  "timestamp": "2026-05-27T10:27:40+09:00"
+}

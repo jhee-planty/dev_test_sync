@@ -1,0 +1,20 @@
+{
+  "id": 1486,
+  "service": "m365_copilot",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (bulk, behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "Copilot",
+  "conversation_url": "https://m365.cloud.microsoft/chat/conversation/9f493947-6f8c-43e7-bed2-21e8fa407d7f",
+  "auth_state": "logged-in as 최장희 (M365 Copilot 기본)",
+  "notes": "windows-mcp available; GUI on default logged-in Chrome. m365.cloud.microsoft IS MITM-intercepted. Pasted PII prompt via clipboard, submitted. Engine fired AND a READABLE warning rendered in the Copilot answer area: '⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request has been blocked due to sensitive information.)'. Contains 보안 정책, visible end-to-end, conversation persisted (URL has /conversation/...). This is BETTER than the prior known 'm365 FE-render gap' (generic 연결이 끊겼습니다 non-persisting error) — this run shows a clean readable block.",
+  "timestamp": "2026-05-27T10:29:10+09:00"
+}
