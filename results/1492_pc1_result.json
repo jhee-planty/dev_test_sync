@@ -1,0 +1,20 @@
+{
+  "id": 1492,
+  "service": "wrtn",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (bulk, behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "보안 경고 — 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다. (This request was blocked due to sensitive information.)",
+  "expected_text_found": true,
+  "warning_format": "page-replacement",
+  "sender_label": "engine block page (document-level replacement)",
+  "conversation_url": "https://wrtn.ai/",
+  "auth_state": "anonymous (cleared logged-in session)",
+  "notes": "windows-mcp AVAILABLE and used (GUI). The default profile's wrtn session was STUCK in phone-number onboarding (wrtn.ai -> login.wrtn.ai -> /onboarding phone-verify wall); per mission must NOT use that logged-in account. Cleared wrtn.ai site data via Chrome site-info > '기기 내 사이트 데이터' (deleted only wrtn.ai, left other sites' cookies intact) to obtain a clean ANONYMOUS session. After clearing, navigating fresh to wrtn.ai (no PII submitted yet) yields a page-replacement block: tab title '보안 정책 - 접근 차단', blank body, '보안 경고' toast containing '보안 정책'. Persisted across Ctrl+Shift+R hard-reload. wrtn uses socket.io/WS; the anonymous SPA boot connection appears to be intercepted by the engine before any composer renders, so the PII prompt could not be typed/sent this run. Warning containing '보안 정책' is visible end-to-end and engine intercept fired => PASS on warning visibility. ANOMALY FLAG for dev review: block fired on a bare anonymous homepage load with no PII in the submitted prompt (same pattern as blackbox 1475); composer unreachable. Not self-declaring a regression.",
+  "timestamp": "2026-05-27T09:55:30+09:00"
+}
