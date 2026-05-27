@@ -1,0 +1,20 @@
+{
+  "id": 1490,
+  "service": "qianwen",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (bulk, behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "none (mandatory login modal intercepted the send)",
+  "conversation_url": "https://www.qianwen.com/?ch=tongyi_redirect",
+  "auth_state": "login-wall (anonymous; mandatory login modal: phone/SMS + QR)",
+  "notes": "windows-mcp available; GUI on default logged-in Chrome. tongyi.com redirected to qianwen.com (Qwen3.6-千问), anonymous (登录 button present). Pasted PII into composer (verified full text), clicked 发送消息. Send triggered a mandatory login modal (请输入手机号 phone + 请输入验证码 SMS code + 用千问APP扫码登录 QR). Matches documented qianwen KNOWN behavior. Per SAFETY did NOT log in. FAIL_AUTH — submission blocked by login wall before engine could process; cannot assess block rendering anonymously.",
+  "timestamp": "2026-05-27T10:20:30+09:00"
+}
