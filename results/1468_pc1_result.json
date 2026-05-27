@@ -1,0 +1,20 @@
+{
+  "id": 1468,
+  "service": "v0",
+  "request_type": "check-warning",
+  "scenario": "R1 max_age dead-code removal regression (behavior-neutral)",
+  "method": "GUI",
+  "pc": "pc1",
+  "verdict": "FAIL_AUTH",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "other/none",
+  "sender_label": "none (submission rejected at Vercel auth gate)",
+  "conversation_url": "https://v0.app/",
+  "auth_state": "anonymous (Sign In / Sign Up shown top-right; no Vercel session)",
+  "notes": "windows-mcp AVAILABLE (used GUI/label-clicks). Loaded v0.app anonymously; composer accepted PII prompt via clipboard paste. Clicked the composer send arrow to submit. DevTools console confirmed generation is login-gated: /chat/api/send and /chat/api/send-site returned net::ERR_CONNECTION_CLOSED, /api/git/connection + /api/chat/chat/template + /api/chat/global/daily-model-usage returned 401, /api/chat/chat/attributes 404, 'Uncaught TypeError: Failed to fetch' at window.fetch. Page never navigated to a chat conversation; composer still held the prompt. Engine never reached (request killed at auth gate). Matches prior FAIL_AUTH runs #1419/#1463. Did NOT log in per SAFETY.",
+  "timestamp": "2026-05-27T09:11:30+09:00"
+}
