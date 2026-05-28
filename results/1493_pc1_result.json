@@ -1,0 +1,20 @@
+{
+  "id": "1493",
+  "service": "chatgpt",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "none",
+  "sender_label": "최장희 (Free)",
+  "conversation_url": "https://chatgpt.com/c/6a17cf8d-6fa0-8324-8efe-0c70e94b45c6",
+  "auth_state": "logged_in",
+  "notes": "Known auth-state coverage gap #1451: logged-in /backend-api/ traffic NOT intercepted by engine (engine intercepts only anonymous /backend-anon/). Network log confirms POST /backend-api/sentinel/chat-requirements/prepare (logged-in path). Full normal AI response rendered with personal info inferred from RRN (DOB/gender/etc.). NOT a regression — pre-existing gap. First use of Claude-in-Chrome primary backend per updated test-pc-worker skill (commit 0ad3e9b).",
+  "timestamp": "2026-05-28T05:15:00Z"
+}
