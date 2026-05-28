@@ -1,0 +1,20 @@
+{
+  "id": "1504",
+  "service": "duckduckgo",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 이 요청은 보안 정책에 의해 차단되었습니다. 민감한 정보가 포함된 요청은 외부 AI 서비스로 전송할 수 없습니다.",
+  "expected_text_found": true,
+  "warning_format": "차단경고",
+  "sender_label": "anonymous",
+  "conversation_url": "https://duck.ai/chat?ia=chat",
+  "auth_state": "anonymous",
+  "notes": "Duck.ai (duckduckgo chat surface, GPT-5 mini model selected). Warning rendered in answer area replacing model reply within ~10s. POST-body SSE engine intercept clean as expected.",
+  "timestamp": "2026-05-28T05:55:00Z"
+}
