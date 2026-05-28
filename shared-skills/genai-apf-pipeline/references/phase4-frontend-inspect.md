@@ -12,10 +12,13 @@ Capture and analyze how AI service pages render responses in the browser.
 This understanding is essential for designing warnings that display correctly
 within the service's frontend rather than causing client-side errors.
 
-**Why desktop-commander:**
-test PC에서는 Chrome MCP를 사용할 수 없다. 대신 desktop-commander의
-`start_process`로 PowerShell을 실행하여 HTTP 요청, 브라우저 실행, 스크린샷 캡처를 수행한다.
-DOM 직접 접근 대신 스크린샷 기반 시각적 분석과 HTTP 응답 분석을 결합한다.
+**Backend (2026-05-14 정정 — 무효 전제 폐기):**
+~~test PC에서는 Chrome MCP를 사용할 수 없다~~ → **무효**. test PC default 로그인 Chrome 에 **Claude-in-Chrome 확장 설치·연결됨**. frontend-inspect 의 DOM 직접 read (`javascript_tool`/`read_page`/`find`) + transport endpoint (`read_network_requests`) + screenshot (`computer`) 가능.
+- **기본**: Claude-in-Chrome (real 로그인 Chrome 직접 — 별도 profile/로그인 불필요). DOM 렌더 구조 / endpoint / screenshot 캡처.
+- **Fallback (의무)**: **raw SSE/WS frame body / envelope schema** 가 필요한 경우 = Claude-in-Chrome taint-guard 로 **불가** → windows-mcp/CDP 의 **CDP Network-domain / DevTools-HAR** 사용. (perplexity/mistral/copilot envelope schema = 이 경로.)
+- HTTP-level 정밀 측정 / cert parse = PowerShell `Invoke-WebRequest` fallback.
+
+→ Backend 선택 + tool gotcha + recipe = `test-pc-worker/SKILL.md § Browser automation backends` + `test-pc-worker/references/browser-rules.md § Claude-in-Chrome`.
 
 **Remote Inspect via test PC:**
 dev PC는 실망(실제 망)에 연결되어 있지 않으므로, AI 서비스에 Etap 프록시를

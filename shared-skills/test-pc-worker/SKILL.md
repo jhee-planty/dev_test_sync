@@ -3,7 +3,7 @@ name: test-pc-worker
 type: A
 execution_context: main_only
 description: Test PC (Windows) 전용 worker. dev 가 push 한 requests/ 를 git pull 로 수신 → PowerShell + windows-mcp 로 Chrome 자동화 실행 → results/ 에 결과 push. Use when on test PC and user says "새 요청 확인", "요청 처리", "check-warning 실행", "check-block 실행", "dev 에서 요청 왔어?", "result push". 결정론 runtime 은 PowerShell script. Claude 는 DOM/Console 판독 + scenario decision 만 담당. 응답 대기 중 자동 에스컬레이션 없음 (cowork-remote 와 pair).
-allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, mcp__windows-mcp__Scrape, mcp__windows-mcp__Snapshot, mcp__windows-mcp__Wait, mcp__windows-mcp__Clipboard, mcp__windows-mcp__Scroll, Bash, Read, Write
+allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__windows-mcp__Click, mcp__windows-mcp__Type, mcp__windows-mcp__Screenshot, mcp__windows-mcp__Scrape, mcp__windows-mcp__Snapshot, mcp__windows-mcp__Wait, mcp__windows-mcp__Clipboard, mcp__windows-mcp__Scroll, mcp__Claude_in_Chrome__list_connected_browsers, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__tabs_create_mcp, mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__browser_batch, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__read_network_requests, mcp__Claude_in_Chrome__read_console_messages, mcp__Claude_in_Chrome__get_page_text, Bash, Read, Write
 ---
 
 <!-- execution_context: main_only — Test PC (Windows) 환경 의존, windows-mcp tool 사용. Sub-agent dispatch 부적합 (별도 environment). D32.b reference. -->
@@ -67,6 +67,33 @@ mcp__windows-mcp__PowerShell
 File I/O 는 `mcp__windows-mcp__FileSystem` (read / write / list / create). Chrome 자동화용 GUI 상호작용은 `mcp__windows-mcp__Click` / `Type` / `Screenshot`. DOM text 추출은 `Scrape`, accessibility tree inspection 은 `Snapshot`, 상태 대기는 `Wait`, 스크롤은 `Scroll`, 대용량 prompt paste 는 `Clipboard` (Type rate-limit 우회).
 
 **Legacy note**: 2026-04-23 11차 이전에는 `mcp__desktop-commander__*` 였음. Test PC 에 desktop-commander MCP 가 없는 환경에서는 windows-mcp 로 대체 (allowed-tools 참조).
+
+---
+
+## Browser automation backends (2026-05-14)
+
+Test PC 의 browser 작업은 2 backend 중 선택. **기본 = Claude-in-Chrome**, fallback = windows-mcp/CDP.
+
+| Backend | 사용 시점 | 강점 | 한계 |
+|---------|----------|------|------|
+| **Claude-in-Chrome (primary)** | check-warning / check-block / capture-screenshot / run-scenario(frontend-inspect) | real default 로그인 Chrome 직접 driving (별도 CDP profile/로그인 불필요), 좌표=screenshot pixel (DPI 보정 불필요), Hangul `type` 정상, `read_network_requests` endpoint 캡처 | raw SSE/WS frame **body 불가** (taint-guard), `get_page_text` SPA 무효 |
+| **windows-mcp + CDP (fallback)** | (a) raw frame body / envelope schema 가 필요한 HAR 캡처, (b) cert X509 parse, (c) HTTP 정밀 측정, (d) Claude-in-Chrome 확장 disconnect 시 | CDP Network-domain / DevTools-HAR 로 wire-frame bytes 확보, PowerShell `Invoke-WebRequest` 정밀 측정 | 별도 CDP throwaway profile (로그인 세션 주의), DPI ÷1.25 보정 |
+
+**★ fallback 의무 (절대)**: perplexity/mistral/copilot 등의 **envelope schema reverse-engineering** = raw frame body 필요 → **Claude-in-Chrome 으로 불가** (taint-guard: 네트워크 캡처 파생 데이터 = `[BLOCKED: Cookie/query string data]`, `window.fetch` hook 은 chatgpt render 깨뜨림). 반드시 **CDP/HAR fallback** 사용.
+
+**MITM 전제 (매 세션 검증)**: Claude-in-Chrome 의 default Chrome 이 MITM 경유하려면 OfficeGuard bypass 설정 OFF 여야 함 → `check-cert` 로 cert chain 확인.
+
+→ **Detail**: tool inventory / per-tool gotcha / check-warning recipe / CDP-HAR 절차 = `references/browser-rules.md` § Claude-in-Chrome.
+
+## Role Boundary (D27 Authority Boundary — capture/execute vs design)
+
+Test PC (consumer) 의 작업 영역 — dev (producer) 와 명확히 분리:
+
+- **IN SCOPE (routine)**: queued request 수신 → real 로그인/MITM Chrome 에서 browser action 실행 → DOM/Console **판독은 PASS/FAIL *판정* 목적만** (`차단`/`보안 정책` 렌더 여부) → evidence capture → `results/{id}_result_{WORKER_ID}.json` push.
+- **IN SCOPE (on explicit request only)**: dev 의 **data-collection hands** — frontend-inspect/capture request 에 대해 DOM 렌더 구조 / transport endpoint / screenshot / HAR 캡처.
+- **OUT OF SCOPE**: 경고를 DOM 에 **어떻게 주입할지** 설계 / injection target 선택 / warning-delivery design. → dev-side (`genai-apf-pipeline` Phase 4 frontend-inspect → Phase 5 warning-design → Phase 6 impl). Test PC 는 raw observation 공급, dev 가 분석/설계.
+
+→ Capability 가능 여부 판단 = Test PC 권한 (cowork-remote/SKILL.md §Authority Boundary 의 producer/consumer 분리).
 
 ---
 

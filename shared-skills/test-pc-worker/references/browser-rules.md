@@ -2,6 +2,62 @@
 
 브라우저 작업 시 따르는 규칙. `test-pc-worker/SKILL.md`에서 참조한다.
 
+**Backend 선택**: 기본 = Claude-in-Chrome (아래 § Claude-in-Chrome), fallback = windows-mcp/CDP (이하 기존 섹션). SKILL.md § Browser automation backends 참조.
+
+---
+
+## Claude-in-Chrome (primary backend, 2026-05-14)
+
+Test PC default 로그인 Chrome 에 Claude-in-Chrome 확장 설치·연결됨. real Chrome 직접 driving.
+
+### Tool inventory (VERIFIED on test PC)
+
+| Tool | 용도 | gotcha |
+|------|------|--------|
+| `list_connected_browsers` | 연결된 Chrome 목록 (deviceId/isLocal) | — |
+| `tabs_context_mcp` (`createIfEmpty:true`) | MCP tab group get/create | **다른 tab op 전 1회 필수 호출** |
+| `tabs_create_mcp` | group 내 new tab | — |
+| `navigate` | URL / back / forward | tabId 필요 |
+| `read_page` | accessibility tree | 50K 초과 시 `depth`/`ref_id`/`max_chars` 사용 |
+| `find` | 자연어 element 검색 → ref | false-positive 가능 (privacy-policy link 가 "보안 정책" 매칭한 사례) |
+| `computer` | screenshot/wait/click/type/key/scroll/hover/zoom | 좌표 = screenshot pixel space (DPI 보정 불필요), Hangul `type` 정상 |
+| `browser_batch` | 1 round-trip 다중 action (first error 시 중단) | **batch 내 screenshot = `{"name":"computer","input":{"action":"screenshot"}}` (별도 "screenshot" tool 없음)** |
+| `javascript_tool` | page context JS (마지막 expression 반환) | **IIFE 안 `return` 필수**. DOM 구조 read 우수 |
+| `read_network_requests` | extension-level network log (url/method/statusCode, auto-redact) | **첫 호출 시 tracking 시작 → 호출 후 reload/act 로 캡처. cross-domain nav 시 clear. response body 없음** |
+| UNTESTED | `read_console_messages` / `form_input` / `file_upload` / `tabs_close_mcp` / `select_browser` / `resize_window` / `get_page_text` | — |
+
+### check-warning recipe (Claude-in-Chrome)
+
+```
+1. tabs_context_mcp (createIfEmpty:true)  ← 필수 선행
+2. (선택) check-cert 로 MITM bypass OFF 확인
+3. navigate → service URL
+4. PII 입력 (computer type) 또는 GET-query URL navigate
+5. 전송 (computer key Enter 또는 submit 버튼 click)
+6. computer screenshot + find "차단" / "보안 정책"
+7. 판정:
+   - 경고 텍스트 렌더 → PASS
+   - 응답 정상, 경고 없음 → FAIL_NOT_RENDERED
+   - 로그인/세션 만료 → FAIL_AUTH
+```
+
+판정 원칙은 § 프롬프트 전송 후 판정 (Network 최우선) 동일 적용 — `read_network_requests` 로 POST 확인 후 화면/find 판정.
+
+### Limitations — 사용 금지 영역 (fallback 필수)
+
+- ❌ **raw SSE/WS frame body 불가**: `javascript_tool` 출력 taint-guard — 네트워크 캡처 파생 (cookie/query) = `[BLOCKED: Cookie/query string data]`. `window.fetch` hook/tee = 너무 침습적 (chatgpt render 깨뜨림). **wire-frame/envelope bytes = CDP Network-domain / DevTools-HAR route (아래 § 입력 자동화 실패 시 대응 4순위 CDP) 사용.**
+- ❌ `get_page_text` = SPA/app page 에서 "no article text" → `read_page`/`find`/screenshot 사용.
+- ⚠️ `read_network_requests` timing (첫 호출 시 시작, domain 변경 시 clear, body 없음).
+- ⚠️ MITM 경유 = OfficeGuard bypass OFF 의존 → 매 세션 cert check.
+
+### envelope schema 캡처 (CDP/HAR 의무)
+
+perplexity/mistral/copilot 등의 envelope schema reverse-engineering = raw frame body 필요. Claude-in-Chrome taint-guard 로 **불가**. 반드시:
+- CDP `--remote-debugging-port=9222` → Network domain (response body 포함), 또는
+- DevTools → Network → "Preserve log" → HAR export
+
+→ 이 작업은 windows-mcp/CDP fallback backend 영역 (§ 입력 자동화 실패 시 대응 전략 4순위).
+
 ---
 
 ## Chrome 탭 재사용 — 종료하지 않고 탭 관리
