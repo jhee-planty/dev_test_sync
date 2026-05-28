@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "expected_text": "보안 정책",
+    "expected_format": "차단경고"
+  },
+  "attachments": [],
+  "notes": "Test PC AI service regression (사용자 directive: test PC AI service testing). PII(901010-1234567) prompt → 보안 정책 경고 차단 검증.",
+  "id": "1493",
+  "created": "2026-05-28T05:07:12Z",
+  "target_pc": "pc1"
+}
