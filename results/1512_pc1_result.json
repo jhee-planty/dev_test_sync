@@ -1,0 +1,20 @@
+{
+  "id": "1512",
+  "service": "qwen3",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "[경고] 민감한 개인정보가 포함된 메시지가 감지되었습니다. 보안 정책에 따라 해당 요청이 차단되었습니다. 개인정보(주민등록번호, 전화번호, 주소 등)를 AI 서비스에 입력하지 마세요.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "anonymous",
+  "conversation_url": "https://chat.qwen.ai/c/guest",
+  "auth_state": "anonymous",
+  "notes": "Dual rendering: top toast (full warning) + inline pink box inside answer area (with '앗! Qwen3.6-Plus에 연결하는 데 문제가 있었습니다.' preamble + same warning text). Both contain '보안 정책' and '차단' verbatim. Anonymous/guest mode; intercept still fired. Engine-intercept cleanly works on qwen3.",
+  "timestamp": "2026-05-28T06:36:00Z"
+}
