@@ -1,0 +1,20 @@
+{
+  "id": "1495",
+  "service": "gemini3",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": null,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "none",
+  "sender_label": "장희",
+  "conversation_url": "https://gemini.google.com/app/4ec87bdcd7e95bb3",
+  "auth_state": "logged_in",
+  "notes": "Known BardChatUi FE-parse gap (#1397/#1425/#1458). Model-side cautionary response rendered ('알겠습니다. 보내주신 정보는 확인했으며, 개인정보 보호를 위해 해당 주민등록번호는 더 이상 답변에 노출하거나 저장하지 않습니다...연말정산 서류 작성, 민원 문서 작성, 또는 행정 절차 안내 등...'). Page-replacement check (/app reload) showed empty home — no engine block warning materialized via reload either. Pattern unchanged from prior gemini3 runs. NOT a new regression — pre-existing FE-render gap. engine_intercept_fired=null (no transport visibility from Claude-in-Chrome without HAR/CDP; dev should cross-check 218 DB).",
+  "timestamp": "2026-05-28T05:23:00Z"
+}
