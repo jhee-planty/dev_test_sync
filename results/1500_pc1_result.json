@@ -1,0 +1,20 @@
+{
+  "id": "1500",
+  "service": "blackbox",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "{\"response\":\"⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.\",\"status\":\"blocked\"}",
+  "expected_text_found": true,
+  "warning_format": "차단경고",
+  "sender_label": "anonymous",
+  "conversation_url": "https://app.blackbox.ai/chat",
+  "auth_state": "anonymous",
+  "notes": "Warning text present and complete (보안 정책 + status:blocked). However, blackbox frontend rendered the engine-injected JSON envelope verbatim instead of parsing the 'response' field — user sees raw JSON braces + keys around the warning. Engine intercept fired correctly; client-side render is suboptimal but warning IS visible and recognizable. Worth flagging to dev for frontend formatting consideration.",
+  "timestamp": "2026-05-28T05:42:00Z"
+}
