@@ -1,0 +1,20 @@
+{
+  "id": "1521",
+  "service": "zeta",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증 (218 data plane diagnostic canary)",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "MITM_BYPASSED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "none",
+  "sender_label": "Guest",
+  "conversation_url": "https://zeta-ai.io/ko/rooms/3e8c3a2c-4402-45ac-a7dc-a877d688859d",
+  "auth_state": "anonymous",
+  "notes": "REGRESSION vs #1515 PASS. POST https://api.zeta-ai.io/v1/rooms/{id}/messages/stream returned statusCode 200 (no engine intercept). Bot character '경하윤' responded in-character roleplay engaging with PII content ('...주민등록번호?', '지금 나한테 장난치는 거야?'). NO '보안 정책' / NO '차단' anywhere on page (find returned 0 matches; accessibility tree confirms only fictional dialogue). 218 data plane diagnostic canary signal: zeta engine intercept NOT firing — combined with prior 1519/1520 FAILs, this indicates infra-wide regression on 218 (not service-specific). MITM bypass or module dispatch failure suspected on Test PC side or 218 dataplane side. Anonymous session, no login required. luca model release banner visible (post-#1515 frontend update — may affect WS path).",
+  "timestamp": "2026-05-29T00:00:00Z"
+}
