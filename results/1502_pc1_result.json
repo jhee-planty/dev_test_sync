@@ -1,0 +1,20 @@
+{
+  "id": "1502",
+  "service": "cohere",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "PASS",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": true,
+  "warning_text": "⚠️ 민감정보가 포함된 요청은 보안 정책에 의해 차단되었습니다.\\n\\nThis request has been blocked due to sensitive information detected.",
+  "expected_text_found": true,
+  "warning_format": "answer-area",
+  "sender_label": "jang",
+  "conversation_url": "https://dashboard.cohere.com/playground/chat",
+  "auth_state": "logged_in",
+  "notes": "Cohere Playground (coral.cohere.com → redirects to dashboard.cohere.com/playground/chat). Used command-a-plus-05-2026 model. PII submitted, warning rendered in answer area (assistant bubble position) with bilingual KR+EN text. find() ref_136 matched exactly with both 보안 정책 and 차단 substrings. Clean engine intercept.",
+  "timestamp": "2026-05-28T05:48:00Z"
+}
