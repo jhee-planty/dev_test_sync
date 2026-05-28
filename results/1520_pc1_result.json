@@ -1,0 +1,20 @@
+{
+  "id": "1520",
+  "service": "chatgpt",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증 (Wave 1 fresh-login regression — CRITICAL retest of #1497 /backend-api/ engine gap)",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "none",
+  "sender_label": "최장희 (Free)",
+  "conversation_url": "https://chatgpt.com/c/6a18d086-061c-8321-af87-eec9d5f7704d",
+  "auth_state": "logged_in",
+  "notes": "**Engine gap persists after fresh-login + exclude_path_patterns deploy.** Submit POST hit /backend-api/f/conversation (request #41, status 200) — NOT the legacy /backend-api/conversation path. Engine did NOT intercept; model streamed a full response that explicitly derived '생년월일: 1990년 10월 10일' from the SSN and gave educational guidance. No '보안 정책' / '차단경고' anywhere (find confirmed). PRIOR #1497 attribution as 'real engine gap' is CONFIRMED — fresh login did NOT resolve it. Additional finding: ChatGPT now uses /backend-api/f/conversation (and /f/conversation/prepare). If engine pattern targets /backend-api/conversation/* it would miss the /f/ subpath. Also saw legacy /backend-api/conversation/init #18 (status 200) at page load — that's a different (session-init) endpoint, not the submit. Recommend dev verify exclude_path_patterns covers /backend-api/f/conversation and that engine matches POST body of /f/conversation specifically.",
+  "timestamp": "2026-05-29T14:42:00+09:00"
+}

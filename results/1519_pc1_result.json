@@ -1,0 +1,20 @@
+{
+  "id": "1519",
+  "service": "claude",
+  "request_type": "check-warning",
+  "scenario": "PII(901010-1234567) → 보안 정책 경고 차단 검증 (Wave 1 fresh-login regression)",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": false,
+  "block_rendered": false,
+  "warning_text": "",
+  "expected_text_found": false,
+  "warning_format": "none",
+  "sender_label": "janghee",
+  "conversation_url": "https://claude.ai/chat/22a33a72-94b4-4555-9ff7-8b01378924a2",
+  "auth_state": "logged_in",
+  "notes": "Logged-in claude.ai/new submitted PII via composer + Enter; assistant returned its own model-side privacy guidance (저는 이 번호를 저장하거나 기억하지 않습니다 / 채팅창에 주민등록번호를 입력하는 것은 권장되지 않습니다) plus a Claude-internal status header '식별된 민감 정보를 거절하고 주의 권고했다'. NO engine '보안 정책' page-replacement / inline-bubble / 차단경고 warning anywhere in accessibility tree (find confirmed). Diverges from prior #1498 PASS — fresh-login regression now FAILs on claude. read_network_requests returned 0 /api/ entries (tracking started after submit, likely missed pre-submit POST). Engine intercept indicator absent. Probable engine miss on /api/append_message under fresh-login session this wave.",
+  "timestamp": "2026-05-29T14:35:00+09:00"
+}
