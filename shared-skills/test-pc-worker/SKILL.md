@@ -11,6 +11,9 @@ allowed-tools: mcp__windows-mcp__PowerShell, mcp__windows-mcp__FileSystem, mcp__
 
 # test-pc-worker
 
+> **★ Parent Mission Anchor (59차 Q1 Gap D fix, M3 합의)**: 본 skill 은 `genai-apf-pipeline ## ★ APF Mission` (D20 26차 canonical) 의 **verification layer (test PC ground truth)**. APF Mission = "모든 등록 AI 서비스에 대해 PII 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시" (사용자 verbatim 2026-04-29). 본 skill 의 모든 DOM/Console 판독 + scenario decision 은 본 mission 의 **end-to-end verify** (사용자 화면 visible warning) anchor. ratio 측정 분모/분자 = 사용자 directive 영역 — 자율 재정의 금지 (D9 Stage 6 sub-form). Authority Boundary (D27 53차): consumer (test PC) capability 판단은 본 skill 권한. producer (dev PC) 의 capability inventorying / internal reasoning simulation = boundary violation.
+> **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` + `genai-apf-pipeline/SKILL.md ## ★ APF Mission (canonical anchor, D20 26차)`.
+
 Test PC (Windows) 전용 micro-control skill. Pair of `cowork-remote` (dev 쪽).
 
 ## 기본 인프라

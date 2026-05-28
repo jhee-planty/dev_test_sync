@@ -10,6 +10,9 @@ description: "Etap 브릿지 성능 벤치마크 스킬. Dell 테스트베드에
 
 # Etap Performance Benchmark (etap-bench)
 
+> **★ Parent Mission Anchor (59차 Q1 Gap D fix, M3 합의)**: 본 skill 은 Etap 전체 module 의 performance 측정 utility. APF 는 그 중 한 module. `genai-apf-pipeline ## ★ APF Mission` (D20 26차 canonical) 와 관련된 측정 시 anchor: APF Mission = "모든 등록 AI 서비스에 대해 PII 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시" (사용자 verbatim 2026-04-29). 본 skill 의 RSS / imissed / dropPps 측정 결과는 APF mission 의 production safety 검증에 입력. Etap testbed DPDK 정상 테스트 불가 (memory feedback_etap_dpdk_unavailable.md) — APF/VT 변경 평가만 충분, core packet path 한계.
+> **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` + `genai-apf-pipeline/SKILL.md ## ★ APF Mission (canonical anchor, D20 26차)`.
+
 > **★ 사용 가능성 제약** (canonical: `~/.claude/memory/feedback_etap_dpdk_unavailable.md`):
 > 본 testbed 에서 **pktgen-dpdk 정상 작동 불가**. Step 2 의 pktgen 절차는 reference 만 (실행 X).
 > **실행 가능 path**: ab/hi (L7 HTTPS, etap-testbed §VT MITM) + etapcomm 통계 (RSS/imissed/dropPps).

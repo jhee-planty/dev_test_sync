@@ -10,6 +10,9 @@ description: "Etap 모듈 기능 테스트를 위한 Dell 테스트베드 환경
 
 # Etap Testbed
 
+> **★ Parent Mission Anchor (59차 Q1 Gap D fix, M3 합의)**: 본 skill 은 Etap 전체 module (VT / APF / 브릿지 / NIC 등) 의 functional test 환경 가이드. APF 는 그 중 한 module. `genai-apf-pipeline ## ★ APF Mission` (D20 26차 canonical) 와 관련된 testbed 사용 시 anchor: APF Mission = "모든 등록 AI 서비스에 대해 PII 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시" (사용자 verbatim 2026-04-29). 본 skill 의 MITM HTTPS 테스트 + etapcomm 진단 + 로그 검증 절차는 APF service warning 동작의 functional verify path. blocked=1 만으로 성공 판단 금지 — test PC 화면이 ground truth.
+> **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` + `genai-apf-pipeline/SKILL.md ## ★ APF Mission (canonical anchor, D20 26차)`.
+
 > ⚠️ **내부 테스트 환경 전용** — 서버 주소·포트·계정 정보는 `references/server-config.md` 참조. 외부 공개 금지.
 
 Dell 3대로 구성된 폐쇄 테스트 망에서 Etap 모듈 기능을 검증하는 가이드.

@@ -11,6 +11,9 @@ allowed-tools: Bash, Read, Write, Edit
 
 # cowork-remote
 
+> **★ Parent Mission Anchor (59차 Q1 Gap D fix, M3 합의)**: 본 skill 은 `genai-apf-pipeline ## ★ APF Mission` (D20 26차 canonical) 의 **dev↔test 비동기 communication layer**. APF Mission = "모든 등록 AI 서비스에 대해 PII 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시" (사용자 verbatim 2026-04-29). 본 skill 의 모든 request/result coordination 은 본 mission 에 advance 해야 정당. ratio 측정 분모/분자 = 사용자 directive 영역 — 자율 재정의 금지 (D9 Stage 6 sub-form). Authority Boundary (D27 53차): producer (dev PC) 가 consumer (test PC) capability internal reasoning simulate 금지.
+> **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` + `genai-apf-pipeline/SKILL.md ## ★ APF Mission (canonical anchor, D20 26차)`.
+
 Dev PC 전용 micro-control skill. 결정론 runtime + Claude 판단 분리.
 
 ## 기본 인프라

@@ -11,6 +11,9 @@ allowed-tools: Bash, Read, Write, Edit, mcp__desktop-commander__start_process, m
 
 # etap-build-deploy
 
+> **★ Parent Mission Anchor (59차 Q1 Gap D fix, M3 합의)**: 본 skill 은 EtapV3 전체 module 의 build/deploy infrastructure. APF 는 그 중 한 module. `genai-apf-pipeline ## ★ APF Mission` (D20 26차 canonical) 와 관련된 작업 시 anchor: APF Mission = "모든 등록 AI 서비스에 대해 PII 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시" (사용자 verbatim 2026-04-29). 본 skill 의 8-step 빌드/배포 chain 은 APF source 변경 의 mission advance 를 deliver 하는 means (engine code → testbed). Verify-before-commit (engine 변경) 의무 — APF mission 영향 시 반드시 회귀 + UI verify 후 commit.
+> **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` + `genai-apf-pipeline/SKILL.md ## ★ APF Mission (canonical anchor, D20 26차)`.
+
 ## 기본 인프라
 
 | 항목 | 값 |

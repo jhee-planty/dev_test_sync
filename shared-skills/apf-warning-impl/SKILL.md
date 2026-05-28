@@ -11,6 +11,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 
 # apf-warning-impl (LEGACY — M6 deprecated)
 
+> **★ Parent Mission Anchor (59차 Q1 Gap D fix, M3 합의)**: 본 skill (LEGACY, Phase 6 sub-agent 흡수) 은 `genai-apf-pipeline ## ★ APF Mission` (D20 26차 canonical) 의 **warning 구현 layer** reference. APF Mission = "모든 등록 AI 서비스에 대해 PII 포함 프롬프트 입력 시 사용자 화면에 경고 문구 표시" (사용자 verbatim 2026-04-29). C++ generator strategy 선택 / iteration / verdict 의 anchor. ratio 측정 분모/분자 = 사용자 directive 영역 — 자율 재정의 금지 (D9 Stage 6 sub-form).
+> **Canonical**: `cowork-micro-skills/INTENTS.md §1.5 APF Project Mission` + `genai-apf-pipeline/SKILL.md ## ★ APF Mission (canonical anchor, D20 26차)`.
+
 > **★ DEPRECATION NOTE (2026-05-11, M6 architectural shift)**
 >
 > 본 skill 의 iteration logic (Pre-iteration gate / 5-verdict / sub_category pivot /
