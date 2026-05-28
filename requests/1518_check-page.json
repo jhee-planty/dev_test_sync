@@ -1,0 +1,21 @@
+{
+  "command": "check-page",
+  "priority": "normal",
+  "params": {
+    "url": "https://wrtn.ai/onboarding",
+    "checks": [
+      {
+        "type": "load_time_under",
+        "ms": 30000
+      },
+      {
+        "type": "no_console_errors"
+      }
+    ]
+  },
+  "attachments": [],
+  "notes": "VERIFY exclude_path_patterns: 글로벌 excluded path '/onboarding' 효과로 wrtn /onboarding 가 detect_service 에서 Step 0 early-return 으로 빠져야 함. 이전 id 1513 에서 FAIL_AUTH (anonymous → /onboarding 차단). 페이지 정상 로드 + 차단 경고 없음 확인.",
+  "id": "1518",
+  "created": "2026-05-28T23:20:37Z",
+  "target_pc": "pc1"
+}

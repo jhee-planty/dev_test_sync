@@ -1,0 +1,21 @@
+{
+  "command": "check-page",
+  "priority": "normal",
+  "params": {
+    "url": "https://claude.ai/login",
+    "checks": [
+      {
+        "type": "load_time_under",
+        "ms": 30000
+      },
+      {
+        "type": "no_console_errors"
+      }
+    ]
+  },
+  "attachments": [],
+  "notes": "VERIFY exclude_path_patterns: 글로벌 excluded path '/login' 효과로 claude.ai/login 가 detect_service 에서 Step 0 early-return 으로 빠져야 함. 이전엔 password 키워드 FP (category=credential) 차단됐었음. 페이지 정상 로드 + 차단 경고 없음 확인. (218 etap deploy 2026-05-29 08:09, 20 global excluded paths loaded.)",
+  "id": "1517",
+  "created": "2026-05-28T23:20:29Z",
+  "target_pc": "pc1"
+}
