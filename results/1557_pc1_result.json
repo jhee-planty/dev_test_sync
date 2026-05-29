@@ -1,0 +1,25 @@
+{
+  "id": "1557",
+  "service": "wrtn",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://api.wrtn.ai/wrtn/v1/chats/{chatId} (chat load GET confirmed); generation send endpoint on same api.wrtn.ai host (POST, streamed) — exact path not byte-captured this run",
+    "chat_api_path": "/wrtn/v1/chats/{chatId} (REST base on api.wrtn.ai)",
+    "request_content_type": "application/json (POST for send)",
+    "response_content_type": "streaming (assistant text streamed; body taint-guarded). Chat-load GET returns application/json.",
+    "transport_protocol": "SSE (assistant token streaming inferred); REST/JSON for chat metadata (GET /wrtn/v1/chats/{id})",
+    "success_response_wire_sample": "GET https://api.wrtn.ai/wrtn/v1/chats/6a18efc133f0c2a4007e4caa -> 200 application/json (chat history envelope). Generation streamed separately. Raw stream body unavailable (Claude-in-Chrome taint-guard) -> CDP/HAR for exact bytes. API host separate from frontend host (wrtn.ai vs api.wrtn.ai).",
+    "frame_separator": "SSE-style chunks inferred; not byte-confirmed",
+    "dom_render_structure": "user msg div.css-*._message-sent; assistant div._assistant-message (css-ei2qnj) > div._assistant-message_content > div.chat-markdown; supporter-name label divs (AssistantMessageDefaultLayout_supporter-name). Emotion CSS-in-JS hashed classnames (css-XXXXX).",
+    "framework": "Next.js + Emotion (CSS-in-JS, css-* hashed classes; #__next present)",
+    "auth_state": "anonymous",
+    "console_errors": "not separately polled; no functional error. Heavy 3rd-party tracker traffic (mixpanel, GA4, Facebook pixel [one 503 on FB privacy-sandbox], TikTok, Daum, airbridge, MS Clarity, Twitter/X)."
+  },
+  "screenshot_name": "(observed in-session; not persisted to disk)",
+  "notes": "etap-BYPASSED clean baseline. wrtn worked ANONYMOUSLY — NO /onboarding wall appeared; chat input on home page, redirect to /c/{id} after first send. Benign prompt sent verbatim, assistant (둘른/뉴튼 supporter persona) replied normally. API on separate host api.wrtn.ai (/wrtn/v1/...). First-send chat POST was cleared by home->/c/ navigation; follow-up benign prompt used to surface live endpoints. Very heavy marketing-tracker payload on this page.",
+  "timestamp": "2026-05-29T16:01:07+09:00"
+}
