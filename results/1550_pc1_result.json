@@ -1,0 +1,25 @@
+{
+  "id": "1550",
+  "service": "mistral",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://chat.mistral.ai/api/trpc/* (tRPC). Token stream endpoint not surfaced by extension log (separate streaming POST).",
+    "chat_api_path": "/api/trpc/{procedure} — observed: message.get, chat.byId, chat.generateTitle, user.limits. Frontend route /chat/{chatId} uses Next.js App Router RSC (?_rsc= param).",
+    "request_content_type": "application/json (tRPC batch, SuperJSON-wrapped: input={\"0\":{\"json\":{...}}})",
+    "response_content_type": "application/json (tRPC); token stream presumed text/event-stream (SSE) — not captured",
+    "transport_protocol": "tRPC over JSON (control plane) + SSE (token stream, inferred)",
+    "success_response_wire_sample": "tRPC envelope shape: GET /api/trpc/chat.byId?batch=1&input={\"0\":{\"json\":{\"id\":\"<chatId>\"}}}; GET message.get with {chatId, messageId}. SuperJSON {\"0\":{\"json\":{...}}} input encoding. Raw streaming token body NOT captured (taint-guard) — needs CDP/HAR.",
+    "frame_separator": "SSE data: lines (inferred for token stream); tRPC responses are single JSON",
+    "dom_render_structure": "Message node: DIV[data-message-author-role=assistant|user][data-message-id][data-message-version][id]. Assistant answer text: P inside DIV.markdown-container-style[text-message-part] > DIV.select-none, wrapped in DIV.group/message[assistant]. No .prose class.",
+    "framework": "Next.js (App Router, React Server Components — _rsc query params)",
+    "auth_state": "logged-in",
+    "console_errors": ["Several transient HTTP 503 on /api/trpc (message.get, chat.byId, chat.generateTitle) and /chat/{id}?_rsc during this capture — answer still rendered normally; appears to be intermittent backend 503, not a hard failure."]
+  },
+  "screenshot_name": "1550_mistral_screenshot",
+  "notes": "ETAP-BYPASSED clean baseline. Logged in (장희 최, Le Chat Free). Benign prompt answered ('안녕하세요, 장희 최님! 😊'). Branded as 'Vibe' in this account. Clean tRPC control-plane endpoints captured with SuperJSON envelope. Token-stream raw body not capturable via Claude-in-Chrome. NOTE: transient 503s on several trpc/RSC calls during capture (did not block render).",
+  "timestamp": "2026-05-29T00:00:00+09:00"
+}

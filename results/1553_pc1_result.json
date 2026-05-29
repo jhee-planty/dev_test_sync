@@ -1,0 +1,25 @@
+{
+  "id": "1553",
+  "service": "poe",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://poe.com/api/gql_POST",
+    "chat_api_path": "/api/gql_POST (single GraphQL endpoint; mutation for send + subscription/poll for stream). Token stream delivered via subsequent gql_POST polls / WebSocket subscription.",
+    "request_content_type": "application/json (GraphQL: {queryName, variables, query/extensions})",
+    "response_content_type": "application/json (GraphQL response); streamed message tokens via gql subscription",
+    "transport_protocol": "GraphQL",
+    "success_response_wire_sample": "POST https://poe.com/api/gql_POST 200 (x2: one for sendMessageMutation, one for chat-state/subscription). Body taint-guarded by Claude-in-Chrome — GraphQL JSON envelope {data:{...},errors:null} shape; raw body needs CDP/HAR. Frontend route /chat/{chatCode}.",
+    "frame_separator": "GraphQL JSON response objects (HTTP); incremental tokens via subscription messages",
+    "dom_render_structure": "Next.js + CSS Modules. Message scroller: DIV.ChatMessagesScrollWrapper_scrollableContainerWrapper__* > DIV.InfiniteScroll_container__*. Individual messages use ChatMessage*-family CSS-module classes; assistant bubble text in SPAN inside the message bubble. Bot header label 'Assistant'.",
+    "framework": "Next.js (#__next) with CSS Modules (hashed class names e.g. ChatMessagesScrollWrapper_*, ChatHistoryListItem_*, SidebarItem_*)",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "1553_poe_screenshot",
+  "notes": "ETAP-BYPASSED clean baseline. Logged in. Benign prompt answered by default Assistant bot ('안녕하세요! 만나서 반갑습니다.'). Transport confirmed GraphQL via /api/gql_POST (2x 200). DOM uses Next.js CSS-module hashed classes. Raw GraphQL body taint-guarded — recommend CDP/HAR for envelope schema. Poe also showed model-comparison suggestions (Mistral-Small-4, Qwen3.5-Plus, Gemma-4-31B). No console errors.",
+  "timestamp": "2026-05-29T00:00:00+09:00"
+}

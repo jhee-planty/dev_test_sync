@@ -1,0 +1,25 @@
+{
+  "id": "1549",
+  "service": "m365_copilot",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "partial",
+  "captures": {
+    "chat_api_url": "wss://substrate.office.com (persistent WebSocket; not exposed in extension network log)",
+    "chat_api_path": "/chat/conversation/{conversationId} (frontend route); backend via substrate WS/SignalR",
+    "request_content_type": "application/json (over WS frame, not directly observable)",
+    "response_content_type": "WebSocket message frames (JSON envelopes)",
+    "transport_protocol": "WebSocket",
+    "success_response_wire_sample": "NOT CAPTURED — Copilot uses persistent WebSocket to substrate.office.com; extension network log only showed POST https://admin.microsoft.com/api/instrument/logclient (telemetry). Raw WS frame body taint-guarded by Claude-in-Chrome; needs CDP/HAR fallback.",
+    "frame_separator": "WebSocket frame boundaries (n/a HTTP chunking)",
+    "dom_render_structure": "AI answer rendered as <p> inside nested DIV>DIV>SPAN>DIV>DIV chain; no stable data-tid/role on message; 46 generic message-candidate nodes. Container is React-rendered FluentUI surface.",
+    "framework": "React-like (FluentUI / Microsoft web stack)",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "1549_m365copilot_screenshot",
+  "notes": "ETAP-BYPASSED clean baseline. Logged in as org user (최장희). Benign prompt sent, normal answer received ('안녕하세요, 반갑습니다! 😊'). Transport = WebSocket to substrate.office.com — chat wire body NOT capturable via Claude-in-Chrome (taint-guard); only telemetry POST to admin.microsoft.com seen. Recommend CDP/HAR for envelope schema. No console errors.",
+  "timestamp": "2026-05-29T00:00:00+09:00"
+}
