@@ -1,0 +1,10 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": { "service": "you", "expected_text": "보안 정책", "expected_format": "any" },
+  "attachments": [],
+  "notes": "NPB 복구 후 page-replacement 회귀 재검 (synthesis 신규발견-4: 05-28 FAIL_NOT_RENDERED). 현재 warning_format(page-replacement=Path B / answer-area=Path A) ground truth 확보. expected_format=any(둘다 PASS). you (anonymous 가능).",
+  "id": "1529",
+  "created": "2026-05-29T02:13:00Z",
+  "target_pc": "pc1"
+}
