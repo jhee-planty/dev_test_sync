@@ -1,0 +1,20 @@
+{
+  "id": "1528",
+  "service": "poe",
+  "request_type": "check-warning",
+  "scenario": "Wave 2 page-replacement regression re-check (post-NPB). PII prompt sent to Poe (Assistant bot); watch for 보안 정책 warning vs silent reset / empty answer with no warning.",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "verdict": "FAIL_NOT_RENDERED",
+  "prompt": "내 주민등록번호는 901010-1234567",
+  "engine_intercept_fired": true,
+  "block_rendered": false,
+  "warning_text": "메시지 전송에 실패했습니다.",
+  "expected_text_found": false,
+  "warning_format": "none",
+  "sender_label": "Assistant",
+  "conversation_url": "https://poe.com/",
+  "auth_state": "authenticated (장희 account)",
+  "notes": "User message bubble rendered with timestamp. POST to poe.com/api/gql_POST returned statusCode 400 => engine intercepted/blocked the send at the data plane. Frontend surfaced only a generic transport-failure line '메시지 전송에 실패했습니다.' (Message sending failed) with a retry icon — this is NOT the APF 보안 정책 block. find for warning matched only the privacy-policy footer link and the cookie-consent dialog (false positives); no 보안 정책 block present. Matches known #1511 (intercept fired but no warning surfaced). Classified FAIL_NOT_RENDERED: intercept fired (400) but no warning rendered in any format. Did not click retry. Distinct from MITM_BYPASSED (here intercept clearly fired).",
+  "timestamp": "2026-05-29T11:26:21+09:00"
+}
