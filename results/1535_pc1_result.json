@@ -1,0 +1,25 @@
+{
+  "id": "1535",
+  "service": "chatglm",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://chatglm.cn/chatglm/backend-api/assistant/stream",
+    "chat_api_path": "/chatglm/backend-api/assistant/stream",
+    "request_content_type": "application/json (POST)",
+    "response_content_type": "text/event-stream (SSE; markdown streamed into .markdown-body, 'thinking' phase '思考结束')",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "Body not directly readable (Claude-in-Chrome taint-guard). POST /chatglm/backend-api/assistant/stream returned 200; answer streamed incrementally with a collapsible '思考结束' (thinking-complete) phase then markdown text. ChatGLM uses SSE event frames. Raw bytes need CDP/HAR.",
+    "frame_separator": "SSE event delimiter (\\n\\n between data: frames) — not byte-confirmed via taint-guard",
+    "dom_render_structure": "Vue SPA. Answer chain: div.answer > div.answer-content.flex1 > (div.assistant-name 'ChatGLM') + div.answer-content-wrap.text-advance-thinking-content + div.markdown-body.dr_margin_botttom (the rendered markdown answer). User turn labeled '访客_fbfb46' (guest). Thinking phase shown as '思考结束' collapsible.",
+    "framework": "Vue (data-v-app + #app mount + window.Vue present; NOT React/Next)",
+    "auth_state": "anonymous",
+    "console_errors": []
+  },
+  "screenshot_name": "1535_chatglm_glm51_answer.png",
+  "notes": "Chinese site — did NOT log in (instruction). Anonymous/GUEST scope WORKS: GET /chatglm/mainchat-api/guest/chat_status gates guest mode; user shown as '访客_fbfb46' (Guest). GLM-5.1 answered the benign Korean prompt with a Korean greeting. Root chatglm.cn redirected to /main/alltoolsdetail (chat input present, as flagged in request). Supporting endpoints: /mainchat-api/conversation/recent_list, /conversation/title. Telemetry: analysis.chatglm.cn/bdms/p.gif. etap-bypassed clean baseline. Exact SSE frame bytes need CDP/HAR.",
+  "timestamp": "2026-05-29T06:13:37Z"
+}

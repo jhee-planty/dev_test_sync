@@ -1,0 +1,25 @@
+{
+  "id": "1531",
+  "service": "amazon",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "blocked-login",
+  "captures": {
+    "chat_api_url": null,
+    "chat_api_path": null,
+    "request_content_type": null,
+    "response_content_type": null,
+    "transport_protocol": null,
+    "success_response_wire_sample": null,
+    "frame_separator": null,
+    "dom_render_structure": null,
+    "framework": "AWS Console sign-in (server-rendered IAM login form)",
+    "auth_state": "login-required",
+    "console_errors": []
+  },
+  "screenshot_name": "1531_amazon_login.png",
+  "notes": "Amazon Q lives inside the authenticated AWS Console. https://console.aws.amazon.com redirected to us-east-2.signin.aws.amazon.com/oauth (client_id=arn:aws:signin:::console/canvas, OAuth code_challenge flow). IAM user sign-in form shown (Account ID, IAM username, Password). No logged-in AWS session present; per instructions did NOT log in. Amazon Q chat transport unreachable in anonymous scope. etap-bypassed clean baseline.",
+  "timestamp": "2026-05-29T06:13:37Z"
+}

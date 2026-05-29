@@ -1,0 +1,25 @@
+{
+  "id": "1536",
+  "service": "chatgpt",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://chatgpt.com/backend-api/f/conversation",
+    "chat_api_path": "/backend-api/f/conversation",
+    "request_content_type": "application/json (POST; preceded by POST /backend-api/f/conversation/prepare)",
+    "response_content_type": "text/event-stream (SSE — Server-Sent Events; ChatGPT streams turn deltas)",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "Body not directly readable (Claude-in-Chrome taint-guard). POST /backend-api/f/conversation returned 200; answer streamed into div.markdown. Known ChatGPT SSE framing: 'data: {json delta}\\n\\n' frames terminated by 'data: [DONE]'. Stream tracked via GET /backend-api/conversation/<id>/stream_status. Raw bytes need CDP/HAR.",
+    "frame_separator": "SSE: 'data: ' prefix per frame, '\\n\\n' delimiter, terminal 'data: [DONE]' (standard ChatGPT) — not byte-confirmed via taint-guard",
+    "dom_render_structure": "Assistant turn: section.text-token-text-primary > div.text-base > div > div.flex > div.min-h-8 ... [data-message-author-role=assistant][data-message-model-slug=gpt-5-5]. Answer markdown in div.markdown.prose.dark:prose-invert. Each turn wrapped in article/div [data-testid=conversation-turn-N]. Action toolbar (copy/like/dislike/share/regenerate) below.",
+    "framework": "React (custom build; NOT __NEXT_DATA__/#__next — uses Remix/app-style routing, data-testid + data-message-* attributes). Tailwind (prose).",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "1536_chatgpt_gpt5_answer.png",
+  "notes": "Logged in (최장희, Free). Benign prompt SUCCEEDED: GPT-5 (model-slug gpt-5-5) answered with a one-sentence Korean greeting. Chat POST endpoint confirmed = /backend-api/f/conversation (as flagged in request), preceded by /f/conversation/prepare, then SSE stream + /conversation/<id>/stream_status poll. Supporting: /backend-api/conversations (list), /conversation/<id>/textdocs, /gizmos/snorlax/sidebar. etap-bypassed clean baseline. Exact SSE frame bytes need CDP/HAR (taint-guard).",
+  "timestamp": "2026-05-29T06:13:37Z"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1534",
+  "service": "character",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "partial",
+  "captures": {
+    "chat_api_url": "Not surfaced by extension HTTP network reader. character.ai streams chat via WebSocket to neo.character.ai (wss://neo.character.ai/ws/) — WS frames are not captured by read_network_requests (HTTP XHR/fetch only). Only telemetry POSTs observed (prodregistryv2.org/v1/rgstr, adtrafficquality.google).",
+    "chat_api_path": "/ws/ (WebSocket on neo.character.ai) — not byte-confirmed this session; needs CDP/HAR (WS frames)",
+    "request_content_type": "WebSocket text frame (JSON command envelope) — inferred",
+    "response_content_type": "WebSocket text frames (JSON turn/candidate deltas) — inferred",
+    "transport_protocol": "WebSocket",
+    "success_response_wire_sample": "Body not captured (WS not in extension HTTP log + taint-guard). Answer streamed token-by-token into the message bubble (roleplay text). Raw WS frame schema requires CDP/HAR.",
+    "frame_separator": "WebSocket frame boundaries (each delta = one WS text frame) — not byte-confirmed",
+    "dom_render_structure": "Next.js. Answer text chain: EM > P > div.prose.dark:prose-invert > div.font-display.font-light > div.mt-1.max-w-xl > div.flex.flex-col > div.m-0.flex. Markdown via 'prose' (Tailwind typography); narration rendered as <em> italics. Message bubble per turn with regenerate/like/dislike toolbar.",
+    "framework": "Next.js (React; #__next mount + __NEXT_DATA__ present) + Tailwind (prose typography)",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "1534_character_drbright_answer.png",
+  "notes": "Logged in as HealthyWorm4019. Character-chat platform (not single chatbot) — opened 'Dr Bright' character to chat. Benign prompt SUCCEEDED: Dr Bright replied in-character (roleplay greeting/narration). Chat transport is WebSocket (neo.character.ai) which Claude-in-Chrome's HTTP network reader does NOT surface — only telemetry endpoints captured. etap-bypassed clean baseline. Raw WS frame schema needs CDP/HAR fallback.",
+  "timestamp": "2026-05-29T06:13:37Z"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1532",
+  "service": "baidu",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://yiyan.baidu.com/eb/chat/conversation/v2",
+    "chat_api_path": "/eb/chat/conversation/v2",
+    "request_content_type": "application/json (observed POST)",
+    "response_content_type": "text/event-stream (SSE — body not directly readable under Claude-in-Chrome taint-guard; inferred from ERNIE streaming render behavior)",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "Body not captured (taint-guard). Render arrived incrementally with a 'Thinking complete' phase then streamed text into an 'md-stream-desktop' container, consistent with SSE event frames. CDP/HAR fallback required for raw frame bytes.",
+    "frame_separator": "not captured (taint-guard) — SSE default expected (\\n\\n event delimiter)",
+    "dom_render_structure": "Answer text: P > div.custom-html.md-stream-desktop (streaming markdown) > ... > div.dialog-card-wrapper.cardWrapper__<hash>. CSS-module hashed classnames (cardWrapper__s6Gr9aXy). Bot answer block under answerBox__<hash> / flowBox__<hash>.",
+    "framework": "React + Ant Design (npm-antd bundle present; CSS Modules hashed classnames; not Next — __NEXT_DATA__ absent)",
+    "auth_state": "anonymous",
+    "console_errors": []
+  },
+  "screenshot_name": "1532_baidu_ernie_answer.png",
+  "notes": "Chinese site — did NOT log in (instruction). Anonymous scope WORKS: ERNIE 5.1 Thinking answered the benign Korean prompt with a one-sentence Korean greeting ('Thinking complete' shown). Anonymous trial gated by POST /eb/chat/check/token. Supporting endpoints seen: /eb/chat/history, /eb/chat/likeConfig, /eb/file/num, /eb/common/event/batch, /eb/monitor/write/trace/log, /eb/pluginbox/list. etap-bypassed clean baseline. Exact SSE frame bytes need CDP/HAR (taint-guard blocks body via Claude-in-Chrome).",
+  "timestamp": "2026-05-29T06:13:37Z"
+}
