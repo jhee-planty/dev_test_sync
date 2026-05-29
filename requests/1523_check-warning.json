@@ -1,0 +1,14 @@
+{
+  "command": "check-warning",
+  "priority": "normal",
+  "params": {
+    "service": "chatgpt",
+    "expected_text": "보안 정책",
+    "expected_format": "차단경고"
+  },
+  "attachments": [],
+  "notes": "NPB/dataplane 복구(si/so 10Gb, etapd restart 10:21:50) 후 Wave 1 회귀 재개. PII(901010-1234567) prompt → 보안 정책 차단경고 검증. verify-before-commit gate: 본 Wave PASS 시 exclude_path_patterns(#67) EtapV3 commit 진행. chatgpt logged-in.",
+  "id": "1523",
+  "created": "2026-05-29T01:38:05Z",
+  "target_pc": "pc1"
+}
