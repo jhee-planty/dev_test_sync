@@ -1,0 +1,25 @@
+{
+  "id": "1543",
+  "service": "gemini3",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate?bl=boq_assistant-bard-web-server_20260525.09_p0&f.sid=...&hl=ko&_reqid=...&rt=c",
+    "chat_api_path": "/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+    "request_content_type": "application/x-www-form-urlencoded;charset=UTF-8 (f.req batchexecute envelope)",
+    "response_content_type": "application/json+protobuf (rt=c chunked stream)",
+    "transport_protocol": "JSON (Google batchexecute/StreamGenerate chunked-array, protobuf-ish nested JSON; not SSE/WS). Side-loads via /data/batchexecute (rpcids).",
+    "success_response_wire_sample": "Anti-hijack prefix )]}' then length-prefixed chunks of nested arrays: [[\"wrb.fr\",null,\"<escaped-json-string of model response array>\"...]] — model text is buried in a stringified inner array. Body NOT readable via Claude-in-Chrome taint-guard; schema is the known BardChatUi StreamGenerate format (length-delimited JSON-protobuf chunks).",
+    "frame_separator": "Leading byte-length integer line before each JSON chunk (length-prefixed framing), with )]}' XSSI guard prefix at stream start.",
+    "dom_render_structure": "Custom Angular elements: <chat-app> root > <bard-sidenav-container>/<bard-sidenav-content>. Conversation: user turn = <user-query class='ng-star-inserted'> > <span.user-query-container> > <user-query-content>; model turn = <model-response class='enable-lr26-response-chrome-updates'> > <structured-content-container.model-response-text> > <message-content>. Material components (mat-icon, mat-nav-list, mat-menu, mat-progress-spinner) throughout.",
+    "framework": "Angular (Google BardChatUi / boq-bard-web; Angular Material). ng-star-inserted markers, custom elements chat-app/model-response/user-query.",
+    "auth_state": "logged-in",
+    "console_errors": "Not separately polled; visible network 503 only on google-analytics /g/collect beacon (telemetry, non-functional). Chat StreamGenerate + batchexecute all 200."
+  },
+  "screenshot_name": "1543_gemini3_response (in-session ss_2046hj6th, not persisted to disk)",
+  "notes": "etap-BYPASSED clean baseline. Chat POST confirmed = StreamGenerate (BardFrontendService), 200. Wire body is length-prefixed protobuf-ish chunked JSON with )]}' XSSI guard — taint-guarded, not byte-readable via Claude-in-Chrome; CDP/HAR needed for raw bytes. Response rendered normally ('안녕하세요! 반가워요...'). Logged in as user 장희.",
+  "timestamp": "2026-05-29T00:00:00+09:00"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1545",
+  "service": "github_copilot",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://api.individual.githubcopilot.com/github/chat/threads/{threadId}/messages",
+    "chat_api_path": "/github/chat/threads/{threadId}/messages  (host: api.individual.githubcopilot.com, separate from github.com). Thread name set via /github/chat/threads/{threadId}/name. Aux: github.com/github-copilot/chat/repositories_search.",
+    "request_content_type": "application/json (POST message body)",
+    "response_content_type": "text/event-stream (SSE)",
+    "transport_protocol": "SSE. Chat completion streamed from dedicated API host api.individual.githubcopilot.com (NOT github.com). Telemetry to collector.github.com (POST 204).",
+    "success_response_wire_sample": "Body not byte-readable via Claude-in-Chrome taint-guard. Endpoint /github/chat/threads/{id}/messages returns SSE stream of token/annotation events rendered into div.markdown-body. Final assistant text observed: '안녕하세요! GitHub Copilot입니다. 소프트웨어 개발을 도와드리겠습니다.' Raw SSE frames require CDP/HAR.",
+    "frame_separator": "SSE 'data:' lines separated by blank line (standard EventSource framing) — inferred from text/event-stream; exact bytes need CDP/HAR.",
+    "dom_render_structure": "GitHub React (react-partial / react-app custom elements, Primer CSS Modules). User turn = div.UserMessage-module__container__*; assistant turn = div.ChatMessage-module__content__* > div.ImmersiveChat-module__messageContent__* > div.markdown-body. Retry/model controls = div.ModelPicker-module__*. CopilotBadgeV2 on assistant. Code blocks via js-snippet-clipboard-copy.",
+    "framework": "React (GitHub react-partial hydration islands, Primer Design System CSS Modules). Not data-reactroot legacy; component-scoped CSS module class hashes.",
+    "auth_state": "logged-in (GitHub session; Copilot Free plan, model Claude Haiku 4.5)",
+    "console_errors": "Not separately polled; no functional errors observed. Note: SPA route change to /copilot/c/{id} cleared extension network buffer, so the messages POST was recovered via performance.getEntriesByType('resource') rather than read_network_requests."
+  },
+  "screenshot_name": "1545_copilot_response (in-session ss_3943sc7rj)",
+  "notes": "etap-BYPASSED clean baseline. Chat API on SEPARATE host api.individual.githubcopilot.com (key structural fact — block/inspect rules targeting github.com won't see chat traffic). SSE transport. Response rendered normally. Logged in (Copilot Free). read_network_requests buffer cleared on SPA nav; endpoint confirmed via perf resource entries. Wire bytes taint-guarded -> CDP/HAR for raw SSE.",
+  "timestamp": "2026-05-29T00:00:00+09:00"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "1548",
+  "service": "kimi",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/Chat (send + stream) ; https://www.kimi.com/apiv2/kimi.chat.v1.ChatService/ListChats (list)",
+    "chat_api_path": "/apiv2/kimi.gateway.chat.v1.ChatService/Chat  and  /apiv2/kimi.chat.v1.ChatService/ListChats ; device init via /api/device/register (POST)",
+    "request_content_type": "application/json or application/connect+json (Connect-RPC / gRPC-web style fully-qualified service method path)",
+    "response_content_type": "application/connect+json (Connect streaming) / text/event-stream — RPC streaming envelope",
+    "transport_protocol": "Connect-RPC / gRPC-web style RPC (POST to fully-qualified ServiceName/Method path). Streaming response. NOT plain REST and NOT classic SSE path; uses Connect protocol framing.",
+    "success_response_wire_sample": "Body not byte-readable via Claude-in-Chrome taint-guard. Endpoint /apiv2/kimi.gateway.chat.v1.ChatService/Chat returns a Connect-protocol streamed sequence of message-delta envelopes (length-prefixed Connect frames carrying JSON). Client renders into div.chat-detail-content / segment markdown. Observed final text: '안녕하세요! 반갑습니다. 무엇을 도와드릴까요?'. Raw Connect frames require CDP/HAR.",
+    "frame_separator": "Connect-RPC envelope framing: 5-byte prefix (1 flag byte + 4-byte big-endian length) per message frame. Inferred from Connect service-path convention; exact bytes need CDP/HAR.",
+    "dom_render_structure": "Vue SPA (vue-router: router-link-active / router-link-exact-active classes; no Next/#__next). Layout: div.chat-page.chat > div.chat-detail-content > div.chat-detail-main; header = header.chat-header-content. Sidebar div.sidebar-new-chat / a.new-chat-btn / div.chat-info > span.chat-name. Message segments rendered with Edit/Copy/Share actions.",
+    "framework": "Vue 3 + Vue Router (router-link-active markers). Custom-named utility classes (chat-page/chat-detail-*).",
+    "auth_state": "logged-in (existing session, account 최장희) — NO new login performed (Chinese-site constraint respected; account was already authenticated)",
+    "console_errors": "Not separately polled; /api/device/register 200, chat RPC succeeded, response rendered normally."
+  },
+  "screenshot_name": "1548_kimi_response (in-session ss_3272g4j9r)",
+  "notes": "etap-BYPASSED clean baseline. 중국 사이트 — account was ALREADY logged in (최장희), so used existing session; no new login attempted. KNOWN quirk handled: submitted via send button (not Enter). Most notable structural fact: chat transport is Connect-RPC/gRPC-web style (/apiv2/kimi.gateway.chat.v1.ChatService/Chat) — fully-qualified protobuf service path, distinct from REST/SSE peers. Response rendered normally. Wire bytes taint-guarded -> CDP/HAR for raw Connect frames.",
+  "timestamp": "2026-05-29T00:00:00+09:00"
+}
