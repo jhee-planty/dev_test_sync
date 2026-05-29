@@ -1,0 +1,32 @@
+{
+  "id": "1541",
+  "service": "duckduckgo",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://duck.ai/duckchat/v1/chat (POST). Supporting: GET /duckchat/v1/auth/token, GET /duckchat/v1/status. Telemetry on improving.duckduckgo.com/t/*",
+    "chat_api_path": "/duckchat/v1/chat",
+    "request_content_type": "application/json (body: {model:\"gpt-5-mini\", messages:[{role:\"user\",content:\"테스트입니다...\"}], ...}; headers include x-vqd-hash/auth token from /auth/token)",
+    "response_content_type": "text/event-stream",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "Duck.ai SSE: data: {\"role\":\"assistant\",\"message\":\"안녕\",\"created\":...,\"model\":\"gpt-5-mini\",\"action\":\"success\"}\\n\\n ... data: [DONE]. NOTE: raw frame body taint-guarded (not captured); endpoint+method confirmed via read_network_requests (POST /duckchat/v1/chat). Telemetry wide_event confirms streaming: time_to_first_token=1411ms, time_to_last_token=3742ms, status=SUCCESS, model=gpt-5-mini, mode=chat, reasoning_mode=fast. One captured POST showed statusCode 503 (transient/earlier attempt) but final answer rendered + telemetry=SUCCESS. Exact bytes need CDP/HAR.",
+    "frame_separator": "SSE double-newline; data: JSON lines; terminator data: [DONE]",
+    "dom_render_structure": {
+      "sidebar": "[data-testid=\"duckai-sidebar\"] containing [data-testid=\"RecentChatsList\"]",
+      "toolbar": "[data-testid=\"duckai-top-toolbar\"]",
+      "user_message": "[data-testid=\"user-message\"]",
+      "assistant_message": "rendered with CSS-modules hashed classes (e.g. PBQZNIcKgp0FJ_yxBVaB inside UF8GjwsZHDPDmhfMJPOg pHy4erJAYftGH9zGlL6z); model label 'GPT-5 mini' shown above answer",
+      "input": "[data-testid=\"duckai-chat-input\"]",
+      "distinct_testids": ["duckai-sidebar","RecentChatsList","duckai-top-toolbar","user-message","feedback-prompt","duckai-chat-input"]
+    },
+    "framework": "React SPA with CSS Modules (hashed class names); no Next.js (#__next absent). DuckDuckGo proprietary 'duckai' component namespace.",
+    "auth_state": "anonymous",
+    "console_errors": []
+  },
+  "screenshot_name": "ss_7679zpygq (in-tool capture; not saved to disk)",
+  "notes": "etap-bypassed clean baseline. Anonymous (Duck.ai requires no account; privacy-first, chats local). Benign prompt sent; GPT-5 mini replied '안녕하세요 — 오늘 기분은 어떠세요?'. Transport = SSE POST /duckchat/v1/chat with vqd auth token flow. Endpoint+method captured live via read_network_requests (rare clean hit). DOM uses data-testid taxonomy (user-message, duckai-chat-input) + CSS-module hashed classes for content. No console errors.",
+  "timestamp": "2026-05-29T06:33:00Z"
+}

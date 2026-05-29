@@ -1,0 +1,32 @@
+{
+  "id": "1538",
+  "service": "cohere",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "final_host": "dashboard.cohere.com (coral.cohere.com 301->dashboard.cohere.com/playground/chat)",
+    "chat_api_url": "Cohere Chat v2 API via CohereClientV2 cohere.chat(); playground proxies to api.cohere.com/v2/chat (confirmed via View Code: import {CohereClientV2} from 'cohere-ai'; cohere.chat({messages:[...]}))",
+    "chat_api_path": "/v2/chat (Cohere API) — playground driver dispatches through dashboard.cohere.com backend proxy",
+    "request_content_type": "application/json",
+    "response_content_type": "text/event-stream (streaming SSE; playground streams tokens)",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "v2/chat streaming events: {\"type\":\"content-start\",...}, {\"type\":\"content-delta\",\"delta\":{\"message\":{\"content\":{\"text\":\"...\"}}}}, {\"type\":\"content-end\"}, {\"type\":\"message-end\"}. Request body schema (from View Code): {messages:[{role:\"user\",content:[{type:\"text\",text:\"테스트입니다...\"}]}], model:\"command-a-plus-05-2026\"}. NOTE: raw frame body taint-guarded; chat POST fired before re-arming read_network_requests (network log cleared on cross-domain nav coral->dashboard). Schema authoritative from playground View Code panel.",
+    "frame_separator": "SSE double-newline; each event typed (content-start/content-delta/content-end/message-end)",
+    "dom_render_structure": {
+      "message_block": "user+assistant turns rendered as div.flex.flex-col.gap-2.break-words; text content inner div.space-y-3",
+      "reasoning_trace": "rendered as separate block above final answer (Reasoning toggle ON)",
+      "input": "textarea placeholder 'Message...' with role selector ('user') + Send button",
+      "distinct_testids": ["dropdown-model-selector","add-thinking-budget"],
+      "controls": ["View Code","Clear","System message editor"]
+    },
+    "framework": "Next.js (#__next + __NEXT_DATA__ present), Tailwind utility classes",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "ss_59560ik3q (in-tool capture; not saved to disk)",
+  "notes": "etap-bypassed clean baseline. coral.cohere.com permanently redirects to dashboard.cohere.com/playground/chat (final host = dashboard.cohere.com). Logged-in. Benign prompt sent; command-a-plus-05-2026 replied with reasoning trace + Korean greeting '안녕하세요, 만나서 반가워요!'. Transport = Cohere v2 Chat API SSE. Network chat POST not re-captured (log cleared on coral->dashboard cross-domain nav before re-arm); endpoint/schema confirmed via playground View Code (CohereClientV2.chat, structured content blocks). No console errors.",
+  "timestamp": "2026-05-29T06:27:30Z"
+}

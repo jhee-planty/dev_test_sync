@@ -1,0 +1,32 @@
+{
+  "id": "1542",
+  "service": "gamma",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://api.gamma.app/graphql (primary AI generation transport, POST). Supporting AI telemetry: POST https://api.gamma.app/ai/v2/track-span. Generation draft route: /create/generate/{draftId} (is7suu64d4m0qs3)",
+    "chat_api_path": "/graphql (on api.gamma.app)",
+    "request_content_type": "application/json (GraphQL mutation/query envelope: {operationName, variables:{input:{...prompt...}}, query})",
+    "response_content_type": "application/json (GraphQL); AI outline/content streamed (Gamma streams generation progress; SSE/chunked-over-fetch for token stream within the GraphQL/AI pipeline)",
+    "transport_protocol": "GraphQL",
+    "success_response_wire_sample": "GraphQL response envelope: {\"data\":{\"<operation>\":{...generated cards/outline...}},\"errors\":null}. AI generation produced presentation OUTLINE (윤곽선) of 10 cards: title 'テスト 발표: 성공적인 시작을 위한 여정' + sectioned bullet lists. NOTE: raw GraphQL/AI body taint-guarded (not captured); endpoint+method confirmed live via read_network_requests (POST api.gamma.app/graphql 200 + ai/v2/track-span 201). This is a DOCUMENT-GENERATION flow, not a conversational chat — benign prompt produced a slide outline, not a one-sentence reply. Full deck build (생성 button) NOT triggered to avoid credit spend + heavy render. CDP/HAR needed for exact GraphQL bytes.",
+    "frame_separator": "GraphQL single JSON response (HTTP). Generation progress streamed via chunked fetch within AI pipeline.",
+    "dom_render_structure": {
+      "outline_editor": "[data-testid=\"ai-content-editor\"] containing [data-testid=\"node-view-content\"] and [data-testid=\"bullet-list-item\"] (ProseMirror-style editable outline)",
+      "card_controls": "[data-testid=\"add-card\"], [data-testid=\"delete-card\"], [data-testid=\"merge-card\"]",
+      "bottom_bar": "[data-testid=\"sticky-bottom-bar\"] with 생성(generate) CTA + 크레딧 320개 + 총 카드 10개; [data-testid=\"theme-name\"]; [data-testid=\"butterbar\"]",
+      "prompt_input": "textarea '무엇을 만들지 설명하세요' with controls 카드10개/클래식/기본/한국어",
+      "modes": ["프레젠테이션","웹 페이지","문서","소셜","그래픽"],
+      "distinct_testids": ["ai-content-editor","node-view-content","bullet-list-item","theme-name","sticky-bottom-bar","butterbar","add-card","delete-card","merge-card"]
+    },
+    "framework": "Next.js (#__next + __NEXT_DATA__ present) + Chakra UI (chakra-ui-light class). Apollo/GraphQL client to api.gamma.app.",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "ss_10009e7bf (in-tool capture; not saved to disk)",
+  "notes": "etap-bypassed clean baseline. Logged-in (장희 최's Workspace, Free tier, 320 credits). KEY STRUCTURAL FACT: Gamma is NOT a chat service — it is an AI presentation/document generator. The benign prompt was entered into the AI '생성' flow and produced a 10-card presentation OUTLINE (윤곽선), not a one-sentence greeting. Transport = GraphQL (POST api.gamma.app/graphql) + ai/v2/track-span, distinct from the SSE/WS chat services in this batch. Did NOT click final 생성 to avoid credit consumption. Next.js + Chakra UI; ProseMirror-style outline editor with rich data-testid card controls. No console errors.",
+  "timestamp": "2026-05-29T06:36:00Z"
+}

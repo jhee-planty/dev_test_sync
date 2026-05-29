@@ -1,0 +1,31 @@
+{
+  "id": "1537",
+  "service": "claude",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://claude.ai/api/organizations/{org_uuid}/chat_conversations/{conv_uuid}/completion",
+    "chat_api_path": "/api/organizations/{org_uuid}/chat_conversations/{conv_uuid}/completion",
+    "request_content_type": "application/json",
+    "response_content_type": "text/event-stream",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "event: completion\\ndata: {\"type\":\"completion\",\"completion\":\"...\",\"stop_reason\":null,...}\\n\\n  (NOTE: raw body taint-guarded by Claude-in-Chrome; schema inferred from endpoint=/completion + response_content_type=text/event-stream observed via read_network_requests. POST 200. For exact bytes a CDP/HAR fallback is required.)",
+    "frame_separator": "double newline (\\n\\n) per SSE spec; each frame = 'event: <name>' + 'data: <json>'",
+    "dom_render_structure": {
+      "user_message": "div[data-testid=\"user-message\"] (classes: font-large !font-user-message grid grid-cols-1), parent div.flex-1",
+      "assistant_message": "div.font-claude-message inside wrapper div[data-is-streaming] (group relative pb-3); data-is-streaming toggles true->false on stream end",
+      "input": "[data-testid=\"chat-input\"] contenteditable",
+      "distinct_testids": ["page-header","chat-title-button","chat-menu-trigger","user-message","action-bar-copy","action-bar-retry","file-upload","chat-input","model-selector-dropdown"],
+      "body_class": "bg-bg-100 text-text-100 font-ui min-h-screen chat-ui-core"
+    },
+    "framework": "React SPA (no #__next; no Next.js root detected; client-rendered chat-ui-core, Tailwind utility classes)",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "ss_2865hl0n8 (in-tool capture; not saved to disk)",
+  "notes": "etap-bypassed clean baseline. Logged-in as janghee. Benign prompt sent, Claude replied with a one-sentence Korean greeting. Chat POST /completion returned 200 streaming. Raw SSE body not capturable via Claude-in-Chrome (taint-guard); transport confirmed SSE by response_content_type=text/event-stream + /completion endpoint. Title auto-gen via separate POST /title. No console errors.",
+  "timestamp": "2026-05-29T06:26:05Z"
+}

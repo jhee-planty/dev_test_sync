@@ -1,0 +1,32 @@
+{
+  "id": "1540",
+  "service": "deepseek",
+  "request_type": "run-scenario",
+  "method": "Claude-in-Chrome",
+  "pc": "pc1",
+  "capture_mode": "etap-bypassed",
+  "status": "captured",
+  "captures": {
+    "chat_api_url": "https://chat.deepseek.com/api/v0/chat/completion (DeepSeek web chat completion, SSE). Session route: /a/chat/s/{sessionId}; sessionId=06c564ec-07f7-4043-abed-002ba3a25116",
+    "chat_api_path": "/api/v0/chat/completion",
+    "request_content_type": "application/json",
+    "response_content_type": "text/event-stream",
+    "transport_protocol": "SSE",
+    "success_response_wire_sample": "DeepSeek SSE: data: {\"choices\":[{\"delta\":{\"content\":\"안녕\"}}],...}\\n\\n ... data: [DONE]. Request body schema: {chat_session_id, parent_message_id, prompt:\"테스트입니다...\", ref_file_ids:[], thinking_enabled:false, search_enabled:false}. NOTE: raw SSE body NOT captured — completion POST fired before re-arming read_network_requests; only telemetry (gator.volces.com/list POST 200) remained in log. Endpoint/schema = known DeepSeek web API (cause: cross-domain nav cleared log + body taint-guard). CDP/HAR needed for exact bytes.",
+    "frame_separator": "SSE double-newline; data: lines; terminator data: [DONE]",
+    "dom_render_structure": {
+      "message_list": "div.ds-virtual-list.ds-virtual-list--printable (custom virtual-scroll list); items in div.ds-virtual-list-items",
+      "assistant_message": "text rendered inside ds-virtual-list-items child node (custom DS component lib, hashed class suffixes e.g. _6f2c522)",
+      "user_message": "right-aligned bubble in same virtual list",
+      "input": "textarea placeholder 'DeepSeek에 메시지 보내기' with mode toggles 깊은 생각(deep-think)/검색(search)",
+      "distinct_testids": [],
+      "note": "No data-testid attributes; component classes are hashed (DS design-system). body class='ko light'"
+    },
+    "framework": "Custom React SPA with proprietary 'ds-' design system + virtualized message list. No Next.js (#__next absent, no __NEXT_DATA__).",
+    "auth_state": "logged-in",
+    "console_errors": []
+  },
+  "screenshot_name": "ss_1450h0epk (in-tool capture; not saved to disk)",
+  "notes": "etap-bypassed clean baseline. IMPORTANT: used PRE-EXISTING logged-in session (user '최장희' already signed in) — NO new login performed per 중국 사이트 constraint. Benign prompt sent in 빠른(fast) mode; replied '안녕하세요, 테스트가 잘 작동하고 있습니다!'. Transport = SSE via /api/v0/chat/completion. Raw body not re-captured (log cleared on nav + taint-guard); schema from known DeepSeek web API. DOM uses proprietary ds-virtual-list with hashed classes, no data-testid. No console errors.",
+  "timestamp": "2026-05-29T06:31:00Z"
+}
